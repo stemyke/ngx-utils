@@ -1,4 +1,4 @@
-interface IScriptPromises {
+export interface IScriptPromises {
     [src: string]: Promise<HTMLScriptElement>;
 }
 

@@ -1,10 +1,9 @@
 import {Injector, TypeProvider} from "@angular/core";
 import {ObjectUtils} from "./object.utils";
-
-declare const Reflect: any;
+import "reflect-metadata";
 
 export function FactoryDependencies(...dependencies: TypeProvider[]): MethodDecorator {
-    return (target: any, method: string): void => {
+    return function (target: any, method: string): void {
         ReflectUtils.defineMetadata("factoryDependencies", dependencies, target, method);
     };
 }
@@ -34,12 +33,14 @@ export class ReflectUtils {
         const factory = <IResolveFactory>obj;
         let depends: TypeProvider[] = [];
         if (factory.type) {
-            const method = Object.keys(factory.type).find(t => factory.type[t] === factory.func);
+            const method = Object.keys(factory.type).find(function (key) {
+                return factory.type[key] === factory.func;
+            });
             depends = ReflectUtils.getMetadata("factoryDependencies", factory.type, method) || [];
         } else {
             depends = ReflectUtils.getMetadata("factoryDependencies", factory.func) || [];
         }
-        const parameters = depends.map(dep => {
+        const parameters = depends.map(function (dep) {
             return injector.get(dep);
         }).concat(factory.params);
         return factory.func.apply(null, parameters);

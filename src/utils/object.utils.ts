@@ -27,7 +27,10 @@ export class ObjectUtils {
 
     static evaluate(expr: string, context: any = {}): any {
         expr = Object.keys(context).reduce((res, key) => `var ${key} = this['${key}']; ${res}`, expr);
-        return (() => eval(expr)).call(context);
+        return (
+            // @dynamic
+            () => eval(expr)
+        ).call(context);
     }
 
     static empty(obj: any): boolean {
@@ -37,21 +40,24 @@ export class ObjectUtils {
     static iterate(obj: any, cb: IterateCallback): void {
         if (!obj) return;
         const keys: any[] = isArray(obj) ? obj.map((e, i) => i) : Object.keys(obj);
-        keys.forEach(key => {
-            cb(obj[key], key);
-        });
+        keys.forEach(
+            // @dynamic
+            key => {
+                cb(obj[key], key);
+            }
+        );
     }
 
     static filter(obj: any, predicate: FilterPrecidate): any {
-        return this.copyRecursive(null, obj, predicate);
+        return ObjectUtils.copyRecursive(null, obj, predicate);
     }
 
     static copy<T>(obj: T): T {
-        return this.copyRecursive(null, obj);
+        return ObjectUtils.copyRecursive(null, obj);
     }
 
     static assign<T>(target: T, source: any): T {
-        return this.copyRecursive(target, source);
+        return ObjectUtils.copyRecursive(target, source);
     }
 
     static checkInterface(obj: any, itface: any): boolean {
@@ -72,16 +78,16 @@ export class ObjectUtils {
             source.forEach((item, index) => {
                 if (!predicate(item, index)) return;
                 if (target.length > i)
-                    target[i] = this.copyRecursive(target[i], item, predicate);
+                    target[i] = ObjectUtils.copyRecursive(target[i], item, predicate);
                 else
-                    target.push(this.copyRecursive(item, predicate));
+                    target.push(ObjectUtils.copyRecursive(item, predicate));
                 i++;
             });
             return target;
         }
         return Object.keys(source).reduce((result, key) => {
             if (!predicate(source[key], key)) return result;
-            result[key] = this.copyRecursive(result[key], source[key], predicate);
+            result[key] = ObjectUtils.copyRecursive(result[key], source[key], predicate);
             return result;
         }, target || {});
     }
