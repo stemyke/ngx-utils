@@ -1,4 +1,3 @@
-export * from "./extension.utils";
 export * from "./file.utils";
 export * from "./loader.utils";
 export * from "./math.utils";
