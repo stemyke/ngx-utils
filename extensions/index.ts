@@ -1,6 +1,9 @@
 import {utc, DurationInputArg1, DurationInputArg2} from "moment";
 
-export const propDescriptor: PropertyDescriptor = {enumerable: false};
+export const propDescriptor: PropertyDescriptor = {
+    writable: true,
+    enumerable: false
+};
 
 declare global {
     interface String {
