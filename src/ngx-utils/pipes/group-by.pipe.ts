@@ -1,4 +1,5 @@
 import {Pipe, PipeTransform} from "@angular/core";
+import {ObjectUtils} from "../utils";
 
 export interface IGroupMap {
     [column: string]: any;
@@ -11,16 +12,16 @@ export class GroupByPipe implements PipeTransform {
 
     transform(records: any[], column: string, map: IGroupMap = null): any {
         const groups = (records || []).reduce((result: any, item: any) => {
-            const col = (map ? map[item[column] || ""] : item[column]) || "";
+            const key = ObjectUtils.getValue(item, column) || "";
+            console.log(item, column, key);
+            const col = map ? (map[key] || "") : key;
             const group: any[] = result[col] || [];
             group.push(item);
             result[col] = group;
             return result;
         }, {});
-        return Object.keys(groups).map(k => {
-            const result = {items: groups[k]};
-            result[column] = k;
-            return result;
+        return Object.keys(groups).map(key => {
+            return {group: key, items: groups[key]};
         });
     }
 }
