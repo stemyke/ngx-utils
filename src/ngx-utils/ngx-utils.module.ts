@@ -1,6 +1,8 @@
 import {ModuleWithProviders, NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
-import {GroupByPipe} from "./pipes";
+import {GroupByPipe, TranslationPipe} from "./pipes";
+import {Provider} from "@angular/core/src/di";
+import {LANGUAGE_SERVICE, StaticLanguageService} from "./services";
 
 // --- Components ---
 export const components = [
@@ -12,8 +14,13 @@ export const directives = [
 
 // --- Pipes ---
 export const pipes = [
-    GroupByPipe
+    GroupByPipe,
+    TranslationPipe
 ];
+
+export interface NgxUtilsModuleConfig {
+    providers?: Provider[];
+}
 
 @NgModule({
     declarations: [
@@ -30,21 +37,19 @@ export const pipes = [
         ...pipes
     ],
     providers: [
-
+        StaticLanguageService,
+        {
+            provide: LANGUAGE_SERVICE,
+            useExisting: StaticLanguageService
+        }
     ]
 })
 export class NgxUtilsModule {
-    static forChild(): ModuleWithProviders {
+    static forRoot(config?: NgxUtilsModuleConfig): ModuleWithProviders {
+        config = config || {};
         return {
             ngModule: NgxUtilsModule,
-            providers: pipes
-        };
-    }
-
-    static forRoot(): ModuleWithProviders {
-        return {
-            ngModule: NgxUtilsModule,
-            providers: []
+            providers: config.providers ||[]
         }
     }
 }

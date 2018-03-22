@@ -1,11 +1,13 @@
 import {isArray, isDate, isNullOrUndefined, isPrimitive} from "util";
+
 const defaultPredicate = (value: any, key: any) => true;
 
 export type FilterPrecidate = (value: any, key?: any) => boolean;
 export type IterateCallback = (value: any, key?: any) => void;
+
 export class ObjectUtils {
 
-    static compare(a, b): number {
+    static compare(a: any, b: any): number {
         if ((a === null || b === null) || (typeof a != typeof b)) {
             return null;
         }
@@ -23,6 +25,43 @@ export class ObjectUtils {
             }
             return 0;
         }
+    }
+
+    static equals(a: any, b: any): boolean {
+        if (a === b) return true;
+        if (a === null || b === null) return false;
+        if (a !== a && b !== b) return true; // NaN === NaN
+        const at = typeof a, bt = typeof b;
+        let length: number, key: any, keySet: any;
+        if (at == bt && at == "object") {
+            if (Array.isArray(a)) {
+                if (!Array.isArray(b)) return false;
+                if ((length = a.length) == b.length) {
+                    for (key = 0; key < length; key++) {
+                        if (!ObjectUtils.equals(a[key], b[key])) return false;
+                    }
+                    return true;
+                }
+            } else {
+                if (Array.isArray(b)) {
+                    return false;
+                }
+                keySet = Object.create(null);
+                for (key in a) {
+                    if (!ObjectUtils.equals(a[key], b[key])) {
+                        return false;
+                    }
+                    keySet[key] = true;
+                }
+                for (key in b) {
+                    if (!(key in keySet) && typeof b[key] !== "undefined") {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     static evaluate(expr: string, context: any = {}): any {
@@ -48,6 +87,23 @@ export class ObjectUtils {
         );
     }
 
+    static getValue(obj: any, key: string): any {
+        const keys = key.split(".");
+        key = "";
+        do {
+            key += keys.shift();
+            if (ObjectUtils.isDefined(obj) && ObjectUtils.isDefined(obj[key]) && (typeof obj[key] === "object" || !keys.length)) {
+                obj = obj[key];
+                key = "";
+            } else if (!keys.length) {
+                obj = undefined;
+            } else {
+                key += ".";
+            }
+        } while (keys.length);
+        return obj;
+    }
+
     static filter(obj: any, predicate: FilterPrecidate): any {
         return ObjectUtils.copyRecursive(null, obj, predicate);
     }
@@ -58,6 +114,10 @@ export class ObjectUtils {
 
     static assign<T>(target: T, source: any): T {
         return ObjectUtils.copyRecursive(target, source);
+    }
+
+    static isDefined(value: any): boolean {
+        return typeof value !== "undefined" && value !== null;
     }
 
     static checkInterface(obj: any, itface: any): boolean {
