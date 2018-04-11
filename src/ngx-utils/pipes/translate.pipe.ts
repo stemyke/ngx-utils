@@ -6,10 +6,10 @@ export type TranslationQuery = string | ITranslations | ITranslation[];
 
 @Injectable()
 @Pipe({
-    name: "translation",
+    name: "translate",
     pure: false
 })
-export class TranslationPipe implements PipeTransform {
+export class TranslatePipe implements PipeTransform {
 
     private lang: string;
     private query: TranslationQuery;

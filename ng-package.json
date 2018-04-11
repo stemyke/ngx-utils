@@ -2,6 +2,9 @@
     "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
     "lib": {
         "entryFile": "./src/public_api.ts",
-        "languageLevel": ["dom", "es2017"]
+        "languageLevel": ["dom", "es2017"],
+        "umdModuleIds": {
+            "moment": "moment"
+        }
     }
 }

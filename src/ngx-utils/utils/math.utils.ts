@@ -1,9 +1,9 @@
-import {isNumber} from "util";
+import {ObjectUtils} from "./object.utils";
 
 export class MathUtils {
 
     static equal(a: number, b: number, epsilon: number = null): boolean {
-        epsilon = isNumber(epsilon) ? epsilon : Math.E;
+        epsilon = ObjectUtils.isNumber(epsilon) ? epsilon : Math.E;
         return Math.abs( a - b ) < epsilon;
     }
 

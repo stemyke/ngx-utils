@@ -8,11 +8,8 @@ export const propDescriptor: PropertyDescriptor = {
 declare global {
     interface String {
         pad(width: number, chr?: string): string;
-
         has(...parts: string[]): boolean;
-
         lcFirst(): string;
-
         ucFirst(): string;
     }
 
@@ -22,30 +19,23 @@ declare global {
 
     interface Date {
         isHoliday(): boolean;
-
         isBusinessDay(): boolean;
-
         add(amount?: DurationInputArg1, unit?: DurationInputArg2): Date;
-
         businessAdd(amount?: number, unit?: DurationInputArg2): Date;
-
         businessSubtract (amount?: number, unit?: DurationInputArg2): Date;
     }
 
     interface Set<T> {
         equals(obj: any): boolean;
-
         addArray(items: Array<T>): void;
     }
 
     interface Array<T> {
         has(...values: T[]): boolean;
-
         match(str: string): boolean;
-
         any(cb: (item: T) => boolean): boolean;
-
         move(oldIndex: number, newIndex: number): T[];
+        reversed(): T[];
     }
 }
 
@@ -171,9 +161,17 @@ Array.prototype.move = function (oldIndex: number, newIndex: number): any[] {
     this.splice(newIndex, 0, this.splice(oldIndex, 1)[0]);
     return this;
 };
+Array.prototype.reversed = function (): any[] {
+    const result = [];
+    for (let i = this.length - 1; i >= 0; i--) {
+        result.push(this[i]);
+    }
+    return result;
+};
 Object.defineProperties(Array.prototype, {
     has: propDescriptor,
     match: propDescriptor,
     any: propDescriptor,
     move: propDescriptor,
+    reversed: propDescriptor
 });

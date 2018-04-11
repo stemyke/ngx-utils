@@ -1,5 +1,5 @@
-import {isObject} from "util";
 import {HttpClient} from "@angular/common/http";
+import {ObjectUtils} from "./object.utils";
 
 declare const saveAs: any;
 
@@ -28,7 +28,7 @@ export class FileUtils {
     }
 
     static saveJson(json: any, fileName: string): void {
-        if (!isObject(json)) return;
+        if (!ObjectUtils.isObject(json)) return;
         FileUtils.saveBlob(new Blob([JSON.stringify(json, null, 4)]), fileName);
     }
 

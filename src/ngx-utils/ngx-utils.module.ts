@@ -1,11 +1,13 @@
 import {ModuleWithProviders, NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
-import {GroupByPipe, TranslationPipe} from "./pipes";
+import {UnorderedListComponent} from "./components";
+import {ChunkPipe, EntriesPipe, FilterPipe, GroupByPipe, ReversePipe, TranslatePipe} from "./pipes";
 import {Provider} from "@angular/core/src/di";
 import {LANGUAGE_SERVICE, StaticLanguageService} from "./services";
 
 // --- Components ---
 export const components = [
+    UnorderedListComponent
 ];
 
 // --- Directives ---
@@ -14,8 +16,12 @@ export const directives = [
 
 // --- Pipes ---
 export const pipes = [
+    ChunkPipe,
+    EntriesPipe,
+    FilterPipe,
     GroupByPipe,
-    TranslationPipe
+    ReversePipe,
+    TranslatePipe
 ];
 
 export interface NgxUtilsModuleConfig {

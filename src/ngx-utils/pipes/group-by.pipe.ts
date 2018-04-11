@@ -13,7 +13,6 @@ export class GroupByPipe implements PipeTransform {
     transform(records: any[], column: string, map: IGroupMap = null): any {
         const groups = (records || []).reduce((result: any, item: any) => {
             const key = ObjectUtils.getValue(item, column) || "";
-            console.log(item, column, key);
             const col = map ? (map[key] || "") : key;
             const group: any[] = result[col] || [];
             group.push(item);

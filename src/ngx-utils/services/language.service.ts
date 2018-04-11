@@ -11,7 +11,7 @@ export interface ITranslation {
 }
 
 export interface ITranslations {
-    [key: string]: string;
+    [key: string]: any;
 }
 
 export interface ILanguageService {
@@ -29,7 +29,7 @@ export class StaticLanguageService implements ILanguageService {
     dictionary: ITranslations = {};
 
     getTranslation(key: string, params?: any): Promise<string> {
-        if (!ObjectUtils.isDefined(key) || !key.length) {
+        if (!ObjectUtils.isString(key) || !key.length) {
             throw new Error(`Parameter "key" required`);
         }
         const translation = ObjectUtils.getValue(this.dictionary, key) || key;

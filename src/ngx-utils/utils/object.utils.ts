@@ -1,9 +1,7 @@
-import {isArray, isDate, isNullOrUndefined, isPrimitive} from "util";
-
-const defaultPredicate = (value: any, key: any) => true;
-
 export type FilterPrecidate = (value: any, key?: any) => boolean;
 export type IterateCallback = (value: any, key?: any) => void;
+
+const defaultPredicate: FilterPrecidate = () => true;
 
 export class ObjectUtils {
 
@@ -48,13 +46,15 @@ export class ObjectUtils {
                 }
                 keySet = Object.create(null);
                 for (key in a) {
-                    if (!ObjectUtils.equals(a[key], b[key])) {
-                        return false;
+                    if (a.hasOwnProperty(key)) {
+                        if (!ObjectUtils.equals(a[key], b[key])) {
+                            return false;
+                        }
+                        keySet[key] = true;
                     }
-                    keySet[key] = true;
                 }
                 for (key in b) {
-                    if (!(key in keySet) && typeof b[key] !== "undefined") {
+                    if (b.hasOwnProperty(key) && !(key in keySet) && typeof b[key] !== "undefined") {
                         return false;
                     }
                 }
@@ -78,7 +78,7 @@ export class ObjectUtils {
 
     static iterate(obj: any, cb: IterateCallback): void {
         if (!obj) return;
-        const keys: any[] = isArray(obj) ? obj.map((e, i) => i) : Object.keys(obj);
+        const keys: any[] = Array.isArray(obj) ? obj.map((e, i) => i) : Object.keys(obj);
         keys.forEach(
             // @dynamic
             key => {
@@ -116,24 +116,64 @@ export class ObjectUtils {
         return ObjectUtils.copyRecursive(target, source);
     }
 
+    static isArray(value: any): boolean {
+        return Array.isArray(value);
+    }
+
+    static isPrimitive(value: any): boolean {
+        const type = typeof value;
+        return value == null || (type !== "object" && type !== "function");
+    }
+
+    static isObject(value: any): boolean {
+        return !ObjectUtils.isPrimitive(value);
+    }
+
     static isDefined(value: any): boolean {
         return typeof value !== "undefined" && value !== null;
     }
 
-    static checkInterface(obj: any, itface: any): boolean {
+    static isNullOrUndefined(value: any): boolean {
+        return typeof value == "undefined" || value == null;
+    }
+
+    static isString(value: any): boolean {
+        return typeof value === "string";
+    }
+
+    static isFunction(value: any): boolean {
+        return typeof value === "function";
+    }
+
+    static isDate(value: any): boolean {
+        return null !== value && !isNaN(value) && "undefined" !== typeof value.getDate;
+    }
+
+    static isNumber(value: any): boolean {
+        if (typeof value !== "number") return false;
+        const num = +value;
+        if ((num - num) !== 0) {
+            return false;
+        }
+        if (num === value) {
+            return true;
+        }
+    }
+
+    static checkInterface(obj: any, interFaceObject: any): boolean {
         if (!obj) return false;
-        for (const key in itface) {
-            if (typeof obj[key] !== itface[key]) return false;
+        for (const key in interFaceObject) {
+            if (interFaceObject.hasOwnProperty(key) && typeof obj[key] !== interFaceObject[key]) return false;
         }
         return true;
     }
 
     private static copyRecursive(target: any, source: any, predicate?: FilterPrecidate): any {
         predicate = predicate || defaultPredicate;
-        if (isNullOrUndefined(source)) return target || source;
-        if (isPrimitive(source) || isDate(source)) return source;
-        if (isArray(source)) {
-            target = isArray(target) || [];
+        if (ObjectUtils.isNullOrUndefined(source)) return target || source;
+        if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source)) return source;
+        if (Array.isArray(source)) {
+            target = Array.isArray(target) || [];
             let i = 0;
             source.forEach((item, index) => {
                 if (!predicate(item, index)) return;
