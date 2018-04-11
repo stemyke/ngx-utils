@@ -1,13 +1,16 @@
 import {Component} from "@angular/core";
 import "../../extensions";
-import {StaticLanguageService} from "../public_api";
+import {StaticLanguageService, VariableHolder} from "../public_api";
 
 @Component({
     selector: "app-root",
     templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.css"]
+    styleUrls: ["./app.component.css"],
+    providers: [
+        {provide: VariableHolder, useExisting: AppComponent}
+    ]
 })
-export class AppComponent {
+export class AppComponent extends VariableHolder {
     title = "app".pad(10);
     data = [
         {
@@ -33,6 +36,7 @@ export class AppComponent {
     ];
 
     constructor(lang: StaticLanguageService) {
+        super();
         lang.dictionary = {
             test: {
                 ize: "Izé",

@@ -4,6 +4,7 @@ import {UnorderedListComponent} from "./components";
 import {ChunkPipe, EntriesPipe, FilterPipe, GroupByPipe, ReversePipe, TranslatePipe} from "./pipes";
 import {Provider} from "@angular/core/src/di";
 import {LANGUAGE_SERVICE, StaticLanguageService} from "./services";
+import {IconDirective, JsonVarDirective} from "./directives";
 
 // --- Components ---
 export const components = [
@@ -12,6 +13,8 @@ export const components = [
 
 // --- Directives ---
 export const directives = [
+    IconDirective,
+    JsonVarDirective
 ];
 
 // --- Pipes ---

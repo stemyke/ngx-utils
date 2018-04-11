@@ -22,7 +22,7 @@ import {ObjectUtils} from "../utils";
                               [ngTemplateOutletContext]="{item: item, key: item.key, keyPrefix: keyPrefix, path: path}"></ng-container>
                 <unordered-list [data]="item.value" [keyPrefix]="keyPrefix" [keyTemplate]="keyTemplate"
                                 [valueTemplate]="valueTemplate" [key]="item.key"
-                                [path]="path ? path + '.' + key : key"></unordered-list>
+                                [path]="path ? path + '.' + item.key : item.key"></unordered-list>
             </li>
         </ul>
     `
