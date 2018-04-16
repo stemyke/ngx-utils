@@ -204,15 +204,16 @@ Object.defineProperties(Array.prototype, {
     max: propDescriptor
 });
 
-const originalOpen = XMLHttpRequest.prototype.open;
-
-XMLHttpRequest.prototype.open = function (method: string, url?: string, async?: boolean, user?: string, password?: string): void {
-    originalOpen.apply(this, arguments);
-    window.dispatchEvent(new CustomEvent("ajaxRequest", {
-        detail: {
-            request: this,
-            method: method,
-            url: url
-        }
-    }))
-};
+if (typeof XMLHttpRequest !== "undefined") {
+    const originalOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (method: string, url?: string, async?: boolean, user?: string, password?: string): void {
+        originalOpen.apply(this, arguments);
+        window.dispatchEvent(new CustomEvent("ajaxRequest", {
+            detail: {
+                request: this,
+                method: method,
+                url: url
+            }
+        }))
+    };
+}
