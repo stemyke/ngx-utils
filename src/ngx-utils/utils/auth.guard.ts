@@ -5,7 +5,7 @@ import {ReflectUtils} from "./reflect.utils";
 
 export class AuthGuard implements CanActivate {
 
-    constructor(protected router: Router, protected injector: Injector, @Inject(AUTH_SERVICE) protected auth: IAuthService) {
+    constructor(protected injector: Injector, @Inject(Router) protected router: Router, @Inject(AUTH_SERVICE) protected auth: IAuthService) {
 
     }
 
@@ -36,12 +36,12 @@ export class AuthGuard implements CanActivate {
             this.auth.checkAuthenticated().then(authenticated => {
                 if (!authenticated) {
                     resolve(false);
-                    if (returnState)
+                    if (returnState) {}
                         this.router.navigate(returnState);
                 }
                 this.checkRoute(route).then(hasRights => {
                     resolve(hasRights);
-                    if (!hasRights && returnState)
+                    if (!hasRights && returnState){}
                         this.router.navigate(returnState);
                 });
             });

@@ -2,8 +2,11 @@ import {ModuleWithProviders, NgModule, Provider} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {UnorderedListComponent} from "./components";
 import {ChunkPipe, EntriesPipe, FilterPipe, GroupByPipe, ReversePipe, TranslatePipe} from "./pipes";
-import {StateService, StaticAuthService, StaticLanguageService, StorageService, UniversalService} from "./services";
-import {IconDirective} from "./directives";
+import {
+    AclService, StateService, StaticAuthService, StaticLanguageService, StorageService,
+    UniversalService
+} from "./services";
+import {BackgroundDirective, IconDirective, PaginationDirective, PaginationItemDirective} from "./directives";
 import {AUTH_SERVICE, LANGUAGE_SERVICE} from "./common-types";
 
 // --- Components ---
@@ -13,7 +16,10 @@ export const components = [
 
 // --- Directives ---
 export const directives = [
-    IconDirective
+    BackgroundDirective,
+    IconDirective,
+    PaginationDirective,
+    PaginationItemDirective
 ];
 
 // --- Pipes ---
@@ -60,6 +66,7 @@ export class NgxUtilsModule {
             }
         ];
         config.providers.push(
+            AclService,
             StaticAuthService,
             StaticLanguageService,
             StateService,

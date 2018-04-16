@@ -1,5 +1,6 @@
 import {Data, Route} from "@angular/router";
-import {InjectionToken} from "@angular/core";
+import {EventEmitter, InjectionToken} from "@angular/core";
+import {AuthGuard} from "./utils";
 
 // --- Utils
 
@@ -34,6 +35,7 @@ export const LANGUAGE_SERVICE: InjectionToken<ILanguageService> = new InjectionT
 
 export interface IAuthService {
     isAuthenticated: boolean;
+    userChanged: EventEmitter<any>;
     checkAuthenticated(): Promise<boolean>;
     getReturnState(route: IRoute): string[];
 }
@@ -49,4 +51,19 @@ export interface IRouteData extends Data {
     guards?: Array<IResolveFactory | RouteValidator>;
 }
 
-export const AUTH_SERVICE: InjectionToken<IAuthService> = new InjectionToken<IAuthService>("language-service");
+export const AUTH_SERVICE: InjectionToken<IAuthService> = new InjectionToken<IAuthService>("auth-service");
+
+// --- Acl Service ---
+
+export interface IAclComponent {
+    onUserInitialized(): void;
+    onUserChanged(): void;
+}
+
+export interface IRouteStateInfo {
+    route: IRoute;
+    component: any;
+    guard: AuthGuard;
+    dirty: boolean;
+    first: boolean;
+}
