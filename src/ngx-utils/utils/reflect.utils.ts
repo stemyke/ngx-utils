@@ -1,17 +1,12 @@
+import "reflect-metadata";
 import {Injector, TypeProvider} from "@angular/core";
 import {ObjectUtils} from "./object.utils";
-import "reflect-metadata";
+import {IResolveFactory} from "../common-types";
 
 export function FactoryDependencies(...dependencies: TypeProvider[]): MethodDecorator {
     return function (target: any, method: string): void {
         ReflectUtils.defineMetadata("factoryDependencies", dependencies, target, method);
     };
-}
-
-export interface IResolveFactory {
-    func: Function;
-    type?: any;
-    params?: any[];
 }
 
 export class ReflectUtils {

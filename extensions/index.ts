@@ -36,6 +36,8 @@ declare global {
         any(cb: (item: T) => boolean): boolean;
         move(oldIndex: number, newIndex: number): T[];
         reversed(): T[];
+        min(cb: (item: T) => number): T;
+        max(cb: (item: T) => number): T;
     }
 }
 
@@ -168,10 +170,49 @@ Array.prototype.reversed = function (): any[] {
     }
     return result;
 };
+Array.prototype.min = function (cb: (item: any) => number): any {
+    let result = null;
+    let min = Number.MAX_SAFE_INTEGER;
+    for (let i = 0; i < this.length; i++) {
+        const current = cb(this[i]);
+        if (current < min) {
+            min = current;
+            result = this[i];
+        }
+    }
+    return result;
+};
+Array.prototype.max = function (cb: (item: any) => number): any {
+    let result = null;
+    let max = Number.MIN_SAFE_INTEGER;
+    for (let i = 0; i < this.length; i++) {
+        const current = cb(this[i]);
+        if (current > max) {
+            max = current;
+            result = this[i];
+        }
+    }
+    return result;
+};
 Object.defineProperties(Array.prototype, {
     has: propDescriptor,
     match: propDescriptor,
     any: propDescriptor,
     move: propDescriptor,
-    reversed: propDescriptor
+    reversed: propDescriptor,
+    min: propDescriptor,
+    max: propDescriptor
 });
+
+const originalOpen = XMLHttpRequest.prototype.open;
+
+XMLHttpRequest.prototype.open = function (method: string, url?: string, async?: boolean, user?: string, password?: string): void {
+    originalOpen.apply(this, arguments);
+    window.dispatchEvent(new CustomEvent("ajaxRequest", {
+        detail: {
+            request: this,
+            method: method,
+            url: url
+        }
+    }))
+};

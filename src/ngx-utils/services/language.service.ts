@@ -1,26 +1,7 @@
-import {InjectionToken} from "@angular/core";
 import {Injectable} from "@angular/core";
 import "rxjs/Rx";
 import {ObjectUtils} from "../utils";
-
-export const LANGUAGE_SERVICE: InjectionToken<ILanguageService> = new InjectionToken<ILanguageService>("language-service");
-
-export interface ITranslation {
-    lang: string;
-    translation: string;
-}
-
-export interface ITranslations {
-    [key: string]: any;
-}
-
-export interface ILanguageService {
-    currentLanguage: string;
-    getTranslation(key: string, params?: any): Promise<string>;
-    getTranslationFromObject(translations: ITranslations, params?: any): string;
-    getTranslationFromArray(translations: ITranslation[], params?: any): string;
-    getTranslations(...keys: string[]): Promise<ITranslations>;
-}
+import {ILanguageService, ITranslation, ITranslations} from "../common-types";
 
 @Injectable()
 export class StaticLanguageService implements ILanguageService {

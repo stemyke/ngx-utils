@@ -3,6 +3,7 @@ import {NgModule} from "@angular/core";
 
 import {AppComponent} from "./app.component";
 import {NgxUtilsModule} from "../public_api";
+import {HttpClientModule} from "@angular/common/http";
 
 
 @NgModule({
@@ -11,6 +12,7 @@ import {NgxUtilsModule} from "../public_api";
     ],
     imports: [
         BrowserModule,
+        HttpClientModule,
         NgxUtilsModule.forRoot()
     ],
     providers: [],
