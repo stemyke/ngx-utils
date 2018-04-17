@@ -1,4 +1,4 @@
-import {Inject, Injectable, Injector} from "@angular/core";
+import {Inject, Injectable, Injector, Type} from "@angular/core";
 import "rxjs/Rx";
 import {StateService} from "./state.service";
 import {AUTH_SERVICE, IAclComponent, IAuthService, IRouteStateInfo} from "../common-types";
@@ -36,14 +36,14 @@ export class AclService {
     handleUserChanged = (): void => {
         this.components.forEach(t => t.dirty = true);
         const info = this.getStateInfo();
-        if (!info) return;
-        const canActivate = info.guard instanceof AuthGuard ? info.guard.checkRoute(info.route) : Promise.resolve(true);
-        canActivate.then(result => {
+        const guard: AuthGuard = info && info.guard instanceof AuthGuard ? info.guard : null;
+        if (!guard) return;
+        guard.checkRoute(info.route).then(result => {
             if (result) {
                 AclService.checkStateDirty(info);
                 return;
             }
-            const returnState = info.route.data.returnState || this.auth.getReturnState(info.route);
+            const returnState = info.route.data.returnState || guard.getReturnState(info.route);
             if (returnState) this.state.navigate(returnState);
         });
     };
@@ -58,11 +58,11 @@ export class AclService {
         if (!route) return null;
         let info = this.components.find(t => t.route == this.state.route);
         if (!info) {
-            const guards = route.canActivate || emptyGuards;
+            const guardType: Type<AuthGuard> = (route.canActivate || emptyGuards)[0];
             info = {
                 route: this.state.route,
                 component: this.state.component,
-                guard: guards.length ? this.injector.get(guards[0]) : null,
+                guard: guardType ? this.injector.get(guardType) : null,
                 dirty: false,
                 first: true
             };
