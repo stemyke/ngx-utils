@@ -5,7 +5,7 @@ import {ObjectUtils} from "../utils";
     name: "min"
 })
 export class MinPipe implements PipeTransform {
-    transform(value: number[], selector: any = null, params: any = {}): number {
+    transform(value: any, selector: any = null, params: any = {}): number {
         selector = selector || (item => <number>item);
         const minSelector: Function = ObjectUtils.isFunction(value) ? value : (item, index, params) => {
             return ObjectUtils.evaluate(selector, {
@@ -14,6 +14,7 @@ export class MinPipe implements PipeTransform {
                 params: params
             });
         };
-        return ObjectUtils.isArray(value) ? value.min((item, index) => minSelector(item, index, params)) : 0;
+        const isArray: boolean = ObjectUtils.isArray(value);
+        return isArray ? value.min((item, index) => minSelector(item, index, params)) : 0;
     }
 }

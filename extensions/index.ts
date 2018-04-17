@@ -171,11 +171,11 @@ Array.prototype.reversed = function (): any[] {
     return result;
 };
 Array.prototype.min = function (cb: (item: any, index?: number) => number): any {
-    let result = null;
     let min = Number.MAX_SAFE_INTEGER;
+    let result = null;
     for (let i = 0; i < this.length; i++) {
         const current = cb(this[i], i);
-        if (current < min) {
+        if (current < min || result === null) {
             min = current;
             result = this[i];
         }
@@ -183,11 +183,11 @@ Array.prototype.min = function (cb: (item: any, index?: number) => number): any 
     return result;
 };
 Array.prototype.max = function (cb: (item: any, index?: number) => number): any {
-    let result = null;
     let max = Number.MIN_SAFE_INTEGER;
+    let result = null;
     for (let i = 0; i < this.length; i++) {
         const current = cb(this[i], i);
-        if (current > max) {
+        if (current > max || result === null) {
             max = current;
             result = this[i];
         }

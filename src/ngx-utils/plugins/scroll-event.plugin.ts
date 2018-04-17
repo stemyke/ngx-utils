@@ -3,9 +3,8 @@ import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
 import {UniversalService} from "../services";
 
-function emptyRemove(): void {
-
-}
+const emptyRemove: Function = (): void => {};
+const globalElements: string[] = ["document", "window"];
 
 declare const elementResizeDetectorMaker: any;
 
@@ -38,7 +37,7 @@ export class ScrollEventPlugin extends ɵd {
         const zone = this.manager.getZone();
         return zone.runOutsideAngular(() => {
             if (this.universal.isServer) return emptyRemove;
-            if (!element.has("document", "window")) {
+            if (globalElements.indexOf(element) < 0) {
                 console.error("Global resize event other than window or document?", element);
                 return emptyRemove;
             }

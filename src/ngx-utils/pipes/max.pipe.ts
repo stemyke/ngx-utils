@@ -5,7 +5,7 @@ import {ObjectUtils} from "../utils";
     name: "max"
 })
 export class MaxPipe implements PipeTransform {
-    transform(value: number[], selector: any = null, params: any = {}): number {
+    transform(value: any, selector: any = null, params: any = {}): number {
         selector = selector || (item => <number>item);
         const maxSelector: Function = ObjectUtils.isFunction(value) ? value : (item, index, params) => {
             return ObjectUtils.evaluate(selector, {
@@ -14,6 +14,7 @@ export class MaxPipe implements PipeTransform {
                 params: params
             });
         };
-        return ObjectUtils.isArray(value) ? value.max((item, index) => maxSelector(item, index, params)) : 0;
+        const isArray: boolean = ObjectUtils.isArray(value);
+        return isArray ? value.max((item, index) => maxSelector(item, index, params)) : 0;
     }
 }
