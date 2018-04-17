@@ -5,7 +5,7 @@ import {ReflectUtils} from "./reflect.utils";
 
 export class AuthGuard implements CanActivate {
 
-    constructor(protected injector: Injector, @Inject(Router) protected router: Router, @Inject(AUTH_SERVICE) protected auth: IAuthService) {
+    constructor(@Inject(Injector) protected injector: Injector, @Inject(Router) protected router: Router, @Inject(AUTH_SERVICE) protected auth: IAuthService) {
 
     }
 
