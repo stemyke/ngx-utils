@@ -37,7 +37,6 @@ export interface IAuthService {
     isAuthenticated: boolean;
     userChanged: EventEmitter<any>;
     checkAuthenticated(): Promise<boolean>;
-    getReturnState(route: IRoute): string[];
 }
 
 export type RouteValidator = (auth: IAuthService) => Promise<boolean>;

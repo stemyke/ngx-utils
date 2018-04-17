@@ -116,10 +116,6 @@ export class ObjectUtils {
         return ObjectUtils.copyRecursive(target, source);
     }
 
-    static isArray(value: any): boolean {
-        return Array.isArray(value);
-    }
-
     static isPrimitive(value: any): boolean {
         const type = typeof value;
         return value == null || (type !== "object" && type !== "function");
@@ -137,19 +133,19 @@ export class ObjectUtils {
         return typeof value == "undefined" || value == null;
     }
 
-    static isString(value: any): boolean {
+    static isString(value: any): value is string {
         return typeof value === "string";
     }
 
-    static isFunction(value: any): boolean {
+    static isFunction(value: any): value is Function {
         return typeof value === "function";
     }
 
-    static isDate(value: any): boolean {
+    static isDate(value: any): value is Date {
         return null !== value && !isNaN(value) && "undefined" !== typeof value.getDate;
     }
 
-    static isNumber(value: any): boolean {
+    static isNumber(value: any): value is number {
         if (typeof value !== "number") return false;
         const num = +value;
         if ((num - num) !== 0) {
@@ -158,6 +154,10 @@ export class ObjectUtils {
         if (num === value) {
             return true;
         }
+    }
+
+    static isArray(value: any): value is Array<any> {
+        return Array.isArray(value);
     }
 
     static checkInterface(obj: any, interFaceObject: any): boolean {

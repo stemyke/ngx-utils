@@ -36,8 +36,8 @@ declare global {
         any(cb: (item: T) => boolean): boolean;
         move(oldIndex: number, newIndex: number): T[];
         reversed(): T[];
-        min(cb: (item: T) => number): T;
-        max(cb: (item: T) => number): T;
+        min(cb: (item: T, index?: number) => number): T;
+        max(cb: (item: T, index?: number) => number): T;
     }
 }
 
@@ -170,11 +170,11 @@ Array.prototype.reversed = function (): any[] {
     }
     return result;
 };
-Array.prototype.min = function (cb: (item: any) => number): any {
+Array.prototype.min = function (cb: (item: any, index?: number) => number): any {
     let result = null;
     let min = Number.MAX_SAFE_INTEGER;
     for (let i = 0; i < this.length; i++) {
-        const current = cb(this[i]);
+        const current = cb(this[i], i);
         if (current < min) {
             min = current;
             result = this[i];
@@ -182,11 +182,11 @@ Array.prototype.min = function (cb: (item: any) => number): any {
     }
     return result;
 };
-Array.prototype.max = function (cb: (item: any) => number): any {
+Array.prototype.max = function (cb: (item: any, index?: number) => number): any {
     let result = null;
     let max = Number.MIN_SAFE_INTEGER;
     for (let i = 0; i < this.length; i++) {
-        const current = cb(this[i]);
+        const current = cb(this[i], i);
         if (current > max) {
             max = current;
             result = this[i];
