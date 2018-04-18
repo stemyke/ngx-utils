@@ -66,10 +66,13 @@ export class ObjectUtils {
 
     static evaluate(expr: string, context: any = {}): any {
         expr = Object.keys(context).reduce((res, key) => `var ${key} = this['${key}']; ${res}`, expr);
-        return (
-            // @dynamic
-            () => eval(expr)
-        ).call(context);
+        let result = null;
+        try {
+            result = (() => eval(expr)).call(context);
+        } catch (e) {
+            console.log(`Failed to parse expression: ${e.message}`, expr, context);
+        }
+        return result;
     }
 
     static empty(obj: any): boolean {

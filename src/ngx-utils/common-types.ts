@@ -66,3 +66,23 @@ export interface IRouteStateInfo {
     dirty: boolean;
     first: boolean;
 }
+
+// --- Toaster Service ---
+
+export interface IToasterService {
+    error(message: string, params?: any, title?: string): void;
+    info(message: string, params?: any, title?: string): void;
+    success(message: string, params?: any, title?: string): void;
+    warning(message: string, params?: any, title?: string): void;
+}
+
+export const TOASTER_SERVICE: InjectionToken<IToasterService> = new InjectionToken<IToasterService>("toaster-service");
+
+// --- Async method ---
+
+export interface IAsyncMessage {
+    message: string;
+    context?: any;
+}
+
+export type AsyncMethod = () => Promise<IAsyncMessage>;
