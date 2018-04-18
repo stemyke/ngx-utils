@@ -24,8 +24,8 @@ export interface ITranslations {
 export interface ILanguageService {
     currentLanguage: string;
     getTranslation(key: string, params?: any): Promise<string>;
-    getTranslationFromObject(translations: ITranslations, params?: any): string;
-    getTranslationFromArray(translations: ITranslation[], params?: any): string;
+    getTranslationFromObject(translations: ITranslations, params?: any, lang?: string): string;
+    getTranslationFromArray(translations: ITranslation[], params?: any, lang?: string): string;
     getTranslations(...keys: string[]): Promise<ITranslations>;
 }
 
