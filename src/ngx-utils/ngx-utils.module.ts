@@ -8,15 +8,16 @@ import {
 } from "./pipes";
 import {
     AclService, EventsService, FormatterService, StateService, StaticAuthService, StaticLanguageService,
-    StorageService, UniversalService
+    StorageService, ConsoleToasterService, UniversalService
 } from "./services";
 import {
+    AsyncMethodDirective,
     BackgroundDirective, IconDirective, PaginationDirective, PaginationItemDirective, ResourceIfDirective,
     StickyDirective
 } from "./directives";
 import {AuthGuard} from "./utils";
 import {ScrollEventPlugin} from "./plugins";
-import {AUTH_SERVICE, LANGUAGE_SERVICE} from "./common-types";
+import {AUTH_SERVICE, LANGUAGE_SERVICE, TOASTER_SERVICE} from "./common-types";
 
 // --- Components ---
 export const components = [
@@ -25,6 +26,7 @@ export const components = [
 
 // --- Directives ---
 export const directives = [
+    AsyncMethodDirective,
     BackgroundDirective,
     IconDirective,
     PaginationDirective,
@@ -80,6 +82,7 @@ export class NgxUtilsModule {
                 StaticLanguageService,
                 StateService,
                 StorageService,
+                ConsoleToasterService,
                 UniversalService,
                 AuthGuard,
                 {
@@ -94,6 +97,10 @@ export class NgxUtilsModule {
                 {
                     provide: LANGUAGE_SERVICE,
                     useExisting: StaticLanguageService
+                },
+                {
+                    provide: TOASTER_SERVICE,
+                    useExisting: ConsoleToasterService
                 }
             ]
         }

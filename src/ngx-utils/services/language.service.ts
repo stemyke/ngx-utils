@@ -17,12 +17,13 @@ export class StaticLanguageService implements ILanguageService {
         return Promise.resolve(this.interpolate(translation, params));
     }
 
-    getTranslationFromObject(translations: ITranslations, params?: any): string {
-        return this.interpolate(translations ? (translations[this.currentLanguage] || "") : "")
+    getTranslationFromObject(translations: ITranslations, params?: any, lang?: string): string {
+        lang = lang || this.currentLanguage;
+        return this.interpolate(translations ? (translations[lang] || "") : "")
     }
 
-    getTranslationFromArray(translations: ITranslation[], params?: any): string {
-        const lang = this.currentLanguage;
+    getTranslationFromArray(translations: ITranslation[], params?: any, lang?: string): string {
+        lang = lang || this.currentLanguage;
         const translation = translations ? translations.find(t => t.lang == lang) : null;
         return this.interpolate(translation ? translation.translation : "", params);
     }

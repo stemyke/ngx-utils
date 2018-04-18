@@ -17,6 +17,10 @@ export class TranslatePipe implements PipeTransform {
     private params: any;
     private lastValue: string;
 
+    get currentLang(): string {
+        return this.language.currentLanguage;
+    }
+
     constructor(@Inject(LANGUAGE_SERVICE) private language: ILanguageService) {
 
     }
@@ -24,8 +28,9 @@ export class TranslatePipe implements PipeTransform {
     transform(query: TranslationQuery, ...args: any[]): string {
         if (!query) return "";
         let dirty = false;
-        if (this.lang !== this.language.currentLanguage) {
-            this.lang = this.language.currentLanguage;
+        const lang = this.currentLang;
+        if (this.lang !== lang) {
+            this.lang = lang;
             dirty = true;
         }
         if(!ObjectUtils.equals(this.query, query)) {
@@ -53,7 +58,7 @@ export class TranslatePipe implements PipeTransform {
         }
         if (dirty) {
             if (typeof query === "object") {
-                this.lastValue = Array.isArray(query) ? this.language.getTranslationFromArray(query, this.params) : this.language.getTranslationFromObject(query, this.params);
+                this.lastValue = Array.isArray(query) ? this.language.getTranslationFromArray(query, this.params, lang) : this.language.getTranslationFromObject(query, this.params, lang);
                 return this.lastValue;
             }
             this.language.getTranslation(query, this.params).then(value => this.lastValue = value);
