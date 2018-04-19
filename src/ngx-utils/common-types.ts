@@ -1,9 +1,8 @@
-import {Data, Route} from "@angular/router";
 import {EventEmitter, InjectionToken} from "@angular/core";
+import {Data, Route} from "@angular/router";
 import {AuthGuard} from "./utils";
 
 // --- Utils
-
 export interface IResolveFactory {
     func: Function;
     type?: any;
@@ -11,7 +10,6 @@ export interface IResolveFactory {
 }
 
 // --- Language service ---
-
 export interface ITranslation {
     lang: string;
     translation: string;
@@ -32,7 +30,6 @@ export interface ILanguageService {
 export const LANGUAGE_SERVICE: InjectionToken<ILanguageService> = new InjectionToken<ILanguageService>("language-service");
 
 // --- Auth Service ---
-
 export interface IAuthService {
     isAuthenticated: boolean;
     userChanged: EventEmitter<any>;
@@ -53,7 +50,6 @@ export interface IRouteData extends Data {
 export const AUTH_SERVICE: InjectionToken<IAuthService> = new InjectionToken<IAuthService>("auth-service");
 
 // --- Acl Service ---
-
 export interface IAclComponent {
     onUserInitialized(): void;
     onUserChanged(): void;
@@ -68,7 +64,6 @@ export interface IRouteStateInfo {
 }
 
 // --- Toaster Service ---
-
 export interface IToasterService {
     error(message: string, params?: any, title?: string): void;
     info(message: string, params?: any, title?: string): void;
@@ -79,7 +74,6 @@ export interface IToasterService {
 export const TOASTER_SERVICE: InjectionToken<IToasterService> = new InjectionToken<IToasterService>("toaster-service");
 
 // --- Async method ---
-
 export interface IAsyncMessage {
     message: string;
     context?: any;
