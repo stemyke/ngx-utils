@@ -32,7 +32,7 @@
         "moment": "^2.22.0",
         "bowser": "^1.9.3"
     },
-    "dependencies": {
+    "devDependencies": {
         "@angular/animations": "^5.2.9",
         "@angular/common": "^5.2.9",
         "@angular/compiler": "^5.2.9",
@@ -47,9 +47,8 @@
         "rxjs": "^5.5.8",
         "zone.js": "^0.8.17",
         "moment": "^2.22.0",
-        "bowser": "^1.9.3"
-    },
-    "devDependencies": {
+        "bowser": "^1.9.3",
+
         "@angular/cli": "~1.7.3",
         "@angular/compiler-cli": "^5.2.9",
         "@angular/language-service": "^5.2.9",
@@ -64,7 +63,7 @@
         "karma-coverage-istanbul-reporter": "^1.2.1",
         "karma-jasmine": "~1.1.0",
         "karma-jasmine-html-reporter": "^0.2.2",
-        "ng-packagr": "^2.2.0",
+        "ng-packagr": "^2.4.2",
         "protractor": "~5.1.2",
         "ts-node": "~4.1.0",
         "tslint": "~5.9.1",
