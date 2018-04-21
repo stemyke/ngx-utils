@@ -148,6 +148,10 @@ export class ObjectUtils {
         return null !== value && !isNaN(value) && "undefined" !== typeof value.getDate;
     }
 
+    static isBoolean(value: any): value is boolean {
+        return typeof(value) == typeof(true);
+    }
+
     static isNumber(value: any): value is number {
         if (typeof value !== "number") return false;
         const num = +value;
