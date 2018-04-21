@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges, TemplateRef} from "@angular/core";
+import {Component, Input, OnChanges, SimpleChanges, TemplateRef} from "@angular/core";
 import {ObjectUtils} from "../utils";
 
 @Component({
@@ -6,7 +6,7 @@ import {ObjectUtils} from "../utils";
     selector: "unordered-list",
     template: `
         <ng-template #defaultKeyTemplate let-key="key">
-            <b *ngIf="!isArray">{{ keyPrefix + key | translate }}:</b>
+            <b *ngIf="!isArray">{{ (keyPrefix ? keyPrefix + key : key) | translate }}:</b>
         </ng-template>
         <ng-template #defaultValueTemplate>
             {{ data }}
@@ -27,7 +27,7 @@ import {ObjectUtils} from "../utils";
         </ul>
     `
 })
-export class UnorderedListComponent implements OnInit, OnChanges {
+export class UnorderedListComponent implements OnChanges {
 
     @Input() data: any;
     @Input() keyPrefix: string;
@@ -40,7 +40,8 @@ export class UnorderedListComponent implements OnInit, OnChanges {
     isArray: boolean;
     isObject: boolean;
 
-    ngOnInit(): void {
+    constructor() {
+        this.keyPrefix = "";
         this.key = "";
         this.path = "";
     }
