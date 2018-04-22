@@ -1,6 +1,5 @@
 import {EventEmitter, InjectionToken} from "@angular/core";
 import {Data, Route} from "@angular/router";
-import {AuthGuard} from "./utils";
 
 // --- Utils
 export interface IResolveFactory {
@@ -38,13 +37,13 @@ export interface IAuthService {
 
 export type RouteValidator = (auth: IAuthService) => Promise<boolean>;
 
-export interface IRoute extends Route {
-    data?: IRouteData;
-}
-
 export interface IRouteData extends Data {
     returnState?: string[];
     guards?: Array<IResolveFactory | RouteValidator>;
+}
+
+export interface IRoute extends Route {
+    data?: IRouteData;
 }
 
 export const AUTH_SERVICE: InjectionToken<IAuthService> = new InjectionToken<IAuthService>("auth-service");
@@ -58,7 +57,7 @@ export interface IAclComponent {
 export interface IRouteStateInfo {
     route: IRoute;
     component: any;
-    guard: AuthGuard;
+    guard: any;
     dirty: boolean;
     first: boolean;
 }
