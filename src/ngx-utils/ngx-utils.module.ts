@@ -65,9 +65,13 @@ export const pipes = [
     exports: [
         ...components,
         ...directives,
-        ...pipes
+        ...pipes,
+        AuthGuard
     ],
-    providers: []
+    providers: [
+        ...pipes,
+        AuthGuard
+    ]
 })
 export class NgxUtilsModule {
     static forRoot(): ModuleWithProviders {
@@ -75,6 +79,7 @@ export class NgxUtilsModule {
             ngModule: NgxUtilsModule,
             providers: [
                 ...pipes,
+                AuthGuard,
                 AclService,
                 StaticAuthService,
                 EventsService,
@@ -84,7 +89,6 @@ export class NgxUtilsModule {
                 StorageService,
                 ConsoleToasterService,
                 UniversalService,
-                AuthGuard,
                 {
                     provide: EVENT_MANAGER_PLUGINS,
                     useClass: ScrollEventPlugin,
