@@ -65,8 +65,7 @@ export const pipes = [
     exports: [
         ...components,
         ...directives,
-        ...pipes,
-        AuthGuard
+        ...pipes
     ],
     providers: [
         ...pipes,
