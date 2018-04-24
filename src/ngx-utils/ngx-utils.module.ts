@@ -13,8 +13,9 @@ import {
 import {
     AsyncMethodDirective,
     BackgroundDirective, IconDirective, PaginationDirective, PaginationItemDirective, ResourceIfDirective,
-    StickyDirective
+    StickyDirective, UnorderedListItemDirective
 } from "./directives";
+import {UnorderedListTemplateDirective} from "./directives/templates";
 import {AuthGuard} from "./utils";
 import {ScrollEventPlugin} from "./plugins";
 import {AUTH_SERVICE, LANGUAGE_SERVICE, TOASTER_SERVICE} from "./common-types";
@@ -32,7 +33,9 @@ export const directives = [
     PaginationDirective,
     PaginationItemDirective,
     ResourceIfDirective,
-    StickyDirective
+    StickyDirective,
+    UnorderedListItemDirective,
+    UnorderedListTemplateDirective
 ];
 
 // --- Pipes ---

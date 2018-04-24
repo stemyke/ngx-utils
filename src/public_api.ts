@@ -1,5 +1,6 @@
 export * from "./ngx-utils/components";
 export * from "./ngx-utils/directives";
+export * from "./ngx-utils/directives/templates";
 export * from "./ngx-utils/pipes";
 export * from "./ngx-utils/services";
 export * from "./ngx-utils/utils";

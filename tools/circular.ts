@@ -51,6 +51,24 @@ function matchSymbols(scriptPath: string, content: string, regex: RegExp): void 
     }
 }
 
+function matchPropertyBindFunctions(scriptPath: string, content: string): void {
+    const regex = /((?:[a-z]|[A-Z]|[0-9]|_|-|\.)*) = \((?:(?:[a-z]|[A-Z]|[0-9]|_|,|:)*)\): (?:(?:[a-z]|[A-Z]|[0-9]|_|-|\.)*) =>/g;
+    const nl = "\n";
+    let match = regex.exec(content);
+    while (match !== null) {
+        let index = match.index;
+        const lines = content.substr(0, index).split(nl);
+        const line = lines.length;
+        while (lines.length > 1) {
+            index -= (lines.shift().length + nl.length);
+        }
+        index += nl.length + 2;
+        console.log("Property bind function found!", match[1], scriptPath, `${line}:${index}`);
+        match = regex.exec(content);
+        recursions++;
+    }
+}
+
 function matchFileReferences(scriptDir: string, content: string, mapItem: string[], regex: RegExp): void {
     let match = regex.exec(content);
     while (match !== null) {
@@ -65,10 +83,12 @@ function readScript(scriptPath): void {
     const scriptDir = path.dirname(scriptPath);
     const content = fs.readFileSync(scriptPath, "utf8");
     const mapItem = depMap[scriptPath] || [];
-    // Find classes interfaces
+    // Find classes, interfaces
     matchSymbols(scriptPath, content, /(?:class|interface) ((?:[a-z]|[A-Z]|[0-9]|_|-|\.)*) (?:(?:implements |extends )(?:(?:(?:[a-z]|[A-Z]|[0-9]|_|-|\.)*)(, | ))+){0,2}{/g);
     // Find types
     matchSymbols(scriptPath, content, /type ((?:[a-z]|[A-Z]|[0-9]|_|-|\.)*) =/g);
+    // Find property bind functions
+    matchPropertyBindFunctions(scriptPath, content);
     // Find imports
     matchFileReferences(scriptDir, content, mapItem,  /import {(?:[a-z]|[A-Z]|[0-9]|_|-|\.|\*)*} from "(\..*)"/g);
     // Find exports

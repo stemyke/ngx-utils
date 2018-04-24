@@ -5,3 +5,4 @@ export * from "./pagination.directive";
 export * from "./pagination-item.directive";
 export * from "./resource-if.directive";
 export * from "./sticky.directive";
+export * from "./unordered-list-item.directive";

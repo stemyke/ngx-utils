@@ -1,4 +1,4 @@
-import {EventEmitter, InjectionToken} from "@angular/core";
+import {EventEmitter, InjectionToken, TemplateRef} from "@angular/core";
 import {Data, Route} from "@angular/router";
 
 // --- Utils
@@ -79,3 +79,9 @@ export interface IAsyncMessage {
 }
 
 export type AsyncMethod = () => Promise<IAsyncMessage>;
+
+// --- Unordered list ---
+export abstract class UnorederedListTemplate extends TemplateRef<any> {
+    abstract type: string;
+    abstract selector: string;
+}

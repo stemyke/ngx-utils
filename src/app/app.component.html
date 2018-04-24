@@ -8,10 +8,8 @@
 </div>
 <h2>Here are some links to help you start: </h2>
 
-<unordered-list [data]="data | reverse" keyPrefix="test."></unordered-list>
-
-nkjn
-
-
-
-<unordered-list [data]="data"></unordered-list>
+<unordered-list [data]="data" keyPrefix="test.">
+    <ng-template type="value" selector="item.key == 'bigyo'">
+        gdfgdf
+    </ng-template>
+</unordered-list>

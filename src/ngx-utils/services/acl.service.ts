@@ -15,9 +15,9 @@ export class AclService {
         if (!info || !info.dirty) return;
         info.dirty = false;
         if (!ObjectUtils.checkInterface(info.component, {
-                onUserInitialized: "function",
-                onUserChanged: "function"
-            })) return;
+            onUserInitialized: "function",
+            onUserChanged: "function"
+        })) return;
         const component: IAclComponent = info.component;
         if (info.first) {
             component.onUserInitialized();
@@ -27,31 +27,27 @@ export class AclService {
         component.onUserChanged();
     }
 
-    constructor(public injector: Injector, @Inject(StateService) public state: StateService, @Inject(AUTH_SERVICE) public auth: IAuthService) {
+    constructor(public injector: Injector, public state: StateService, @Inject(AUTH_SERVICE) public auth: IAuthService) {
         this.components = [];
-        this.auth.userChanged.subscribe(this.handleUserChanged);
-        this.state.subscribe(this.handleStateChanged);
-    }
-
-    handleUserChanged = (): void => {
-        this.components.forEach(t => t.dirty = true);
-        const info = this.getStateInfo();
-        const guard: AuthGuard = info && info.guard instanceof AuthGuard ? info.guard : null;
-        if (!guard) return;
-        guard.checkRoute(info.route).then(result => {
-            if (result) {
-                AclService.checkStateDirty(info);
-                return;
-            }
-            const returnState = info.route.data.returnState || guard.getReturnState(info.route);
-            if (returnState) this.state.navigate(returnState);
+        this.auth.userChanged.subscribe(() => {
+            this.components.forEach(t => t.dirty = true);
+            const info = this.getStateInfo();
+            const guard: AuthGuard = info && info.guard instanceof AuthGuard ? info.guard : null;
+            if (!guard) return;
+            guard.checkRoute(info.route).then(result => {
+                if (result) {
+                    AclService.checkStateDirty(info);
+                    return;
+                }
+                const returnState = info.route.data.returnState || guard.getReturnState(info.route);
+                if (returnState) this.state.navigate(returnState);
+            });
         });
-    };
-
-    handleStateChanged = (): void => {
-        const info = this.getStateInfo();
-        AclService.checkStateDirty(info);
-    };
+        this.state.subscribe(() => {
+            const info = this.getStateInfo();
+            AclService.checkStateDirty(info);
+        });
+    }
 
     private getStateInfo(): IRouteStateInfo {
         const route = this.state.route;

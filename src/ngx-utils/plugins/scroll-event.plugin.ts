@@ -3,7 +3,9 @@ import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
 import {UniversalService} from "../services";
 
-const emptyRemove: Function = (): void => {};
+export function emptyRemove(): void {
+
+}
 const globalElements: string[] = ["document", "window"];
 
 declare const elementResizeDetectorMaker: any;
