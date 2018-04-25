@@ -38,7 +38,7 @@ export class AclService {
                     AclService.checkStateDirty(info);
                     return;
                 }
-                const returnState = info.route.data.returnState || guard.getReturnState(info.route);
+                const returnState = info.route.data.returnState || info.guard.getReturnState(info.route);
                 if (returnState) this.state.navigate(returnState);
             });
         });
