@@ -14,3 +14,73 @@
     </ng-template>
 </unordered-list>
 <unordered-list [data]="map | keys"></unordered-list>
+
+
+<div class="content">
+    <ng-container *ngFor="let ring of manufacturing | entries; let y = index">
+        <div class="top">
+            <div class="top-left">
+                <div class="ring-id">
+                    {{ 'review.ringId' | translate }}
+                    <div class="id">
+                        {{ id }}
+                    </div>
+                    <div class="timestamp">
+                        {{ date }}
+                    </div>
+                </div>
+            </div>
+            <div class="top-center">
+
+            </div>
+
+        </div>
+        <div class="table-wrapper">
+            <h1 [ngClass]="{'page-heading': y > 0}">{{ 'ring.' + ring.key | translate }}</h1>
+            <ng-template #discValueTemplate let-key="key" let-value="data">
+                <ng-template #numberValue>
+                    <span>
+                        &nbsp;{{ value | formatNumber:mmFormat:6 }}
+                    </span>
+                </ng-template>
+                <span *ngIf="key.has('color', 'fineness', 'surface'); else numberValue">
+                    &nbsp;{{ value }}
+                </span>
+            </ng-template>
+            <ng-template #valueTemplate let-key="key" let-value="value">
+                <ng-container [ngSwitch]="key">
+                    <unordered-list keyPrefix="review."
+                                    [data]="value | reverse"
+                                    *ngSwitchCase="'discs'">
+                    </unordered-list>
+                    <ul *ngSwitchCase="'diamondPlacements'">
+                        <li *ngFor="let placement of value">
+                            <b>{{ 'review.x' | translate }}:</b> {{ placement.y | formatNumber:mmFormat:4 }}<br/>
+                            <b>{{ 'review.y' | translate }}:</b> {{ -placement.x | formatNumber:mmFormat:4 }}<br/>
+                            <b>{{ 'review.carat' | translate }}:</b> {{ placement.carat }} ct.
+                        </li>
+                    </ul>
+                    <span *ngSwitchDefault>{{ value }}</span>
+                </ng-container>
+            </ng-template>
+            <ng-container *ngFor="let chunk of reviewMap | filter:groupFilter:ring.value | chunk:3">
+                <unordered-list [data]="chunk | remap: ring.value" keyPrefix="review.">
+                    <ng-template type="item" selector="level == 0" let-item="item.value" let-keyPrefix="keyPrefix" let-path="path" let-templates="templates" let-defaultTemplates="defaultTemplates">
+                        <span class="title">{{ keyPrefix + item.group | translate }}</span>
+                        <ng-container [unorderedListItem]="{key: path, value: item.keys}"
+                                      type="value"
+                                      [data]="item"
+                                      [keyPrefix]="keyPrefix"
+                                      [path]="path"
+                                      [level]="0"
+                                      [templates]="templates"
+                                      [defaultTemplates]="defaultTemplates"></ng-container>
+                    </ng-template>
+                </unordered-list>
+            </ng-container>
+        </div>
+        <div class="page-break">
+            &nbsp;
+        </div>
+    </ng-container>
+</div>

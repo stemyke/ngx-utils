@@ -1,5 +1,5 @@
-import {Directive, Input, OnChanges, SimpleChanges, TemplateRef, ViewContainerRef} from "@angular/core";
-import {UnorederedListTemplate} from "../common-types";
+import {Directive, Input, OnChanges, SimpleChanges, ViewContainerRef} from "@angular/core";
+import {UnorderedListTemplates, UnorederedListTemplate} from "../common-types";
 import {ObjectUtils} from "../utils";
 
 @Directive({
@@ -9,11 +9,12 @@ export class UnorderedListItemDirective implements OnChanges {
 
     @Input("unorderedListItem") item: any;
     @Input() type: string;
+    @Input() data: any;
     @Input() keyPrefix: string;
     @Input() path: string;
-    @Input() data: any;
+    @Input() level: number;
     @Input() templates: UnorederedListTemplate[];
-    @Input() defaultTemplate: TemplateRef<any>;
+    @Input() defaultTemplates: UnorderedListTemplates;
 
     isArray: boolean;
     isObject: boolean;
@@ -25,13 +26,15 @@ export class UnorderedListItemDirective implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!this.templates || !this.item) return;
+        if (!this.templates || !this.defaultTemplates || !this.item) return;
+        this.path = ObjectUtils.isNullOrUndefined(this.path) ? "" : this.path.toString();
         this.isArray = ObjectUtils.isArray(this.data);
         this.isObject = ObjectUtils.isObject(this.data);
         this.valueIsObject = ObjectUtils.isObject(this.item.value);
         this.valueType = typeof this.item.value;
-        const template = this.templates.find(t => t.type == this.type && ObjectUtils.evaluate(t.selector, this)) || this.defaultTemplate;
+        const context: any = this;
+        const template = this.templates.find(t => t.type == this.type && ObjectUtils.evaluate(t.selector, context)) || this.defaultTemplates[this.type];
         this.viewContainer.clear();
-        this.viewContainer.createEmbeddedView(template, this);
+        this.viewContainer.createEmbeddedView(template, context);
     }
 }

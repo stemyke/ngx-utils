@@ -85,3 +85,7 @@ export abstract class UnorederedListTemplate extends TemplateRef<any> {
     abstract type: string;
     abstract selector: string;
 }
+
+export interface UnorderedListTemplates {
+    [type: string]: TemplateRef<any>;
+}

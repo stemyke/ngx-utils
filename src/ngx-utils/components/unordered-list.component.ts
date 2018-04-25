@@ -1,4 +1,5 @@
 import {
+    AfterContentInit,
     AfterViewInit,
     ChangeDetectorRef,
     Component,
@@ -6,11 +7,11 @@ import {
     Input,
     OnChanges,
     QueryList,
-    SimpleChanges
+    SimpleChanges, TemplateRef, ViewChild
 } from "@angular/core";
 import {UnorderedListTemplateDirective} from "../directives/templates";
 import {ObjectUtils} from "../utils";
-import {UnorederedListTemplate} from "../common-types";
+import {UnorderedListTemplates, UnorederedListTemplate} from "../common-types";
 
 @Component({
     moduleId: module.id,
@@ -22,57 +23,71 @@ import {UnorederedListTemplate} from "../common-types";
         <ng-template let-keyPrefix="keyPrefix" let-val="item.value" let-path="path"
                      let-templates="templates" let-isObject="valueIsObject" #defaultValueTemplate>
             <ng-template #value>{{ val }}</ng-template>
-            <unordered-list [keyPrefix]="keyPrefix"
+            <unordered-list [data]="val"
+                            [keyPrefix]="keyPrefix"
                             [path]="path"
-                            [data]="val"
+                            [level]="level + 1"
                             [templates]="templates"
                             *ngIf="isObject; else value"></unordered-list>
         </ng-template>
-        <ng-template let-keyPrefix="keyPrefix" let-item="item" let-path="path" let-data="data" let-templates="templates" #defaultItemTemplate>
+        <ng-template let-item="item" let-data="data" let-keyPrefix="keyPrefix" let-path="path" let-level="level" let-templates="templates" #defaultItemTemplate>
             <ng-container [unorderedListItem]="item"
+                          type="key"
+                          [data]="data"
                           [keyPrefix]="keyPrefix"
                           [path]="path"
-                          [data]="data"
+                          [level]="level"
                           [templates]="templates"
-                          [defaultTemplate]="defaultKeyTemplate"
-                          type="key"></ng-container>
+                          [defaultTemplates]="defaultTemplates"></ng-container>
             <ng-container [unorderedListItem]="item"
+                          type="value"
+                          [data]="data"
                           [keyPrefix]="keyPrefix"
                           [path]="path"
-                          [data]="data"
+                          [level]="level"
                           [templates]="templates"
-                          [defaultTemplate]="defaultValueTemplate"
-                          type="value"></ng-container>
+                          [defaultTemplates]="defaultTemplates"></ng-container>
         </ng-template>
         <ul *ngIf="isObject">
             <li *ngFor="let item of data | entries">
                 <ng-container [unorderedListItem]="item"
+                              type="item"
+                              [data]="data"
                               [keyPrefix]="keyPrefix"
                               [path]="path ? path + '.' + item.key : item.key"
-                              [data]="data"
+                              [level]="level"
                               [templates]="templates"
-                              [defaultTemplate]="defaultItemTemplate"
-                              type="item"></ng-container>
+                              [defaultTemplates]="defaultTemplates"></ng-container>
             </li>
         </ul>
     `
 })
-export class UnorderedListComponent implements OnChanges, AfterViewInit {
+export class UnorderedListComponent implements OnChanges, AfterContentInit, AfterViewInit {
 
+    @Input() data: any;
     @Input() keyPrefix: string;
     @Input() path: string;
-    @Input() data: any;
+    @Input() level: number;
     @Input() templates: UnorederedListTemplate[];
 
     isArray: boolean;
     isObject: boolean;
+    defaultTemplates: UnorderedListTemplates;
 
     @ContentChildren(UnorderedListTemplateDirective)
-    templateDirectives: QueryList<UnorderedListTemplateDirective>;
+    private templateDirectives: QueryList<UnorderedListTemplateDirective>;
+
+    @ViewChild("defaultKeyTemplate")
+    private defaultKeyTemplate: TemplateRef<any>;
+    @ViewChild("defaultValueTemplate")
+    private defaultValueTemplate: TemplateRef<any>;
+    @ViewChild("defaultItemTemplate")
+    private defaultItemTemplate: TemplateRef<any>;
 
     constructor(private cdr: ChangeDetectorRef) {
         this.keyPrefix = "";
         this.path = "";
+        this.level = 0;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -80,8 +95,17 @@ export class UnorderedListComponent implements OnChanges, AfterViewInit {
         this.isObject = ObjectUtils.isObject(this.data);
     }
 
-    ngAfterViewInit(): void {
+    ngAfterContentInit(): void {
         this.templates = this.templates || this.templateDirectives.toArray();
+        this.cdr.detectChanges();
+    }
+
+    ngAfterViewInit(): void {
+        this.defaultTemplates = {
+            key: this.defaultKeyTemplate,
+            value: this.defaultValueTemplate,
+            item: this.defaultItemTemplate,
+        };
         this.cdr.detectChanges();
     }
 }
