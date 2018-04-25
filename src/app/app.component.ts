@@ -1,8 +1,6 @@
 import {Component} from "@angular/core";
 import "../../extensions";
 import {StaticLanguageService} from "../public_api";
-import {HttpClient} from "@angular/common/http";
-import {AjaxRequestHandler, IAjaxRequestDetails} from "../ngx-utils/utils";
 
 @Component({
     selector: "app-root",
@@ -13,14 +11,11 @@ export class AppComponent {
     title = "app".pad(10);
     data = [
         {
-            ize: "test",
-            bigyo: [
-                "a", "b", "c", "d"
-            ],
-            egyeb: {
-                "kola": 3,
-                "sprite": 4,
-            }
+            "olla": [
+                "ize",
+                "bigyo",
+                "egyeb"
+            ]
         },
         {
             ize: "test2",
@@ -34,20 +29,25 @@ export class AppComponent {
         }
     ];
 
-    constructor(lang: StaticLanguageService, http: HttpClient) {
+    map = {
+        ize: "test",
+        bigyo: [
+            "a", "b", "c", "d"
+        ],
+        egyeb: {
+            "kola": 3,
+            "sprite": 4,
+        }
+    };
+
+    constructor(lang: StaticLanguageService) {
         lang.dictionary = {
             test: {
+                olla: "Ollé",
                 ize: "Izé",
                 bigyo: "Bigyó",
                 egyeb: "Egyéb",
             }
         };
-        const handler = new AjaxRequestHandler(/jsonplaceholder/g, (details: IAjaxRequestDetails, params: any) => {
-            console.log(details, params);
-        }).listen();
-        http.get("https://jsonplaceholder.typicode.com/posts/1").subscribe(t => {
-            console.log(t);
-        });
-        handler.forget();
     }
 }

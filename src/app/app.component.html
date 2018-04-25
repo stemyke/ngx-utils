@@ -8,8 +8,9 @@
 </div>
 <h2>Here are some links to help you start: </h2>
 
-<unordered-list [data]="data" keyPrefix="test.">
+<unordered-list [data]="data | remap:map" keyPrefix="test.">
     <ng-template type="value" selector="item.key == 'bigyo'">
         gdfgdf
     </ng-template>
 </unordered-list>
+<unordered-list [data]="map | keys"></unordered-list>

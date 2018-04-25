@@ -3,17 +3,43 @@ import {EVENT_MANAGER_PLUGINS} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 import {UnorderedListComponent} from "./components";
 import {
-    ChunkPipe, EntriesPipe, ExtraItemPropertiesPipe, FilterPipe, FormatNumberPipe, GetOffsetPipe, GroupByPipe,
-    MaxPipe, MinPipe, ReplacePipe, ReversePipe, RoundPipe, TranslatePipe, ValuesPipe
+    ChunkPipe,
+    EntriesPipe,
+    ExtraItemPropertiesPipe,
+    FilterPipe,
+    FormatNumberPipe,
+    GetOffsetPipe,
+    GroupByPipe,
+    KeysPipe,
+    MaxPipe,
+    MinPipe,
+    RemapPipe,
+    ReplacePipe,
+    ReversePipe,
+    RoundPipe,
+    TranslatePipe,
+    ValuesPipe
 } from "./pipes";
 import {
-    AclService, EventsService, FormatterService, StateService, StaticAuthService, StaticLanguageService,
-    StorageService, ConsoleToasterService, UniversalService
+    AclService,
+    ConsoleToasterService,
+    EventsService,
+    FormatterService,
+    StateService,
+    StaticAuthService,
+    StaticLanguageService,
+    StorageService,
+    UniversalService
 } from "./services";
 import {
     AsyncMethodDirective,
-    BackgroundDirective, IconDirective, PaginationDirective, PaginationItemDirective, ResourceIfDirective,
-    StickyDirective, UnorderedListItemDirective
+    BackgroundDirective,
+    IconDirective,
+    PaginationDirective,
+    PaginationItemDirective,
+    ResourceIfDirective,
+    StickyDirective,
+    UnorderedListItemDirective
 } from "./directives";
 import {UnorderedListTemplateDirective} from "./directives/templates";
 import {AuthGuard} from "./utils";
@@ -47,8 +73,10 @@ export const pipes = [
     FormatNumberPipe,
     GetOffsetPipe,
     GroupByPipe,
+    KeysPipe,
     MaxPipe,
     MinPipe,
+    RemapPipe,
     ReplacePipe,
     ReversePipe,
     RoundPipe,

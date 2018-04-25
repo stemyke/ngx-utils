@@ -1,4 +1,4 @@
-export type FilterPrecidate = (value: any, key?: any) => boolean;
+export type FilterPrecidate = (value: any, key?: any, source?: any) => boolean;
 export type IterateCallback = (value: any, key?: any) => void;
 
 const defaultPredicate: FilterPrecidate = () => true;
@@ -81,7 +81,7 @@ export class ObjectUtils {
 
     static iterate(obj: any, cb: IterateCallback): void {
         if (!obj) return;
-        const keys: any[] = Array.isArray(obj) ? obj.map((e, i) => i) : Object.keys(obj);
+        const keys: any[] = Array.isArray(obj) ? Array.from(obj.keys()) : Object.keys(obj);
         keys.forEach(
             // @dynamic
             key => {
@@ -90,7 +90,7 @@ export class ObjectUtils {
         );
     }
 
-    static getValue(obj: any, key: string): any {
+    static getValue(obj: any, key: string, defaultValue: any = key): any {
         const keys = key.split(".");
         key = "";
         do {
@@ -99,7 +99,7 @@ export class ObjectUtils {
                 obj = obj[key];
                 key = "";
             } else if (!keys.length) {
-                obj = undefined;
+                obj = defaultValue;
             } else {
                 key += ".";
             }
@@ -179,21 +179,19 @@ export class ObjectUtils {
         predicate = predicate || defaultPredicate;
         if (ObjectUtils.isNullOrUndefined(source)) return target || source;
         if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source)) return source;
-        if (Array.isArray(source)) {
-            target = Array.isArray(target) || [];
-            let i = 0;
+        if (ObjectUtils.isArray(source)) {
+            target = ObjectUtils.isArray(target) ? target : [];
             source.forEach((item, index) => {
-                if (!predicate(item, index)) return;
-                if (target.length > i)
-                    target[i] = ObjectUtils.copyRecursive(target[i], item, predicate);
+                if (!predicate(item, index, target)) return;
+                if (target.length > index)
+                    target[index] = ObjectUtils.copyRecursive(target[index], item, predicate);
                 else
-                    target.push(ObjectUtils.copyRecursive(item, predicate));
-                i++;
+                    target.push(ObjectUtils.copyRecursive(null, item, predicate));
             });
             return target;
         }
         return Object.keys(source).reduce((result, key) => {
-            if (!predicate(source[key], key)) return result;
+            if (!predicate(source[key], key, result)) return result;
             result[key] = ObjectUtils.copyRecursive(result[key], source[key], predicate);
             return result;
         }, target || {});
