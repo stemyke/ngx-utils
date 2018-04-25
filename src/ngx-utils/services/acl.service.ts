@@ -32,9 +32,8 @@ export class AclService {
         this.auth.userChanged.subscribe(() => {
             this.components.forEach(t => t.dirty = true);
             const info = this.getStateInfo();
-            const guard: AuthGuard = info && info.guard instanceof AuthGuard ? info.guard : null;
-            if (!guard) return;
-            guard.checkRoute(info.route).then(result => {
+            const check: Promise<boolean> = info && info.guard instanceof AuthGuard ? info.guard.checkRoute(info.route) : Promise.resolve(true);
+            check.then(result => {
                 if (result) {
                     AclService.checkStateDirty(info);
                     return;

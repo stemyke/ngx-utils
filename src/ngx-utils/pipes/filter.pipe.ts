@@ -1,22 +1,27 @@
 import {Pipe, PipeTransform} from "@angular/core";
 import {ObjectUtils} from "../utils";
 
-export const defaultFilter = () => true;
+export function defaultFilter() {
+    return true;
+}
 
 @Pipe({
     name: "filter"
 })
 export class FilterPipe implements PipeTransform {
-    transform(items: any[], filter: any = defaultFilter, params: any = {}): any[] {
-        const filterFunc = ObjectUtils.isFunction(filter) ? filter : (item, index, params) => {
+    transform(values: any, filter: any = defaultFilter, params: any = {}): any[] {
+        if (!ObjectUtils.isObject(values)) return [];
+        const filterFunc = ObjectUtils.isFunction(filter) ? filter : (value, key, params) => {
             return ObjectUtils.evaluate(filter, {
-                item: item,
-                index: index,
+                value: value,
+                key: key,
+                item: value,
+                index: key,
                 params: params
             });
         };
-        return (items || []).filter((item, index) => {
-            return filterFunc(item, index, params);
+        return ObjectUtils.filter(values, (value, key) => {
+            return filterFunc(value, key, params);
         });
     }
 }
