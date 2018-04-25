@@ -14,7 +14,7 @@ export class AppComponent {
             "olla": [
                 "ize",
                 "bigyo",
-                "egyeb"
+                "egyeb.fd"
             ]
         },
         {
