@@ -89,3 +89,5 @@ export abstract class UnorederedListTemplate extends TemplateRef<any> {
 export interface UnorderedListTemplates {
     [type: string]: TemplateRef<any>;
 }
+
+export type UnorderedListStyle = "table" | "list";

@@ -1,11 +1,12 @@
-import {Component} from "@angular/core";
+import {Component, ViewEncapsulation} from "@angular/core";
 import "../../extensions";
 import {StaticLanguageService} from "../public_api";
 
 @Component({
     selector: "app-root",
     templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.css"],
+    styleUrls: ["./app.component.scss"],
+    encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
     title = "app".pad(10);
@@ -42,29 +43,42 @@ export class AppComponent {
 
     manufacturing = {
         left: {
-            diamondSetting: "none",
-            diamondCount: 0,
-            diamondCarat: 0,
-            diamondQuality: "white/normal",
+            diamondSetting: "rubbed",
+            diamondCount: 1,
+            diamondCarat: 0.009,
             diamondCut: "brilliant",
+            diamondQuality: "white/normal",
             diamondSpreading: "together",
-            diamondOrientation: "center",
-            diamondPosition: null,
-            diamondRows: 1,
             diamondQuantity: 1,
+            diamondRows: 1,
+            diamondOrientation: "center",
+            diamondRotation: "0°",
+            diamondPosition: 2,
+            diamondPlacements: [
+                {
+                    carat: 0.009,
+                    width: 1.3,
+                    height: 1.3,
+                    rotation: 0,
+                    x: 2,
+                    y: 0
+                }
+            ],
+            diamondRowGap: 0.8,
+            diamondGap: 0.8,
             normalGroovePositions: [],
             normalGrooveType: null,
             normalGrooveSurface: null,
             normalGrooveWidth: 0,
             normalGrooveWidths: [],
             normalGrooveDepth: 0,
-            normalGrooveAngle: null,
+            normalGrooveAngle: "0°",
             normalGrooveColors: [],
             normalGrooveCount: 0,
             hasNormalGrooves: "no",
             separationGroovePositions: [
-                1.3333333333333333,
-                2.666666666666666
+                1.6,
+                2.4000000000000004
             ],
             separationGrooveType: "v",
             separationGrooveSurface: "polished",
@@ -74,7 +88,7 @@ export class AppComponent {
                 0.3
             ],
             separationGrooveDepth: 0.12586494467659198,
-            separationGrooveAngle: {},
+            separationGrooveAngle: "100°",
             separationGrooveColors: [
                 null,
                 null
@@ -87,7 +101,7 @@ export class AppComponent {
             coloritGrooveWidth: 0,
             coloritGrooveWidths: [],
             coloritGrooveDepth: 0,
-            coloritGrooveAngle: null,
+            coloritGrooveAngle: "0°",
             coloritGrooveColors: [],
             coloritGrooveCount: 0,
             hasColoritGrooves: "no",
@@ -100,30 +114,30 @@ export class AppComponent {
             edgeWidths: [],
             discs: [
                 {
-                    width: 1.3333333333333333,
+                    width: 1.6,
                     height: 1.7,
-                    density: 12.9,
-                    volume: 0.096381,
+                    density: 14.87,
+                    volume: 0.128948,
                     color: "white",
-                    fineness: 585,
+                    fineness: 750,
                     surface: "polished"
                 },
                 {
-                    width: 1.3333333333333333,
+                    width: 0.8,
                     height: 1.7,
-                    density: 13.05,
-                    volume: 0.145279,
+                    density: 14.79,
+                    volume: 0.09078200000000002,
                     color: "rose",
-                    fineness: 585,
+                    fineness: 750,
                     surface: "polished"
                 },
                 {
-                    width: 1.3333333333333333,
+                    width: 1.6,
                     height: 1.7,
-                    density: 13.12,
-                    volume: 0.107001,
+                    density: 14.92,
+                    volume: 0.128931,
                     color: "yellow",
-                    fineness: 585,
+                    fineness: 750,
                     surface: "polished"
                 }
             ],
@@ -135,7 +149,7 @@ export class AppComponent {
             ringDiameter: 19.735212943395023,
             ringWidth: 4,
             ringHeight: 1.7,
-            divisionPreset: "vertical-1-1-1",
+            divisionPreset: "vertical-2-1-2",
             outerRadius: 3.9,
             innerRadius: 3.2,
             cornerRadiusOuter: 0.25,
@@ -146,26 +160,28 @@ export class AppComponent {
             diamondSetting: "none",
             diamondCount: 0,
             diamondCarat: 0,
-            diamondQuality: "white/normal",
             diamondCut: "brilliant",
+            diamondQuality: "white/normal",
             diamondSpreading: "together",
-            diamondOrientation: "center",
-            diamondPosition: null,
-            diamondRows: 1,
             diamondQuantity: 1,
+            diamondRows: 1,
+            diamondOrientation: "center",
+            diamondRotation: "0°",
+            diamondPosition: 0,
+            diamondPlacements: [],
             normalGroovePositions: [],
             normalGrooveType: null,
             normalGrooveSurface: null,
             normalGrooveWidth: 0,
             normalGrooveWidths: [],
             normalGrooveDepth: 0,
-            normalGrooveAngle: null,
+            normalGrooveAngle: "0°",
             normalGrooveColors: [],
             normalGrooveCount: 0,
             hasNormalGrooves: "no",
             separationGroovePositions: [
-                1.3333333333333333,
-                2.6666666666666665
+                1.6,
+                2.4000000000000004
             ],
             separationGrooveType: "v",
             separationGrooveSurface: "polished",
@@ -175,7 +191,7 @@ export class AppComponent {
                 0.3
             ],
             separationGrooveDepth: 0.12586494467659198,
-            separationGrooveAngle: {},
+            separationGrooveAngle: "100°",
             separationGrooveColors: [
                 null,
                 null
@@ -188,7 +204,7 @@ export class AppComponent {
             coloritGrooveWidth: 0,
             coloritGrooveWidths: [],
             coloritGrooveDepth: 0,
-            coloritGrooveAngle: null,
+            coloritGrooveAngle: "0°",
             coloritGrooveColors: [],
             coloritGrooveCount: 0,
             hasColoritGrooves: "no",
@@ -201,30 +217,30 @@ export class AppComponent {
             edgeWidths: [],
             discs: [
                 {
-                    width: 1.3333333333333333,
+                    width: 1.6,
                     height: 1.7,
-                    density: 12.9,
-                    volume: 0.08496100000000002,
+                    density: 14.87,
+                    volume: 0.11366100000000004,
                     color: "white",
-                    fineness: 585,
+                    fineness: 750,
                     surface: "polished"
                 },
                 {
-                    width: 1.3333333333333333,
+                    width: 0.8,
                     height: 1.7,
-                    density: 13.05,
-                    volume: 0.128024,
+                    density: 14.79,
+                    volume: 0.07999800000000001,
                     color: "rose",
-                    fineness: 585,
+                    fineness: 750,
                     surface: "polished"
                 },
                 {
-                    width: 1.3333333333333333,
+                    width: 1.6,
                     height: 1.7,
-                    density: 13.12,
-                    volume: 0.09431999999999999,
+                    density: 14.92,
+                    volume: 0.11364599999999997,
                     color: "yellow",
-                    fineness: 585,
+                    fineness: 750,
                     surface: "polished"
                 }
             ],
@@ -236,7 +252,7 @@ export class AppComponent {
             ringDiameter: 17.188733853924695,
             ringWidth: 4,
             ringHeight: 1.7,
-            divisionPreset: "vertical-1-1-1",
+            divisionPreset: "vertical-2-1-2",
             outerRadius: 3.9,
             innerRadius: 3.2,
             cornerRadiusOuter: 0.25,
@@ -247,22 +263,23 @@ export class AppComponent {
 
     reviewMap = [
         {
+            group: "profileAndSizeSetting",
             keys: [
                 "profile",
                 "ringWidth",
                 "ringHeight",
                 "ringSize"
-            ],
-            group: "profileAndSizeSetting"
+            ]
         },
         {
+            group: "metalSetting",
             keys: [
                 "divisionPreset",
                 "discs"
-            ],
-            group: "metalSetting"
+            ]
         },
         {
+            group: "normalGroove",
             keys: [
                 "normalGrooveType",
                 "normalGrooveAngle",
@@ -270,10 +287,10 @@ export class AppComponent {
                 "normalGrooveDepth",
                 "normalGrooveSurface",
                 "normalGroovePositions"
-            ],
-            group: "normalGrooves"
+            ]
         },
         {
+            group: "separationGroove",
             keys: [
                 "separationGrooveType",
                 "separationGrooveAngle",
@@ -281,10 +298,10 @@ export class AppComponent {
                 "separationGrooveDepth",
                 "separationGrooveSurface",
                 "separationGroovePositions"
-            ],
-            group: "separationGrooves"
+            ]
         },
         {
+            group: "coloritGroove",
             keys: [
                 "coloritGrooveType",
                 "coloritGrooveAngle",
@@ -292,10 +309,10 @@ export class AppComponent {
                 "coloritGrooveDepth",
                 "coloritGrooveSurface",
                 "coloritGroovePositions"
-            ],
-            group: "coloritGrooves"
+            ]
         },
         {
+            group: "diamonds",
             keys: [
                 "diamondSetting",
                 "diamondCut",
@@ -303,16 +320,15 @@ export class AppComponent {
                 "diamondQuality",
                 "diamondCount",
                 "diamondPlacements"
-            ],
-            group: "diamonds"
+            ]
         },
         {
+            group: "engraving",
             keys: [
                 "engravingType",
                 "engravingFont",
                 "engravingText"
-            ],
-            group: "engraving"
+            ]
         }
     ];
 
