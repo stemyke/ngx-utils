@@ -3,8 +3,7 @@ import {
     ActivatedRouteSnapshot, ChildrenOutletContexts, Data, Event, NavigationEnd, NavigationExtras, OutletContext, Params, Router,
     UrlSegment, UrlTree
 } from "@angular/router";
-import {Subject} from "rxjs/Subject";
-import {Subscription} from "rxjs/Subscription";
+import {Subject, Subscription} from "rxjs";
 import {IRoute} from "../common-types";
 
 const emptySnapshot: ActivatedRouteSnapshot = new ActivatedRouteSnapshot();

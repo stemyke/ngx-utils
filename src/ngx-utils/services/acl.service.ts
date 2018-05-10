@@ -1,5 +1,4 @@
 import {Inject, Injectable, Injector, Type} from "@angular/core";
-import "rxjs/Rx";
 import {StateService} from "./state.service";
 import {AUTH_SERVICE, IAclComponent, IAuthService, IRouteStateInfo} from "../common-types";
 import {AuthGuard, ObjectUtils} from "../utils";

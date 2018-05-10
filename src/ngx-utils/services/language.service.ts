@@ -1,5 +1,4 @@
 import {Injectable} from "@angular/core";
-import "rxjs/Rx";
 import {ObjectUtils} from "../utils";
 import {ILanguageService, ITranslation, ITranslations} from "../common-types";
 

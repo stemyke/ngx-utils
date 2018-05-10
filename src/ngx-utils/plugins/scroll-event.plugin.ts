@@ -1,4 +1,4 @@
-import {ɵd} from "@angular/platform-browser";
+import {ɵangular_packages_platform_browser_platform_browser_d as EventManagerPlugin} from "@angular/platform-browser";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
 import {UniversalService} from "../services";
@@ -6,12 +6,11 @@ import {UniversalService} from "../services";
 export function emptyRemove(): void {
 
 }
+
 const globalElements: string[] = ["document", "window"];
 
-declare const elementResizeDetectorMaker: any;
-
 @Injectable()
-export class ScrollEventPlugin extends ɵd {
+export class ScrollEventPlugin extends EventManagerPlugin {
 
     private static EVENT_NAME: string = "scroll";
 

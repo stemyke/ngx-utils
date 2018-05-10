@@ -1,4 +1,5 @@
 import {HttpClient} from "@angular/common/http";
+import {first} from "rxjs/operators";
 import {ObjectUtils} from "./object.utils";
 
 declare const saveAs: any;
@@ -67,9 +68,9 @@ export class FileUtils {
                     resolve(url);
                     return;
                 }
-                http.get(url, {
+                first()(http.get(url, {
                     responseType: "blob"
-                }).first().subscribe(blob => {
+                })).subscribe((blob: Blob) => {
                     FileUtils.readFileAsDataURL(blob).then(resolve, reject);
                 }, reason => {
                     if (reason.status > 0)

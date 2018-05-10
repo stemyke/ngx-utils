@@ -1,5 +1,5 @@
 import {Directive, ElementRef, HostBinding, HostListener, OnDestroy, OnInit} from "@angular/core";
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from "rxjs";
 import {EventsService} from "../services";
 import {ITimer, TimerUtils} from "../utils";
 

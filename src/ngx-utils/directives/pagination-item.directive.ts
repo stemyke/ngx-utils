@@ -1,5 +1,5 @@
 import {Directive, ViewContainerRef, TemplateRef, OnInit, OnDestroy} from "@angular/core";
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from "rxjs";
 import {PaginationDirective} from "./pagination.directive";
 
 export class PaginationItemContext {

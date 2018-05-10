@@ -5,6 +5,7 @@ export * from "./filter.pipe";
 export * from "./format-number.pipe";
 export * from "./get-offset.pipe";
 export * from "./group-by.pipe";
+export * from "./join.pipe";
 export * from "./keys.pipe";
 export * from "./max.pipe";
 export * from "./min.pipe";
