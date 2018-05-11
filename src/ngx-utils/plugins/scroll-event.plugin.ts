@@ -1,7 +1,7 @@
 import {ɵangular_packages_platform_browser_platform_browser_d as EventManagerPlugin} from "@angular/platform-browser";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
-import {UniversalService} from "../services";
+import {UniversalService} from "../services/universal.service";
 
 export function emptyRemove(): void {
 

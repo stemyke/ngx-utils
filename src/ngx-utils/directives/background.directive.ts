@@ -1,7 +1,7 @@
 import {Directive, ElementRef, Input, OnChanges, Renderer2, SimpleChanges} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import {UniversalService} from "../services";
-import {FileUtils} from "../utils";
+import {FileUtils} from "../utils/file.utils";
+import {UniversalService} from "../services/universal.service";
 
 const defaultClass = "default-image";
 const loadingClass = "loading-image";

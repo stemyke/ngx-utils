@@ -1,6 +1,6 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -66,5 +66,10 @@
         "ts-node": "6.0.3",
         "tslint": "5.10.0",
         "typescript": "2.7.2"
-    }
+    },
+    "main": "dist/bundles/stemy-ngx-utils.umd.js",
+    "module": "dist/esm5/stemy-ngx-utils.js",
+    "es2015": "dist/esm2015/stemy-ngx-utils.js",
+    "typings": "dist/stemy-ngx-utils.d.ts",
+    "metadata": "dist/stemy-ngx-utils.metadata.json"
 }

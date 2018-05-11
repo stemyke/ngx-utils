@@ -1,7 +1,7 @@
 import {Directive, ElementRef, HostBinding, HostListener, OnDestroy, OnInit} from "@angular/core";
 import {Subscription} from "rxjs";
-import {EventsService} from "../services";
-import {ITimer, TimerUtils} from "../utils";
+import {ITimer, TimerUtils} from "../utils/timer.utils";
+import {EventsService} from "../services/events.service";
 
 @Directive({
     selector: "[sticky]"

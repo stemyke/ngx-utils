@@ -9,9 +9,9 @@ import {
     QueryList,
     SimpleChanges, TemplateRef, ViewChild
 } from "@angular/core";
-import {UnorderedListTemplateDirective} from "../directives/templates";
-import {ObjectUtils} from "../utils";
 import {UnorderedListStyle, UnorderedListTemplates, UnorederedListTemplate} from "../common-types";
+import {ObjectUtils} from "../utils/object.utils";
+import {UnorderedListTemplateDirective} from "../directives/unordered-list-template.directive";
 
 @Component({
     moduleId: module.id,

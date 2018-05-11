@@ -1,6 +1,6 @@
 import {Inject, Injectable, Pipe, PipeTransform} from "@angular/core";
 import {ILanguageService, ITranslation, ITranslations, LANGUAGE_SERVICE} from "../common-types";
-import {ObjectUtils} from "../utils";
+import {ObjectUtils} from "../utils/object.utils";
 
 export type TranslationQuery = string | ITranslations | ITranslation[];
 

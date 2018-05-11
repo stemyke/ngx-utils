@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
-import {ObjectUtils} from "../utils";
 import {ILanguageService, ITranslation, ITranslations} from "../common-types";
+import {ObjectUtils} from "../utils/object.utils";
 
 @Injectable()
 export class StaticLanguageService implements ILanguageService {

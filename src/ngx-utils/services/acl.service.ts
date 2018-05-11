@@ -1,7 +1,8 @@
 import {Inject, Injectable, Injector, Type} from "@angular/core";
 import {StateService} from "./state.service";
 import {AUTH_SERVICE, IAclComponent, IAuthService, IRouteStateInfo} from "../common-types";
-import {AuthGuard, ObjectUtils} from "../utils";
+import {ObjectUtils} from "../utils/object.utils";
+import {AuthGuard} from "../utils/auth.guard";
 
 const emptyGuards: any[] = [];
 

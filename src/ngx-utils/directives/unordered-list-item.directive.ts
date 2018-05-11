@@ -1,6 +1,6 @@
 import {Directive, ElementRef, Input, OnChanges, Renderer2, SimpleChanges, ViewContainerRef} from "@angular/core";
 import {UnorderedListStyle, UnorderedListTemplates, UnorederedListTemplate} from "../common-types";
-import {ObjectUtils} from "../utils";
+import {ObjectUtils} from "../utils/object.utils";
 
 @Directive({
     selector: "[unorderedListItem]"

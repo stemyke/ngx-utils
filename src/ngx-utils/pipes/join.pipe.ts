@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from "@angular/core";
-import {ObjectUtils} from "../utils";
+import {ObjectUtils} from "../utils/object.utils";
 
 @Pipe({
     name: "join"

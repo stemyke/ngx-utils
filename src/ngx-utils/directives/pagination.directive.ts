@@ -1,5 +1,5 @@
 import {Directive, Input, OnChanges, SimpleChanges, NgZone, EventEmitter, Output} from "@angular/core";
-import {ITimer, TimerUtils} from "../utils";
+import {ITimer, TimerUtils} from "../utils/timer.utils";
 
 export interface IPaginationData {
     total: number;

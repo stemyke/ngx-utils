@@ -1,7 +1,7 @@
 import {Directive, ViewContainerRef, TemplateRef, Input} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import {UniversalService} from "../services";
-import {FileUtils} from "../utils";
+import {FileUtils} from "../utils/file.utils";
+import {UniversalService} from "../services/universal.service";
 
 export class ResourceIfContext {
     resource: string;
