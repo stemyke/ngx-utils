@@ -1,5 +1,6 @@
 import {utc, DurationInputArg1, DurationInputArg2} from "moment";
 
+// --- Interfaces ---
 export const propDescriptor: PropertyDescriptor = {
     writable: true,
     enumerable: false
@@ -41,60 +42,56 @@ declare global {
     }
 }
 
+// --- Object extensions ---
+export function pad(this: any, width: number, chr: string = "0"): string {
+    const str = this.toString();
+    return str.length >= width ? str : new Array(width - str.length + 1).join(chr) + str;
+}
+String.prototype.pad = pad;
+Number.prototype.pad = pad;
+
 // --- String extensions ---
-String.prototype.pad = function (width: number, chr: string = "0"): string {
-    return this.length >= width ? this : new Array(width - this.length + 1).join(chr) + this;
-};
-String.prototype.has = function (...parts: string[]): boolean {
+export function has(this: string, ...parts: string[]): boolean {
     for (let i = 0; i < parts.length; i++) {
         if (this.indexOf(parts[i]) >= 0) return true;
     }
     return false;
-};
-String.prototype.lcFirst = function (): string {
-    return this.charAt(0).toLowerCase() + this.substring(1);
-};
-String.prototype.ucFirst = function (): string {
-    return this.charAt(0).toUpperCase() + this.substring(1);
-};
-Object.defineProperties(Number.prototype, {
-    pad: propDescriptor,
-    has: propDescriptor,
-    lcFirst: propDescriptor,
-    ucFirst: propDescriptor
-});
+}
 
-// --- Number extensions ---
-Number.prototype.pad = function (width: number, chr: string = "0"): string {
-    const str = this.toString();
-    return str.length >= width ? str : new Array(width - str.length + 1).join(chr) + str;
-};
-Object.defineProperties(Number.prototype, {
-    pad: propDescriptor
-});
+export function lcFirst(this: string): string {
+    return this.charAt(0).toLowerCase() + this.substring(1);
+}
+
+export function ucFirst (this: string): string {
+    return this.charAt(0).toUpperCase() + this.substring(1);
+}
 
 // --- Date extensions ---
-Date.prototype.isHoliday = function (): boolean {
+export function isHoliday(this: Date): boolean {
     return utc(this).isoWeekday() > 5;
-};
-Date.prototype.isBusinessDay = function (): boolean {
+}
+
+export function isBusinessDay(this: Date): boolean {
     return utc(this).isoWeekday() < 6;
-};
-Date.prototype.add = function (amount?: DurationInputArg1, unit?: DurationInputArg2): Date {
+}
+
+export function add(this: Date, amount?: DurationInputArg1, unit?: DurationInputArg2): Date {
     return utc(this).add(amount, unit).toDate();
-};
-Date.prototype.businessAdd = function (amount?: number, unit?: DurationInputArg2): Date {
+}
+
+export function businessAdd(this: Date, amount?: number, unit?: DurationInputArg2): Date {
     const signal = amount < 0 ? -1 : 1;
     let remaining = Math.abs(amount);
-    let day = this;
+    let day: Date = this;
     while (remaining) {
-        day = day.add(signal, unit);
+        day = add(day, signal, unit);
         if (day.isBusinessDay()) {
             remaining--;
         }
     }
     return day;
-};
+}
+
 Date.prototype.businessSubtract = function (amount?: number, unit?: DurationInputArg2): Date {
     return this.businessAdd(-amount, unit);
 };

@@ -1,5 +1,5 @@
 import {Component, ViewEncapsulation} from "@angular/core";
-import "../../extensions";
+import "../ngx-utils/extensions";
 import {StaticLanguageService} from "../public_api";
 
 @Component({
