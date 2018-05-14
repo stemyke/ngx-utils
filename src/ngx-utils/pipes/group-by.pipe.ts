@@ -1,9 +1,6 @@
 import {Pipe, PipeTransform} from "@angular/core";
+import {IGroupMap} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
-
-export interface IGroupMap {
-    [column: string]: any;
-}
 
 @Pipe({
     name: "groupBy"

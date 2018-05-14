@@ -1,5 +1,6 @@
-import {EmbeddedViewRef, EventEmitter, InjectionToken, TemplateRef} from "@angular/core";
+import {EmbeddedViewRef, EventEmitter, InjectionToken, TemplateRef, TypeProvider} from "@angular/core";
 import {Data, Route} from "@angular/router";
+import {ReflectUtils} from "./utils/reflect.utils";
 
 // --- Utils
 export interface IResolveFactory {
@@ -62,6 +63,12 @@ export interface IRouteStateInfo {
     first: boolean;
 }
 
+// --- Storage Service ---
+export enum StorageMode {
+    Local,
+    Session
+}
+
 // --- Toaster Service ---
 export interface IToasterService {
     error(message: string, params?: any, title?: string): void;
@@ -106,12 +113,38 @@ export interface IScriptPromises {
     [src: string]: Promise<HTMLScriptElement>;
 }
 
+// --- Observable utils ---
+export interface ISearchObservable {
+    search: string;
+    getSearchResults(token: string): Promise<any[]>;
+}
+
+// --- Reflect utils ---
+export function FactoryDependencies(...dependencies: TypeProvider[]): MethodDecorator {
+    return function (target: any, method: string): void {
+        ReflectUtils.defineMetadata("factoryDependencies", dependencies, target, method);
+    };
+}
+
 // --- Timer utils ---
 export interface ITimer {
     id?: any;
     set?: (func: Function, time: number) => void;
     clear?: () => void;
 }
+
+// --- ExtraItemProperties ---
+export interface IExtraProperties {
+    [prop: string]: any;
+}
+
+// --- Group by ---
+export interface IGroupMap {
+    [column: string]: any;
+}
+
+// --- Translate ---
+export type TranslationQuery = string | ITranslations | ITranslation[];
 
 // --- Pagination ---
 export interface IPaginationData {

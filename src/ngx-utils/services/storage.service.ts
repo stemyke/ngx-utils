@@ -1,10 +1,6 @@
 import {Injectable} from "@angular/core";
+import {StorageMode} from "../common-types";
 import {UniversalService} from "./universal.service";
-
-export enum StorageMode {
-    Local,
-    Session
-}
 
 /**
  * Use this service instead of Storage to avoid Angular Universal breaks on server environment

@@ -1,11 +1,6 @@
 import {Observable} from "rxjs";
 import {mergeMap} from "rxjs/operators";
-
-export interface ISearchObservable {
-    search: string;
-
-    getSearchResults(token: string): Promise<any[]>;
-}
+import {ISearchObservable} from "../common-types";
 
 export class ObservableUtils {
 

@@ -11,6 +11,7 @@ export {
     AUTH_SERVICE,
     IAclComponent,
     IRouteStateInfo,
+    StorageMode,
     IToasterService,
     TOASTER_SERVICE,
     IAsyncMessage,
@@ -21,7 +22,12 @@ export {
     IAjaxRequestDetails,
     AjaxRequestCallback,
     IScriptPromises,
+    ISearchObservable,
+    FactoryDependencies,
     ITimer,
+    IExtraProperties,
+    IGroupMap,
+    TranslationQuery,
     IPaginationData,
     PaginationDataLoader,
     PaginationItemContext,
@@ -47,7 +53,7 @@ export {StaticAuthService} from "./ngx-utils/services/auth.service";
 export {EventsService} from "./ngx-utils/services/events.service";
 export {FormatterService} from "./ngx-utils/services/formatter.service";
 export {StaticLanguageService} from "./ngx-utils/services/language.service";
-export {StorageMode, StorageService} from "./ngx-utils/services/storage.service";
+export {StorageService} from "./ngx-utils/services/storage.service";
 export {ConsoleToasterService} from "./ngx-utils/services/toaster.service";
 
 export {ScrollEventPlugin} from "./ngx-utils/plugins/scroll-event.plugin";

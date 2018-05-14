@@ -3,12 +3,6 @@ import {Injector, TypeProvider} from "@angular/core";
 import {IResolveFactory} from "../common-types";
 import {ObjectUtils} from "./object.utils";
 
-export function FactoryDependencies(...dependencies: TypeProvider[]): MethodDecorator {
-    return function (target: any, method: string): void {
-        ReflectUtils.defineMetadata("factoryDependencies", dependencies, target, method);
-    };
-}
-
 export class ReflectUtils {
 
     static defineMetadata(key: string, data: any, target: any, name?: string): void {

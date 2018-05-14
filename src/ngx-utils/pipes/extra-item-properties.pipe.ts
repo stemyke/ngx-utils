@@ -1,9 +1,6 @@
 import {Pipe, PipeTransform} from "@angular/core";
+import {IExtraProperties} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
-
-export interface IExtraProperties {
-    [prop: string]: any;
-}
 
 @Pipe({
     name: "extraItemProperties"
