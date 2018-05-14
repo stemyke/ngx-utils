@@ -1,8 +1,4 @@
-export interface ITimer {
-    id?: any;
-    set?: (func: Function, time: number) => void;
-    clear?: () => void;
-}
+import {ITimer} from "../common-types";
 
 export class TimerUtils {
 

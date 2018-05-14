@@ -5,12 +5,13 @@ import {UnorederedListTemplate} from "../common-types";
     selector: "ng-template[type][selector]"
 })
 
-export class UnorderedListTemplateDirective implements UnorederedListTemplate {
+export class UnorderedListTemplateDirective extends UnorederedListTemplate {
 
     @Input() type: string;
     @Input() selector: string;
 
     constructor(public elementRef: ElementRef, public templateRef: TemplateRef<any>) {
+        super();
     }
 
     createEmbeddedView(context: any): EmbeddedViewRef<any> {

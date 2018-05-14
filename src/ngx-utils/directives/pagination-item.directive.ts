@@ -1,28 +1,7 @@
 import {Directive, ViewContainerRef, TemplateRef, OnInit, OnDestroy} from "@angular/core";
 import {Subscription} from "rxjs";
+import {PaginationItemContext} from "../common-types";
 import {PaginationDirective} from "./pagination.directive";
-
-export class PaginationItemContext {
-
-    constructor(public item: any, public count: number, public index: number, public dataIndex: number) {
-    }
-
-    get first(): boolean {
-        return this.index === 0;
-    }
-
-    get last(): boolean {
-        return this.index === this.count - 1;
-    }
-
-    get even(): boolean {
-        return this.index % 2 === 0;
-    }
-
-    get odd(): boolean {
-        return !this.even;
-    }
-}
 
 @Directive({
     selector: "[paginationItem]"

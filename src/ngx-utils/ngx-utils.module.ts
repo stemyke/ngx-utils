@@ -42,7 +42,7 @@ import {ValuesPipe} from "./pipes/values.pipe";
 import {UnorderedListComponent} from "./components/unordered-list.component";
 
 // --- Pipes ---
-export const pipes = [
+const pipes = [
     ChunkPipe,
     EntriesPipe,
     ExtraItemPropertiesPipe,
@@ -63,7 +63,7 @@ export const pipes = [
 ];
 
 // --- Directives ---
-export const directives = [
+const directives = [
     AsyncMethodDirective,
     BackgroundDirective,
     IconDirective,
@@ -76,7 +76,7 @@ export const directives = [
 ];
 
 // --- Components ---
-export const components = [
+const components = [
     UnorderedListComponent
 ];
 

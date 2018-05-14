@@ -1,6 +1,4 @@
-export interface IScriptPromises {
-    [src: string]: Promise<HTMLScriptElement>;
-}
+import {IScriptPromises} from "../common-types";
 
 export class LoaderUtils {
 

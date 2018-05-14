@@ -1,6 +1,7 @@
 import {Directive, ElementRef, HostBinding, HostListener, OnDestroy, OnInit} from "@angular/core";
 import {Subscription} from "rxjs";
-import {ITimer, TimerUtils} from "../utils/timer.utils";
+import {ITimer} from "../common-types";
+import {TimerUtils} from "../utils/timer.utils";
 import {EventsService} from "../services/events.service";
 
 @Directive({

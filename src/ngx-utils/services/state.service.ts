@@ -6,11 +6,11 @@ import {
 import {Subject, Subscription} from "rxjs";
 import {IRoute} from "../common-types";
 
-const emptySnapshot: ActivatedRouteSnapshot = new ActivatedRouteSnapshot();
-const emptyData: Data = {id: ""};
-const emptyParams: Params = {};
-const emptySegments: UrlSegment[] = [];
-const emptyComponents: any[] = [];
+export const emptySnapshot: ActivatedRouteSnapshot = new ActivatedRouteSnapshot();
+export const emptyData: Data = {id: ""};
+export const emptyParams: Params = {};
+export const emptySegments: UrlSegment[] = [];
+export const emptyComponents: any[] = [];
 
 export interface IStateInfo {
     url: string;

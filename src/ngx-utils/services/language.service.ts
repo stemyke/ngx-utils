@@ -5,7 +5,10 @@ import {ObjectUtils} from "../utils/object.utils";
 @Injectable()
 export class StaticLanguageService implements ILanguageService {
 
-    currentLanguage: string = "none";
+    get currentLanguage(): string {
+        return "none";
+    }
+
     dictionary: ITranslations = {};
 
     getTranslation(key: string, params?: any): Promise<string> {
@@ -14,17 +17,6 @@ export class StaticLanguageService implements ILanguageService {
         }
         const translation = ObjectUtils.getValue(this.dictionary, key) || key;
         return Promise.resolve(this.interpolate(translation, params));
-    }
-
-    getTranslationFromObject(translations: ITranslations, params?: any, lang?: string): string {
-        lang = lang || this.currentLanguage;
-        return this.interpolate(translations ? (translations[lang] || "") : "")
-    }
-
-    getTranslationFromArray(translations: ITranslation[], params?: any, lang?: string): string {
-        lang = lang || this.currentLanguage;
-        const translation = translations ? translations.find(t => t.lang == lang) : null;
-        return this.interpolate(translation ? translation.translation : "", params);
     }
 
     getTranslations(...keys: string[]): Promise<ITranslations> {
@@ -38,7 +30,18 @@ export class StaticLanguageService implements ILanguageService {
         });
     }
 
-    private interpolate(expr: string | Function, params?: any): string {
+    getTranslationFromObject(translations: ITranslations, params?: any, lang?: string): string {
+        lang = lang || this.currentLanguage;
+        return this.interpolate(translations ? (translations[lang] || "") : "")
+    }
+
+    getTranslationFromArray(translations: ITranslation[], params?: any, lang?: string): string {
+        lang = lang || this.currentLanguage;
+        const translation = translations ? translations.find(t => t.lang == lang) : null;
+        return this.interpolate(translation ? translation.translation : "", params);
+    }
+
+    protected interpolate(expr: string | Function, params?: any): string {
         if (typeof expr === "string") {
             return this.interpolateString(expr, params);
         }
@@ -48,7 +51,7 @@ export class StaticLanguageService implements ILanguageService {
         return expr as string;
     }
 
-    private interpolateString(expr: string, params?: any) {
+    protected interpolateString(expr: string, params?: any) {
         if (!expr || !params) return expr;
         return expr.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, b: string) => {
             const r = ObjectUtils.getValue(params, b);

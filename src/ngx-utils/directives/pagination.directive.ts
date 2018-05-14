@@ -1,12 +1,6 @@
-import {Directive, Input, OnChanges, SimpleChanges, NgZone, EventEmitter, Output} from "@angular/core";
-import {ITimer, TimerUtils} from "../utils/timer.utils";
-
-export interface IPaginationData {
-    total: number;
-    items: any[];
-}
-
-export type DataLoader = (page: number, itemsPerPage: number) => Promise<IPaginationData>;
+import {Directive, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChanges} from "@angular/core";
+import {IPaginationData, ITimer, PaginationDataLoader} from "../common-types";
+import {TimerUtils} from "../utils/timer.utils";
 
 @Directive({
     selector: "[pagination]",
@@ -22,7 +16,7 @@ export class PaginationDirective implements OnChanges {
         return this.data ? this.data.items : [];
     }
 
-    @Input("pagination") loader: DataLoader;
+    @Input("pagination") loader: PaginationDataLoader;
     @Input() page: number;
     @Input() itemsPerPage: number;
     @Input() updateTime: number;

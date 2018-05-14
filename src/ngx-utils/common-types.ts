@@ -1,4 +1,4 @@
-import {EventEmitter, InjectionToken, TemplateRef} from "@angular/core";
+import {EmbeddedViewRef, EventEmitter, InjectionToken, TemplateRef} from "@angular/core";
 import {Data, Route} from "@angular/router";
 
 // --- Utils
@@ -21,9 +21,9 @@ export interface ITranslations {
 export interface ILanguageService {
     currentLanguage: string;
     getTranslation(key: string, params?: any): Promise<string>;
+    getTranslations(...keys: string[]): Promise<ITranslations>;
     getTranslationFromObject(translations: ITranslations, params?: any, lang?: string): string;
     getTranslationFromArray(translations: ITranslation[], params?: any, lang?: string): string;
-    getTranslations(...keys: string[]): Promise<ITranslations>;
 }
 
 export const LANGUAGE_SERVICE: InjectionToken<ILanguageService> = new InjectionToken<ILanguageService>("language-service");
@@ -91,3 +91,60 @@ export interface UnorderedListTemplates {
 }
 
 export type UnorderedListStyle = "table" | "list";
+
+// --- Ajax request  ---
+export interface IAjaxRequestDetails {
+    request: XMLHttpRequest,
+    method: string;
+    url: string;
+}
+
+export type AjaxRequestCallback = (details: IAjaxRequestDetails, params: any) => void;
+
+// --- Loader utils ---
+export interface IScriptPromises {
+    [src: string]: Promise<HTMLScriptElement>;
+}
+
+// --- Timer utils ---
+export interface ITimer {
+    id?: any;
+    set?: (func: Function, time: number) => void;
+    clear?: () => void;
+}
+
+// --- Pagination ---
+export interface IPaginationData {
+    total: number;
+    items: any[];
+}
+
+export type PaginationDataLoader = (page: number, itemsPerPage: number) => Promise<IPaginationData>;
+
+export class PaginationItemContext {
+
+    constructor(public item: any, public count: number, public index: number, public dataIndex: number) {
+    }
+
+    get first(): boolean {
+        return this.index === 0;
+    }
+
+    get last(): boolean {
+        return this.index === this.count - 1;
+    }
+
+    get even(): boolean {
+        return this.index % 2 === 0;
+    }
+
+    get odd(): boolean {
+        return !this.even;
+    }
+}
+
+// --- Resource if ---
+export class ResourceIfContext {
+    resource: string;
+    url: string;
+}

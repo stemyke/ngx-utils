@@ -1,12 +1,8 @@
 import {Directive, ViewContainerRef, TemplateRef, Input} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
+import {ResourceIfContext} from "../common-types";
 import {FileUtils} from "../utils/file.utils";
 import {UniversalService} from "../services/universal.service";
-
-export class ResourceIfContext {
-    resource: string;
-    url: string;
-}
 
 @Directive({
     selector: "[resourceIf]",

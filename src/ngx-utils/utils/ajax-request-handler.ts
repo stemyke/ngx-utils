@@ -1,14 +1,8 @@
-export interface IAjaxRequestDetails {
-    request: XMLHttpRequest,
-    method: string;
-    url: string;
-}
-
-export type AjaxRequestCallback = (details: IAjaxRequestDetails, params: any) => void;
+import {AjaxRequestCallback, IAjaxRequestDetails} from "../common-types";
 
 export class AjaxRequestHandler {
 
-    private params: any;
+    public params: any;
 
     constructor(private pattern: RegExp, private callback: AjaxRequestCallback) {
         this.params = {};
