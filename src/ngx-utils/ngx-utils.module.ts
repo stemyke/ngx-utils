@@ -1,7 +1,14 @@
-import {ModuleWithProviders, NgModule} from "@angular/core";
-import {EVENT_MANAGER_PLUGINS} from "@angular/platform-browser";
+import {InjectionToken, ModuleWithProviders, NgModule} from "@angular/core";
+import {EVENT_MANAGER_PLUGINS, ɵangular_packages_platform_browser_platform_browser_d as EventManagerPlugin} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
-import {AUTH_SERVICE, LANGUAGE_SERVICE, TOASTER_SERVICE} from "./common-types";
+import {
+    IAuthService,
+    AUTH_SERVICE,
+    LANGUAGE_SERVICE,
+    TOASTER_SERVICE,
+    ILanguageService,
+    IToasterService
+} from "./common-types";
 import {AuthGuard} from "./utils/auth.guard";
 import {AclService} from "./services/acl.service";
 import {StaticAuthService} from "./services/auth.service";
@@ -42,7 +49,7 @@ import {ValuesPipe} from "./pipes/values.pipe";
 import {UnorderedListComponent} from "./components/unordered-list.component";
 
 // --- Pipes ---
-const pipes = [
+export const pipes = [
     ChunkPipe,
     EntriesPipe,
     ExtraItemPropertiesPipe,
@@ -63,7 +70,7 @@ const pipes = [
 ];
 
 // --- Directives ---
-const directives = [
+export const directives = [
     AsyncMethodDirective,
     BackgroundDirective,
     IconDirective,
@@ -76,8 +83,45 @@ const directives = [
 ];
 
 // --- Components ---
-const components = [
+export const components = [
     UnorderedListComponent
+];
+
+// --- Providers ---
+export const eventManagerPluginsToken: InjectionToken<EventManagerPlugin> = EVENT_MANAGER_PLUGINS;
+export const authServiceToken: InjectionToken<IAuthService> = AUTH_SERVICE;
+export const languageServiceToken: InjectionToken<ILanguageService> = LANGUAGE_SERVICE;
+export const toasterServiceToken: InjectionToken<IToasterService> = TOASTER_SERVICE;
+
+export const providers = [
+    ...pipes,
+    AuthGuard,
+    AclService,
+    StaticAuthService,
+    EventsService,
+    FormatterService,
+    StaticLanguageService,
+    StateService,
+    StorageService,
+    ConsoleToasterService,
+    UniversalService,
+    {
+        provide: eventManagerPluginsToken,
+        useClass: ScrollEventPlugin,
+        multi: true
+    },
+    {
+        provide: authServiceToken,
+        useExisting: StaticAuthService
+    },
+    {
+        provide: languageServiceToken,
+        useExisting: StaticLanguageService
+    },
+    {
+        provide: toasterServiceToken,
+        useExisting: ConsoleToasterService
+    }
 ];
 
 @NgModule({
@@ -103,36 +147,7 @@ export class NgxUtilsModule {
     static forRoot(): ModuleWithProviders {
         return {
             ngModule: NgxUtilsModule,
-            providers: [
-                ...pipes,
-                AuthGuard,
-                AclService,
-                StaticAuthService,
-                EventsService,
-                FormatterService,
-                StaticLanguageService,
-                StateService,
-                StorageService,
-                ConsoleToasterService,
-                UniversalService,
-                {
-                    provide: EVENT_MANAGER_PLUGINS,
-                    useClass: ScrollEventPlugin,
-                    multi: true
-                },
-                {
-                    provide: AUTH_SERVICE,
-                    useExisting: StaticAuthService
-                },
-                {
-                    provide: LANGUAGE_SERVICE,
-                    useExisting: StaticLanguageService
-                },
-                {
-                    provide: TOASTER_SERVICE,
-                    useExisting: ConsoleToasterService
-                }
-            ]
+            providers: providers
         }
     }
 }
