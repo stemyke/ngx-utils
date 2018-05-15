@@ -1,13 +1,12 @@
 import {ɵangular_packages_platform_browser_platform_browser_d as EventManagerPlugin} from "@angular/platform-browser";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
+import {StringUtils} from "../utils/string.utils";
 import {UniversalService} from "../services/universal.service";
 
 export function emptyRemove(): void {
 
 }
-
-const globalElements: string[] = ["document", "window"];
 
 @Injectable()
 export class ScrollEventPlugin extends EventManagerPlugin {
@@ -38,7 +37,7 @@ export class ScrollEventPlugin extends EventManagerPlugin {
         const zone = this.manager.getZone();
         return zone.runOutsideAngular(() => {
             if (this.universal.isServer) return emptyRemove;
-            if (globalElements.indexOf(element) < 0) {
+            if (!StringUtils.has(element, "document", "window")) {
                 console.error("Global resize event other than window or document?", element);
                 return emptyRemove;
             }
