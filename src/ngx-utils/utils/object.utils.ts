@@ -167,12 +167,21 @@ export class ObjectUtils {
         return Array.isArray(value);
     }
 
+    static isSet(value: any): value is Set<any> {
+        return value instanceof Set;
+    }
+
     static checkInterface(obj: any, interFaceObject: any): boolean {
         if (!obj) return false;
         for (const key in interFaceObject) {
             if (interFaceObject.hasOwnProperty(key) && typeof obj[key] !== interFaceObject[key]) return false;
         }
         return true;
+    }
+
+    static pad(obj: any, width: number, chr: string = "0"): string {
+        const str = ObjectUtils.isDefined(obj) ? obj.toString() : "";
+        return str.length >= width ? str : new Array(width - str.length + 1).join(chr) + str;
     }
 
     private static copyRecursive(target: any, source: any, predicate?: FilterPrecidate): any {
