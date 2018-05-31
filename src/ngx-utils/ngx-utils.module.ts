@@ -35,7 +35,9 @@ import {ExtraItemPropertiesPipe} from "./pipes/extra-item-properties.pipe";
 import {FilterPipe} from "./pipes/filter.pipe";
 import {FormatNumberPipe} from "./pipes/format-number.pipe";
 import {GetOffsetPipe} from "./pipes/get-offset.pipe";
+import {GetTypePipe} from "./pipes/get-type.pipe";
 import {GroupByPipe} from "./pipes/group-by.pipe";
+import {IsTypePipe} from "./pipes/is-type.pipe";
 import {JoinPipe} from "./pipes/join.pipe";
 import {KeysPipe} from "./pipes/keys.pipe";
 import {MaxPipe} from "./pipes/max.pipe";
@@ -56,7 +58,9 @@ export const pipes = [
     FilterPipe,
     FormatNumberPipe,
     GetOffsetPipe,
+    GetTypePipe,
     GroupByPipe,
+    IsTypePipe,
     JoinPipe,
     KeysPipe,
     MaxPipe,

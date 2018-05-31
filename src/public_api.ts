@@ -74,7 +74,9 @@ export {ExtraItemPropertiesPipe} from "./ngx-utils/pipes/extra-item-properties.p
 export {FilterPipe} from "./ngx-utils/pipes/filter.pipe";
 export {FormatNumberPipe} from "./ngx-utils/pipes/format-number.pipe";
 export {GetOffsetPipe} from "./ngx-utils/pipes/get-offset.pipe";
+export {GetTypePipe} from "./ngx-utils/pipes/get-type.pipe";
 export {GroupByPipe} from "./ngx-utils/pipes/group-by.pipe";
+export {IsTypePipe} from "./ngx-utils/pipes/is-type.pipe";
 export {JoinPipe} from "./ngx-utils/pipes/join.pipe";
 export {KeysPipe} from "./ngx-utils/pipes/keys.pipe";
 export {MinPipe} from "./ngx-utils/pipes/min.pipe";
