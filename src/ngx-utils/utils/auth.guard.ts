@@ -34,12 +34,7 @@ export class AuthGuard implements CanActivate {
         const route = <IRoute>next.routeConfig;
         const returnState = route.data.returnState || this.getReturnState(route);
         return new Promise<boolean>(resolve => {
-            this.auth.checkAuthenticated().then(authenticated => {
-                if (!authenticated) {
-                    resolve(false);
-                    if (returnState)
-                        this.router.navigate(returnState);
-                }
+            this.auth.checkAuthenticated().then(() => {
                 this.checkRoute(route).then(hasRights => {
                     resolve(hasRights);
                     if (!hasRights && returnState)
