@@ -6,7 +6,7 @@ export class SetUtils {
             return false;
         if (set.size != obj.size)
             return false;
-        for (const item of set) {
+        for (const item in set) {
             if (!obj.has(item)) return false;
         }
         return true;

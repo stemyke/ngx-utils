@@ -1,5 +1,4 @@
 import {Component, ViewEncapsulation} from "@angular/core";
-import "../ngx-utils/extensions";
 import {StaticLanguageService} from "../public_api";
 
 @Component({
@@ -9,7 +8,7 @@ import {StaticLanguageService} from "../public_api";
     encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
-    title = "app".pad(10);
+    title = "application";
     data = [
         {
             "olla": [
