@@ -186,7 +186,6 @@ export class ObjectUtils {
 
     private static copyRecursive(target: any, source: any, predicate?: FilterPrecidate): any {
         predicate = predicate || defaultPredicate;
-        if (ObjectUtils.isNullOrUndefined(source)) return target || source;
         if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source)) return source;
         if (ObjectUtils.isArray(source)) {
             target = ObjectUtils.isArray(target) ? target : [];
