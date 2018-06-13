@@ -188,7 +188,7 @@ export class ObjectUtils {
         predicate = predicate || defaultPredicate;
         if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source)) return source;
         if (ObjectUtils.isArray(source)) {
-            target = ObjectUtils.isArray(target) ? target : [];
+            target = ObjectUtils.isArray(target) ? Array.from(target) : [];
             source.forEach((item, index) => {
                 if (!predicate(item, index, target)) return;
                 if (target.length > index)
@@ -202,6 +202,6 @@ export class ObjectUtils {
             if (!predicate(source[key], key, result)) return result;
             result[key] = ObjectUtils.copyRecursive(result[key], source[key], predicate);
             return result;
-        }, target || {});
+        }, Object.assign({}, target));
     }
 }
