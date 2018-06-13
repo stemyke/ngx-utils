@@ -115,8 +115,8 @@ export class ObjectUtils {
         return ObjectUtils.copyRecursive(null, obj);
     }
 
-    static assign<T>(target: T, source: any): T {
-        return ObjectUtils.copyRecursive(target, source);
+    static assign<T>(target: T, source: any, predicate?: FilterPrecidate): T {
+        return ObjectUtils.copyRecursive(target, source, predicate);
     }
 
     static isPrimitive(value: any): boolean {
