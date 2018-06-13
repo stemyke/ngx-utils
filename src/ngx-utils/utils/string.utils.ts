@@ -7,6 +7,13 @@ export class StringUtils {
         ).join(separator);
     }
 
+    static startsWith(str: string, ...starts: string[]): boolean {
+        for (let i = 0; i < starts.length; i++) {
+            if (str.startsWith(starts[i])) return true;
+        }
+        return false;
+    }
+
     static has(str: string, ...parts: string[]): boolean {
         for (let i = 0; i < parts.length; i++) {
             if (str.indexOf(parts[i]) >= 0) return true;
@@ -20,9 +27,5 @@ export class StringUtils {
 
     static ucFirst(str: string): string {
         return str ? str.charAt(0).toUpperCase() + str.substring(1) : "";
-    }
-
-    static startsWith(str: string, start: string): boolean {
-        return str == start || (str && str.indexOf(start) == 0);
     }
 }

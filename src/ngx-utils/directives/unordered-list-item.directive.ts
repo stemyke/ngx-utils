@@ -1,6 +1,7 @@
 import {Directive, ElementRef, Input, OnChanges, Renderer2, SimpleChanges, ViewContainerRef} from "@angular/core";
 import {UnorderedListStyle, UnorderedListTemplates, UnorederedListTemplate} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
+import {StringUtils} from "../utils/string.utils";
 
 @Directive({
     selector: "[unorderedListItem]"
@@ -33,7 +34,6 @@ export class UnorderedListItemDirective implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (!this.templates || !this.defaultTemplates || !this.item) return;
-        const prevType = this.valueType;
         this.path = ObjectUtils.isNullOrUndefined(this.path) ? "" : this.path.toString();
         this.isArray = ObjectUtils.isArray(this.data);
         this.isObject = ObjectUtils.isObject(this.data);
@@ -50,8 +50,15 @@ export class UnorderedListItemDirective implements OnChanges {
         this.isClass(this.valueIsArray, "is-array");
         this.isClass(this.valueIsObject, "is-object");
         this.isClass(!this.valueIsObject, "is-value");
-        this.renderer.removeClass(this.elem.parentElement, `type-${prevType}`);
+        const parent = this.elem.parentElement;
+        const classes = Array.from(parent.classList);
+        classes.forEach(cls => {
+            if (!StringUtils.startsWith(cls, "type-", "path-", "key-")) return;
+            this.renderer.removeClass(parent, cls);
+        });
         this.renderer.addClass(this.elem.parentElement, `type-${this.valueType}`);
+        this.renderer.addClass(this.elem.parentElement, `path-${this.path.replace(/\./g, "-")}`);
+        this.renderer.addClass(this.elem.parentElement, `key-${this.item.key}`);
     }
 
     private isClass(value: boolean, className: string): void {
