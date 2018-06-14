@@ -1,4 +1,4 @@
-export type FilterPrecidate = (value: any, key?: any, source?: any) => boolean;
+export type FilterPrecidate = (value: any, key?: any, target?: any, source?: any) => boolean;
 export type IterateCallback = (value: any, key?: any) => void;
 
 const defaultPredicate: FilterPrecidate = () => true;
@@ -190,7 +190,7 @@ export class ObjectUtils {
         if (ObjectUtils.isArray(source)) {
             target = ObjectUtils.isArray(target) ? Array.from(target) : [];
             source.forEach((item, index) => {
-                if (!predicate(item, index, target)) return;
+                if (!predicate(item, index, target, source)) return;
                 if (target.length > index)
                     target[index] = ObjectUtils.copyRecursive(target[index], item, predicate);
                 else
@@ -199,7 +199,7 @@ export class ObjectUtils {
             return target;
         }
         return Object.keys(source).reduce((result, key) => {
-            if (!predicate(source[key], key, result)) return result;
+            if (!predicate(source[key], key, result, source)) return result;
             result[key] = ObjectUtils.copyRecursive(result[key], source[key], predicate);
             return result;
         }, Object.assign({}, target));
