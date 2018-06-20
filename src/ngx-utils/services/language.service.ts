@@ -5,11 +5,29 @@ import {ObjectUtils} from "../utils/object.utils";
 @Injectable()
 export class StaticLanguageService implements ILanguageService {
 
-    get currentLanguage(): string {
+    get defaultLanguage(): string {
         return "none";
     }
 
-    dictionary: ITranslations = {};
+    get dictionary(): any {
+        return this.translations[this.currentLanguage];
+    }
+
+    set dictionary(value: any) {
+        this.translations[this.currentLanguage] = value;
+    }
+
+    currentLanguage: string;
+
+    private translations: ITranslations = {
+        none: {}
+    };
+
+    addLanguages(languages: string[]): void {
+        languages.forEach(lang => {
+            this.translations[lang] = {};
+        });
+    }
 
     getTranslation(key: string, params?: any): Promise<string> {
         if (!ObjectUtils.isString(key) || !key.length) {

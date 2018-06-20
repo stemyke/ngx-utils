@@ -21,6 +21,9 @@ export interface ITranslations {
 
 export interface ILanguageService {
     currentLanguage: string;
+    defaultLanguage: string;
+    dictionary: any;
+    addLanguages(languages: string[]): void;
     getTranslation(key: string, params?: any): Promise<string>;
     getTranslations(...keys: string[]): Promise<ITranslations>;
     getTranslationFromObject(translations: ITranslations, params?: any, lang?: string): string;
