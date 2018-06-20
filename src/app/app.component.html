@@ -1,64 +1,8 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-    <h1>
-        Welcome to {{ title }}!
-    </h1>
-    <img width="300" alt="Angular Logo"
-         src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<div class="manufacturing-table" *ngFor="let id of ids">
+    <h1 [ngClass]="{'page-heading': y > 0}">{{ manufacturing[id].sex }}</h1>
+    <unordered-list [data]="map | remap:manufacturing[id]" keyPrefix="review." *ngFor="let map of reviewMap | chunk:24">
+        <ng-template type="value" selector="path.match(/engravingText$/g)" let-item="item">
+            <span [ngClass]="['engraving-text', 'font-' + manufacturing[id].engravingFont]">{{ item.value }}</span>
+        </ng-template>
+    </unordered-list>
 </div>
-<h2>Here are some links to help you start: {{ map.bigyo | filter:'item !== params[0]':map.bigyo | join:' - ' }}</h2>
-<h2>{{ map | filter:'item !== params.bigyo':map | json }}</h2>
-
-<unordered-list [data]="data | remap:map:'null'" keyPrefix="test.">
-    <ng-template type="value" selector="item.key == 'bigyo'">
-        gdfgdf
-    </ng-template>
-</unordered-list>
-<unordered-list [data]="map | keys"></unordered-list>
-<ng-container *ngFor="let ring of manufacturing | entries; let y = index">
-    <div class="table-wrapper">
-        <h1 [ngClass]="{'page-heading': y > 0}">{{ 'ring.' + ring.key | translate }}</h1>
-        <ng-container *ngFor="let chunk of reviewMap | filter:groupFilter:ring.value | chunk:3">
-            <unordered-list [data]="chunk | remap: ring.value:'null'" keyPrefix="review.">
-                <ng-template type="item" selector="level == 0" let-item="item.value" let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-path="path" let-templates="templates" let-defaultTemplates="defaultTemplates">
-                    <th>
-                        {{ keyPrefix + item.group | translate }}
-                    </th>
-                    <td>
-                        <ng-container [unorderedListItem]="{key: path, value: item.keys}"
-                                      type="value"
-                                      [data]="item"
-                                      [keyPrefix]="keyPrefix"
-                                      [listStyle]="listStyle"
-                                      [path]="path"
-                                      [level]="1"
-                                      [templates]="templates"
-                                      [defaultTemplates]="defaultTemplates"></ng-container>
-                    </td>
-                </ng-template>
-                <ng-template type="value" selector="item.key == 'discs'" let-data="item.value" let-keyPrefix="keyPrefix">
-                    <unordered-list [data]="data | reverse" [keyPrefix]="keyPrefix" [level]="2">
-                        <ng-template type="value" selector="item.key !== 'fineness' && valueType == 'number'" let-num="item.value">
-                            {{ num | formatNumber:mmFormat:6 }}
-                        </ng-template>
-                    </unordered-list>
-                </ng-template>
-                <ng-template type="value" selector="path.match(/diamondPlacements\./g) && item.key == 'x'" let-placement="data">
-                    {{ -placement.y | formatNumber:mmFormat:4 }}
-                </ng-template>
-                <ng-template type="value" selector="path.match(/diamondPlacements\./g) && item.key == 'y'" let-placement="data">
-                    {{ placement.x | formatNumber:mmFormat:4 }}
-                </ng-template>
-                <ng-template type="value" selector="path.match(/GroovePositions\./g)" let-num="item.value">
-                    {{ (ring.value.ringWidth - num) | formatNumber:mmFormat:6 }}
-                </ng-template>
-                <ng-template type="value" selector="item.key !== 'size' && valueType == 'number'" let-num="item.value">
-                    {{ num | formatNumber:mmFormat:6 }}
-                </ng-template>
-            </unordered-list>
-        </ng-container>
-    </div>
-    <div class="page-break">
-        &nbsp;
-    </div>
-</ng-container>

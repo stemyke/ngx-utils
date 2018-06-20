@@ -1,5 +1,4 @@
-import {Component, ViewEncapsulation} from "@angular/core";
-import {StaticLanguageService} from "../public_api";
+import {Component, OnInit, ViewEncapsulation} from "@angular/core";
 
 @Component({
     selector: "app-root",
@@ -7,160 +6,15 @@ import {StaticLanguageService} from "../public_api";
     styleUrls: ["./app.component.scss"],
     encapsulation: ViewEncapsulation.None
 })
-export class AppComponent {
-    title = "application";
-    data = [
-        {
-            "olla": [
-                "ize",
-                "bigyo",
-                "egyeb.fd"
-            ]
-        },
-        {
-            ize: "test2",
-            bigyo: [
-                "d", "c", "b", "a"
-            ],
-            egyeb: {
-                "kola": 3,
-                "sprite": 4,
-            }
-        }
-    ];
+export class AppComponent implements OnInit {
 
-    map = {
-        ize: "test",
-        bigyo: [
-            "a", "b", "c", "d"
-        ],
-        egyeb: {
-            "kola": 3,
-            "sprite": 4,
-        }
-    };
-
-    manufacturing = {
+    manufacturing: any = {
         left: {
-            diamondSetting: "rubbed",
-            diamondCount: 1,
-            diamondCarat: 0.009,
-            diamondCut: "brilliant",
-            diamondQuality: "white/normal",
-            diamondSpreading: "together",
-            diamondQuantity: 1,
-            diamondRows: 1,
-            diamondOrientation: "center",
-            diamondRotation: "0°",
-            diamondPosition: 2,
-            diamondPlacements: [
-                {
-                    carat: 0.009,
-                    width: 1.3,
-                    height: 1.3,
-                    rotation: 0,
-                    x: 2,
-                    y: 0
-                }
-            ],
-            diamondRowGap: 0.8,
-            diamondGap: 0.8,
-            normalGroovePositions: [],
-            normalGrooveType: null,
-            normalGrooveSurface: null,
-            normalGrooveWidth: 0,
-            normalGrooveWidths: [],
-            normalGrooveDepth: 0,
-            normalGrooveAngle: "0°",
-            normalGrooveColors: [],
-            normalGrooveCount: 0,
-            hasNormalGrooves: "no",
-            separationGroovePositions: [
-                1.6,
-                2.4000000000000004
-            ],
-            separationGrooveType: "v",
-            separationGrooveSurface: "polished",
-            separationGrooveWidth: 0.3,
-            separationGrooveWidths: [
-                0.3,
-                0.3
-            ],
-            separationGrooveDepth: 0.12586494467659198,
-            separationGrooveAngle: "100°",
-            separationGrooveColors: [
-                null,
-                null
-            ],
-            separationGrooveCount: 2,
-            hasSeparationGrooves: "yes",
-            coloritGroovePositions: [],
-            coloritGrooveType: null,
-            coloritGrooveSurface: null,
-            coloritGrooveWidth: 0,
-            coloritGrooveWidths: [],
-            coloritGrooveDepth: 0,
-            coloritGrooveAngle: "0°",
-            coloritGrooveColors: [],
-            coloritGrooveCount: 0,
-            hasColoritGrooves: "no",
-            engravingType: "diamond",
-            engravingFont: "greatvibes-regular",
-            engravingText: "",
-            edgePositions: [],
-            edgeDepths: [],
-            edgeSurfaces: [],
-            edgeWidths: [],
-            discs: [
-                {
-                    width: 1.6,
-                    height: 1.7,
-                    density: 14.87,
-                    volume: 0.128948,
-                    color: "white",
-                    fineness: 750,
-                    surface: "polished"
-                },
-                {
-                    width: 0.8,
-                    height: 1.7,
-                    density: 14.79,
-                    volume: 0.09078200000000002,
-                    color: "rose",
-                    fineness: 750,
-                    surface: "polished"
-                },
-                {
-                    width: 1.6,
-                    height: 1.7,
-                    density: 14.92,
-                    volume: 0.128931,
-                    color: "yellow",
-                    fineness: 750,
-                    surface: "polished"
-                }
-            ],
-            id: "left",
-            active: true,
-            profile: "V1",
-            ringDesign: "three-color",
-            ringSize: 62,
-            ringDiameter: 19.735212943395023,
-            ringWidth: 4,
-            ringHeight: 1.7,
-            divisionPreset: "vertical-2-1-2",
-            outerRadius: 3.9,
-            innerRadius: 3.2,
-            cornerRadiusOuter: 0.25,
-            cornerRadiusInner: 0.25,
-            slope: 0
-        },
-        right: {
             diamondSetting: "none",
             diamondCount: 0,
             diamondCarat: 0,
             diamondCut: "brilliant",
-            diamondQuality: "white/normal",
+            diamondQuality: "W/Si",
             diamondSpreading: "together",
             diamondQuantity: 1,
             diamondRows: 1,
@@ -178,25 +32,16 @@ export class AppComponent {
             normalGrooveColors: [],
             normalGrooveCount: 0,
             hasNormalGrooves: "no",
-            separationGroovePositions: [
-                1.6,
-                2.4000000000000004
-            ],
-            separationGrooveType: "v",
-            separationGrooveSurface: "polished",
-            separationGrooveWidth: 0.3,
-            separationGrooveWidths: [
-                0.3,
-                0.3
-            ],
-            separationGrooveDepth: 0.12586494467659198,
-            separationGrooveAngle: "100°",
-            separationGrooveColors: [
-                null,
-                null
-            ],
-            separationGrooveCount: 2,
-            hasSeparationGrooves: "yes",
+            separationGroovePositions: [],
+            separationGrooveType: null,
+            separationGrooveSurface: null,
+            separationGrooveWidth: 0,
+            separationGrooveWidths: [],
+            separationGrooveDepth: 0,
+            separationGrooveAngle: "0°",
+            separationGrooveColors: [],
+            separationGrooveCount: 0,
+            hasSeparationGrooves: "no",
             coloritGroovePositions: [],
             coloritGrooveType: null,
             coloritGrooveSurface: null,
@@ -208,141 +53,214 @@ export class AppComponent {
             coloritGrooveCount: 0,
             hasColoritGrooves: "no",
             engravingType: "diamond",
-            engravingFont: "greatvibes-regular",
+            engravingFont: "01_Helvetica",
+            engravingText: "≠≥≈≈",
+            edgePositions: [],
+            edgeDepths: [],
+            edgeSurfaces: [],
+            edgeWidths: [],
+            ringDesign: "one-color",
+            divisionProto: "none",
+            divisionAngle: null,
+            divisionPercentage: null,
+            divisionNumberOfCycles: null,
+            discs: [
+                {
+                    width: 5,
+                    height: 1.5,
+                    density: 0,
+                    volume: 0.4096430000000001,
+                    color: "yellow",
+                    fineness: 585,
+                    surface: "polished"
+                }
+            ],
+            ringDiameter: 20.690142601946395,
+            ringWidth: 5,
+            ringHeight: 1.5,
+            ringSize: 65,
+            profile: "25",
+            outerRadius: 5.508333333333334,
+            innerRadius: 8.860555555555555,
+            cornerRadiusOuter: 0.4,
+            cornerRadiusInner: 0.3,
+            slope: 0,
+            id: "left",
+            active: true,
+            divisionPreset: "none"
+        },
+        right: {
+            diamondSetting: "rubbed",
+            diamondCount: 1,
+            diamondCarat: 0.025,
+            diamondCut: "brilliant",
+            diamondQuality: "W/Si",
+            diamondSpreading: "together",
+            diamondQuantity: 1,
+            diamondRows: 1,
+            diamondOrientation: "center",
+            diamondRotation: "0°",
+            diamondPosition: 2.5,
+            diamondPlacements: [
+                {
+                    carat: 0.025,
+                    width: 1.8,
+                    height: 1.8,
+                    rotation: 0,
+                    x: 0,
+                    y: 0
+                }
+            ],
+            diamondRowGap: 0,
+            diamondGap: 0,
+            normalGroovePositions: [],
+            normalGrooveType: null,
+            normalGrooveSurface: null,
+            normalGrooveWidth: 0,
+            normalGrooveWidths: [],
+            normalGrooveDepth: 0,
+            normalGrooveAngle: "0°",
+            normalGrooveColors: [],
+            normalGrooveCount: 0,
+            hasNormalGrooves: "no",
+            separationGroovePositions: [],
+            separationGrooveType: null,
+            separationGrooveSurface: null,
+            separationGrooveWidth: 0,
+            separationGrooveWidths: [],
+            separationGrooveDepth: 0,
+            separationGrooveAngle: "0°",
+            separationGrooveColors: [],
+            separationGrooveCount: 0,
+            hasSeparationGrooves: "no",
+            coloritGroovePositions: [],
+            coloritGrooveType: null,
+            coloritGrooveSurface: null,
+            coloritGrooveWidth: 0,
+            coloritGrooveWidths: [],
+            coloritGrooveDepth: 0,
+            coloritGrooveAngle: "0°",
+            coloritGrooveColors: [],
+            coloritGrooveCount: 0,
+            hasColoritGrooves: "no",
+            engravingType: "diamond",
+            engravingFont: "01_Helvetica",
             engravingText: "",
             edgePositions: [],
             edgeDepths: [],
             edgeSurfaces: [],
             edgeWidths: [],
+            ringDesign: "one-color",
+            divisionProto: "none",
+            divisionAngle: null,
+            divisionPercentage: null,
+            divisionNumberOfCycles: null,
             discs: [
                 {
-                    width: 1.6,
-                    height: 1.7,
-                    density: 14.87,
-                    volume: 0.11366100000000004,
-                    color: "white",
-                    fineness: 750,
-                    surface: "polished"
-                },
-                {
-                    width: 0.8,
-                    height: 1.7,
-                    density: 14.79,
-                    volume: 0.07999800000000001,
-                    color: "rose",
-                    fineness: 750,
-                    surface: "polished"
-                },
-                {
-                    width: 1.6,
-                    height: 1.7,
-                    density: 14.92,
-                    volume: 0.11364599999999997,
+                    width: 5,
+                    height: 1.5,
+                    density: 0,
+                    volume: 0.3566170000000001,
                     color: "yellow",
-                    fineness: 750,
+                    fineness: 585,
                     surface: "polished"
                 }
             ],
+            ringDiameter: 17.82535362629228,
+            ringWidth: 5,
+            ringHeight: 1.5,
+            ringSize: 56,
+            profile: "25",
+            outerRadius: 5.508333333333334,
+            innerRadius: 8.860555555555555,
+            cornerRadiusOuter: 0.4,
+            cornerRadiusInner: 0.3,
+            slope: 0,
             id: "right",
             active: true,
-            profile: "V1",
-            ringDesign: "three-color",
-            ringSize: 54,
-            ringDiameter: 17.188733853924695,
-            ringWidth: 4,
-            ringHeight: 1.7,
-            divisionPreset: "vertical-2-1-2",
-            outerRadius: 3.9,
-            innerRadius: 3.2,
-            cornerRadiusOuter: 0.25,
-            cornerRadiusInner: 0.25,
-            slope: 0
+            divisionPreset: "none"
         }
     };
+    orderdata: any;
+    reviewMap: any;
 
-    reviewMap = [
-        {
-            group: "profileAndSizeSetting",
-            keys: [
-                "profile",
-                "ringWidth",
-                "ringHeight",
-                "ringSize"
-            ]
-        },
-        {
-            group: "metalSetting",
-            keys: [
-                "divisionPreset",
-                "discs"
-            ]
-        },
-        {
-            group: "normalGroove",
-            keys: [
-                "normalGrooveType",
-                "normalGrooveAngle",
-                "normalGrooveWidth",
-                "normalGrooveDepth",
-                "normalGrooveSurface",
-                "normalGroovePositions"
-            ]
-        },
-        {
-            group: "separationGroove",
-            keys: [
-                "separationGrooveType",
-                "separationGrooveAngle",
-                "separationGrooveWidth",
-                "separationGrooveDepth",
-                "separationGrooveSurface",
-                "separationGroovePositions"
-            ]
-        },
-        {
-            group: "coloritGroove",
-            keys: [
-                "coloritGrooveType",
-                "coloritGrooveAngle",
-                "coloritGrooveWidth",
-                "coloritGrooveDepth",
-                "coloritGrooveSurface",
-                "coloritGroovePositions"
-            ]
-        },
-        {
-            group: "diamonds",
-            keys: [
-                "diamondSetting",
-                "diamondCut",
-                "diamondCarat",
-                "diamondQuality",
-                "diamondCount",
-                "diamondPlacements"
-            ]
-        },
-        {
-            group: "engraving",
-            keys: [
-                "engravingType",
-                "engravingFont",
-                "engravingText"
-            ]
-        }
+    configuratorReviewMap: any = [
+        "profile",
+        "ringSize",
+        "ringDiameter",
+        "ringWidth",
+        "ringHeight",
+        "ringDesign",
+        "divisionPreset",
+        "divisionAngle",
+        "divisionPercentage",
+        "divisionNumberOfCycles",
+        "outerRadius",
+        "innerRadius",
+        "cornerRadiusOuter",
+        "cornerRadiusInner",
+        "slope",
+        "discs",
+        "hasNormalGrooves",
+        "normalGrooveCount",
+        "normalGrooveType",
+        "normalGrooveWidth",
+        "normalGrooveSurface",
+        "normalGrooveAngle",
+        "normalGrooveDepth",
+        "normalGroovePositions",
+        "hasSeparationGrooves",
+        "separationGrooveCount",
+        "separationGrooveType",
+        "separationGrooveWidth",
+        "separationGrooveSurface",
+        "separationGrooveAngle",
+        "separationGrooveDepth",
+        "separationGroovePositions",
+        "edgeWidths",
+        "edgePositions",
+        "edgeSurfaces",
+        "engravingType",
+        "engravingFont",
+        "engravingText",
+        "diamondSetting",
+        "diamondCut",
+        "diamondCount",
+        "diamondCarat",
+        "diamondQuality",
+        "diamondSpreading",
+        "diamondOrientation",
+        "diamondRows",
+        "diamondPosition",
+        "diamondPlacements"
     ];
 
-    groupFilter = "item.key !== 'diamonds' || params.diamondSetting !== 'none'";
-    keyFilter = "(typeof params[item]).has('object', 'number', 'string')";
-    mmFormat = "num + ' mm'";
+    modificatorReviewMap: any = [];
 
-    constructor(lang: StaticLanguageService) {
-        lang.dictionary = {
-            test: {
-                olla: "Ollé",
-                ize: "Izé",
-                bigyo: "Bigyó",
-                egyeb: "Egyéb",
+    i18n: any = {};
+    images: any = [];
+    ids: any;
+
+    ngOnInit(): void {
+        if (!this.manufacturing) return;
+        let ids = Object.keys(this.manufacturing);
+        const order = this.orderdata;
+        if (order && order.selection) {
+            if (Array.isArray(order.selection)) {
+                ids = order.selection;
+            } else if (ids.indexOf(order.selection) >= 0) {
+                ids = [order.selection];
             }
-        };
+        }
+        if (!Array.isArray(this.reviewMap)) {
+            const isModificator = ids.findIndex(id => !this.manufacturing[id].productId) < 0;
+            this.reviewMap = isModificator ? this.modificatorReviewMap: this.configuratorReviewMap;
+        }
+        ids.forEach(id => {
+            const ring = this.manufacturing[id];
+            ring.sex =  !ring.sex ? this.i18n["ring.mode." + id] : this.i18n["tab.yourrings.ring." + ring.sex];
+            ring.image = this.images[id];
+        });
+        this.ids = ids;
     }
 }

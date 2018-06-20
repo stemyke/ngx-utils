@@ -8,13 +8,13 @@ const empty: any = {};
 })
 export class RemapPipe implements PipeTransform {
 
-    transform(source: any, map: any, defaultValue: string = "key"): any {
-        if (!source) return empty;
-        if (!map) return source;
-        const remapped = ObjectUtils.filter({map: ObjectUtils.copy(source)}, (value, key, target) => {
+    transform(map: any, source: any, defaultValue: string = "key"): any {
+        if (!map) return empty;
+        if (!source) return map;
+        const remapped = ObjectUtils.filter({map: ObjectUtils.copy(map)}, (value, key, target) => {
             if (ObjectUtils.isArray(value) && value.every(ObjectUtils.isString)) {
                 target[key] = value.reduce((result, k) => {
-                    result[k] = ObjectUtils.getValue(map, k, ObjectUtils.evaluate(defaultValue, {key: k, map: map}));
+                    result[k] = ObjectUtils.getValue(source, k, ObjectUtils.evaluate(defaultValue, {key: k, map: map, source: source}));
                     return result;
                 }, {});
                 return false;
