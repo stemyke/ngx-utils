@@ -85,6 +85,7 @@ export {RemapPipe} from "./ngx-utils/pipes/remap.pipe";
 export {ReplacePipe} from "./ngx-utils/pipes/replace.pipe";
 export {ReversePipe} from "./ngx-utils/pipes/reverse.pipe";
 export {RoundPipe} from "./ngx-utils/pipes/round.pipe";
+export {SafeHtmlPipe} from "./ngx-utils/pipes/safe-html.pipe";
 export {TranslatePipe} from "./ngx-utils/pipes/translate.pipe";
 export {ValuesPipe} from "./ngx-utils/pipes/values.pipe";
 

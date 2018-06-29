@@ -1,14 +1,10 @@
 import {InjectionToken, ModuleWithProviders, NgModule} from "@angular/core";
-import {EVENT_MANAGER_PLUGINS, ɵangular_packages_platform_browser_platform_browser_d as EventManagerPlugin} from "@angular/platform-browser";
-import {CommonModule} from "@angular/common";
 import {
-    IAuthService,
-    AUTH_SERVICE,
-    LANGUAGE_SERVICE,
-    TOASTER_SERVICE,
-    ILanguageService,
-    IToasterService
-} from "./common-types";
+    EVENT_MANAGER_PLUGINS,
+    ɵangular_packages_platform_browser_platform_browser_d as EventManagerPlugin
+} from "@angular/platform-browser";
+import {CommonModule} from "@angular/common";
+import {AUTH_SERVICE, IAuthService, ILanguageService, IToasterService, LANGUAGE_SERVICE, TOASTER_SERVICE} from "./common-types";
 import {AuthGuard} from "./utils/auth.guard";
 import {AclService} from "./services/acl.service";
 import {StaticAuthService} from "./services/auth.service";
@@ -49,6 +45,7 @@ import {RoundPipe} from "./pipes/round.pipe";
 import {TranslatePipe} from "./pipes/translate.pipe";
 import {ValuesPipe} from "./pipes/values.pipe";
 import {UnorderedListComponent} from "./components/unordered-list.component";
+import {SafeHtmlPipe} from "./pipes/safe-html.pipe";
 
 // --- Pipes ---
 export const pipes = [
@@ -69,6 +66,7 @@ export const pipes = [
     ReplacePipe,
     ReversePipe,
     RoundPipe,
+    SafeHtmlPipe,
     TranslatePipe,
     ValuesPipe
 ];
