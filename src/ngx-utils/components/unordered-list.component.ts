@@ -133,7 +133,8 @@ export class UnorderedListComponent implements OnChanges, AfterContentInit, Afte
     }
 
     ngAfterContentInit(): void {
-        this.templates = this.templates || this.templateDirectives.toArray();
+        const templates: UnorederedListTemplate[] = this.templateDirectives.toArray();
+        this.templates = templates.concat(this.templates || []);
         this.cdr.detectChanges();
     }
 
