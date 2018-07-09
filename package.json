@@ -1,6 +1,6 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "2.2.5",
+    "version": "2.2.6",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -24,10 +24,10 @@
         "@angular/platform-server": "6.0.7",
         "@angular/router": "6.0.7",
         "core-js": "2.5.7",
-        "rxjs": "6.2.0",
+        "rxjs": "6.2.1",
         "zone.js": "0.8.26",
-        "moment": "2.22.1",
-        "bowser": "1.9.3"
+        "moment": "2.22.2",
+        "bowser": "1.9.4"
     },
     "devDependencies": {
         "@angular/animations": "6.0.7",
