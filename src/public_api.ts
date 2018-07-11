@@ -7,6 +7,8 @@ import {UniqueUtils} from "./ngx-utils/utils/unique.utils";
 
 export {
     IResolveFactory,
+    IIconService,
+    ICON_SERVICE,
     ITranslation,
     ITranslations,
     ILanguageService,
@@ -62,6 +64,7 @@ export {AclService} from "./ngx-utils/services/acl.service";
 export {StaticAuthService} from "./ngx-utils/services/auth.service";
 export {EventsService} from "./ngx-utils/services/events.service";
 export {FormatterService} from "./ngx-utils/services/formatter.service";
+export {IconService} from "./ngx-utils/services/icon.service";
 export {StaticLanguageService} from "./ngx-utils/services/language.service";
 export {StorageService} from "./ngx-utils/services/storage.service";
 export {ConsoleToasterService} from "./ngx-utils/services/toaster.service";

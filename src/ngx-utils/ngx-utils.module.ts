@@ -4,12 +4,22 @@ import {
     ɵangular_packages_platform_browser_platform_browser_d as EventManagerPlugin
 } from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
-import {AUTH_SERVICE, IAuthService, ILanguageService, IToasterService, LANGUAGE_SERVICE, TOASTER_SERVICE} from "./common-types";
+import {
+    AUTH_SERVICE,
+    IAuthService,
+    ICON_SERVICE,
+    IIconService,
+    ILanguageService,
+    IToasterService,
+    LANGUAGE_SERVICE,
+    TOASTER_SERVICE
+} from "./common-types";
 import {AuthGuard} from "./utils/auth.guard";
 import {AclService} from "./services/acl.service";
 import {StaticAuthService} from "./services/auth.service";
 import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
+import {IconService} from "./services/icon.service";
 import {StaticLanguageService} from "./services/language.service";
 import {StateService} from "./services/state.service";
 import {StorageService} from "./services/storage.service";
@@ -92,6 +102,7 @@ export const components = [
 // --- Providers ---
 export const eventManagerPluginsToken: InjectionToken<EventManagerPlugin> = EVENT_MANAGER_PLUGINS;
 export const authServiceToken: InjectionToken<IAuthService> = AUTH_SERVICE;
+export const iconServiceToken: InjectionToken<IIconService> = ICON_SERVICE;
 export const languageServiceToken: InjectionToken<ILanguageService> = LANGUAGE_SERVICE;
 export const toasterServiceToken: InjectionToken<IToasterService> = TOASTER_SERVICE;
 
@@ -102,6 +113,7 @@ export const providers = [
     StaticAuthService,
     EventsService,
     FormatterService,
+    IconService,
     StaticLanguageService,
     StateService,
     StorageService,
@@ -115,6 +127,10 @@ export const providers = [
     {
         provide: authServiceToken,
         useExisting: StaticAuthService
+    },
+    {
+        provide: iconServiceToken,
+        useExisting: IconService
     },
     {
         provide: languageServiceToken,

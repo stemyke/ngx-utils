@@ -9,6 +9,13 @@ export interface IResolveFactory {
     params?: any[];
 }
 
+// --- Icon service ---
+export interface IIconService {
+    getIcon(icon: string, activeIcon: string, active: boolean): Promise<string>;
+}
+
+export const ICON_SERVICE: InjectionToken<IIconService> = new InjectionToken<IIconService>("icon-service");
+
 // --- Language service ---
 export interface ITranslation {
     lang: string;

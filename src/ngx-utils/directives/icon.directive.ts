@@ -4,16 +4,14 @@ import {
     EventEmitter,
     HostBinding,
     HostListener,
+    Inject,
     Input,
     OnChanges,
     Output,
     Renderer2,
     SimpleChanges
 } from "@angular/core";
-
-declare const icons: {
-    [icon: string]: string;
-};
+import {ICON_SERVICE, IIconService} from "../common-types";
 
 @Directive({
     selector: "[icon]"
@@ -21,6 +19,7 @@ declare const icons: {
 export class IconDirective implements OnChanges {
 
     @Input() icon: string;
+    @Input() activeIcon: string;
     @Input() active: boolean;
     @Output() activeChange: EventEmitter<boolean>;
 
@@ -29,7 +28,7 @@ export class IconDirective implements OnChanges {
         return this.active;
     }
 
-    constructor(private element: ElementRef, private renderer: Renderer2) {
+    constructor(private element: ElementRef, private renderer: Renderer2, @Inject(ICON_SERVICE) private icons: IIconService) {
         this.renderer.addClass(this.element.nativeElement, "svg-icon");
         this.activeChange = new EventEmitter<boolean>();
     }
@@ -50,9 +49,8 @@ export class IconDirective implements OnChanges {
     }
 
     private changeIcon(): void {
-        const active = `${this.icon}-active`;
-        const icon = typeof icons == "undefined" ? this.icon : (icons[this.icon] || this.icon);
-        const activeIcon = typeof icons == "undefined" ? active : (icons[active] || icon);
-        this.element.nativeElement.innerHTML = this.active ? activeIcon : icon;
+        this.icons.getIcon(this.icon, this.activeIcon || `${this.icon}-active`, this.active).then(icon => {
+            this.element.nativeElement.innerHTML = icon;
+        });
     }
 }
