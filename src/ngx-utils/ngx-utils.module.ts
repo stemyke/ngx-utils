@@ -39,6 +39,7 @@ import {ChunkPipe} from "./pipes/chunk.pipe";
 import {EntriesPipe} from "./pipes/entries.pipe";
 import {ExtraItemPropertiesPipe} from "./pipes/extra-item-properties.pipe";
 import {FilterPipe} from "./pipes/filter.pipe";
+import {FindPipe} from "./pipes/find.pipe";
 import {FormatNumberPipe} from "./pipes/format-number.pipe";
 import {GetOffsetPipe} from "./pipes/get-offset.pipe";
 import {GetTypePipe} from "./pipes/get-type.pipe";
@@ -63,6 +64,7 @@ export const pipes = [
     EntriesPipe,
     ExtraItemPropertiesPipe,
     FilterPipe,
+    FindPipe,
     FormatNumberPipe,
     GetOffsetPipe,
     GetTypePipe,

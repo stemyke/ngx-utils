@@ -75,6 +75,7 @@ export {ChunkPipe} from "./ngx-utils/pipes/chunk.pipe";
 export {EntriesPipe} from "./ngx-utils/pipes/entries.pipe";
 export {ExtraItemPropertiesPipe} from "./ngx-utils/pipes/extra-item-properties.pipe";
 export {FilterPipe} from "./ngx-utils/pipes/filter.pipe";
+export {FindPipe} from "./ngx-utils/pipes/find.pipe";
 export {FormatNumberPipe} from "./ngx-utils/pipes/format-number.pipe";
 export {GetOffsetPipe} from "./ngx-utils/pipes/get-offset.pipe";
 export {GetTypePipe} from "./ngx-utils/pipes/get-type.pipe";
