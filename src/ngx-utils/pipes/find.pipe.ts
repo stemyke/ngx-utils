@@ -11,15 +11,13 @@ export function defaultFilter() {
 export class FindPipe implements PipeTransform {
     transform(values: any[], filter: any = defaultFilter, params: any = {}): any[] {
         if (!ObjectUtils.isArray(values)) return [];
-        const filterFunc = ObjectUtils.isFunction(filter) ? filter : (value, key, params) => {
+        const filterFunc = ObjectUtils.isFunction(filter) ? filter : (value, index, params) => {
             return ObjectUtils.evaluate(filter, {
                 value: value,
-                key: key,
-                item: value,
-                index: key,
+                index: index,
                 params: params
             });
         };
-        return values.find((value, key) => filterFunc(value, key, params));
+        return values.find((value, index) => filterFunc(value, index, params));
     }
 }

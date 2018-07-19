@@ -47,8 +47,10 @@ import {GroupByPipe} from "./pipes/group-by.pipe";
 import {IsTypePipe} from "./pipes/is-type.pipe";
 import {JoinPipe} from "./pipes/join.pipe";
 import {KeysPipe} from "./pipes/keys.pipe";
+import {MapPipe} from "./pipes/map.pipe";
 import {MaxPipe} from "./pipes/max.pipe";
 import {MinPipe} from "./pipes/min.pipe";
+import {ReducePipe} from "./pipes/reduce.pipe";
 import {RemapPipe} from "./pipes/remap.pipe";
 import {ReplacePipe} from "./pipes/replace.pipe";
 import {ReversePipe} from "./pipes/reverse.pipe";
@@ -72,8 +74,10 @@ export const pipes = [
     IsTypePipe,
     JoinPipe,
     KeysPipe,
+    MapPipe,
     MaxPipe,
     MinPipe,
+    ReducePipe,
     RemapPipe,
     ReplacePipe,
     ReversePipe,
