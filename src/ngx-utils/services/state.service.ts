@@ -1,9 +1,20 @@
 import {Injectable, NgZone} from "@angular/core";
 import {
-    ActivatedRouteSnapshot, ChildrenOutletContexts, Data, Event, NavigationEnd, NavigationExtras, OutletContext, Params, Router,
-    UrlSegment, UrlTree
+    ActivatedRouteSnapshot,
+    ChildrenOutletContexts,
+    Data,
+    Event,
+    NavigationEnd,
+    NavigationExtras,
+    OutletContext,
+    Params,
+    Route,
+    Router,
+    UrlSegment,
+    UrlTree
 } from "@angular/router";
 import {Subject, Subscription} from "rxjs";
+import {ObjectUtils} from "../utils/object.utils";
 import {IRoute} from "../common-types";
 
 export const emptySnapshot: ActivatedRouteSnapshot = new ActivatedRouteSnapshot();
@@ -26,6 +37,14 @@ export class StateService {
     private stateInfo: IStateInfo;
     private contexts: ChildrenOutletContexts;
     private subject: Subject<ActivatedRouteSnapshot>;
+
+    static toPath(route: Route, params: any): string {
+        let path = route.path || "";
+        ObjectUtils.iterate(params, (value: any, key: string) => {
+            path = path.replace(`/:${key}/`, `/${value}/`);
+        });
+        return path;
+    }
 
     get component(): any {
         return this.comp;
