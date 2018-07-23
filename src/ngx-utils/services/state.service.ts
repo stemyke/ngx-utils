@@ -41,7 +41,7 @@ export class StateService {
     static toPath(route: Route, params: any): string {
         let path = route.path || "";
         ObjectUtils.iterate(params, (value: any, key: string) => {
-            path = path.replace(`/:${key}/`, `/${value}/`);
+            path = path.replace(`:${key}`, `${value}`);
         });
         return path;
     }
