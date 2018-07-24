@@ -17,7 +17,7 @@ export class StaticLanguageService implements ILanguageService {
         this.translations[this.currentLanguage] = value;
     }
 
-    currentLanguage: string;
+    currentLanguage: string = "none";
 
     private translations: ITranslations = {
         none: {}
