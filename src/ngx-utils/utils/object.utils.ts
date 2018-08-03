@@ -186,6 +186,11 @@ export class ObjectUtils {
         return str.length >= width ? str : new Array(width - str.length + 1).join(chr) + str;
     }
 
+    static getType(obj: any): string {
+        const regex = new RegExp("\\s([a-zA-Z]+)");
+        return Object.prototype.toString.call(obj).match(regex)[1].toLowerCase();
+    }
+
     private static copyRecursive(target: any, source: any, predicate?: FilterPrecidate): any {
         predicate = predicate || defaultPredicate;
         if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source)) return source;

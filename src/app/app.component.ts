@@ -246,6 +246,7 @@ export class AppComponent implements OnInit {
         if (!this.manufacturing) return;
         let ids = Object.keys(this.manufacturing);
         const order = this.orderdata;
+        console.log(ObjectUtils.getType([]));
         if (order && order.selection) {
             if (Array.isArray(order.selection)) {
                 ids = order.selection;
