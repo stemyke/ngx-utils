@@ -90,18 +90,20 @@ export class ObjectUtils {
         );
     }
 
-    static getValue(obj: any, key: string, defaultValue: any = key): any {
+    static getValue(obj: any, key: string, defaultValue?: any, treeFallback: boolean = false): any {
+        key = key || "";
         const keys = key.split(".");
-        key = "";
+        let curKey = "";
         do {
-            key += keys.shift();
-            if (ObjectUtils.isDefined(obj) && ObjectUtils.isDefined(obj[key]) && (typeof obj[key] === "object" || !keys.length)) {
-                obj = obj[key];
-                key = "";
+            curKey += keys.shift();
+            if (ObjectUtils.isDefined(obj) && ObjectUtils.isDefined(obj[curKey]) && (typeof obj[curKey] === "object" || !keys.length)) {
+                obj = obj[curKey];
+                curKey = "";
             } else if (!keys.length) {
-                obj = defaultValue;
+                defaultValue = typeof defaultValue == "undefined" ? key.replace(new RegExp(`${curKey}$`), `{${curKey}}`) : defaultValue;
+                obj = treeFallback ? obj || defaultValue : defaultValue;
             } else {
-                key += ".";
+                curKey += ".";
             }
         } while (keys.length);
         return obj;

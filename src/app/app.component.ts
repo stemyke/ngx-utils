@@ -1,4 +1,5 @@
 import {Component, OnInit, ViewEncapsulation} from "@angular/core";
+import {ObjectUtils} from "../ngx-utils/utils/object.utils";
 
 @Component({
     selector: "app-root",
@@ -262,5 +263,9 @@ export class AppComponent implements OnInit {
             ring.image = this.images[id];
         });
         this.ids = ids;
+    }
+
+    getValue(path: string): any {
+        return ObjectUtils.getValue(this.manufacturing, path, undefined, false);
     }
 }
