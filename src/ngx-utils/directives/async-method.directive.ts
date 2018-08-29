@@ -31,8 +31,13 @@ export class AsyncMethodDirective {
     }
 
     @HostListener("click")
+    click(): void {
+        if (this.disabled) return;
+        this.callMethod();
+    }
+
     callMethod(): void {
-        if (this.isDisabled || this.isLoading) return;
+        if (this.loading) return;
         this.loading = true;
         this.method().then(result => {
             this.loading = false;
