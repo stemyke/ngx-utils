@@ -33,7 +33,7 @@ export class StaticLanguageService implements ILanguageService {
         if (!ObjectUtils.isString(key) || !key.length) {
             throw new Error(`Parameter "key" required`);
         }
-        const translation = ObjectUtils.getValue(this.dictionary, key) || key;
+        const translation = ObjectUtils.getValue(this.dictionary, key, key) || key;
         return Promise.resolve(this.interpolate(translation, params));
     }
 
