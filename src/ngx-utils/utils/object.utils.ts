@@ -121,13 +121,18 @@ export class ObjectUtils {
         return ObjectUtils.copyRecursive(target, source, predicate);
     }
 
+    static getType(obj: any): string {
+        const regex = new RegExp("\\s([a-zA-Z]+)");
+        return Object.prototype.toString.call(obj).match(regex)[1].toLowerCase();
+    }
+
     static isPrimitive(value: any): boolean {
         const type = typeof value;
         return value == null || (type !== "object" && type !== "function");
     }
 
     static isObject(value: any): boolean {
-        return !ObjectUtils.isPrimitive(value);
+        return ObjectUtils.getType(value) === "object";
     }
 
     static isDefined(value: any): boolean {
@@ -184,11 +189,6 @@ export class ObjectUtils {
     static pad(obj: any, width: number, chr: string = "0"): string {
         const str = ObjectUtils.isDefined(obj) ? obj.toString() : "";
         return str.length >= width ? str : new Array(width - str.length + 1).join(chr) + str;
-    }
-
-    static getType(obj: any): string {
-        const regex = new RegExp("\\s([a-zA-Z]+)");
-        return Object.prototype.toString.call(obj).match(regex)[1].toLowerCase();
     }
 
     private static copyRecursive(target: any, source: any, predicate?: FilterPrecidate): any {

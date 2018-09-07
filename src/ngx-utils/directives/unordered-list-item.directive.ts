@@ -39,7 +39,7 @@ export class UnorderedListItemDirective implements OnChanges {
         this.isObject = ObjectUtils.isObject(this.data);
         this.valueIsArray = ObjectUtils.isArray(this.item.value);
         this.valueIsObject = ObjectUtils.isObject(this.item.value);
-        this.valueType = typeof this.item.value;
+        this.valueType = ObjectUtils.getType(this.item.value);
         const context: any = this;
         const template = this.templates.find(t => t.type == this.type && ObjectUtils.evaluate(t.selector, context)) || this.defaultTemplates[this.type];
         // Set view
