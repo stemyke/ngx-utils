@@ -5,14 +5,8 @@ import {
 } from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 import {
-    AUTH_SERVICE,
-    IAuthService,
-    ICON_SERVICE,
-    IIconService,
-    ILanguageService,
-    IToasterService,
-    LANGUAGE_SERVICE,
-    TOASTER_SERVICE
+    AUTH_SERVICE, IAuthService, ICON_SERVICE, IIconService, ILanguageService, IPromiseService, IToasterService, LANGUAGE_SERVICE,
+    PROMISE_SERVICE, TOASTER_SERVICE
 } from "./common-types";
 import {AuthGuard} from "./utils/auth.guard";
 import {AclService} from "./services/acl.service";
@@ -57,8 +51,9 @@ import {ReversePipe} from "./pipes/reverse.pipe";
 import {RoundPipe} from "./pipes/round.pipe";
 import {TranslatePipe} from "./pipes/translate.pipe";
 import {ValuesPipe} from "./pipes/values.pipe";
-import {UnorderedListComponent} from "./components/unordered-list.component";
+import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {SafeHtmlPipe} from "./pipes/safe-html.pipe";
+import {PromiseService} from "./services/promise.service";
 
 // --- Pipes ---
 export const pipes = [
@@ -111,6 +106,7 @@ export const authServiceToken: InjectionToken<IAuthService> = AUTH_SERVICE;
 export const iconServiceToken: InjectionToken<IIconService> = ICON_SERVICE;
 export const languageServiceToken: InjectionToken<ILanguageService> = LANGUAGE_SERVICE;
 export const toasterServiceToken: InjectionToken<IToasterService> = TOASTER_SERVICE;
+export const promiseServiceToken: InjectionToken<IPromiseService> = PROMISE_SERVICE;
 
 export const providers = [
     ...pipes,
@@ -125,6 +121,7 @@ export const providers = [
     StorageService,
     ConsoleToasterService,
     UniversalService,
+    PromiseService,
     {
         provide: eventManagerPluginsToken,
         useClass: ScrollEventPlugin,
@@ -145,6 +142,10 @@ export const providers = [
     {
         provide: toasterServiceToken,
         useExisting: ConsoleToasterService
+    },
+    {
+        provide: promiseServiceToken,
+        useExisting: PromiseService
     }
 ];
 
@@ -172,6 +173,6 @@ export class NgxUtilsModule {
         return {
             ngModule: NgxUtilsModule,
             providers: providers
-        }
+        };
     }
 }

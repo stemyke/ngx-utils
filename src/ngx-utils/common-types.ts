@@ -89,6 +89,17 @@ export interface IToasterService {
 
 export const TOASTER_SERVICE: InjectionToken<IToasterService> = new InjectionToken<IToasterService>("toaster-service");
 
+// --- Promise Service ---
+
+export interface IPromiseService {
+    promises: Promise<any>[];
+    create<T>(executor: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void): Promise<T>;
+    all(promises: Promise<any>[]): Promise<any>;
+    resolve<T>(value: T | PromiseLike<T>): Promise<T>;
+}
+
+export const PROMISE_SERVICE = new InjectionToken<IPromiseService>("promise-service");
+
 // --- Async method ---
 export interface IAsyncMessage {
     message: string;

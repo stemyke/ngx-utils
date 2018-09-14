@@ -19,6 +19,8 @@ export {
     IRoute,
     AUTH_SERVICE,
     IAclComponent,
+    IPromiseService,
+    PROMISE_SERVICE,
     IRouteStateInfo,
     StorageMode,
     IToasterService,
@@ -68,6 +70,7 @@ export {IconService} from "./ngx-utils/services/icon.service";
 export {StaticLanguageService} from "./ngx-utils/services/language.service";
 export {StorageService} from "./ngx-utils/services/storage.service";
 export {ConsoleToasterService} from "./ngx-utils/services/toaster.service";
+export {PromiseService} from "./ngx-utils/services/promise.service";
 
 export {ScrollEventPlugin} from "./ngx-utils/plugins/scroll-event.plugin";
 
@@ -105,6 +108,6 @@ export {StickyDirective} from "./ngx-utils/directives/sticky.directive";
 export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-item.directive";
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
 
-export {UnorderedListComponent} from "./ngx-utils/components/unordered-list.component";
+export {UnorderedListComponent} from "./ngx-utils/components/unordered-list/unordered-list.component";
 
 export {NgxUtilsModule} from "./ngx-utils/ngx-utils.module";
