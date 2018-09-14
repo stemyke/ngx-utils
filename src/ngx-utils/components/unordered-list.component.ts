@@ -29,7 +29,7 @@ import {UnorderedListTemplateDirective} from "../directives/unordered-list-templ
                             [path]="path"
                             [level]="level + 1"
                             [templates]="templates"
-                            *ngIf="isObject; else value"></unordered-list>
+                            *ngIf="(isObject || isArray); else value"></unordered-list>
         </ng-template>
         <ng-template let-item="item" let-data="data" let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-path="path" let-level="level" let-templates="templates" #defaultItemTemplate>
             <ng-template #itemKey>

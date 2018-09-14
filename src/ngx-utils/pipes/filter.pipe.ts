@@ -10,7 +10,7 @@ export function defaultFilter() {
 })
 export class FilterPipe implements PipeTransform {
     transform(values: any, filter: any = defaultFilter, params: any = {}): any[] {
-        if (!ObjectUtils.isObject(values)) return [];
+        if (!ObjectUtils.isObject(values) && !ObjectUtils.isArray(values)) return [];
         const filterFunc = ObjectUtils.isFunction(filter) ? filter : (value, key, params) => {
             return ObjectUtils.evaluate(filter, {
                 value: value,
