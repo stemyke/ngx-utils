@@ -1,7 +1,7 @@
 import {InjectionToken, ModuleWithProviders, NgModule} from "@angular/core";
 import {
     EVENT_MANAGER_PLUGINS,
-    ɵangular_packages_platform_browser_platform_browser_d as EventManagerPlugin
+    ɵangular_packages_platform_browser_platform_browser_g as EventManagerPlugin
 } from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 import {

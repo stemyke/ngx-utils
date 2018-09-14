@@ -2,7 +2,7 @@
     {{ (keyPrefix ? keyPrefix + key : key) | translate }}:
 </ng-template>
 <ng-template let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-val="item.value" let-path="path"
-             let-templates="templates" let-list="valueIsObject || valueIsArray" #defaultValueTemplate>
+             let-templates="templates" let-isObject="valueIsObject" let-isArray="valueIsArray" #defaultValueTemplate>
     <ng-template #value>{{ val }}</ng-template>
     <unordered-list [data]="val"
                     [keyPrefix]="keyPrefix"
@@ -10,7 +10,7 @@
                     [path]="path"
                     [level]="level + 1"
                     [templates]="templates"
-                    *ngIf="list; else value"></unordered-list>
+                    *ngIf="(isObject || isArray); else value"></unordered-list>
 </ng-template>
 <ng-template let-item="item" let-data="data" let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-path="path" let-level="level" let-templates="templates" #defaultItemTemplate>
     <ng-template #itemKey>

@@ -1,4 +1,4 @@
-import {ɵangular_packages_platform_browser_platform_browser_d as EventManagerPlugin} from "@angular/platform-browser";
+import {ɵangular_packages_platform_browser_platform_browser_g as EventManagerPlugin} from "@angular/platform-browser";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
 import {StringUtils} from "../utils/string.utils";
