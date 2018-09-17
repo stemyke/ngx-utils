@@ -34,31 +34,37 @@ export class UnorderedListItemDirective implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (!this.templates || !this.defaultTemplates || !this.item) return;
-        this.path = ObjectUtils.isNullOrUndefined(this.path) ? "" : this.path.toString();
-        this.isArray = ObjectUtils.isArray(this.data);
-        this.isObject = ObjectUtils.isObject(this.data);
-        this.valueIsArray = ObjectUtils.isArray(this.item.value);
-        this.valueIsObject = ObjectUtils.isObject(this.item.value);
-        this.valueType = ObjectUtils.getType(this.item.value);
-        const context: any = this;
-        const template = this.templates.find(t => t.type == this.type && ObjectUtils.evaluate(t.selector, context)) || this.defaultTemplates[this.type];
-        // Set view
-        this.viewContainer.clear();
-        this.viewContainer.createEmbeddedView(template, context);
-        // Set classes
-        if (this.type !== "item") return;
-        this.isClass(this.valueIsArray, "is-array");
-        this.isClass(this.valueIsObject, "is-object");
-        this.isClass(!this.valueIsObject, "is-value");
-        const parent = this.elem.parentElement;
-        const classes = Array.from(parent.classList);
-        classes.forEach(cls => {
-            if (!StringUtils.startsWith(cls, "type-", "path-", "key-")) return;
-            this.renderer.removeClass(parent, cls);
+        const promise = this.item.value instanceof Promise ? this.item.value : Promise.resolve(this.item.value);
+        promise.then(value => {
+            this.item.value = value;
+            this.path = ObjectUtils.isNullOrUndefined(this.path) ? "" : this.path.toString();
+            this.isArray = ObjectUtils.isArray(this.data);
+            this.isObject = ObjectUtils.isObject(this.data);
+            this.valueIsArray = ObjectUtils.isArray(this.item.value);
+            this.valueIsObject = ObjectUtils.isObject(this.item.value);
+            this.valueType = ObjectUtils.getType(this.item.value);
+            const context: any = this;
+            const template = this.templates.find(t => t.type == this.type && ObjectUtils.evaluate(t.selector, context)) || this.defaultTemplates[this.type];
+            // Set view
+            this.viewContainer.clear();
+            this.viewContainer.createEmbeddedView(template, context);
+            // Set classes
+            if (this.type !== "item") return;
+            this.isClass(this.valueIsArray, "is-array");
+            this.isClass(this.valueIsObject, "is-object");
+            this.isClass(!this.valueIsObject, "is-value");
+            const parent = this.elem.parentElement;
+            const classes = Array.from(parent.classList);
+            classes.forEach(cls => {
+                if (!StringUtils.startsWith(cls, "type-", "path-", "key-")) return;
+                this.renderer.removeClass(parent, cls);
+            });
+            this.renderer.addClass(this.elem.parentElement, `type-${this.valueType}`);
+            this.renderer.addClass(this.elem.parentElement, `path-${this.path.replace(/\./g, "-")}`);
+            this.renderer.addClass(this.elem.parentElement, `key-${this.item.key}`);
+        }, reason => {
+            console.log("Can't handle promise rejection", reason);
         });
-        this.renderer.addClass(this.elem.parentElement, `type-${this.valueType}`);
-        this.renderer.addClass(this.elem.parentElement, `path-${this.path.replace(/\./g, "-")}`);
-        this.renderer.addClass(this.elem.parentElement, `key-${this.item.key}`);
     }
 
     private isClass(value: boolean, className: string): void {
