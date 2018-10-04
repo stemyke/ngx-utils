@@ -52,7 +52,7 @@ export class UnorderedListItemDirective implements OnChanges {
             if (this.type !== "item") return;
             this.isClass(this.valueIsArray, "is-array");
             this.isClass(this.valueIsObject, "is-object");
-            this.isClass(!this.valueIsObject, "is-value");
+            this.isClass(!this.valueIsObject && !this.valueIsArray, "is-value");
             const parent = this.elem.parentElement;
             const classes = Array.from(parent.classList);
             classes.forEach(cls => {
