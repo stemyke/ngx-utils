@@ -23,7 +23,10 @@ export class PromiseService implements IPromiseService {
     }
 
     private add<T>(promise: Promise<T>): Promise<T> {
-        this.promises.push(promise);
+        this.promises.push(new Promise<any>(resolve => {
+            const cb = () => setTimeout(resolve);
+            promise.then(cb, cb);
+        }));
         return promise;
     }
 }
