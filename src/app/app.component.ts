@@ -1,5 +1,6 @@
-import {Component, OnInit, ViewEncapsulation} from "@angular/core";
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation} from "@angular/core";
 import {ObjectUtils} from "../ngx-utils/utils/object.utils";
+import {CanvasUtils} from "../public_api";
 
 @Component({
     selector: "app-root",
@@ -7,7 +8,7 @@ import {ObjectUtils} from "../ngx-utils/utils/object.utils";
     styleUrls: ["./app.component.scss"],
     encapsulation: ViewEncapsulation.None
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
 
     manufacturing: any = {
         left: {
@@ -242,11 +243,17 @@ export class AppComponent implements OnInit {
     images: any = [];
     ids: any;
 
+    @ViewChild("textCanvas")
+    textCanvas: ElementRef;
+
+    get canvas(): HTMLCanvasElement {
+        return this.textCanvas.nativeElement;
+    }
+
     ngOnInit(): void {
         if (!this.manufacturing) return;
         let ids = Object.keys(this.manufacturing);
         const order = this.orderdata;
-        console.log(ObjectUtils.getType([]));
         if (order && order.selection) {
             if (Array.isArray(order.selection)) {
                 ids = order.selection;
@@ -264,6 +271,16 @@ export class AppComponent implements OnInit {
             ring.image = this.images[id];
         });
         this.ids = ids;
+    }
+
+    ngAfterViewInit(): void {
+        const lines: string[] = "lorem\ndsfds\ndsfdsfds".split("\n");
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const size = CanvasUtils.measureTextFontSize(w, h, lines, "arial");
+        const ctx = this.canvas.getContext("2d");
+        const y = (h * .5) - (size * 1.1 * .5 * lines.length);
+        CanvasUtils.drawLines(ctx, lines, "arial", size, 1.1, "center", "top", w * .5, y);
     }
 
     getValue(path: string): any {

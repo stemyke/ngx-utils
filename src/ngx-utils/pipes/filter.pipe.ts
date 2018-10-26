@@ -9,8 +9,9 @@ export function defaultFilter() {
     name: "filter"
 })
 export class FilterPipe implements PipeTransform {
-    transform(values: any, filter: any = defaultFilter, params: any = {}): any[] {
-        if (!ObjectUtils.isObject(values) && !ObjectUtils.isArray(values)) return [];
+    transform(values: any, filter: any = defaultFilter, params: any = {}): any {
+        const isObject = ObjectUtils.isObject(values);
+        if (!isObject && !ObjectUtils.isArray(values)) return [];
         const filterFunc = ObjectUtils.isFunction(filter) ? filter : (value, key, params) => {
             return ObjectUtils.evaluate(filter, {
                 value: value,
@@ -20,7 +21,15 @@ export class FilterPipe implements PipeTransform {
                 params: params
             });
         };
-        return ObjectUtils.filter(values, (value, key) => {
+        if (isObject) {
+            return Object.keys(values).filter(key => {
+                return filterFunc(values[key], key, params);
+            }).reduce((result, key) => {
+                result[key] = values[key];
+                return result;
+            }, {})
+        }
+        return values.filter((value, key) => {
             return filterFunc(value, key, params);
         });
     }
