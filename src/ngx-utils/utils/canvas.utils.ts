@@ -343,7 +343,7 @@ export class CanvasUtils {
         return fontSize;
     }
 
-    static drawLines(context: CanvasRenderingContext2D, lines: string[], font: string, size: number, lineHeightPercent: number = 1.1, align: CanvasTextAlign = "left", baseLine: CanvasTextBaseline = "top", x: number = 0, y: number = 0): number {
+    static drawLines(context: CanvasRenderingContext2D, lines: string[], font: string, size: number, lineHeightPercent: number = 1.1, align: string = "left", baseLine: string = "top", x: number = 0, y: number = 0): number {
         CanvasUtils.setFontProps(context, font, size, align, baseLine);
         for (let i: number = 0; i < lines.length; i++) {
             const line: string = lines[i];
@@ -380,7 +380,7 @@ export class CanvasUtils {
         });
     }
 
-    static setFontProps(context: CanvasRenderingContext2D, font: string, fontSize: number, align: CanvasTextAlign = "left", baseLine: CanvasTextBaseline = "top"): void {
+    static setFontProps(context: CanvasRenderingContext2D, font: string, fontSize: number, align: string = "left", baseLine: string = "top"): void {
         context.font = `${fontSize}px ${font}`;
         context.textAlign = align;
         context.textBaseline = baseLine;
