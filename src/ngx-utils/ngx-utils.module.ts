@@ -19,6 +19,7 @@ import {StateService} from "./services/state.service";
 import {StorageService} from "./services/storage.service";
 import {ConsoleToasterService} from "./services/toaster.service";
 import {UniversalService} from "./services/universal.service";
+import {ResizeEventPlugin} from "./plugins/resize-event.plugin";
 import {ScrollEventPlugin} from "./plugins/scroll-event.plugin";
 import {AsyncMethodDirective} from "./directives/async-method.directive";
 import {BackgroundDirective} from "./directives/background.directive";
@@ -122,6 +123,11 @@ export const providers = [
     ConsoleToasterService,
     UniversalService,
     PromiseService,
+    {
+        provide: eventManagerPluginsToken,
+        useClass: ResizeEventPlugin,
+        multi: true
+    },
     {
         provide: eventManagerPluginsToken,
         useClass: ScrollEventPlugin,

@@ -73,6 +73,7 @@ export {StorageService} from "./ngx-utils/services/storage.service";
 export {ConsoleToasterService} from "./ngx-utils/services/toaster.service";
 export {PromiseService} from "./ngx-utils/services/promise.service";
 
+export {ResizeEventPlugin} from "./ngx-utils/plugins/resize-event.plugin";
 export {ScrollEventPlugin} from "./ngx-utils/plugins/scroll-event.plugin";
 
 export {ChunkPipe} from "./ngx-utils/pipes/chunk.pipe";
