@@ -19,6 +19,16 @@ export class StaticLanguageService implements ILanguageService {
 
     currentLanguage: string = "none";
 
+    get editLanguage(): string {
+        return this.editLang || this.currentLanguage;
+    }
+
+    set editLanguage(lang: string) {
+        this.editLang = lang || this.currentLanguage;
+    }
+
+    private editLang: string;
+
     private translations: ITranslations = {
         none: {}
     };

@@ -28,6 +28,7 @@ export interface ITranslations {
 
 export interface ILanguageService {
     currentLanguage: string;
+    editLanguage: string;
     defaultLanguage: string;
     dictionary: any;
     addLanguages(languages: string[]): void;

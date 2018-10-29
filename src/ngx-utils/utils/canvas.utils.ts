@@ -46,16 +46,16 @@ const shg_table = [
 
 export class CanvasUtils {
 
-    static thresholding(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, threshold: number = 50): void {
+    static thresholding(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, threshold: number = 50, min: number[] = [0, 0, 0, 255], max: number[] = [0, 0, 0, 0]): void {
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imgData.data;
         for (let i = 0, n = pixels.length; i < n; i += 4) {
             const greyscale = pixels[i] * .3 + pixels[i + 1] * .59 + pixels[i + 2] * .11;
-            const color = threshold == 0 || threshold == 255 ? Math.abs(threshold - greyscale) : (greyscale > threshold ? 255 : 0);
-            pixels[i] = color;        // red
-            pixels[i + 1] = color;        // green
-            pixels[i + 2] = color;        // blue
-            // pixels[i+3]              is alpha
+            const color = greyscale > threshold ? max : min;
+            pixels[i] = color[0];
+            pixels[i + 1] = color[1];
+            pixels[i + 2] = color[2];
+            pixels[i + 3] = color[3];
         }
         ctx.putImageData(imgData, 0, 0);
     }
@@ -335,8 +335,7 @@ export class CanvasUtils {
         const bitmapHeight: number = CanvasUtils.getTextBitmapHeight(canvas, context, lines, font, fontSize, lineHeightPercent);
         if (bitmapHeight > maxHeight) {
             fontSize = CanvasUtils.halveValidateFontSize(fontSize, (size: number) => {
-                const bitmapHeight: number = CanvasUtils.getTextBitmapHeight(canvas, context, lines, font, size, lineHeightPercent);
-                return maxHeight - bitmapHeight;
+                return maxHeight - CanvasUtils.getTextBitmapHeight(canvas, context, lines, font, size, lineHeightPercent);
             });
         }
 
@@ -382,8 +381,8 @@ export class CanvasUtils {
 
     static setFontProps(context: CanvasRenderingContext2D, font: string, fontSize: number, align: string = "left", baseLine: string = "top"): void {
         context.font = `${fontSize}px ${font}`;
-        context.textAlign = align;
-        context.textBaseline = baseLine;
+        context.textAlign = <any>align;
+        context.textBaseline = <any>baseLine;
     }
 
     private static getTextWidth(context: CanvasRenderingContext2D, lines: string[]): number {
