@@ -1,3 +1,6 @@
+import {CanvasColor} from "../common-types";
+import {ObjectUtils} from "./object.utils";
+
 declare const netscape: any;
 
 class BlurStack {
@@ -46,16 +49,21 @@ const shg_table = [
 
 export class CanvasUtils {
 
-    static thresholding(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, threshold: number = 50, min: number[] = [0, 0, 0, 255], max: number[] = [0, 0, 0, 0]): void {
+    static thresholding(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, threshold: number = 50, colorTransformer: (color: CanvasColor, limit: boolean, greyscale?: number) => CanvasColor): void {
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imgData.data;
+        const min = new CanvasColor(0, 0, 0, 255);
+        const max = new CanvasColor(0, 0, 0, 0);
+        colorTransformer = ObjectUtils.isFunction(colorTransformer) ? colorTransformer : ((color: CanvasColor, limit: boolean): CanvasColor => {
+            return limit ? max : min;
+        });
         for (let i = 0, n = pixels.length; i < n; i += 4) {
             const greyscale = pixels[i] * .3 + pixels[i + 1] * .59 + pixels[i + 2] * .11;
-            const color = greyscale > threshold ? max : min;
-            pixels[i] = color[0];
-            pixels[i + 1] = color[1];
-            pixels[i + 2] = color[2];
-            pixels[i + 3] = color[3];
+            const color = colorTransformer(new CanvasColor(pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]), greyscale > threshold, greyscale);
+            pixels[i] = color.r;
+            pixels[i + 1] = color.g;
+            pixels[i + 2] = color.b;
+            pixels[i + 3] = color.a;
         }
         ctx.putImageData(imgData, 0, 0);
     }

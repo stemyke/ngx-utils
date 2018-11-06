@@ -7,6 +7,7 @@ import {UniqueUtils} from "./ngx-utils/utils/unique.utils";
 
 export {
     IResolveFactory,
+    CanvasColor,
     IIconService,
     ICON_SERVICE,
     ITranslation,

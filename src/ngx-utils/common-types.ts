@@ -9,6 +9,12 @@ export interface IResolveFactory {
     params?: any[];
 }
 
+export class CanvasColor {
+    constructor(public r: number, public g: number, public b: number, public a: number = 255) {
+
+    }
+}
+
 // --- Icon service ---
 export interface IIconService {
     getIcon(icon: string, activeIcon: string, active: boolean): Promise<string>;
