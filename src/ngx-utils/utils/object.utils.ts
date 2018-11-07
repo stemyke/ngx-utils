@@ -109,6 +109,32 @@ export class ObjectUtils {
         return obj;
     }
 
+    static mapToPath(target: any, source: any, path: string[]): any {
+        if (typeof source === "undefined") return target;
+        if (path.length == 0) return source;
+        const key: any = path.shift();
+        if (key == "*") {
+            if (ObjectUtils.isArray(source)) {
+                target = ObjectUtils.isArray(target) ? target : [];
+                return source.map((item, index) => {
+                    return ObjectUtils.mapToPath(target[index], item, Array.from(path));
+                });
+            }
+            if (ObjectUtils.isObject(source)) {
+                target = ObjectUtils.isObject(target) ? target : {};
+                return Object.keys(source).reduce((result, key) => {
+                    result[key] = ObjectUtils.mapToPath(target[key], source[key], Array.from(path));
+                    return result;
+                }, {});
+            }
+            return ObjectUtils.isNullOrUndefined(target) ? null : target;
+        }
+        const isArray = ObjectUtils.isArray(target);
+        target = ObjectUtils.isObject(target) || isArray ? target : {};
+        target[key] = ObjectUtils.mapToPath(target[key], source, Array.from(path));
+        return isNaN(key) || isArray ? target : Object.values(target);
+    }
+
     static filter(obj: any, predicate: FilterPrecidate): any {
         return ObjectUtils.copyRecursive(null, obj, predicate);
     }
