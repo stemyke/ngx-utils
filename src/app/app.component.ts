@@ -1,15 +1,20 @@
+import * as FontFaceObserver from "fontfaceobserver";
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation} from "@angular/core";
 import {ObjectUtils} from "../ngx-utils/utils/object.utils";
-import {CanvasUtils} from "../public_api";
+import {CanvasUtils, UniversalService} from "../public_api";
 
 @Component({
     selector: "app-root",
     templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.scss"],
     encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
+    text: string = "Tgéza\n" +
+        "Tebgszt\n" +
+        "gbéza\n" +
+        "bélgja";
+    multiplier: number = .1;
     manufacturing: any = {
         left: {
             diamondSetting: "none",
@@ -242,12 +247,21 @@ export class AppComponent implements OnInit, AfterViewInit {
     i18n: any = {};
     images: any = [];
     ids: any;
+    font: Promise<any>;
+    fonts: any;
 
     @ViewChild("textCanvas")
     textCanvas: ElementRef;
 
+    @ViewChild("measureCanvas")
+    measureCanvas: ElementRef;
+
     get canvas(): HTMLCanvasElement {
         return this.textCanvas.nativeElement;
+    }
+
+    constructor(private universal: UniversalService) {
+
     }
 
     ngOnInit(): void {
@@ -271,16 +285,61 @@ export class AppComponent implements OnInit, AfterViewInit {
             ring.image = this.images[id];
         });
         this.ids = ids;
+        this.fonts = {
+            "garden-grown" : .38,
+            "limon-script-bold" : .25,
+            "helvetica-neue" : .23,
+            "baskerville" : .3
+        };
     }
 
     ngAfterViewInit(): void {
-        const lines: string[] = "lorem\ndsfds\ndsfdsfds".split("\n");
-        const w = this.canvas.width;
-        const h = this.canvas.height;
-        const size = CanvasUtils.measureTextFontSize(w, h, lines, "arial");
-        const ctx = this.canvas.getContext("2d");
-        const y = (h * .5) - (size * 1.1 * .5 * lines.length);
-        CanvasUtils.drawLines(ctx, lines, "arial", size, 1.1, "center", "top", w * .5, y);
+        this.changeFont(Object.keys(this.fonts)[0]);
+    }
+
+    changeText(text: string): void {
+        this.text = text;
+        this.drawText();
+    }
+
+    changeMultiplier(multi: string): void {
+        this.multiplier = parseFloat(multi);
+        this.drawText();
+    }
+
+    changeFont(font: string): void {
+        this.font = new FontFaceObserver(font).load();
+        this.drawText();
+    }
+
+    drawText(): void {
+        this.font.then(fontInfo => {
+            const lineHeight = 1.1;
+            const settings = {canvasWidth: 1417, canvasHeight: 590, boxWidth: 1370.07873876, boxHeight: 531.49606245};
+            const lines: string[] = this.text.split("\n");
+            this.canvas.width = settings.canvasWidth;
+            this.canvas.height = settings.canvasHeight;
+            const size = CanvasUtils.measureTextFontSize(settings.boxWidth, settings.boxHeight, lines, fontInfo.family, lineHeight, this.measureCanvas.nativeElement);
+            const ctx = this.canvas.getContext("2d");
+            const lineSize = size * lineHeight;
+            const textBlockSize = lines.length * lineSize;
+            const x = settings.canvasWidth * .5;
+            let y = (settings.canvasHeight - textBlockSize) * .5;
+            console.log({textBlockSize, y, x, size});
+            ctx.strokeRect(0, y, settings.canvasWidth, textBlockSize);
+            if (true || this.universal.isFirefox) {
+                console.log("Firefox");
+                const multi = !ObjectUtils.isNumber(this.fonts[fontInfo.family]) ? this.multiplier : this.fonts[fontInfo.family];
+                y = y + lineSize - lineSize * multi;
+                CanvasUtils.drawLines(ctx, lines, fontInfo.family, size, lineHeight, "center", "alphabetic", x, y);
+            } else {
+                const baseLine = fontInfo.family == "limon-script-bold" ? "top" : "hanging";
+                CanvasUtils.drawLines(ctx, lines, fontInfo.family, size, lineHeight, "center", baseLine, x, y);
+            }
+            ctx.fillStyle = "black";
+        }, () => {
+            console.log("Cant load font");
+        });
     }
 
     getValue(path: string): any {

@@ -1,14 +1,28 @@
-<canvas width="600" height="50" #textCanvas>
+<textarea [ngModel]="text" (ngModelChange)="changeText($event)"></textarea>
+
+<input type="number" [ngModel]="multiplier" (ngModelChange)="changeMultiplier($event)"/>
+
+<button *ngFor="let fontName of fonts | entries" (click)="changeFont(fontName.key)">{{ fontName.key }}</button>
+
+Text:
+
+<canvas class="text-canvas" #textCanvas>
 
 </canvas>
-<p>{{ getValue("right.diamondPlacements.0") | json }}</p>
-<p>{{ getValue("right.diamondPlacements.1") | json }}</p>
-<p>{{ getValue("right.test.1") | json }}</p>
-<div class="manufacturing-table" *ngFor="let id of ids">
-    <h1 [ngClass]="{'page-heading': y > 0}">{{ manufacturing[id].sex }}</h1>
-    <unordered-list [data]="map | remap:manufacturing[id]" keyPrefix="review." *ngFor="let map of reviewMap | chunk:24">
-        <ng-template type="value" selector="path.match(/engravingText$/g)" let-item="item">
-            <span [ngClass]="['engraving-text', 'font-' + manufacturing[id].engravingFont]">{{ item.value }}</span>
-        </ng-template>
-    </unordered-list>
-</div>
+
+Measure:
+
+<canvas class="text-canvas" #measureCanvas>
+
+</canvas>
+<!--<p>{{ getValue("right.diamondPlacements.0") | json }}</p>-->
+<!--<p>{{ getValue("right.diamondPlacements.1") | json }}</p>-->
+<!--<p>{{ getValue("right.test.1") | json }}</p>-->
+<!--<div class="manufacturing-table" *ngFor="let id of ids">-->
+    <!--<h1 [ngClass]="{'page-heading': y > 0}">{{ manufacturing[id].sex }}</h1>-->
+    <!--<unordered-list [data]="map | remap:manufacturing[id]" keyPrefix="review." *ngFor="let map of reviewMap | chunk:24">-->
+        <!--<ng-template type="value" selector="path.match(/engravingText$/g)" let-item="item">-->
+            <!--<span [ngClass]="['engraving-text', 'font-' + manufacturing[id].engravingFont]">{{ item.value }}</span>-->
+        <!--</ng-template>-->
+    <!--</unordered-list>-->
+<!--</div>-->

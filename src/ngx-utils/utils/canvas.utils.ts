@@ -325,13 +325,17 @@ export class CanvasUtils {
         ctx.putImageData(imageData, top_x, top_y);
     }
 
-    static measureTextFontSize(maxWidth: number, maxHeight: number, lines: string[], font: string, lineHeightPercent: number = 1.1): number {
+    static measureTextFontSize(maxWidth: number, maxHeight: number, lines: string[], font: string, lineHeightPercent: number = 1.1, canvas?: HTMLCanvasElement): number {
 
         const startSize: number = maxHeight;
-        const canvas = <HTMLCanvasElement>document.createElement("canvas");
         const context: CanvasRenderingContext2D = canvas.getContext("2d");
 
-        canvas.width = maxWidth;
+        if (!canvas) {
+            canvas = <HTMLCanvasElement>document.createElement("canvas");
+            document.body.appendChild(canvas);
+        }
+
+        canvas.width = maxWidth + maxHeight;
         canvas.height = maxHeight * 2;
 
         let fontSize: number = CanvasUtils.halveValidateFontSize(startSize, (size: number) => {
@@ -407,7 +411,7 @@ export class CanvasUtils {
         const height: number = canvas.height;
         context.clearRect(0, 0, width, height);
 
-        const textY = CanvasUtils.drawLines(context, lines, font, fontSize, lineHeightPercent);
+        const textY = CanvasUtils.drawLines(context, lines, font, fontSize, lineHeightPercent, "left", "top", fontSize * .5, fontSize * .5);
         const imageData: ImageData = context.getImageData(0, 0, width, height);
 
         let textHeight: number = 0;

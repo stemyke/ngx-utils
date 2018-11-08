@@ -1,0 +1,19 @@
+$fonts: (
+    baskerville: 'baskerville.ttf',
+    garden-grown: 'garden-grown.ttf',
+    helvetica-neue: 'helvetica-neue-bc.ttf',
+    limon-script-bold: 'limon-script-bold.otf'
+);
+
+@each $name, $font in $fonts {
+    @font-face {
+        font-family: $name;
+        src: url('./engraving/#{$font}') format("truetype");
+        font-weight: normal;
+        font-style: normal;
+    }
+}
+
+.text-canvas {
+    border: 1px solid green;
+}
