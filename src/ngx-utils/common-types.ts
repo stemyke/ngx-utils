@@ -140,6 +140,9 @@ export type AjaxRequestCallback = (details: IAjaxRequestDetails, params: any) =>
 export interface IScriptPromises {
     [src: string]: Promise<HTMLScriptElement>;
 }
+export interface IStylePromises {
+    [src: string]: Promise<HTMLLinkElement>;
+}
 
 // --- Observable utils ---
 export interface ISearchObservable {

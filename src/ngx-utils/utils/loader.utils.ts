@@ -1,9 +1,9 @@
-import {IScriptPromises} from "../common-types";
+import {IScriptPromises, IStylePromises} from "../common-types";
 
 export class LoaderUtils {
 
     static scriptPromises: IScriptPromises = {};
-    static styles: Set<string> = new Set<string>();
+    static stylePromises: IStylePromises = {};
 
     static loadScript(src: string, async: boolean = false): Promise<HTMLScriptElement> {
         this.scriptPromises[src] = this.scriptPromises[src] || new Promise<any>((resolve, reject) => {
@@ -30,13 +30,29 @@ export class LoaderUtils {
         return this.scriptPromises[src];
     }
 
-    static loadStyle(src: string): void {
-        if (this.styles.has(src)) return;
-        this.styles.add(src);
-        const link: HTMLLinkElement = document.createElement("link");
-        link.rel = "stylesheet";
-        link.type = "text/css";
-        link.href = src;
-        document.body.appendChild(link);
+    static loadStyle(src: string): Promise<HTMLLinkElement> {
+        this.stylePromises[src] = this.stylePromises[src] || new Promise<any>((resolve, reject) => {
+            // Load script
+            const link: any = document.createElement("link");
+            link.rel = "stylesheet";
+            link.type = "text/css";
+            link.href = src;
+
+            if (link.readyState) {
+                // Internet explorer
+                link.onreadystatechange = () => {
+                    if (link.readyState === "loaded" || link.readyState === "complete") {
+                        link.onreadystatechange = null;
+                        resolve(link);
+                    }
+                };
+            } else {
+                // Other browsers
+                link.onload = () => resolve(link);
+            }
+            link.onerror = (error: any) => reject(error);
+            document.body.appendChild(link);
+        });
+        return this.stylePromises[src];
     }
 }

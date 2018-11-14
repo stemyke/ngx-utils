@@ -34,6 +34,7 @@ export {
     IAjaxRequestDetails,
     AjaxRequestCallback,
     IScriptPromises,
+    IStylePromises,
     ISearchObservable,
     FactoryDependencies,
     ITimer,
