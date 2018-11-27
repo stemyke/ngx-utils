@@ -13,6 +13,8 @@ declare const elementResizeDetectorMaker: any;
 @Injectable()
 export class ResizeEventPlugin extends EventManagerPlugin {
 
+    static strategy: string = "object";
+
     private static EVENT_NAME: string = "resize";
     private static detector: any = null;
 
@@ -31,9 +33,9 @@ export class ResizeEventPlugin extends EventManagerPlugin {
             if (typeof elementResizeDetectorMaker == "undefined") {
                 throw Error("element-resize-detector library is not loaded. Please load it: https://www.npmjs.com/package/element-resize-detector");
             }
-            ResizeEventPlugin.detector = ResizeEventPlugin.detector || elementResizeDetectorMaker({strategy: "object"});
+            ResizeEventPlugin.detector = ResizeEventPlugin.detector || elementResizeDetectorMaker({strategy: ResizeEventPlugin.strategy});
             ResizeEventPlugin.detector.listenTo(element, el => {
-                zone.runGuarded(() => handler(el));
+                zone.run(() => handler(el));
             });
             return () => {
                 try {

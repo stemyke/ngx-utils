@@ -26,7 +26,7 @@ export class ScrollEventPlugin extends EventManagerPlugin {
         return zone.runOutsideAngular(() => {
             if (this.universal.isServer) return emptyRemove;
             const callback = (e: Event) => {
-                zone.runGuarded(() => handler(e));
+                zone.run(() => handler(e));
             };
             element.addEventListener(eventName, callback);
             return () => element.removeEventListener(eventName, callback);
