@@ -160,6 +160,9 @@ export function FactoryDependencies(...dependencies: TypeProvider[]): MethodDeco
 // --- Timer utils ---
 export interface ITimer {
     id?: any;
+    func?: Function;
+    time?: number;
+    run?: () => void;
     set?: (func: Function, time: number) => void;
     clear?: () => void;
 }
