@@ -6,28 +6,36 @@ type TimerFunc = (timer: ITimer) => void;
 export class TimerUtils {
 
     static createTimeout(func?: Function, time?: number): ITimer {
-        return TimerUtils.createTimer(timer => {
+        // @dynamic
+        const run = (timer: ITimer) => {
             timer.clear();
             timer.id = setTimeout(() => {
                 timer.id = null;
                 timer.func();
             }, timer.time);
-        }, timer => {
+        };
+        // @dynamic
+        const clear = (timer: ITimer) => {
             if (!timer.id) return;
             clearTimeout(timer.id);
             timer.id = null;
-        }, func, time);
+        };
+        return TimerUtils.createTimer(run, clear, func, time);
     }
 
     static createInterval(func?: Function, time?: number): ITimer {
-        return TimerUtils.createTimer(timer => {
+        // @dynamic
+        const run = (timer: ITimer) => {
             timer.clear();
             timer.id = setInterval(timer.func, timer.time);
-        }, timer => {
+        };
+        // @dynamic
+        const clear = (timer: ITimer) => {
             if (!timer.id) return;
             clearInterval(timer.id);
             timer.id = null;
-        }, func, time);
+        };
+        return TimerUtils.createTimer(run, clear, func, time);
     }
 
     private static createTimer(run: TimerFunc, clear: TimerFunc, func: Function, time: number): ITimer {

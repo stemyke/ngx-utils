@@ -59,9 +59,9 @@ export class UnorderedListItemDirective implements OnChanges {
                 if (!StringUtils.startsWith(cls, "type-", "path-", "key-")) return;
                 this.renderer.removeClass(parent, cls);
             });
-            this.renderer.addClass(this.elem.parentElement, `type-${this.valueType}`);
-            this.renderer.addClass(this.elem.parentElement, `path-${this.path.replace(/\./g, "-")}`);
-            this.renderer.addClass(this.elem.parentElement, `key-${this.item.key}`);
+            this.renderer.addClass(this.elem.parentNode, `type-${this.valueType}`);
+            this.renderer.addClass(this.elem.parentNode, `path-${this.path.replace(/\./g, "-")}`);
+            this.renderer.addClass(this.elem.parentNode, `key-${this.item.key}`);
         }, reason => {
             console.log("Can't handle promise rejection", reason);
         });
@@ -69,9 +69,9 @@ export class UnorderedListItemDirective implements OnChanges {
 
     private isClass(value: boolean, className: string): void {
         if (value) {
-            this.renderer.addClass(this.elem.parentElement, className);
+            this.renderer.addClass(this.elem.parentNode, className);
             return;
         }
-        this.renderer.removeClass(this.elem.parentElement, className);
+        this.renderer.removeClass(this.elem.parentNode, className);
     }
 }
