@@ -49,7 +49,7 @@
 </ng-template>
 <ng-container *ngIf="(isObject || isArray); else value" [ngSwitch]="listStyle">
     <ul [ngClass]="'level-' + level" *ngSwitchCase="'list'">
-        <li *ngFor="let item of data | entries">
+        <li *ngFor="let item of data | entries" [ngClass]="item.classList">
             <ng-container [unorderedListItem]="item"
                           type="item"
                           [data]="data"
@@ -62,7 +62,7 @@
         </li>
     </ul>
     <table [ngClass]="'level-' + level" *ngSwitchDefault>
-        <tr *ngFor="let item of data | entries">
+        <tr *ngFor="let item of data | entries" [ngClass]="item.classList">
             <ng-container [unorderedListItem]="item"
                           type="item"
                           [data]="data"

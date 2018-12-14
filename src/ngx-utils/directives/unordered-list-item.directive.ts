@@ -50,28 +50,20 @@ export class UnorderedListItemDirective implements OnChanges {
             this.viewContainer.createEmbeddedView(template, context);
             // Set classes
             if (this.type !== "item") return;
-            this.isClass(this.valueIsArray, "is-array");
-            this.isClass(this.valueIsObject, "is-object");
-            this.isClass(!this.valueIsObject && !this.valueIsArray, "is-value");
-            const parent = this.elem.parentElement;
-            const classes = Array.from(parent.classList);
-            classes.forEach(cls => {
-                if (!StringUtils.startsWith(cls, "type-", "path-", "key-")) return;
-                this.renderer.removeClass(parent, cls);
-            });
-            this.renderer.addClass(this.elem.parentNode, `type-${this.valueType}`);
-            this.renderer.addClass(this.elem.parentNode, `path-${this.path.replace(/\./g, "-")}`);
-            this.renderer.addClass(this.elem.parentNode, `key-${this.item.key}`);
+            this.item.classList = [];
+            this.isClass("is-array", this.valueIsArray);
+            this.isClass("is-object", this.valueIsObject);
+            this.isClass("is-value", !this.valueIsObject && !this.valueIsArray);
+            this.isClass(`type-${this.valueType}`);
+            this.isClass(`path-${this.path.replace(/\./g, "-")}`);
+            this.isClass(`key-${this.item.key}`);
         }, reason => {
             console.log("Can't handle promise rejection", reason);
         });
     }
 
-    private isClass(value: boolean, className: string): void {
-        if (value) {
-            this.renderer.addClass(this.elem.parentNode, className);
-            return;
-        }
-        this.renderer.removeClass(this.elem.parentNode, className);
+    private isClass(className: string, value: boolean = true): void {
+        if (!value) return;
+        this.item.classList.push(className);
     }
 }
