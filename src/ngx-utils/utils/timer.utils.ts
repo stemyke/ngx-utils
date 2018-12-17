@@ -40,15 +40,17 @@ export class TimerUtils {
 
     private static createTimer(run: TimerFunc, clear: TimerFunc, func: Function, time: number): ITimer {
         const timer: ITimer = {};
-        timer.set = (func: Function, time: number) => {
-            if (!ObjectUtils.isFunction(timer.func) || !ObjectUtils.isNumber(timer.time)) return;
-            timer.func = func;
-            timer.time = time;
-            timer.run();
+        const setParams = (func: Function, time: number) => {
+            timer.func = !ObjectUtils.isFunction(func) ? (() => {}) : func;
+            timer.time = !ObjectUtils.isNumber(time) ? 100 : time;
         };
         timer.run = () => run(timer);
         timer.clear = () => clear(timer);
-        timer.set(func, time);
+        timer.set = (func: Function, time: number) => {
+            setParams(func, time);
+            timer.run();
+        };
+        setParams(func, time);
         return timer;
     }
 }

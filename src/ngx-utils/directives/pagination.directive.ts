@@ -28,22 +28,20 @@ export class PaginationDirective implements OnChanges {
 
     constructor(private zone: NgZone) {
         this.onRefresh = new EventEmitter<PaginationDirective>();
-        this.updateTimer = TimerUtils.createTimeout();
+        this.updateTimer = TimerUtils.createTimeout(() => this.loadData(), this.updateTime);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (!changes.loader && !changes.itemsPerPage) return;
         this.page = isNaN(this.page) || this.page < 1 ? 1 : this.page;
         this.itemsPerPage = isNaN(this.itemsPerPage) || this.itemsPerPage < 1 ? 20 : this.itemsPerPage;
-        this.updateTime = isNaN(this.updateTime) || this.updateTime < 0 ? 100 : this.updateTime;
+        this.updateTimer.time = isNaN(this.updateTime) || this.updateTime < 0 ? 100 : this.updateTime;
         this.waitFor = this.waitFor || Promise.resolve(true);
         this.waitFor.then(() => this.refresh());
     }
 
     refresh(): void {
-        if (!this.loader) return;
-        this.updateTimer.clear();
-        this.updateTimer.set(() => this.loadData(), this.updateTime);
+        this.updateTimer.run();
     }
 
     paginate(page: number): void {
@@ -52,6 +50,7 @@ export class PaginationDirective implements OnChanges {
     }
 
     private loadData(): void {
+        if (!this.loader) return;
         this.loader(this.page, this.itemsPerPage).then(data => {
             const maxPage = !data || data.total <= 0 ? 1 : Math.floor((data.total - 1) / this.itemsPerPage) + 1;
             this.data = data;
