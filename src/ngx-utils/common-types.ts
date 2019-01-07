@@ -53,7 +53,7 @@ export interface IAuthService {
     checkAuthenticated(): Promise<boolean>;
 }
 
-export type RouteValidator = (auth: IAuthService) => Promise<boolean>;
+export type RouteValidator = (auth: IAuthService, route?: IRoute) => Promise<boolean>;
 
 export interface IRouteData extends Data {
     returnState?: string[];
