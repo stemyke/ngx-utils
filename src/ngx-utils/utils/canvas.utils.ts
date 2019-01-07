@@ -49,23 +49,29 @@ const shg_table = [
 
 export class CanvasUtils {
 
-    static thresholding(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, threshold: number = 50, colorTransformer: (color: CanvasColor, limit: boolean, greyscale?: number) => CanvasColor): void {
+    static manipulatePixels(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, colorTransformer: (color: CanvasColor) => CanvasColor): void {
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imgData.data;
-        const min = new CanvasColor(0, 0, 0, 255);
-        const max = new CanvasColor(0, 0, 0, 0);
-        colorTransformer = ObjectUtils.isFunction(colorTransformer) ? colorTransformer : ((color: CanvasColor, limit: boolean): CanvasColor => {
-            return limit ? max : min;
-        });
         for (let i = 0, n = pixels.length; i < n; i += 4) {
-            const greyscale = pixels[i] * .3 + pixels[i + 1] * .59 + pixels[i + 2] * .11;
-            const color = colorTransformer(new CanvasColor(pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]), greyscale > threshold, greyscale);
+            const color = colorTransformer(new CanvasColor(pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]));
             pixels[i] = color.r;
             pixels[i + 1] = color.g;
             pixels[i + 2] = color.b;
             pixels[i + 3] = color.a;
         }
         ctx.putImageData(imgData, 0, 0);
+    }
+
+    static thresholding(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, threshold: number = 50, colorTransformer: (color: CanvasColor, limit: boolean, greyscale?: number) => CanvasColor): void {
+        const min = new CanvasColor(0, 0, 0, 255);
+        const max = new CanvasColor(0, 0, 0, 0);
+        colorTransformer = ObjectUtils.isFunction(colorTransformer) ? colorTransformer : ((color: CanvasColor, limit: boolean): CanvasColor => {
+            return limit ? max : min;
+        });
+        CanvasUtils.manipulatePixels(canvas, ctx, (color) => {
+            const greyscale = color.r * .3 + color.g * .59 + color.b * .11;
+            return colorTransformer(color, greyscale > threshold, greyscale);
+        });
     }
 
     static stackBlur(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, radius: number = 10): void {
