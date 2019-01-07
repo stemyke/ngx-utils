@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
         return new Promise<boolean>(resolve => {
             const guards = routeData.guards.map(g => {
                 const guard = ReflectUtils.resolve<RouteValidator>(g, this.injector);
-                return guard(this.auth);
+                return guard(this.auth, route);
             });
             Promise.all(guards).then(results => {
                 resolve(results.indexOf(false) < 0);
