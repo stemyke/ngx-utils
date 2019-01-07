@@ -15,14 +15,14 @@ export class AuthGuard implements CanActivate {
         return this.checkRoute(route);
     }
 
-    checkRoute(route: IRoute): Promise<boolean> {
+    checkRoute(route: IRoute, next?: ActivatedRouteSnapshot): Promise<boolean> {
         const routeData = route.data;
         if (!routeData.guards)
             return Promise.resolve(!route.canActivate || this.auth.isAuthenticated);
         return new Promise<boolean>(resolve => {
             const guards = routeData.guards.map(g => {
                 const guard = ReflectUtils.resolve<RouteValidator>(g, this.injector);
-                return guard(this.auth, route);
+                return guard(this.auth, route, next);
             });
             Promise.all(guards).then(results => {
                 resolve(results.indexOf(false) < 0);
@@ -35,7 +35,7 @@ export class AuthGuard implements CanActivate {
         const returnState = route.data.returnState || this.getReturnState(route);
         return new Promise<boolean>(resolve => {
             this.auth.checkAuthenticated().then(() => {
-                this.checkRoute(route).then(hasRights => {
+                this.checkRoute(route, next).then(hasRights => {
                     resolve(hasRights);
                     if (!hasRights && returnState)
                         this.router.navigate(returnState);

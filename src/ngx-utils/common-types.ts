@@ -1,5 +1,5 @@
 import {EmbeddedViewRef, EventEmitter, InjectionToken, TemplateRef, TypeProvider} from "@angular/core";
-import {Data, Route} from "@angular/router";
+import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
 import {ReflectUtils} from "./utils/reflect.utils";
 
 // --- Utils
@@ -53,7 +53,7 @@ export interface IAuthService {
     checkAuthenticated(): Promise<boolean>;
 }
 
-export type RouteValidator = (auth: IAuthService, route?: IRoute) => Promise<boolean>;
+export type RouteValidator = (auth: IAuthService, route?: IRoute, next?: ActivatedRouteSnapshot) => Promise<boolean>;
 
 export interface IRouteData extends Data {
     returnState?: string[];
