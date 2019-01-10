@@ -1,0 +1,21 @@
+<div class="pagination-menu" *ngIf="pagination.total > pagination.itemsPerPage">
+    <ul class="pagination">
+        <li class="page-item" *ngIf="boundaryLinks && hasPrev">
+            <a class="page-link" (click)="paginate(1)">&lt;&lt;</a>
+        </li>
+        <li class="page-item" *ngIf="directionLinks && hasPrev">
+            <a class="page-link" (click)="paginate(pagination.page - 1)">&lt;</a>
+        </li>
+        <li class="page-item" *ngFor="let page of pages">
+            <a class="page-link"
+               [ngClass]="{'active': pagination.page == page, 'disabled': pagination.page != page}"
+               (click)="paginate(page)">{{ page }}</a>
+        </li>
+        <li class="page-item" *ngIf="directionLinks && hasNext">
+            <a class="page-link" (click)="paginate(pagination.page + 1)">&gt;</a>
+        </li>
+        <li class="page-item" *ngIf="boundaryLinks && hasNext">
+            <a class="page-link" (click)="paginate(pagination.maxPage)">&gt;&gt;</a>
+        </li>
+    </ul>
+</div>

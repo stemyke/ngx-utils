@@ -1,4 +1,4 @@
-import {Directive, ViewContainerRef, TemplateRef, OnInit, OnDestroy} from "@angular/core";
+import {Directive, ViewContainerRef, TemplateRef, OnInit, OnDestroy, Input} from "@angular/core";
 import {Subscription} from "rxjs";
 import {PaginationItemContext} from "../common-types";
 import {PaginationDirective} from "./pagination.directive";
@@ -8,6 +8,11 @@ import {PaginationDirective} from "./pagination.directive";
 })
 export class PaginationItemDirective implements OnInit, OnDestroy {
 
+    @Input() set paginationItemExtraContext(context: any) {
+        this.context = context;
+    }
+
+    private context: any;
     private onRefresh: Subscription;
 
     constructor(private pagination: PaginationDirective, private viewContainer: ViewContainerRef, private templateRef: TemplateRef<any>) {
@@ -28,7 +33,8 @@ export class PaginationItemDirective implements OnInit, OnDestroy {
         this.viewContainer.clear();
         items.forEach((item, index) => {
             const ix = baseIndex + index;
-            item = item instanceof PaginationItemContext ? item : new PaginationItemContext(item, items.length, ix, ix);
+            item = item instanceof PaginationItemContext ? item : new PaginationItemContext(item, item, items.length, ix, ix);
+            Object.assign(item, this.context);
             this.viewContainer.createEmbeddedView(this.templateRef, item);
         });
     }

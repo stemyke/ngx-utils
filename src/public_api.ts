@@ -41,9 +41,14 @@ export {
     IExtraProperties,
     IGroupMap,
     TranslationQuery,
+    IPageInfo,
     IPaginationData,
     PaginationDataLoader,
     PaginationItemContext,
+    ITableColumns,
+    ITableTemplate,
+    ITableTemplates,
+    TableDataLoader,
     ResourceIfContext
 } from "./ngx-utils/common-types";
 
@@ -111,7 +116,10 @@ export {ResourceIfDirective} from "./ngx-utils/directives/resource-if.directive"
 export {StickyDirective} from "./ngx-utils/directives/sticky.directive";
 export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-item.directive";
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
+export {DynamicTableTemplateDirective} from "./ngx-utils/directives/dynamic-table-template.directive";
 
 export {UnorderedListComponent} from "./ngx-utils/components/unordered-list/unordered-list.component";
+export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";
+export {PaginationMenuComponent} from "./ngx-utils/components/pagination-menu/pagination-menu.component";
 
 export {NgxUtilsModule} from "./ngx-utils/ngx-utils.module";

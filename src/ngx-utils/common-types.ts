@@ -181,6 +181,12 @@ export interface IGroupMap {
 export type TranslationQuery = string | ITranslations | ITranslation[];
 
 // --- Pagination ---
+export interface IPageInfo {
+    text: string;
+    number: number;
+    active: boolean;
+}
+
 export interface IPaginationData {
     total: number;
     items: any[];
@@ -190,7 +196,7 @@ export type PaginationDataLoader = (page: number, itemsPerPage: number) => Promi
 
 export class PaginationItemContext {
 
-    constructor(public item: any, public count: number, public index: number, public dataIndex: number) {
+    constructor(public item: any, public parallelItem: any, public count: number, public index: number, public dataIndex: number) {
     }
 
     get first(): boolean {
@@ -208,7 +214,40 @@ export class PaginationItemContext {
     get odd(): boolean {
         return !this.even;
     }
+
+    get $implicit(): any {
+        return this;
+    }
+
+    // Support for old dynamic table implementation
+    get row(): any {
+        console.log("DynamicTable row is deprecated use item instead");
+        return this.item;
+    }
+
+    // Support for old dynamic table implementation
+    get parallelRow(): any {
+        console.log("DynamicTable parallelRow is deprecated use parallelItem instead");
+        return this.parallelItem;
+    }
 }
+
+// --- Dynamic table ---
+export interface ITableColumns {
+    [column: string]: string;
+}
+
+export interface ITableTemplate {
+    column: string | string[];
+    pure: boolean;
+    ref: TemplateRef<any>;
+}
+
+export interface ITableTemplates {
+    [column: string]: ITableTemplate;
+}
+
+export type TableDataLoader = (page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string) => Promise<IPaginationData>;
 
 // --- Resource if ---
 export class ResourceIfContext {

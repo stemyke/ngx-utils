@@ -30,6 +30,7 @@ import {ResourceIfDirective} from "./directives/resource-if.directive";
 import {StickyDirective} from "./directives/sticky.directive";
 import {UnorderedListItemDirective} from "./directives/unordered-list-item.directive";
 import {UnorderedListTemplateDirective} from "./directives/unordered-list-template.directive";
+import {DynamicTableTemplateDirective} from "./directives/dynamic-table-template.directive";
 import {ChunkPipe} from "./pipes/chunk.pipe";
 import {EntriesPipe} from "./pipes/entries.pipe";
 import {ExtraItemPropertiesPipe} from "./pipes/extra-item-properties.pipe";
@@ -52,9 +53,12 @@ import {ReversePipe} from "./pipes/reverse.pipe";
 import {RoundPipe} from "./pipes/round.pipe";
 import {TranslatePipe} from "./pipes/translate.pipe";
 import {ValuesPipe} from "./pipes/values.pipe";
+import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
+import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {SafeHtmlPipe} from "./pipes/safe-html.pipe";
 import {PromiseService} from "./services/promise.service";
+import {FormsModule} from "@angular/forms";
 
 // --- Pipes ---
 export const pipes = [
@@ -93,11 +97,14 @@ export const directives = [
     ResourceIfDirective,
     StickyDirective,
     UnorderedListItemDirective,
-    UnorderedListTemplateDirective
+    UnorderedListTemplateDirective,
+    DynamicTableTemplateDirective
 ];
 
 // --- Components ---
 export const components = [
+    DynamicTableComponent,
+    PaginationMenuComponent,
     UnorderedListComponent
 ];
 
@@ -162,12 +169,14 @@ export const providers = [
         ...components
     ],
     imports: [
-        CommonModule
+        CommonModule,
+        FormsModule
     ],
     exports: [
         ...pipes,
         ...directives,
-        ...components
+        ...components,
+        FormsModule
     ],
     providers: [
         ...pipes,

@@ -62,6 +62,19 @@ export class CanvasUtils {
         ctx.putImageData(imgData, 0, 0);
     }
 
+    static manipulatePixel(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, colorTransformer: (color: CanvasColor) => CanvasColor, x: number, y: number): void {
+        const imgData = ctx.getImageData(x, y, 1, 1);
+        const pixels = imgData.data;
+        for (let i = 0, n = pixels.length; i < n; i += 4) {
+            const color = colorTransformer(new CanvasColor(pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]));
+            pixels[i] = color.r;
+            pixels[i + 1] = color.g;
+            pixels[i + 2] = color.b;
+            pixels[i + 3] = color.a;
+        }
+        ctx.putImageData(imgData, 0, 0);
+    }
+
     static thresholding(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, threshold: number = 50, colorTransformer: (color: CanvasColor, limit: boolean, greyscale?: number) => CanvasColor): void {
         const min = new CanvasColor(0, 0, 0, 255);
         const max = new CanvasColor(0, 0, 0, 0);

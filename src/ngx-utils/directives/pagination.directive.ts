@@ -1,5 +1,5 @@
 import {Directive, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChanges} from "@angular/core";
-import {IPaginationData, ITimer, PaginationDataLoader} from "../common-types";
+import {IPaginationData, ITimer, PaginationDataLoader, PaginationItemContext} from "../common-types";
 import {TimerUtils} from "../utils/timer.utils";
 
 @Directive({
@@ -22,6 +22,8 @@ export class PaginationDirective implements OnChanges {
     @Input() updateTime: number;
     @Input() waitFor: Promise<any>;
     @Output() onRefresh: EventEmitter<PaginationDirective>;
+
+    maxPage: number;
 
     private data: IPaginationData;
     private updateTimer: ITimer;
@@ -52,10 +54,16 @@ export class PaginationDirective implements OnChanges {
     private loadData(): void {
         if (!this.loader) return;
         this.loader(this.page, this.itemsPerPage).then(data => {
-            const maxPage = !data || data.total <= 0 ? 1 : Math.floor((data.total - 1) / this.itemsPerPage) + 1;
+            this.maxPage = !data || data.total <= 0 ? 1 : Math.floor((data.total - 1) / this.itemsPerPage) + 1;
             this.data = data;
-            if (this.page > maxPage) {
-                this.paginate(maxPage);
+            const items = data.items || [];
+            for (let i = 0; i < items.length; i++) {
+                const ix = baseIndex + index;
+                item = item instanceof PaginationItemContext ? item : new PaginationItemContext(item, item, items.length, ix, ix);
+            }
+            data.items = items;
+            if (this.page > this.maxPage) {
+                this.paginate(this.maxPage);
                 return;
             }
             this.zone.run(() => this.onRefresh.emit(this));

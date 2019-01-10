@@ -1,0 +1,68 @@
+<div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [itemsPerPage]="itemsPerPage" [updateTime]="updateTime">
+    <div class="row" *ngIf="showFilter">
+        <div class="table-search col-xs-2 col-xs-push-10">
+            <input type="text"
+                   class="form-control"
+                   [ngModel]="filter"
+                   (ngModelChange)="setFilter($event)"/>
+        </div>
+    </div>
+    <pagination-menu [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
+    <div class="table-responsive">
+
+        <ng-template #columnTemplate let-context let-template="template">
+            <ng-template #defaultTemplate let-column="column" let-row="row">
+                <span>{{ row[column] == undefined || row[column] == null ? '-' : row[column] }}</span>
+            </ng-template>
+            <ng-template #pureTemplate>
+                <ng-container [ngTemplateOutlet]="template.ref" [ngTemplateOutletContext]="context"></ng-container>
+            </ng-template>
+            <td [ngClass]="'column-' + column" *ngIf="!template || !template.pure; else pureTemplate">
+                <ng-container [ngTemplateOutlet]="!template ? defaultTemplate : template.ref" [ngTemplateOutletContext]="context"></ng-container>
+            </td>
+        </ng-template>
+
+        <ng-template #columnsTemplate let-context>
+            <ng-container *ngFor="let column of cols"
+                          [ngTemplateOutlet]="columnTemplate"
+                          [ngTemplateOutletContext]="{
+                            template: templates[column],
+                            column: column,
+                            $implicit: context
+                          }">
+        </ng-template>
+
+        <ng-template #defaultRowTemplate let-context>
+            <tr>
+                <ng-container [ngTemplateOutlet]="columnsTemplate" [ngTemplateOutletContext]="context"></ng-container>
+            </tr>
+        </ng-template>
+
+        <ng-template #defaultWrapperTemplate let-rowTemplate="rowTemplate">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th *ngFor="let column of cols" [ngClass]="'column-' + column">
+                        <a *ngIf="orders[column]" (click)="setOrder(column)">
+                            <span>{{ 'label.' + column | translate }}</span>
+                            <i *ngIf="orderBy == column"
+                               [icon]="orderDescending ? 'sort-desc' : 'sort-asc'"
+                               [ngClass]="orderBy == column ? (orderDescending ? 'sort-desc': 'sort-asc') : ''"></i>
+                        </a>
+                        <span *ngIf="!orders[column]">{{ 'label.' + column | translate }}</span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <ng-container *paginationItem="let context;extraContext:this"
+                              [ngTemplateOutlet]="rowTemplate"
+                              [ngTemplateOutletContext]="context"></ng-container>
+                </tbody>
+            </table>
+        </ng-template>
+
+        <ng-container [ngTemplateOutlet]="wrapperTemplate || defaultWrapperTemplate"
+                      [ngTemplateOutletContext]="this"></ng-container>
+    </div>
+    <pagination-menu [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
+</div>
