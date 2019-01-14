@@ -10,35 +10,35 @@
     <pagination-menu [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
     <div class="table-responsive">
 
-        <ng-template #columnTemplate let-context let-template="template">
-            <ng-template #defaultTemplate let-column="column" let-row="row">
-                <span>{{ row[column] == undefined || row[column] == null ? '-' : row[column] }}</span>
+        <ng-template #columnTemplate let-context let-column="column" let-template="template">
+            <ng-template #defaultTemplate let-column="column" let-item="item">
+                <span>{{ item[column] == undefined || item[column] == null ? '-' : item[column] }}</span>
             </ng-template>
             <ng-template #pureTemplate>
-                <ng-container [ngTemplateOutlet]="template.ref" [ngTemplateOutletContext]="context"></ng-container>
+                <ng-container [ngxTemplateOutlet]="template.ref" [context]="context"></ng-container>
             </ng-template>
             <td [ngClass]="'column-' + column" *ngIf="!template || !template.pure; else pureTemplate">
-                <ng-container [ngTemplateOutlet]="!template ? defaultTemplate : template.ref" [ngTemplateOutletContext]="context"></ng-container>
+                <ng-container [ngxTemplateOutlet]="!template ? defaultTemplate : template.ref" [context]="context"></ng-container>
             </td>
         </ng-template>
 
         <ng-template #columnsTemplate let-context>
             <ng-container *ngFor="let column of cols"
-                          [ngTemplateOutlet]="columnTemplate"
-                          [ngTemplateOutletContext]="{
+                          [ngxTemplateOutlet]="columnTemplate"
+                          [context]="context"
+                          [additionalContext]="{
                             template: templates[column],
-                            column: column,
-                            $implicit: context
-                          }">
+                            column: column
+                          }"></ng-container>
         </ng-template>
 
         <ng-template #defaultRowTemplate let-context>
             <tr>
-                <ng-container [ngTemplateOutlet]="columnsTemplate" [ngTemplateOutletContext]="context"></ng-container>
+                <ng-container [ngxTemplateOutlet]="columnsTemplate" [context]="context"></ng-container>
             </tr>
         </ng-template>
 
-        <ng-template #defaultWrapperTemplate let-rowTemplate="rowTemplate">
+        <ng-template #defaultWrapperTemplate>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -54,15 +54,16 @@
                 </tr>
                 </thead>
                 <tbody>
-                <ng-container *paginationItem="let context;extraContext:this"
-                              [ngTemplateOutlet]="rowTemplate"
-                              [ngTemplateOutletContext]="context"></ng-container>
+                <ng-container *paginationItem="let context"
+                              [ngxTemplateOutlet]="rowTemplate"
+                              [context]="context"
+                              [additionalContext]="this"></ng-container>
                 </tbody>
             </table>
         </ng-template>
 
-        <ng-container [ngTemplateOutlet]="wrapperTemplate || defaultWrapperTemplate"
-                      [ngTemplateOutletContext]="this"></ng-container>
+        <ng-container [ngxTemplateOutlet]="wrapperTemplate || defaultWrapperTemplate"
+                      [context]="this"></ng-container>
     </div>
     <pagination-menu [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
 </div>

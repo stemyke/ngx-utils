@@ -50,10 +50,6 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         return !this.pagination ? [] : this.pagination.items;
     }
 
-    get $implicit(): any {
-        return this;
-    }
-
     @ContentChild("rowTemplate")
     rowTemplate: TemplateRef<any>;
 
@@ -119,7 +115,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         if (changes.orderBy && this.orders) {
             this.orderBy = this.orderBy in this.orders ? this.orderBy : this.columns[0];
         }
-        if (!changes.data && !changes.itemsPerPage && !changes.orderBy && !changes.orderDescending) return;
+        if (!changes.data && !changes.parallelData && !changes.itemsPerPage && !changes.orderBy && !changes.orderDescending) return;
         this.refresh();
     }
 

@@ -56,12 +56,14 @@ export class PaginationDirective implements OnChanges {
         this.loader(this.page, this.itemsPerPage).then(data => {
             this.maxPage = !data || data.total <= 0 ? 1 : Math.floor((data.total - 1) / this.itemsPerPage) + 1;
             this.data = data;
-            const items = data.items || [];
-            for (let i = 0; i < items.length; i++) {
+            const baseIndex = (this.page - 1) * this.itemsPerPage;
+            const items = (data.items || []);
+            data.items = items.map((item, index) => {
                 const ix = baseIndex + index;
-                item = item instanceof PaginationItemContext ? item : new PaginationItemContext(item, item, items.length, ix, ix);
-            }
-            data.items = items;
+                return item instanceof PaginationItemContext
+                    ? item
+                    : new PaginationItemContext(item, items, items.length, index, ix);
+            });
             if (this.page > this.maxPage) {
                 this.paginate(this.maxPage);
                 return;

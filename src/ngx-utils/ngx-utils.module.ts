@@ -24,6 +24,7 @@ import {ScrollEventPlugin} from "./plugins/scroll-event.plugin";
 import {AsyncMethodDirective} from "./directives/async-method.directive";
 import {BackgroundDirective} from "./directives/background.directive";
 import {IconDirective} from "./directives/icon.directive";
+import {NgxTemplateOutletDirective} from "./directives/ngx-template-outlet.directive";
 import {PaginationDirective} from "./directives/pagination.directive";
 import {PaginationItemDirective} from "./directives/pagination-item.directive";
 import {ResourceIfDirective} from "./directives/resource-if.directive";
@@ -92,6 +93,7 @@ export const directives = [
     AsyncMethodDirective,
     BackgroundDirective,
     IconDirective,
+    NgxTemplateOutletDirective,
     PaginationDirective,
     PaginationItemDirective,
     ResourceIfDirective,

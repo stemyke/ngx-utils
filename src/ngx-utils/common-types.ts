@@ -215,10 +215,6 @@ export class PaginationItemContext {
         return !this.even;
     }
 
-    get $implicit(): any {
-        return this;
-    }
-
     // Support for old dynamic table implementation
     get row(): any {
         console.log("DynamicTable row is deprecated use item instead");

@@ -110,6 +110,7 @@ export {ValuesPipe} from "./ngx-utils/pipes/values.pipe";
 export {AsyncMethodDirective} from "./ngx-utils/directives/async-method.directive";
 export {BackgroundDirective} from "./ngx-utils/directives/background.directive";
 export {IconDirective} from "./ngx-utils/directives/icon.directive";
+export {NgxTemplateOutletDirective} from "./ngx-utils/directives/ngx-template-outlet.directive";
 export {PaginationDirective} from "./ngx-utils/directives/pagination.directive";
 export {PaginationItemDirective} from "./ngx-utils/directives/pagination-item.directive";
 export {ResourceIfDirective} from "./ngx-utils/directives/resource-if.directive";
