@@ -1,13 +1,14 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "2.8.0",
+    "version": "2.8.1",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
         "build": "ng-packagr -p ng-package.json && tsc --project ./tools-tsconfig.json",
         "public": "npm publish dist --access public",
-        "circular": "ts-node ./tools/circular.ts ./src"
+        "circular": "ts-node ./tools/circular.ts ./src",
+        "notify": "sudo sysctl fs.inotify.max_user_watches=524288 && sudo sysctl -p --system"
     },
     "public": true,
     "repository": "https://github.com/stemyke/ngx-utils.git",

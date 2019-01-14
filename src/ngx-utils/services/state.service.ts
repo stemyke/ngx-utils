@@ -1,4 +1,4 @@
-import {Injectable, NgZone} from "@angular/core";
+import {Injectable, NgZone, Optional} from "@angular/core";
 import {
     ActivatedRouteSnapshot,
     ChildrenOutletContexts,
@@ -78,7 +78,9 @@ export class StateService {
         return this.stateInfo.components || emptyComponents;
     }
 
-    constructor(private router: Router, private zone: NgZone) {
+    constructor(private zone: NgZone, @Optional() private router: Router = null) {
+        this.subject = new Subject<ActivatedRouteSnapshot>();
+        if (!this.router) return;
         this.router.events.subscribe(this.handleRouterEvent);
         this.stateInfo = {
             url: "",
@@ -86,7 +88,6 @@ export class StateService {
             components: []
         };
         this.contexts = (<any>router).rootContexts;
-        this.subject = new Subject<ActivatedRouteSnapshot>();
     }
 
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean> {

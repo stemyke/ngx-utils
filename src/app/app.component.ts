@@ -244,6 +244,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     modificatorReviewMap: any = [];
 
+    tableData: any[];
+
     i18n: any = {};
     images: any = [];
     ids: any;
@@ -291,6 +293,20 @@ export class AppComponent implements OnInit, AfterViewInit {
             "helvetica-neue" : .23,
             "baskerville" : .3
         };
+        this.tableData = [
+            {
+                title: "Cím1",
+                content: "Teszt",
+            },
+            {
+                title: "Cím2",
+                content: "Teszt 2",
+            },
+            {
+                title: "Cím3",
+                content: "Teszt 3",
+            }
+        ];
     }
 
     ngAfterViewInit(): void {

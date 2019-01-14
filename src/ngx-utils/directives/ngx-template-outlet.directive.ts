@@ -63,7 +63,10 @@ export class NgxTemplateOutletDirective implements OnChanges {
 
     private updateExistingContext(ctx: any, context: any): void {
         if (!ctx) return;
-        const ctxProto = Object.getPrototypeOf(ctx);
+        let ctxProto = Object.getPrototypeOf(ctx);
+        if (ctxProto == Object.prototype) {
+            ctxProto = ctx;
+        }
         const props = Object.getOwnPropertyNames(ctxProto);
         for (const propName of props) {
             const desc = Object.getOwnPropertyDescriptor(ctxProto, propName);
