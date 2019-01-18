@@ -12,7 +12,7 @@ import {PaginationDirective} from "../../directives/pagination.directive";
 export class PaginationMenuComponent implements OnInit, OnDestroy, OnChanges {
 
     @Input() maxSize: number;
-    @Input() urlPage: number;
+    @Input() urlParam: string;
     @Input() directionLinks: boolean;
     @Input() boundaryLinks: boolean;
 
@@ -29,7 +29,9 @@ export class PaginationMenuComponent implements OnInit, OnDestroy, OnChanges {
     private onRefresh: Subscription;
 
     constructor(public state: StateService, public pagination: PaginationDirective) {
-
+        this.maxSize = 5;
+        this.directionLinks = true;
+        this.boundaryLinks = true;
     }
 
     ngOnInit(): void {
@@ -42,7 +44,6 @@ export class PaginationMenuComponent implements OnInit, OnDestroy, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         this.maxSize = isNaN(this.maxSize) || this.maxSize <= 0 ? 5 : this.maxSize;
-        this.urlPage = ObjectUtils.isNumber(this.urlPage) && this.urlPage > 0 ? this.urlPage : 0;
         this.directionLinks = ObjectUtils.isBoolean(this.directionLinks) ? this.directionLinks : true;
         this.boundaryLinks = ObjectUtils.isBoolean(this.boundaryLinks) ? this.boundaryLinks : true;
         this.setPages();
@@ -50,13 +51,14 @@ export class PaginationMenuComponent implements OnInit, OnDestroy, OnChanges {
 
     paginate(page: number): void {
         if (this.pagination.page == page) return;
-        if (this.urlPage > 0) {
-            this.state.navigate(this.state.urlSegments.map((segment, index) => {
-                return index == this.urlPage ? page : segment.path;
-            }));
+        if (!this.urlParam) {
+            this.pagination.paginate(page);
             return;
         }
-        this.pagination.paginate(page);
+        const params = Object.assign({}, this.state.params);
+        params[this.urlParam] = page.toString();
+        const path = StateService.toPath(this.state.route, params);
+        this.state.navigateByUrl(path);
     }
 
     protected setPages(): number {
