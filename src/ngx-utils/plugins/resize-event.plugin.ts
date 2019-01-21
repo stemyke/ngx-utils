@@ -1,14 +1,13 @@
 import {ɵangular_packages_platform_browser_platform_browser_g as EventManagerPlugin} from "@angular/platform-browser";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
+import elementResizeDetectorMaker from "element-resize-detector";
 import {StringUtils} from "../utils/string.utils";
 import {UniversalService} from "../services/universal.service";
 
 function emptyRemove(): void {
 
 }
-
-declare const elementResizeDetectorMaker: any;
 
 @Injectable()
 export class ResizeEventPlugin extends EventManagerPlugin {
@@ -30,9 +29,6 @@ export class ResizeEventPlugin extends EventManagerPlugin {
         const zone = this.manager.getZone();
         return zone.runOutsideAngular(() => {
             if (this.universal.isServer) return emptyRemove;
-            if (typeof elementResizeDetectorMaker == "undefined") {
-                throw Error("element-resize-detector library is not loaded. Please load it: https://www.npmjs.com/package/element-resize-detector");
-            }
             ResizeEventPlugin.detector = ResizeEventPlugin.detector || elementResizeDetectorMaker({strategy: ResizeEventPlugin.strategy});
             ResizeEventPlugin.detector.listenTo(element, el => {
                 zone.run(() => handler(el));

@@ -4,6 +4,10 @@
 
 <p>Blaaa</p>
 
+<div style="width: 100%" (resize)="onResizeEvent()">
+    Balfék
+</div>
+
 <textarea [ngModel]="text" (ngModelChange)="changeText($event)"></textarea>
 
 <input type="number" [ngModel]="multiplier" (ngModelChange)="changeMultiplier($event)"/>

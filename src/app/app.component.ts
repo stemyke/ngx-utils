@@ -309,6 +309,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         ];
     }
 
+    onResizeEvent(): void {
+        console.log("Something target is resized...");
+    }
+
     ngAfterViewInit(): void {
         this.changeFont(Object.keys(this.fonts)[0]);
     }
