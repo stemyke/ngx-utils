@@ -50,7 +50,7 @@ export class PaginationMenuComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     paginate(page: number): void {
-        if (this.pagination.page == page) return;
+        if (this.pagination.page == page || this.pagination.maxPage < page || page < 1) return;
         if (!this.urlParam) {
             this.pagination.paginate(page);
             return;
@@ -68,7 +68,7 @@ export class PaginationMenuComponent implements OnInit, OnDestroy, OnChanges {
         let endPage = startPage + this.maxSize - 1;
         if (endPage > totalPages) {
             endPage = totalPages;
-            startPage = endPage - this.maxSize + 1;
+            startPage = Math.max(endPage - this.maxSize + 1, 1);
         }
         const pages: number[] = [];
         for (let num = startPage; num <= endPage; num++) {
