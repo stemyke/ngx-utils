@@ -1,7 +1,9 @@
 import * as FontFaceObserver from "fontfaceobserver";
+import * as JsZip from "jszip";
+import { saveAs } from "file-saver";
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation} from "@angular/core";
 import {ObjectUtils} from "../ngx-utils/utils/object.utils";
-import {CanvasUtils, UniversalService} from "../public_api";
+import {CanvasUtils, LoaderUtils, StringUtils, UniversalService} from "../public_api";
 
 @Component({
     selector: "app-root",
@@ -279,19 +281,19 @@ export class AppComponent implements OnInit, AfterViewInit {
         }
         if (!Array.isArray(this.reviewMap)) {
             const isModificator = ids.findIndex(id => !this.manufacturing[id].productId) < 0;
-            this.reviewMap = isModificator ? this.modificatorReviewMap: this.configuratorReviewMap;
+            this.reviewMap = isModificator ? this.modificatorReviewMap : this.configuratorReviewMap;
         }
         ids.forEach(id => {
             const ring = this.manufacturing[id];
-            ring.sex =  !ring.sex ? this.i18n["ring.mode." + id] : this.i18n["tab.yourrings.ring." + ring.sex];
+            ring.sex = !ring.sex ? this.i18n["ring.mode." + id] : this.i18n["tab.yourrings.ring." + ring.sex];
             ring.image = this.images[id];
         });
         this.ids = ids;
         this.fonts = {
-            "garden-grown" : .38,
-            "limon-script-bold" : .25,
-            "helvetica-neue" : .23,
-            "baskerville" : .3
+            "garden-grown": .38,
+            "limon-script-bold": .25,
+            "helvetica-neue": .23,
+            "baskerville": .3
         };
         this.tableData = [
             {
@@ -333,33 +335,87 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     drawText(): void {
-        this.font.then(fontInfo => {
-            const lineHeight = 1.1;
-            const settings = {canvasWidth: 1417, canvasHeight: 590, boxWidth: 1370.07873876, boxHeight: 531.49606245};
-            const lines: string[] = this.text.split("\n");
-            this.canvas.width = settings.canvasWidth;
-            this.canvas.height = settings.canvasHeight;
-            const size = CanvasUtils.measureTextFontSize(settings.boxWidth, settings.boxHeight, lines, fontInfo.family, lineHeight, this.measureCanvas.nativeElement);
-            const ctx = this.canvas.getContext("2d");
-            const lineSize = size * lineHeight;
-            const textBlockSize = lines.length * lineSize;
-            const x = settings.canvasWidth * .5;
-            let y = (settings.canvasHeight - textBlockSize) * .5;
-            console.log({textBlockSize, y, x, size});
-            ctx.strokeRect(0, y, settings.canvasWidth, textBlockSize);
-            if (true || this.universal.isFirefox) {
-                console.log("Firefox");
-                const multi = !ObjectUtils.isNumber(this.fonts[fontInfo.family]) ? this.multiplier : this.fonts[fontInfo.family];
-                y = y + lineSize - lineSize * multi;
-                CanvasUtils.drawLines(ctx, lines, fontInfo.family, size, lineHeight, "center", "alphabetic", x, y);
-            } else {
-                const baseLine = fontInfo.family == "limon-script-bold" ? "top" : "hanging";
-                CanvasUtils.drawLines(ctx, lines, fontInfo.family, size, lineHeight, "center", baseLine, x, y);
+        const bsize = 1440;
+        const size = 1018;
+        const height = (bsize - size) * .5;
+        this.canvas.width = bsize;
+        this.canvas.height = bsize;
+        const ctx = this.canvas.getContext("2d");
+        const img = new Image();
+        const pages = [0, -size];
+        let imgIndex = 1;
+        const zip = new JsZip();
+        const loadNext = () => {
+            if (imgIndex < 23) {
+                img.src = `/assets/fonya-tetelek-${ObjectUtils.pad(imgIndex, 2)}.jpg`;
+                imgIndex++;
+                return;
             }
-            ctx.fillStyle = "black";
-        }, () => {
-            console.log("Cant load font");
-        });
+            zip.generateAsync({type: "blob"}).then(function(content) {
+                // see FileSaver.js
+                saveAs(content, "fonya-tetelek.zip");
+            });
+            console.log("End");
+        };
+        img.onload = () => {
+            const halfHeight = img.height * .5;
+            const scale = size / halfHeight;
+            let ix = 0;
+            const genPage = () => {
+                if (ix < pages.length) {
+                    ctx.save();
+                    ctx.translate(0, pages[ix] + height);
+                    ctx.scale(scale, scale);
+                    ctx.drawImage(img, 0, 0);
+                    ctx.restore();
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(0, 0, bsize, height);
+                    ctx.fillRect(0, bsize - height, bsize, height);
+                    CanvasUtils.manipulatePixels(this.canvas, ctx, color => {
+                        color.r = 255 - color.r;
+                        color.g = 255 - color.g;
+                        color.b = 255 - color.b;
+                        return color;
+                    });
+                    this.canvas.toBlob(blob => {
+                        zip.file(`fonya-tetelek-${ObjectUtils.pad(imgIndex, 2)}-${ix}.png`, blob);
+                        genPage();
+                    });
+                    ix++;
+                    return;
+                }
+                loadNext();
+            };
+            genPage();
+        };
+        loadNext();
+        // this.font.then(fontInfo => {
+        //     const lineHeight = 1.1;
+        //     const settings = {canvasWidth: 1417, canvasHeight: 590, boxWidth: 1370.07873876, boxHeight: 531.49606245};
+        //     const lines: string[] = this.text.split("\n");
+        //     this.canvas.width = settings.canvasWidth;
+        //     this.canvas.height = settings.canvasHeight;
+        //     const size = CanvasUtils.measureTextFontSize(settings.boxWidth, settings.boxHeight, lines, fontInfo.family, lineHeight, this.measureCanvas.nativeElement);
+        //     const ctx = this.canvas.getContext("2d");
+        //     const lineSize = size * lineHeight;
+        //     const textBlockSize = lines.length * lineSize;
+        //     const x = settings.canvasWidth * .5;
+        //     let y = (settings.canvasHeight - textBlockSize) * .5;
+        //     console.log({textBlockSize, y, x, size});
+        //     ctx.strokeRect(0, y, settings.canvasWidth, textBlockSize);
+        //     if (true || this.universal.isFirefox) {
+        //         console.log("Firefox");
+        //         const multi = !ObjectUtils.isNumber(this.fonts[fontInfo.family]) ? this.multiplier : this.fonts[fontInfo.family];
+        //         y = y + lineSize - lineSize * multi;
+        //         CanvasUtils.drawLines(ctx, lines, fontInfo.family, size, lineHeight, "center", "alphabetic", x, y);
+        //     } else {
+        //         const baseLine = fontInfo.family == "limon-script-bold" ? "top" : "hanging";
+        //         CanvasUtils.drawLines(ctx, lines, fontInfo.family, size, lineHeight, "center", baseLine, x, y);
+        //     }
+        //     ctx.fillStyle = "black";
+        // }, () => {
+        //     console.log("Cant load font");
+        // });
     }
 
     getValue(path: string): any {

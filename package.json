@@ -71,7 +71,9 @@
         "tsickle": "0.33.1",
         "ng-packagr": "4.4.0",
         "fontfaceobserver": "2.0.13",
-        "jszip": "3.1.5"
+        "jszip": "3.1.5",
+        "file-saver": "2.0.0",
+        "stream": "0.0.2"
     },
     "main": "dist/bundles/stemy-ngx-utils.umd.js",
     "module": "dist/esm5/stemy-ngx-utils.js",
