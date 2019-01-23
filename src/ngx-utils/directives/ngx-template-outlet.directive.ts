@@ -8,6 +8,7 @@ import {
     TemplateRef,
     ViewContainerRef
 } from "@angular/core";
+import {ObjectUtils} from "../utils/object.utils";
 
 @Directive({
     selector: "[ngxTemplateOutlet]"
@@ -71,9 +72,17 @@ export class NgxTemplateOutletDirective implements OnChanges {
         for (const propName of props) {
             const desc = Object.getOwnPropertyDescriptor(ctxProto, propName);
             // Copy if its a getter and it is not $implicit
-            if (desc.get && propName !== "$implicit") Object.defineProperty(context, propName, desc);
+            if (desc.get && propName !== "$implicit") {
+                Object.defineProperty(context, propName, desc);
+                continue;
+            }
+            const func: Function = ObjectUtils.isFunction(desc.value) ? desc.value.bind(ctx) : null;
+            if (func && func !== ctxProto.constructor) {
+                context[propName] = func;
+            }
         }
         for (const propName of Object.keys(ctx)) {
+
             const desc = Object.getOwnPropertyDescriptor(ctxProto, propName);
             if (desc && desc.get && !desc.set) continue;
             context[propName] = ctx[propName];

@@ -299,7 +299,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 content: "Teszt",
             },
             {
-                title: "Cím2",
+                title: "Cím1",
                 content: "Teszt 2",
             },
             {

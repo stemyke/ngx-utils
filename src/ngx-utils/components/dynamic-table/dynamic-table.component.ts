@@ -56,6 +56,9 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @ContentChild("wrapperTemplate")
     wrapperTemplate: TemplateRef<any>;
 
+    @ContentChild("filterTemplate")
+    filterTemplate: TemplateRef<any>;
+
     @ViewChild("columnsTemplate")
     columnsTemplate: TemplateRef<any>;
 
@@ -64,6 +67,9 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
 
     @ViewChild("defaultWrapperTemplate")
     defaultWrapperTemplate: TemplateRef<any>;
+
+    @ViewChild("defaultFilterTemplate")
+    defaultFilterTemplate: TemplateRef<any>;
 
     @ViewChild("pagination")
     private pagination: PaginationDirective;
@@ -100,6 +106,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
 
     ngAfterViewInit(): void {
         this.rowTemplate = this.rowTemplate || this.defaultRowTemplate;
+        this.filterTemplate = this.filterTemplate || this.defaultFilterTemplate;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -140,7 +147,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter);
     };
 
-    private loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean): Promise<IPaginationData> {
+    private loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string): Promise<IPaginationData> {
         if (!this.data) {
             return Promise.resolve({
                 total: 0,
@@ -154,9 +161,13 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         const dataLength = this.data.length;
         const length = Math.min(rowsPerPage, dataLength - from);
         const parallelData = this.parallelData || [];
-        const data = this.data.map((item, ix) => {
+        let data = this.data.map((item, ix) => {
             return new PaginationItemContext(item, parallelData[ix] || {}, dataLength, ix, ix);
         });
+        if (ObjectUtils.isString(filter) && filter.length > 0) {
+            const filterRx = new RegExp(filter, "gi");
+            data = data.filter(c => c.filter(filterRx));
+        }
         const items = orderBy ? data.sort(compare).splice(from, length) : data.splice(from, length);
         items.forEach((context, ix) => {
             context.index = from + ix;

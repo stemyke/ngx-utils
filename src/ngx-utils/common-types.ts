@@ -1,6 +1,7 @@
 import {EmbeddedViewRef, EventEmitter, InjectionToken, TemplateRef, TypeProvider} from "@angular/core";
 import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
 import {ReflectUtils} from "./utils/reflect.utils";
+import {ObjectUtils} from "./utils/object.utils";
 
 // --- Utils
 export interface IResolveFactory {
@@ -225,6 +226,17 @@ export class PaginationItemContext {
     get parallelRow(): any {
         console.log("DynamicTable parallelRow is deprecated use parallelItem instead");
         return this.parallelItem;
+    }
+
+    filter(filterRx: RegExp): boolean {
+        const keys = Object.keys(this.item);
+        for (const key of keys) {
+            const value = this.item[key];
+            if (ObjectUtils.isNullOrUndefined(value) || ObjectUtils.isObject(value)) continue;
+            const testValue = ObjectUtils.isString(value) ? value : value.toString();
+            if (testValue.match(filterRx)) return true;
+        }
+        return false;
     }
 }
 

@@ -1,12 +1,13 @@
 <div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [itemsPerPage]="itemsPerPage" [updateTime]="updateTime">
-    <div class="row" *ngIf="showFilter">
-        <div class="table-search col-xs-2 col-xs-push-10">
+    <ng-template #defaultFilterTemplate let-table>
+        <div class="table-search" *ngIf="table.showFilter">
             <input type="text"
                    class="form-control"
-                   [ngModel]="filter"
-                   (ngModelChange)="setFilter($event)"/>
+                   [ngModel]="table.filter"
+                   (ngModelChange)="table.setFilter($event)"/>
         </div>
-    </div>
+    </ng-template>
+    <ng-container [ngxTemplateOutlet]="filterTemplate || defaultFilterTemplate" [context]="this"></ng-container>
     <pagination-menu [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
     <div class="table-responsive">
 
