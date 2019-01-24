@@ -335,9 +335,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     drawText(): void {
-        const bsize = 1440;
-        const size = 1018;
-        const height = (bsize - size) * .5;
+        const bsize = 1655;
+        const size = 1170;
+        const msize = (bsize - size) * .5;
         this.canvas.width = bsize;
         this.canvas.height = bsize;
         const ctx = this.canvas.getContext("2d");
@@ -345,15 +345,18 @@ export class AppComponent implements OnInit, AfterViewInit {
         const pages = [0, -size];
         let imgIndex = 1;
         const zip = new JsZip();
+        const prefix = "kombo_kerdesek";
+        const lastIndex = 9;
+        const pad = lastIndex.toString(10).length;
         const loadNext = () => {
-            if (imgIndex < 23) {
-                img.src = `/assets/fonya-tetelek-${ObjectUtils.pad(imgIndex, 2)}.jpg`;
+            if (imgIndex <= lastIndex) {
+                img.src = `/assets/${prefix}-${ObjectUtils.pad(imgIndex, pad)}.jpg`;
                 imgIndex++;
                 return;
             }
             zip.generateAsync({type: "blob"}).then(function(content) {
                 // see FileSaver.js
-                saveAs(content, "fonya-tetelek.zip");
+                saveAs(content, `${prefix}.zip`);
             });
             console.log("End");
         };
@@ -364,13 +367,12 @@ export class AppComponent implements OnInit, AfterViewInit {
             const genPage = () => {
                 if (ix < pages.length) {
                     ctx.save();
-                    ctx.translate(0, pages[ix] + height);
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(0, 0, bsize, bsize);
+                    ctx.translate(0, pages[ix] + msize);
                     ctx.scale(scale, scale);
                     ctx.drawImage(img, 0, 0);
                     ctx.restore();
-                    ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, bsize, height);
-                    ctx.fillRect(0, bsize - height, bsize, height);
                     CanvasUtils.manipulatePixels(this.canvas, ctx, color => {
                         color.r = 255 - color.r;
                         color.g = 255 - color.g;
@@ -378,7 +380,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                         return color;
                     });
                     this.canvas.toBlob(blob => {
-                        zip.file(`fonya-tetelek-${ObjectUtils.pad(imgIndex, 2)}-${ix}.png`, blob);
+                        zip.file(`${prefix}-${ObjectUtils.pad(imgIndex, pad)}-${ix}.png`, blob);
                         genPage();
                     });
                     ix++;
