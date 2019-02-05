@@ -1,19 +1,19 @@
 <div class="pagination-menu" *ngIf="pagination.total > pagination.itemsPerPage">
     <ul class="pagination">
         <li class="page-item" [ngClass]="{disabled: !hasPrev}" *ngIf="boundaryLinks">
-            <a class="page-link" (click)="paginate(1)">&lt;&lt;</a>
+            <a class="page-link" (click)="paginate(1)" [innerHTML]="firstLabel | safe"></a>
         </li>
         <li class="page-item" [ngClass]="{disabled: !hasPrev}" *ngIf="directionLinks">
-            <a class="page-link" (click)="paginate(pagination.page - 1)">&lt;</a>
+            <a class="page-link" (click)="paginate(pagination.page - 1)" [innerHTML]="prevLabel | safe"></a>
         </li>
         <li class="page-item" [ngClass]="{active: pagination.page == page}" *ngFor="let page of pages">
             <a class="page-link" [ngClass]="{active: pagination.page == page}" (click)="paginate(page)">{{ page }}</a>
         </li>
         <li class="page-item" [ngClass]="{disabled: !hasNext}" *ngIf="directionLinks">
-            <a class="page-link" (click)="paginate(pagination.page + 1)">&gt;</a>
+            <a class="page-link" (click)="paginate(pagination.page + 1)" [innerHTML]="nextLabel | safe"></a>
         </li>
-        <li class="page-item" [ngClass]="{disabled: !hasPrev}" *ngIf="boundaryLinks">
-            <a class="page-link" (click)="paginate(pagination.maxPage)">&gt;&gt;</a>
+        <li class="page-item" [ngClass]="{disabled: !hasNext}" *ngIf="boundaryLinks">
+            <a class="page-link" (click)="paginate(pagination.maxPage)" [innerHTML]="lastLabel | safe"></a>
         </li>
     </ul>
 </div>

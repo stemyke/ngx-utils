@@ -1,8 +1,9 @@
-import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from "@angular/core";
+import {Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from "@angular/core";
 import {Subscription} from "rxjs";
 import {ObjectUtils} from "../../utils/object.utils";
 import {StateService} from "../../services/state.service";
 import {PaginationDirective} from "../../directives/pagination.directive";
+import {ICON_SERVICE, IIconService} from "../../common-types";
 
 @Component({
     moduleId: module.id,
@@ -17,6 +18,10 @@ export class PaginationMenuComponent implements OnInit, OnDestroy, OnChanges {
     @Input() boundaryLinks: boolean;
 
     pages: number[];
+    firstLabel: string;
+    prevLabel: string;
+    nextLabel: string;
+    lastLabel: string;
 
     get hasPrev(): boolean {
         return this.pagination.page > 1;
@@ -28,14 +33,22 @@ export class PaginationMenuComponent implements OnInit, OnDestroy, OnChanges {
 
     private onRefresh: Subscription;
 
-    constructor(public state: StateService, public pagination: PaginationDirective) {
+    constructor(public state: StateService, public pagination: PaginationDirective, @Inject(ICON_SERVICE) public icons: IIconService) {
         this.maxSize = 5;
         this.directionLinks = true;
         this.boundaryLinks = true;
+        this.firstLabel = `<<`;
+        this.prevLabel = `<`;
+        this.nextLabel = `>`;
+        this.lastLabel = `>>`;
     }
 
     ngOnInit(): void {
         this.onRefresh = this.pagination.onRefresh.subscribe(() => this.setPages());
+        this.setIcon("firstLabel", "first-page");
+        this.setIcon("prevLabel", "prev-page");
+        this.setIcon("nextLabel", "next-page");
+        this.setIcon("lastLabel", "last-page");
     }
 
     ngOnDestroy(): void {
@@ -59,6 +72,13 @@ export class PaginationMenuComponent implements OnInit, OnDestroy, OnChanges {
         params[this.urlParam] = page.toString();
         const path = StateService.toPath(this.state.route, params);
         this.state.navigateByUrl(path);
+    }
+
+    protected setIcon(labelName: string, icon: string): void {
+        this.icons.getIcon(icon, icon, false).then(i => {
+            if (i == icon) return;
+            this[labelName] = i;
+        });
     }
 
     protected setPages(): number {

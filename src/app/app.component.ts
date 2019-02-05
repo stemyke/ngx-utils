@@ -307,6 +307,42 @@ export class AppComponent implements OnInit, AfterViewInit {
             {
                 title: "Cím3",
                 content: "Teszt 3",
+            },
+            {
+                title: "Cím3",
+                content: "Teszt 3",
+            },
+            {
+                title: "Cím3",
+                content: "Teszt 3",
+            },
+            {
+                title: "Cím3",
+                content: "Teszt 3",
+            },
+            {
+                title: "Cím3",
+                content: "Teszt 3",
+            },
+            {
+                title: "Cím3",
+                content: "Teszt 3",
+            },
+            {
+                title: "Cím3",
+                content: "Teszt 3",
+            },
+            {
+                title: "Cím3",
+                content: "Teszt 3",
+            },
+            {
+                title: "Cím3",
+                content: "Teszt 3",
+            },
+            {
+                title: "Cím3",
+                content: "Teszt 3",
             }
         ];
     }
@@ -316,7 +352,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        this.changeFont(Object.keys(this.fonts)[0]);
+        // this.changeFont(Object.keys(this.fonts)[0]);
     }
 
     changeText(text: string): void {
@@ -335,8 +371,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     drawText(): void {
-        const bsize = 1655;
-        const size = 1170;
+        const bsize = 5000;
+        const size = 3500;
         const msize = (bsize - size) * .5;
         this.canvas.width = bsize;
         this.canvas.height = bsize;
@@ -345,12 +381,13 @@ export class AppComponent implements OnInit, AfterViewInit {
         const pages = [0, -size];
         let imgIndex = 1;
         const zip = new JsZip();
-        const prefix = "kombo_kerdesek";
-        const lastIndex = 9;
+        const readPrefix = "PDFtoJPG.me";
+        const prefix = "linear-prog";
+        const lastIndex = 26;
         const pad = lastIndex.toString(10).length;
         const loadNext = () => {
             if (imgIndex <= lastIndex) {
-                img.src = `/assets/${prefix}-${ObjectUtils.pad(imgIndex, pad)}.jpg`;
+                img.src = `/assets/${readPrefix}-${ObjectUtils.pad(imgIndex, pad)}.jpg`;
                 imgIndex++;
                 return;
             }
@@ -374,15 +411,16 @@ export class AppComponent implements OnInit, AfterViewInit {
                     ctx.drawImage(img, 0, 0);
                     ctx.restore();
                     CanvasUtils.manipulatePixels(this.canvas, ctx, color => {
-                        color.r = 255 - color.r;
-                        color.g = 255 - color.g;
-                        color.b = 255 - color.b;
+                        const greyscale = 255 - (color.r * .3 + color.g * .59 + color.b * .11);
+                        color.r = greyscale;
+                        color.g = greyscale;
+                        color.b = greyscale;
                         return color;
                     });
                     this.canvas.toBlob(blob => {
-                        zip.file(`${prefix}-${ObjectUtils.pad(imgIndex, pad)}-${ix}.png`, blob);
+                        zip.file(`${prefix}-${ObjectUtils.pad(imgIndex, pad)}-${ix}.jpg`, blob);
                         genPage();
-                    });
+                    }, "image/jpeg", .98);
                     ix++;
                     return;
                 }
