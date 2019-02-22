@@ -1,10 +1,3 @@
-import {FactoryDependencies} from "./ngx-utils/common-types";
-import {LoaderUtils} from "./ngx-utils/utils/loader.utils";
-import {ObservableUtils} from "./ngx-utils/utils/observable.utils";
-import {ArrayUtils} from "./ngx-utils/utils/array.utils";
-import {SetUtils} from "./ngx-utils/utils/set.utils";
-import {UniqueUtils} from "./ngx-utils/utils/unique.utils";
-
 export {
     IResolveFactory,
     CanvasColor,
