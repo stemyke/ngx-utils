@@ -60,6 +60,7 @@ export {ArrayUtils} from "./ngx-utils/utils/array.utils";
 export {SetUtils} from "./ngx-utils/utils/set.utils";
 export {TimerUtils} from "./ngx-utils/utils/timer.utils";
 export {UniqueUtils} from "./ngx-utils/utils/unique.utils";
+export {Vector} from "./ngx-utils/utils/vector";
 
 export {UniversalService} from "./ngx-utils/services/universal.service";
 export {IStateInfo, StateService} from "./ngx-utils/services/state.service";

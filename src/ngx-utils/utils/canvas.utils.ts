@@ -49,24 +49,13 @@ const shg_table = [
 
 export class CanvasUtils {
 
-    static manipulatePixels(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, colorTransformer: (color: CanvasColor) => CanvasColor): void {
+    static manipulatePixels(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, colorTransformer: (color: CanvasColor, greyscale?: number) => CanvasColor): void {
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imgData.data;
         for (let i = 0, n = pixels.length; i < n; i += 4) {
-            const color = colorTransformer(new CanvasColor(pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]));
-            pixels[i] = color.r;
-            pixels[i + 1] = color.g;
-            pixels[i + 2] = color.b;
-            pixels[i + 3] = color.a;
-        }
-        ctx.putImageData(imgData, 0, 0);
-    }
-
-    static manipulatePixel(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, colorTransformer: (color: CanvasColor) => CanvasColor, x: number, y: number): void {
-        const imgData = ctx.getImageData(x, y, 1, 1);
-        const pixels = imgData.data;
-        for (let i = 0, n = pixels.length; i < n; i += 4) {
-            const color = colorTransformer(new CanvasColor(pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]));
+            const clr = new CanvasColor(pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]);
+            const greyscale = clr.r * .3 + clr.g * .59 + clr.b * .11;
+            const color = colorTransformer(clr, greyscale);
             pixels[i] = color.r;
             pixels[i + 1] = color.g;
             pixels[i + 2] = color.b;
@@ -81,8 +70,7 @@ export class CanvasUtils {
         colorTransformer = ObjectUtils.isFunction(colorTransformer) ? colorTransformer : ((color: CanvasColor, limit: boolean): CanvasColor => {
             return limit ? max : min;
         });
-        CanvasUtils.manipulatePixels(canvas, ctx, (color) => {
-            const greyscale = color.r * .3 + color.g * .59 + color.b * .11;
+        CanvasUtils.manipulatePixels(canvas, ctx, (color, greyscale) => {
             return colorTransformer(color, greyscale > threshold, greyscale);
         });
     }
