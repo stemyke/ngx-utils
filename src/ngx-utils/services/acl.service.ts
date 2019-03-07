@@ -38,8 +38,10 @@ export class AclService {
                     AclService.checkStateDirty(info);
                     return;
                 }
-                const returnState = info.route.data.returnState || info.guard.getReturnState(info.route);
-                if (returnState) this.state.navigate(returnState);
+                (info.guard as AuthGuard).getReturnState(info.route).then(returnState => {
+                    if (!returnState) return;
+                    this.state.navigate(returnState);
+                });
             });
         });
         this.state.subscribe(() => {

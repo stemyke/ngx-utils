@@ -2,6 +2,7 @@ import {Inject, Injectable, Injector} from "@angular/core";
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from "@angular/router";
 import {AUTH_SERVICE, IAuthService, IRoute, RouteValidator} from "../common-types";
 import {ReflectUtils} from "./reflect.utils";
+import {ObjectUtils} from "./object.utils";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,9 +17,9 @@ export class AuthGuard implements CanActivate {
     }
 
     checkRoute(route: IRoute, next?: ActivatedRouteSnapshot): Promise<boolean> {
-        const routeData = route.data;
+        const routeData = route.data || {};
         if (!routeData.guards)
-            return Promise.resolve(!route.canActivate || this.auth.isAuthenticated);
+            return Promise.resolve(route.component && (!route.canActivate || this.auth.isAuthenticated));
         return new Promise<boolean>(resolve => {
             const guards = routeData.guards.map(g => {
                 const guard = ReflectUtils.resolve<RouteValidator>(g, this.injector);
@@ -32,33 +33,65 @@ export class AuthGuard implements CanActivate {
 
     canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
         const route = <IRoute>next.routeConfig;
-        const returnState = route.data.returnState || this.getReturnState(route);
         return new Promise<boolean>(resolve => {
             this.auth.checkAuthenticated().then(() => {
                 this.checkRoute(route, next).then(hasRights => {
                     resolve(hasRights);
-                    if (!hasRights && returnState)
-                        this.router.navigate(returnState);
+                    if (!hasRights) {
+                        this.getReturnState(route).then(returnState => {
+                            if (!returnState) return;
+                            this.router.navigate(returnState);
+                        });
+                    }
                 });
             });
         });
     }
 
-    getReturnState(route: IRoute): string[] {
-        return this.getReturnStateRecursive(route, this.router.config);
+    getReturnState(route: IRoute): Promise<string[]> {
+        if (!route) return Promise.resolve(null);
+        if (ObjectUtils.isObject(route.data) && ObjectUtils.isArray(route.data.returnState)) {
+            return Promise.resolve(route.data.returnState);
+        }
+        const path = [];
+        const config = this.getConfig(route, this.router.config, path);
+        return new Promise<string[]>(resolve => {
+            this.getReturnStateRecursive(config).then(rs => {
+                if (!ObjectUtils.isArray(rs)) {
+                    console.log(rs);
+                    resolve(rs);
+                    return;
+                }
+                console.log(path.concat(rs));
+                return path.concat(rs);
+            });
+        });
     }
 
-    private getReturnStateRecursive(route: IRoute, config: IRoute[]): string[] {
+    private getReturnStateRecursive(config: IRoute[], c: number = 0): Promise<string[]> {
+        if (!config || c >= config.length) return Promise.resolve(null);
+        return new Promise<string[]>(resolve => {
+            const route = config[c];
+            this.checkRoute(route).then(res => {
+                if (res) {
+                    resolve([route.path]);
+                    return;
+                }
+                this.getReturnStateRecursive(config, c + 1).then(resolve);
+            });
+        });
+    }
+
+    private getConfig(route: IRoute, config: IRoute[], path: string[]): IRoute[] {
         if (!config) return null;
-        const match = config.find(t => t == route);
-        if (match) {
-            const matchRoute = config.find(t => t.component && !t.canActivate);
-            return matchRoute ? [matchRoute.path] : [];
+        const match = config.findIndex(t => t == route);
+        if (match >= 0) return config;
+        for (let subConfig of config) {
+            path.push(subConfig.path);
+            const match = this.getConfig(route, subConfig.children, path);
+            if (!!match) return match;
+            path.length -= 1;
         }
-        const matchState = config.map(t => ({
-            route: t,
-            match: this.getReturnStateRecursive(route, t.children)
-        })).find(t => !!t.match);
-        return matchState ? [matchState.route.path].concat(matchState.match) : null;
+        return null;
     }
 }
