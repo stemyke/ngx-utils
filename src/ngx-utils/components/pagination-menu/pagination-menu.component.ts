@@ -52,6 +52,7 @@ export class PaginationMenuComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     ngOnDestroy(): void {
+        if (!this.onRefresh) return;
         this.onRefresh.unsubscribe();
     }
 

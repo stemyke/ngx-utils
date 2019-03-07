@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
     checkRoute(route: IRoute, next?: ActivatedRouteSnapshot): Promise<boolean> {
         const routeData = route.data || {};
         if (!routeData.guards)
-            return Promise.resolve(route.component && (!route.canActivate || this.auth.isAuthenticated));
+            return Promise.resolve(!route.canActivate || this.auth.isAuthenticated);
         return new Promise<boolean>(resolve => {
             const guards = routeData.guards.map(g => {
                 const guard = ReflectUtils.resolve<RouteValidator>(g, this.injector);
@@ -70,7 +70,8 @@ export class AuthGuard implements CanActivate {
         if (!config || c >= config.length) return Promise.resolve(null);
         return new Promise<string[]>(resolve => {
             const route = config[c];
-            this.checkRoute(route).then(res => {
+            const check = !route.component ? Promise.resolve(false) : this.checkRoute(route);
+            check.then(res => {
                 if (res) {
                     resolve([route.path]);
                     return;
