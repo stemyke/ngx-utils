@@ -21,6 +21,20 @@ export class FileUtils {
         return <File>data;
     }
 
+    static dataToBlob(data: string): Blob {
+        const parts = data.split(",");
+        const byteString = atob(parts[1]);
+        const mimeString = parts[0].split(":")[1].split(";")[0];
+
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+
+        return new Blob([ab], {type: mimeString});
+    }
+
     static saveBlob(blob: Blob, fileName: string): void {
         if (typeof saveAs == "undefined") {
             throw Error("FileSaver library is not loaded. Please load it: https://www.npmjs.com/package/file-saver");
