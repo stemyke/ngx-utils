@@ -269,6 +269,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
+        console.log(this.universal.isFirefox, this.universal.isChrome);
         if (!this.manufacturing) return;
         let ids = Object.keys(this.manufacturing);
         const order = this.orderdata;
