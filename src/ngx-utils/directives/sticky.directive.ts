@@ -1,4 +1,4 @@
-import {Directive, ElementRef, HostBinding, HostListener, OnDestroy, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Directive, ElementRef, HostBinding, HostListener, OnDestroy, OnInit} from "@angular/core";
 import {Subscription} from "rxjs";
 import {ITimer} from "../common-types";
 import {TimerUtils} from "../utils/timer.utils";
@@ -16,9 +16,12 @@ export class StickyDirective implements OnInit, OnDestroy {
     private updateTimer: ITimer;
     private eventForwarded: Subscription;
 
-    constructor(private events: EventsService, private element: ElementRef) {
+    constructor(private cdr: ChangeDetectorRef, private events: EventsService, private element: ElementRef) {
         this.parentElement = this.element.nativeElement.parentElement;
-        this.updateTimer = TimerUtils.createTimeout();
+        this.updateTimer = TimerUtils.createTimeout(() => {
+            this.isUpdating = false;
+            this.cdr.detectChanges();
+        }, 10);
     }
 
     ngOnInit(): void {
@@ -37,7 +40,7 @@ export class StickyDirective implements OnInit, OnDestroy {
         const distanceToTop = this.parentElement.getBoundingClientRect().top;
         this.isSticky = distanceToTop < 1;
         this.isUpdating = true;
-        this.updateTimer.clear();
-        this.updateTimer.set(() => this.isUpdating = false, 10);
+        this.cdr.detectChanges();
+        this.updateTimer.run();
     }
 }
