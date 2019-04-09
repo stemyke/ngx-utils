@@ -4,6 +4,7 @@ import {
     ɵangular_packages_platform_browser_platform_browser_g as EventManagerPlugin
 } from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
+import { DeviceDetectorModule } from "ngx-device-detector";
 import {
     AUTH_SERVICE, IAuthService, ICON_SERVICE, IIconService, ILanguageService, IPromiseService, IToasterService, LANGUAGE_SERVICE,
     PROMISE_SERVICE, TOASTER_SERVICE
@@ -172,13 +173,15 @@ export const providers = [
     ],
     imports: [
         CommonModule,
-        FormsModule
+        FormsModule,
+        DeviceDetectorModule.forRoot()
     ],
     exports: [
         ...pipes,
         ...directives,
         ...components,
-        FormsModule
+        FormsModule,
+        DeviceDetectorModule
     ],
     providers: [
         ...pipes,

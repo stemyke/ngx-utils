@@ -1,6 +1,6 @@
 import {Inject, Injectable, PLATFORM_ID} from "@angular/core";
 import {isPlatformBrowser, isPlatformServer} from "@angular/common";
-import * as bowser from "bowser";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 /**
  * Use this service to determine which is the current environment
@@ -16,30 +16,46 @@ export class UniversalService {
         return isPlatformServer(this.platformId);
     }
 
+    get browserName(): string {
+        return this.dds.browser;
+    }
+
+    get browserVersion(): string {
+        return this.dds.browser_version;
+    }
+
     get isExplorer(): boolean {
-        return bowser.msie;
+        return this.dds.browser == "ie";
     }
 
     get isEdge(): boolean {
-        return bowser.msedge;
+        return this.dds.browser == "ms-edge";
     }
 
     get isChrome(): boolean {
-        return bowser.chrome;
+        return this.dds.browser == "chrome";
     }
 
     get isFirefox(): boolean {
-        return bowser.firefox;
+        return this.dds.browser == "firefox";
+    }
+
+    get isSafari(): boolean {
+        return this.dds.browser == "safari";
     }
 
     get isTablet(): boolean {
-        return bowser.tablet;
+        return this.dds.isTablet();
     }
 
     get isMobile(): boolean {
-        return bowser.mobile;
+        return this.dds.isMobile();
     }
 
-    constructor(@Inject(PLATFORM_ID) private platformId: string) {
+    get isDesktop(): boolean {
+        return this.dds.isDesktop();
+    }
+
+    constructor(@Inject(PLATFORM_ID) private platformId: string, private dds: DeviceDetectorService) {
     }
 }
