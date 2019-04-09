@@ -181,6 +181,10 @@ export class ObjectUtils {
         return null !== value && !isNaN(value) && "undefined" !== typeof value.getDate;
     }
 
+    static isBlob(value: any): value is Blob {
+        return value instanceof Blob || value instanceof File;
+    }
+
     static isBoolean(value: any): value is boolean {
         return typeof(value) == typeof(true);
     }
@@ -219,7 +223,7 @@ export class ObjectUtils {
 
     private static copyRecursive(target: any, source: any, predicate?: FilterPrecidate): any {
         predicate = predicate || defaultPredicate;
-        if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source)) return source;
+        if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source) || ObjectUtils.isBlob(source)) return source;
         if (ObjectUtils.isArray(source)) {
             target = ObjectUtils.isArray(target) ? Array.from(target) : [];
             source.forEach((item, index) => {
