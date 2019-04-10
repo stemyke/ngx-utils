@@ -1,6 +1,6 @@
 import {Inject, Injectable, PLATFORM_ID} from "@angular/core";
 import {isPlatformBrowser, isPlatformServer} from "@angular/common";
-import * as Bowser from "bowser";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 /**
  * Use this service to determine which is the current environment
@@ -17,74 +17,45 @@ export class UniversalService {
     }
 
     get browserName(): string {
-        this.init();
-        return this.name;
+        return this.dds.browser;
+    }
+
+    get browserVersion(): string {
+        return this.dds.browser_version;
     }
 
     get isExplorer(): boolean {
-        this.init();
-        return this.explorer;
+        return this.dds.browser == "ie";
     }
 
     get isEdge(): boolean {
-        this.init();
-        return this.edge;
+        return this.dds.browser == "ms-edge";
     }
 
     get isChrome(): boolean {
-        this.init();
-        return this.chrome;
+        return this.dds.browser == "chrome";
     }
 
     get isFirefox(): boolean {
-        this.init();
-        return this.firefox;
+        return this.dds.browser == "firefox";
     }
 
     get isSafari(): boolean {
-        this.init();
-        return this.safari;
+        return this.dds.browser == "safari";
     }
 
     get isTablet(): boolean {
-        this.init();
-        return this.tablet;
+        return this.dds.isTablet();
     }
 
     get isMobile(): boolean {
-        this.init();
-        return this.mobile;
+        return this.dds.isMobile();
     }
 
-    private readonly browser: any;
-    private initialized: boolean;
-    private name: string;
-    private explorer: boolean;
-    private edge: boolean;
-    private chrome: boolean;
-    private firefox: boolean;
-    private safari: boolean;
-    private tablet: boolean;
-    private mobile: boolean;
-
-    constructor(@Inject(PLATFORM_ID) private platformId: string) {
-        this.browser = isPlatformServer(this.platformId) ? null : Bowser.getParser(window.navigator.userAgent);
+    get isDesktop(): boolean {
+        return this.dds.isDesktop();
     }
 
-    private init(): void {
-        if (this.initialized) return;
-        this.initialized = true;
-        this.name = !this.browser ? "server" : this.browser.getBrowserName();
-        this.explorer = this.satisfies({ie: ">=1"});
-        this.edge = this.satisfies({edge: ">=1"});
-        this.chrome = this.satisfies({chrome: ">=1"});
-        this.firefox = this.satisfies({firefox: ">=1"});
-        this.safari = this.satisfies({safari: ">=1"});
-        this.tablet = this.satisfies({tablet: {android: ">=1", safari: ">=1"}});
-        this.mobile = this.satisfies({mobile: {android: ">=1", safari: ">=1"}});
-    }
-
-    satisfies(query: any): boolean {
-        return !this.browser ? false : this.browser.satisfies(query) || false;
+    constructor(@Inject(PLATFORM_ID) private platformId: string, private dds: DeviceDetectorService) {
     }
 }

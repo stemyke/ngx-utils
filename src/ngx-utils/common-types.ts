@@ -1,4 +1,4 @@
-import {EmbeddedViewRef, EventEmitter, InjectionToken, TemplateRef, TypeProvider} from "@angular/core";
+import {EmbeddedViewRef, EventEmitter, InjectionToken, NgZone, TemplateRef, TypeProvider} from "@angular/core";
 import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
@@ -100,7 +100,9 @@ export const TOASTER_SERVICE: InjectionToken<IToasterService> = new InjectionTok
 // --- Promise Service ---
 
 export interface IPromiseService {
-    promises: Promise<any>[];
+    zone: NgZone;
+    count: number;
+    onChanged: EventEmitter<number>;
     create<T>(executor: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void): Promise<T>;
     all(promises: Promise<any>[]): Promise<any>;
     resolve<T>(value: T | PromiseLike<T>): Promise<T>;
