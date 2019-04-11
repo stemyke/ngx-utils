@@ -2,6 +2,8 @@ export type FilterPrecidate = (value: any, key?: any, target?: any, source?: any
 export type IterateCallback = (value: any, key?: any) => void;
 
 const defaultPredicate: FilterPrecidate = () => true;
+const hasBlob = typeof Blob !== "undefined";
+const hasFile = typeof File !== "undefined";
 
 export class ObjectUtils {
 
@@ -182,7 +184,7 @@ export class ObjectUtils {
     }
 
     static isBlob(value: any): value is Blob {
-        return value instanceof Blob || value instanceof File;
+        return (hasBlob && value instanceof Blob) || (hasFile && value instanceof File);
     }
 
     static isBoolean(value: any): value is boolean {
