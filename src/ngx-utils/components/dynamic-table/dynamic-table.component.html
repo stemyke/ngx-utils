@@ -1,8 +1,11 @@
 <div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [itemsPerPage]="itemsPerPage" [updateTime]="updateTime">
     <ng-template #defaultFilterTemplate let-table>
         <div class="table-search" *ngIf="table.showFilter">
+            <label *ngIf="label" [attr.for]="tableId">{{ label | translate }}</label>
             <input type="text"
                    class="form-control"
+                   [attr.id]="tableId"
+                   [placeholder]="placeholder | translate"
                    [ngModel]="table.filter"
                    (ngModelChange)="table.setFilter($event)"/>
         </div>

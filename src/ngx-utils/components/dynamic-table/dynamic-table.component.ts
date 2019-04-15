@@ -20,6 +20,7 @@ import {
 import {ObjectUtils} from "../../utils/object.utils";
 import {DynamicTableTemplateDirective} from "../../directives/dynamic-table-template.directive";
 import {PaginationDirective} from "../../directives/pagination.directive";
+import {UniqueUtils} from "../../utils/unique.utils";
 
 @Component({
     moduleId: module.id,
@@ -28,6 +29,8 @@ import {PaginationDirective} from "../../directives/pagination.directive";
 })
 export class DynamicTableComponent implements AfterContentInit, AfterViewInit, OnChanges {
 
+    @Input() label: string;
+    @Input() placeholder: string;
     @Input() dataLoader: TableDataLoader;
     @Input() data: any[];
     @Input() parallelData: any[];
@@ -41,6 +44,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() orderBy: string;
     @Input() orderDescending: boolean;
 
+    tableId: string;
     templates: ITableTemplates;
     filter: string;
     orders: ITableColumns;
@@ -85,9 +89,11 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
 
     constructor() {
         this.dataLoader = this.loadLocalData;
+        this.placeholder = "";
+        this.tableId = UniqueUtils.uuid();
+        this.templates = {};
         this.filter = "";
         this.orders = {};
-        this.templates = {};
     }
 
     ngAfterContentInit(): void {
