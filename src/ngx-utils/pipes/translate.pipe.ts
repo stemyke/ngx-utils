@@ -10,14 +10,11 @@ import {ObjectUtils} from "../utils/object.utils";
 export class TranslatePipe implements PipeTransform {
 
     private lang: string;
+    private disabled: boolean;
     private query: TranslationQuery;
     private args: any[];
     private params: any;
     private lastValue: string;
-
-    get currentLang(): string {
-        return this.language.currentLanguage;
-    }
 
     constructor(@Inject(LANGUAGE_SERVICE) private language: ILanguageService) {
 
@@ -26,9 +23,14 @@ export class TranslatePipe implements PipeTransform {
     transform(query: TranslationQuery, ...args: any[]): string {
         if (!query) return "";
         let dirty = false;
-        const lang = this.currentLang;
+        const lang = this.language.currentLanguage;
         if (this.lang !== lang) {
             this.lang = lang;
+            dirty = true;
+        }
+        const disabled = this.language.disableTranslations;
+        if (this.disabled !== disabled) {
+            this.disabled = disabled;
             dirty = true;
         }
         if (!ObjectUtils.equals(this.query, query)) {
@@ -59,7 +61,14 @@ export class TranslatePipe implements PipeTransform {
                 this.lastValue = Array.isArray(query) ? this.language.getTranslationFromArray(query, this.params, lang) : this.language.getTranslationFromObject(query, this.params, lang);
                 return this.lastValue;
             }
-            this.language.getTranslation(query, this.params).then(value => this.lastValue = value);
+            if (this.disabled) {
+                this.lastValue = query;
+                return this.lastValue;
+            }
+            this.language.getTranslation(query, this.params).then(value => {
+                this.lastValue = value;
+                this.language.collectTranslation(query, value);
+            });
         }
         return this.lastValue;
     }

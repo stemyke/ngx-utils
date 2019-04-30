@@ -33,10 +33,16 @@ export class StaticLanguageService implements ILanguageService {
         none: {}
     };
 
+    disableTranslations: boolean = false;
+
     addLanguages(languages: string[]): void {
         languages.forEach(lang => {
             this.translations[lang] = {};
         });
+    }
+
+    collectTranslation(query: string, result: string): void {
+
     }
 
     getTranslation(key: string, params?: any): Promise<string> {
