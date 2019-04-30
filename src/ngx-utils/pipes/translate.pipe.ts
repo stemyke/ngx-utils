@@ -20,7 +20,7 @@ export class TranslatePipe implements PipeTransform {
         return this.language.currentLanguage
     }
 
-    constructor(@Inject(LANGUAGE_SERVICE) private language: ILanguageService) {
+    constructor(@Inject(LANGUAGE_SERVICE) protected language: ILanguageService) {
 
     }
 
