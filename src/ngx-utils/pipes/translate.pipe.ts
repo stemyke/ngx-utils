@@ -16,6 +16,10 @@ export class TranslatePipe implements PipeTransform {
     private params: any;
     private lastValue: string;
 
+    get currentLang(): string {
+        return this.language.currentLanguage
+    }
+
     constructor(@Inject(LANGUAGE_SERVICE) private language: ILanguageService) {
 
     }
@@ -23,7 +27,7 @@ export class TranslatePipe implements PipeTransform {
     transform(query: TranslationQuery, ...args: any[]): string {
         if (!query) return "";
         let dirty = false;
-        const lang = this.language.currentLanguage;
+        const lang = this.currentLang;
         if (this.lang !== lang) {
             this.lang = lang;
             dirty = true;
