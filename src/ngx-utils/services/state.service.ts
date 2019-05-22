@@ -131,7 +131,6 @@ export class StateService {
             }
             snapshot = snapshot.firstChild;
         }
-        console.log(components);
         this.comp = components[components.length - 1];
         this.shot = snapshot;
         this.stateInfo = {
