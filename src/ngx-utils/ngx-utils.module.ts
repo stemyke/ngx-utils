@@ -183,10 +183,7 @@ export const providers = [
         FormsModule,
         DeviceDetectorModule
     ],
-    providers: [
-        ...pipes,
-        AuthGuard
-    ]
+    providers: pipes
 })
 export class NgxUtilsModule {
     static forRoot(): ModuleWithProviders {

@@ -8,7 +8,7 @@ import {ObjectUtils} from "./object.utils";
 export class AuthGuard implements CanActivate {
 
     constructor(@Inject(Injector) protected injector: Injector, @Inject(Router) protected router: Router, @Inject(AUTH_SERVICE) protected auth: IAuthService) {
-
+        console.log("AuthGuard", this.injector);
     }
 
     checkRouteMenu(route: IRoute): Promise<boolean> {

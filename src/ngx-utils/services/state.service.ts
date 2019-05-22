@@ -119,22 +119,25 @@ export class StateService {
         if (!(event instanceof NavigationEnd)) return;
         const routerStateSnapshot = this.router.routerState.snapshot;
         let snapshot = routerStateSnapshot.root;
-        let context: OutletContext = null;
+        let context: OutletContext = this.contexts.getContext("primary");
         let segments = snapshot.url;
         const components: any[] = [];
+        while (context && context.outlet) {
+            components.push(context.outlet.component);
+            context = !context.children ? null : context.children.getContext("primary");
+        }
         while (snapshot.firstChild) {
             snapshot = snapshot.firstChild;
             segments = segments.concat(snapshot.url);
-            context = (context ? context.children : this.contexts).getContext("primary");
-            components.push(context.outlet.component);
         }
-        this.comp = context ? context.outlet.component : null;
+        this.comp = components[components.length - 1];
         this.shot = snapshot;
         this.stateInfo = {
             url: routerStateSnapshot.url,
             segments: segments,
             components: components
         };
+        console.log(this.comp, this.stateInfo);
         this.subject.next(this.shot);
     };
 }
