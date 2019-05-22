@@ -1,13 +1,14 @@
-import {InjectionToken, ModuleWithProviders, NgModule} from "@angular/core";
-import {
-    EVENT_MANAGER_PLUGINS,
-    ɵangular_packages_platform_browser_platform_browser_g as EventManagerPlugin
-} from "@angular/platform-browser";
+import {ModuleWithProviders, NgModule} from "@angular/core";
+import {EVENT_MANAGER_PLUGINS} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
-import { DeviceDetectorModule } from "ngx-device-detector";
+import {DeviceDetectorModule} from "ngx-device-detector";
 import {
-    AUTH_SERVICE, IAuthService, ICON_SERVICE, IIconService, ILanguageService, IPromiseService, IToasterService, LANGUAGE_SERVICE,
-    PROMISE_SERVICE, TOASTER_SERVICE
+    AUTH_SERVICE,
+    ICON_SERVICE,
+    IModuleConfig,
+    LANGUAGE_SERVICE,
+    PROMISE_SERVICE,
+    TOASTER_SERVICE
 } from "./common-types";
 import {AuthGuard} from "./utils/auth.guard";
 import {AclService} from "./services/acl.service";
@@ -111,14 +112,6 @@ export const components = [
     UnorderedListComponent
 ];
 
-// --- Providers ---
-export const eventManagerPluginsToken: InjectionToken<EventManagerPlugin> = EVENT_MANAGER_PLUGINS;
-export const authServiceToken: InjectionToken<IAuthService> = AUTH_SERVICE;
-export const iconServiceToken: InjectionToken<IIconService> = ICON_SERVICE;
-export const languageServiceToken: InjectionToken<ILanguageService> = LANGUAGE_SERVICE;
-export const toasterServiceToken: InjectionToken<IToasterService> = TOASTER_SERVICE;
-export const promiseServiceToken: InjectionToken<IPromiseService> = PROMISE_SERVICE;
-
 export const providers = [
     ...pipes,
     AuthGuard,
@@ -134,34 +127,14 @@ export const providers = [
     UniversalService,
     PromiseService,
     {
-        provide: eventManagerPluginsToken,
+        provide: EVENT_MANAGER_PLUGINS,
         useClass: ResizeEventPlugin,
         multi: true
     },
     {
-        provide: eventManagerPluginsToken,
+        provide: EVENT_MANAGER_PLUGINS,
         useClass: ScrollEventPlugin,
         multi: true
-    },
-    {
-        provide: authServiceToken,
-        useExisting: StaticAuthService
-    },
-    {
-        provide: iconServiceToken,
-        useExisting: IconService
-    },
-    {
-        provide: languageServiceToken,
-        useExisting: StaticLanguageService
-    },
-    {
-        provide: toasterServiceToken,
-        useExisting: ConsoleToasterService
-    },
-    {
-        provide: promiseServiceToken,
-        useExisting: PromiseService
     }
 ];
 
@@ -186,10 +159,40 @@ export const providers = [
     providers: pipes
 })
 export class NgxUtilsModule {
-    static forRoot(): ModuleWithProviders {
+    static forRoot(config?: IModuleConfig): ModuleWithProviders {
+        const baseConfig: IModuleConfig = {
+            authService: StaticAuthService,
+            iconService: IconService,
+            languageService: StaticLanguageService,
+            toasterService: ConsoleToasterService,
+            promiseService: PromiseService
+        };
+        config = Object.assign(baseConfig, config || baseConfig);
         return {
             ngModule: NgxUtilsModule,
-            providers: providers
+            providers: [
+                ...providers,
+                {
+                    provide: AUTH_SERVICE,
+                    useExisting: config.authService
+                },
+                {
+                    provide: ICON_SERVICE,
+                    useExisting: config.iconService
+                },
+                {
+                    provide: LANGUAGE_SERVICE,
+                    useExisting: config.languageService
+                },
+                {
+                    provide: TOASTER_SERVICE,
+                    useExisting: config.toasterService
+                },
+                {
+                    provide: PROMISE_SERVICE,
+                    useExisting: config.promiseService
+                }
+            ]
         };
     }
 }

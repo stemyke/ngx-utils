@@ -1,4 +1,4 @@
-import {EmbeddedViewRef, EventEmitter, InjectionToken, NgZone, TemplateRef, TypeProvider} from "@angular/core";
+import {EmbeddedViewRef, EventEmitter, InjectionToken, NgZone, TemplateRef, Type, TypeProvider} from "@angular/core";
 import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
@@ -265,4 +265,13 @@ export type TableDataLoader = (page: number, rowsPerPage: number, orderBy: strin
 export class ResourceIfContext {
     resource: string;
     url: string;
+}
+
+// --- Module ---
+export interface IModuleConfig {
+    authService?: Type<IAuthService>;
+    iconService?: Type<IIconService>;
+    languageService?: Type<ILanguageService>;
+    toasterService?: Type<IToasterService>;
+    promiseService?: Type<IPromiseService>;
 }
