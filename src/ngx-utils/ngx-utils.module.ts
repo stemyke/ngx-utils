@@ -31,6 +31,7 @@ import {PaginationDirective} from "./directives/pagination.directive";
 import {PaginationItemDirective} from "./directives/pagination-item.directive";
 import {ResourceIfDirective} from "./directives/resource-if.directive";
 import {StickyDirective} from "./directives/sticky.directive";
+import {StickyClassDirective} from "./directives/sticky-class.directive";
 import {UnorderedListItemDirective} from "./directives/unordered-list-item.directive";
 import {UnorderedListTemplateDirective} from "./directives/unordered-list-template.directive";
 import {DynamicTableTemplateDirective} from "./directives/dynamic-table-template.directive";
@@ -100,6 +101,7 @@ export const directives = [
     PaginationItemDirective,
     ResourceIfDirective,
     StickyDirective,
+    StickyClassDirective,
     UnorderedListItemDirective,
     UnorderedListTemplateDirective,
     DynamicTableTemplateDirective
@@ -160,37 +162,29 @@ export const providers = [
 })
 export class NgxUtilsModule {
     static forRoot(config?: IModuleConfig): ModuleWithProviders {
-        const baseConfig: IModuleConfig = {
-            authService: StaticAuthService,
-            iconService: IconService,
-            languageService: StaticLanguageService,
-            toasterService: ConsoleToasterService,
-            promiseService: PromiseService
-        };
-        config = Object.assign(baseConfig, config || baseConfig);
         return {
             ngModule: NgxUtilsModule,
             providers: [
                 ...providers,
                 {
                     provide: AUTH_SERVICE,
-                    useExisting: config.authService
+                    useExisting: (!config ? null : config.authService) || StaticAuthService
                 },
                 {
                     provide: ICON_SERVICE,
-                    useExisting: config.iconService
+                    useExisting: (!config ? null : config.iconService) || IconService
                 },
                 {
                     provide: LANGUAGE_SERVICE,
-                    useExisting: config.languageService
+                    useExisting: (!config ? null : config.languageService) || StaticLanguageService
                 },
                 {
                     provide: TOASTER_SERVICE,
-                    useExisting: config.toasterService
+                    useExisting: (!config ? null : config.toasterService) || ConsoleToasterService
                 },
                 {
                     provide: PROMISE_SERVICE,
-                    useExisting: config.promiseService
+                    useExisting: (!config ? null : config.promiseService) || PromiseService
                 }
             ]
         };

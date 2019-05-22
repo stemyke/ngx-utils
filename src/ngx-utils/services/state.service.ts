@@ -137,7 +137,6 @@ export class StateService {
             segments: segments,
             components: components
         };
-        console.log(this.comp, this.stateInfo);
         this.subject.next(this.shot);
     };
 }

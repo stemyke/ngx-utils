@@ -21,6 +21,7 @@ export class StickyDirective implements OnInit, OnDestroy {
         this.updateTimer = TimerUtils.createTimeout(() => {
             this.isUpdating = false;
             this.cdr.detectChanges();
+            this.events.updateSticky(this.isSticky);
         }, 10);
     }
 
