@@ -122,14 +122,16 @@ export class StateService {
         let context: OutletContext = this.contexts.getContext("primary");
         let segments = snapshot.url;
         const components: any[] = [];
-        while (context && context.outlet) {
-            components.push(context.outlet.component);
-            context = !context.children ? null : context.children.getContext("primary");
-        }
-        while (snapshot.firstChild) {
-            snapshot = snapshot.firstChild;
+        while (snapshot) {
             segments = segments.concat(snapshot.url);
+            if (context) {
+                if (context.outlet.isActivated)
+                    components.push(context.outlet.component);
+                context = context.children.getContext("primary");
+            }
+            snapshot = snapshot.firstChild;
         }
+        console.log(components);
         this.comp = components[components.length - 1];
         this.shot = snapshot;
         this.stateInfo = {
