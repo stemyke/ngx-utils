@@ -122,7 +122,9 @@ export class StateService {
         let context: OutletContext = this.contexts.getContext("primary");
         let segments = snapshot.url;
         const components: any[] = [];
+        const snapshots: ActivatedRouteSnapshot[] = [];
         while (snapshot) {
+            snapshots.push(snapshot);
             segments = segments.concat(snapshot.url);
             if (context) {
                 if (context.outlet.isActivated)
@@ -132,7 +134,7 @@ export class StateService {
             snapshot = snapshot.firstChild;
         }
         this.comp = components[components.length - 1];
-        this.shot = snapshot;
+        this.shot = snapshots[snapshots.length - 1];
         this.stateInfo = {
             url: routerStateSnapshot.url,
             segments: segments,

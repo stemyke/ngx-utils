@@ -1,6 +1,6 @@
 import {Inject, Injectable, PLATFORM_ID} from "@angular/core";
 import {isPlatformBrowser, isPlatformServer} from "@angular/common";
-import {DeviceDetectorService} from "ngx-device-detector";
+import {DeviceDetectorService, DeviceInfo} from "ngx-device-detector";
 
 /**
  * Use this service to determine which is the current environment
@@ -14,6 +14,19 @@ export class UniversalService {
 
     get isServer(): boolean {
         return isPlatformServer(this.platformId);
+    }
+
+    get deviceInfo(): DeviceInfo {
+        return this.isServer
+            ? {
+                userAgent: "angular-universal",
+                os: "unknown",
+                browser: "node",
+                device: "node",
+                os_version: "unknown",
+                browser_version: "unknown"
+            }
+            : this.dds.getDeviceInfo();
     }
 
     get browserName(): string {
