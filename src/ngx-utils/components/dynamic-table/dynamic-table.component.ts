@@ -54,28 +54,28 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         return !this.pagination ? [] : this.pagination.items;
     }
 
-    @ContentChild("rowTemplate")
+    @ContentChild("rowTemplate", {static: false})
     rowTemplate: TemplateRef<any>;
 
-    @ContentChild("wrapperTemplate")
+    @ContentChild("wrapperTemplate", {static: false})
     wrapperTemplate: TemplateRef<any>;
 
-    @ContentChild("filterTemplate")
+    @ContentChild("filterTemplate", {static: false})
     filterTemplate: TemplateRef<any>;
 
-    @ViewChild("columnsTemplate")
+    @ViewChild("columnsTemplate", {static: false})
     columnsTemplate: TemplateRef<any>;
 
-    @ViewChild("defaultRowTemplate")
+    @ViewChild("defaultRowTemplate", {static: false})
     defaultRowTemplate: TemplateRef<any>;
 
-    @ViewChild("defaultWrapperTemplate")
+    @ViewChild("defaultWrapperTemplate", {static: false})
     defaultWrapperTemplate: TemplateRef<any>;
 
-    @ViewChild("defaultFilterTemplate")
+    @ViewChild("defaultFilterTemplate", {static: false})
     defaultFilterTemplate: TemplateRef<any>;
 
-    @ViewChild("pagination")
+    @ViewChild("pagination", {static: false})
     private pagination: PaginationDirective;
 
     @ContentChildren(DynamicTableTemplateDirective)

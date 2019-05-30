@@ -34,11 +34,11 @@ export class UnorderedListComponent implements OnChanges, AfterContentInit, Afte
     @ContentChildren(UnorderedListTemplateDirective)
     private templateDirectives: QueryList<UnorderedListTemplateDirective>;
 
-    @ViewChild("defaultKeyTemplate")
+    @ViewChild("defaultKeyTemplate", {static: false})
     private defaultKeyTemplate: TemplateRef<any>;
-    @ViewChild("defaultValueTemplate")
+    @ViewChild("defaultValueTemplate", {static: false})
     private defaultValueTemplate: TemplateRef<any>;
-    @ViewChild("defaultItemTemplate")
+    @ViewChild("defaultItemTemplate", {static: false})
     private defaultItemTemplate: TemplateRef<any>;
 
     constructor(private cdr: ChangeDetectorRef) {
