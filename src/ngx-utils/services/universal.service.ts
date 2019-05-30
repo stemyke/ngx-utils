@@ -69,6 +69,14 @@ export class UniversalService {
         return this.dds.isDesktop();
     }
 
+    get isCrawler(): boolean {
+        return this.crawler;
+    }
+
+    private readonly crawler: boolean;
+
     constructor(@Inject(PLATFORM_ID) private platformId: string, private dds: DeviceDetectorService) {
+        const info = this.dds.getDeviceInfo();
+        this.crawler = /bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex|lighthouse|angular-universal/i.test(info.userAgent);
     }
 }

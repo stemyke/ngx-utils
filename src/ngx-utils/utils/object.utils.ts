@@ -225,7 +225,7 @@ export class ObjectUtils {
 
     private static copyRecursive(target: any, source: any, predicate?: FilterPrecidate): any {
         predicate = predicate || defaultPredicate;
-        if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source) || ObjectUtils.isBlob(source)) return source;
+        if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source) || ObjectUtils.isBlob(source) || ObjectUtils.isFunction(source)) return source;
         if (ObjectUtils.isArray(source)) {
             target = ObjectUtils.isArray(target) ? Array.from(target) : [];
             source.forEach((item, index) => {
