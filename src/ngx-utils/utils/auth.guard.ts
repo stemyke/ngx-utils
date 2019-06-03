@@ -84,9 +84,10 @@ export class AuthGuard implements CanActivate {
         if (!config) return null;
         const match = config.findIndex(t => t == route);
         if (match >= 0) return config;
-        for (let subConfig of config) {
+        for (const subConfig of config) {
             path.push(subConfig.path);
-            const match = this.getConfig(route, subConfig.children, path);
+            const loadedChildren = (subConfig["_loadedConfig"] || {routes: null}).routes;
+            const match = this.getConfig(route, subConfig.children || loadedChildren, path);
             if (!!match) return match;
             path.length -= 1;
         }
