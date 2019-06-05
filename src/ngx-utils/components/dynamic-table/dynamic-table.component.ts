@@ -54,25 +54,25 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         return !this.pagination ? [] : this.pagination.items;
     }
 
-    @ContentChild("rowTemplate", {static: false})
+    @ContentChild("rowTemplate", {static: true})
     rowTemplate: TemplateRef<any>;
 
-    @ContentChild("wrapperTemplate", {static: false})
+    @ContentChild("wrapperTemplate", {static: true})
     wrapperTemplate: TemplateRef<any>;
 
-    @ContentChild("filterTemplate", {static: false})
+    @ContentChild("filterTemplate", {static: true})
     filterTemplate: TemplateRef<any>;
 
-    @ViewChild("columnsTemplate", {static: false})
+    @ViewChild("columnsTemplate", {static: true})
     columnsTemplate: TemplateRef<any>;
 
-    @ViewChild("defaultRowTemplate", {static: false})
+    @ViewChild("defaultRowTemplate", {static: true})
     defaultRowTemplate: TemplateRef<any>;
 
-    @ViewChild("defaultWrapperTemplate", {static: false})
+    @ViewChild("defaultWrapperTemplate", {static: true})
     defaultWrapperTemplate: TemplateRef<any>;
 
-    @ViewChild("defaultFilterTemplate", {static: false})
+    @ViewChild("defaultFilterTemplate", {static: true})
     defaultFilterTemplate: TemplateRef<any>;
 
     @ViewChild("pagination", {static: false})
