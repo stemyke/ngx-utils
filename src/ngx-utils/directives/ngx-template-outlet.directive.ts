@@ -1,5 +1,5 @@
 import {
-    Directive,
+    Directive, DoCheck,
     EmbeddedViewRef,
     Input,
     OnChanges,
@@ -13,7 +13,7 @@ import {ObjectUtils} from "../utils/object.utils";
 @Directive({
     selector: "[ngxTemplateOutlet]"
 })
-export class NgxTemplateOutletDirective implements OnChanges {
+export class NgxTemplateOutletDirective implements OnChanges, DoCheck {
 
     private viewRef: EmbeddedViewRef<any>;
 
@@ -47,6 +47,10 @@ export class NgxTemplateOutletDirective implements OnChanges {
             if (this.ngxTemplateOutlet)
                 this.viewRef = this._viewContainerRef.createEmbeddedView(this.ngxTemplateOutlet, {});
         }
+        this.ngDoCheck();
+    }
+
+    ngDoCheck(): void {
         if (!this.viewRef) return;
         const context = this.viewRef.context;
         this.updateExistingContext(this.context, context);
