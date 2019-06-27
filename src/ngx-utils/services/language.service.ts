@@ -41,10 +41,6 @@ export class StaticLanguageService implements ILanguageService {
         });
     }
 
-    collectTranslation(query: string, result: string): void {
-
-    }
-
     getTranslation(key: string, params?: any): Promise<string> {
         if (!ObjectUtils.isString(key) || !key.length) {
             throw new Error(`Parameter "key" required`);

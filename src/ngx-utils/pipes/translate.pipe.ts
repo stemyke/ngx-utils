@@ -71,7 +71,6 @@ export class TranslatePipe implements PipeTransform {
             }
             this.language.getTranslation(query, this.params).then(value => {
                 this.lastValue = value;
-                this.language.collectTranslation(query, value);
             });
         }
         return this.lastValue;

@@ -40,7 +40,6 @@ export interface ILanguageService {
     defaultLanguage: string;
     dictionary: any;
     addLanguages(languages: string[]): void;
-    collectTranslation(query: string, result: string): void;
     getTranslation(key: string, params?: any): Promise<string>;
     getTranslations(...keys: string[]): Promise<ITranslations>;
     getTranslationFromObject(translations: ITranslations, params?: any, lang?: string): string;
