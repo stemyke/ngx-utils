@@ -149,7 +149,7 @@ export const providers = [
     imports: [
         CommonModule,
         FormsModule,
-        DeviceDetectorModule.forRoot()
+        DeviceDetectorModule
     ],
     exports: [
         ...pipes,
