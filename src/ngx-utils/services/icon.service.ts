@@ -8,6 +8,8 @@ declare const icons: {
 @Injectable()
 export class IconService implements IIconService {
 
+    disabled: boolean;
+
     getIcon(icon: string, activeIcon: string, active: boolean): Promise<string> {
         icon = typeof icons == "undefined" ? icon : (icons[icon] || icon);
         activeIcon = typeof icons == "undefined" ? activeIcon : (icons[activeIcon] || icon);

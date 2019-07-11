@@ -50,6 +50,7 @@ export class IconDirective implements OnChanges {
 
     private changeIcon(): void {
         this.icons.getIcon(this.icon, this.activeIcon || `${this.icon}-active`, this.active).then(icon => {
+            if (this.icons.disabled) return;
             this.element.nativeElement.innerHTML = icon;
         });
     }
