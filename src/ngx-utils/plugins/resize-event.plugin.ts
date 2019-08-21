@@ -16,6 +16,7 @@ export class ResizeEventPlugin extends EventManagerPlugin {
 
     private static EVENT_NAME: string = "resize";
     private static detector: any = null;
+    private static scrollDetector: any = null;
 
     constructor(@Inject(DOCUMENT) doc: any, public universal: UniversalService) {
         super(doc);
@@ -30,9 +31,15 @@ export class ResizeEventPlugin extends EventManagerPlugin {
         return zone.runOutsideAngular(() => {
             if (this.universal.isServer) return emptyRemove;
             ResizeEventPlugin.detector = ResizeEventPlugin.detector || elementResizeDetectorMaker({strategy: ResizeEventPlugin.strategy});
-            ResizeEventPlugin.detector.listenTo(element, el => {
+            ResizeEventPlugin.scrollDetector = ResizeEventPlugin.scrollDetector || elementResizeDetectorMaker({strategy: "scroll"});
+            const cb = el => {
                 zone.run(() => handler(el));
-            });
+            };
+            try {
+                ResizeEventPlugin.detector.listenTo(element, cb);
+            } catch {
+                ResizeEventPlugin.scrollDetector.listenTo(element, cb);
+            }
             return () => {
                 try {
                     ResizeEventPlugin.detector.uninstall(element);
