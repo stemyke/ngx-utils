@@ -1,7 +1,7 @@
 import {ɵangular_packages_platform_browser_platform_browser_g as EventManagerPlugin} from "@angular/platform-browser";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
-import elementResizeDetectorMaker from "element-resize-detector";
+import { addListener, removeListener } from "resize-detector";
 import {StringUtils} from "../utils/string.utils";
 import {UniversalService} from "../services/universal.service";
 
@@ -12,11 +12,7 @@ function emptyRemove(): void {
 @Injectable()
 export class ResizeEventPlugin extends EventManagerPlugin {
 
-    static strategy: string = "object";
-
     private static EVENT_NAME: string = "resize";
-    private static detector: any = null;
-    private static scrollDetector: any = null;
 
     constructor(@Inject(DOCUMENT) doc: any, public universal: UniversalService) {
         super(doc);
@@ -30,19 +26,13 @@ export class ResizeEventPlugin extends EventManagerPlugin {
         const zone = this.manager.getZone();
         return zone.runOutsideAngular(() => {
             if (this.universal.isServer) return emptyRemove;
-            ResizeEventPlugin.detector = ResizeEventPlugin.detector || elementResizeDetectorMaker({strategy: ResizeEventPlugin.strategy});
-            ResizeEventPlugin.scrollDetector = ResizeEventPlugin.scrollDetector || elementResizeDetectorMaker({strategy: "scroll"});
             const cb = el => {
                 zone.run(() => handler(el));
             };
-            try {
-                ResizeEventPlugin.detector.listenTo(element, cb);
-            } catch {
-                ResizeEventPlugin.scrollDetector.listenTo(element, cb);
-            }
+            addListener(element, cb);
             return () => {
                 try {
-                    ResizeEventPlugin.detector.uninstall(element);
+                    removeListener(element, cb);
                 } catch (e) {
                 }
             }
