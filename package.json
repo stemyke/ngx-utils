@@ -1,6 +1,6 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "3.0.9",
+    "version": "3.1.0",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -22,7 +22,7 @@
         "@angular/router": "^6.0.0 || ^7.0.0 || ^8.0.0",
         "@angular/platform-browser": "^6.0.0 || ^7.0.0 || ^8.0.0",
         "resize-detector": "^0.2.0",
-        "core-js": "^2.6.5",
+        "core-js": "^2.6.5 || ^3.3.4",
         "rxjs": "^6.3.3 || ^6.4.0",
         "zone.js": "^0.8.26 || ^0.9.1",
         "moment": "^2.24.0",
