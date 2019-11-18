@@ -7,16 +7,19 @@ import {
     Inject,
     Input,
     OnChanges,
+    OnDestroy,
+    OnInit,
     Output,
     Renderer2,
     SimpleChanges
 } from "@angular/core";
+import {Subscription} from "rxjs";
 import {ICON_SERVICE, IIconService} from "../common-types";
 
 @Directive({
     selector: "[icon]"
 })
-export class IconDirective implements OnChanges {
+export class IconDirective implements OnChanges, OnInit, OnDestroy {
 
     @Input() icon: string;
     @Input() activeIcon: string;
@@ -28,9 +31,20 @@ export class IconDirective implements OnChanges {
         return this.active;
     }
 
+    protected iconsLoaded: Subscription;
+
     constructor(private element: ElementRef, private renderer: Renderer2, @Inject(ICON_SERVICE) private icons: IIconService) {
         this.renderer.addClass(this.element.nativeElement, "svg-icon");
         this.activeChange = new EventEmitter<boolean>();
+    }
+
+    ngOnInit(): void {
+        this.iconsLoaded = this.icons.iconsLoaded.subscribe(() => this.changeIcon());
+    }
+
+    ngOnDestroy(): void {
+        if (this.iconsLoaded)
+            this.iconsLoaded.unsubscribe();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -50,7 +64,7 @@ export class IconDirective implements OnChanges {
 
     private changeIcon(): void {
         this.icons.getIcon(this.icon, this.activeIcon || `${this.icon}-active`, this.active).then(icon => {
-            if (this.icons.disabled) return;
+            if (this.icons.isDisabled) return;
             this.element.nativeElement.innerHTML = icon;
         });
     }

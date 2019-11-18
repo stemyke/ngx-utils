@@ -18,7 +18,8 @@ export class CanvasColor {
 
 // --- Icon service ---
 export interface IIconService {
-    disabled: boolean;
+    isDisabled: boolean;
+    iconsLoaded: EventEmitter<any>;
     getIcon(icon: string, activeIcon: string, active: boolean): Promise<string>;
 }
 
