@@ -23,7 +23,6 @@ import {PaginationDirective} from "../../directives/pagination.directive";
 import {UniqueUtils} from "../../utils/unique.utils";
 
 @Component({
-    moduleId: module.id,
     selector: "dynamic-table",
     templateUrl: "./dynamic-table.component.html",
 })
@@ -75,7 +74,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @ViewChild("defaultFilterTemplate", {static: true})
     defaultFilterTemplate: TemplateRef<any>;
 
-    @ViewChild("pagination", {static: false})
+    @ViewChild("pagination")
     private pagination: PaginationDirective;
 
     @ContentChildren(DynamicTableTemplateDirective)

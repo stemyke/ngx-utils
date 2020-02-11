@@ -254,10 +254,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     font: Promise<any>;
     fonts: any;
 
-    @ViewChild("textCanvas", {static: false})
+    @ViewChild("textCanvas")
     textCanvas: ElementRef;
 
-    @ViewChild("measureCanvas", {static: false})
+    @ViewChild("measureCanvas")
     measureCanvas: ElementRef;
 
     get canvas(): HTMLCanvasElement {

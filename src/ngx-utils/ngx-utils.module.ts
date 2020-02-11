@@ -161,7 +161,7 @@ export const providers = [
     providers: pipes
 })
 export class NgxUtilsModule {
-    static forRoot(config?: IModuleConfig): ModuleWithProviders {
+    static forRoot(config?: IModuleConfig): ModuleWithProviders<NgxUtilsModule> {
         return {
             ngModule: NgxUtilsModule,
             providers: [

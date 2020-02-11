@@ -14,7 +14,6 @@ import {ObjectUtils} from "../../utils/object.utils";
 import {UnorderedListTemplateDirective} from "../../directives/unordered-list-template.directive";
 
 @Component({
-    moduleId: module.id,
     selector: "unordered-list",
     templateUrl: "./unordered-list.component.html"
 })
@@ -34,11 +33,11 @@ export class UnorderedListComponent implements OnChanges, AfterContentInit, Afte
     @ContentChildren(UnorderedListTemplateDirective)
     private templateDirectives: QueryList<UnorderedListTemplateDirective>;
 
-    @ViewChild("defaultKeyTemplate", {static: false})
+    @ViewChild("defaultKeyTemplate")
     private defaultKeyTemplate: TemplateRef<any>;
-    @ViewChild("defaultValueTemplate", {static: false})
+    @ViewChild("defaultValueTemplate")
     private defaultValueTemplate: TemplateRef<any>;
-    @ViewChild("defaultItemTemplate", {static: false})
+    @ViewChild("defaultItemTemplate")
     private defaultItemTemplate: TemplateRef<any>;
 
     constructor(private cdr: ChangeDetectorRef) {
