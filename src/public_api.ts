@@ -54,7 +54,7 @@ export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
 export {AuthGuard} from "./ngx-utils/utils/auth.guard";
-export {ObservableUtils} from "./ngx-utils/utils/observable.utils";
+export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
 export {StringUtils} from "./ngx-utils/utils/string.utils";
 export {ArrayUtils} from "./ngx-utils/utils/array.utils";
 export {SetUtils} from "./ngx-utils/utils/set.utils";
