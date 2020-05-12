@@ -12,6 +12,7 @@ import {
 } from "./common-types";
 import {AuthGuard} from "./utils/auth.guard";
 import {AclService} from "./services/acl.service";
+import {ApiService} from "./services/api.service";
 import {StaticAuthService} from "./services/auth.service";
 import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
@@ -118,6 +119,7 @@ export const providers = [
     ...pipes,
     AuthGuard,
     AclService,
+    ApiService,
     StaticAuthService,
     EventsService,
     FormatterService,

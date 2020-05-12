@@ -38,6 +38,14 @@ export {
     IPaginationData,
     PaginationDataLoader,
     PaginationItemContext,
+    IHttpHeaders,
+    IHttpParams,
+    IRequestOptions,
+    IIssueContext,
+    IProgress,
+    ProgressListener,
+    PromiseExecutor,
+    HttpPromise,
     ITableColumns,
     ITableTemplate,
     ITableTemplates,
@@ -65,7 +73,10 @@ export {Vector} from "./ngx-utils/utils/vector";
 export {UniversalService} from "./ngx-utils/services/universal.service";
 export {IStateInfo, StateService} from "./ngx-utils/services/state.service";
 export {AclService} from "./ngx-utils/services/acl.service";
+export {ApiService} from "./ngx-utils/services/api.service";
 export {StaticAuthService} from "./ngx-utils/services/auth.service";
+export {BaseHttpClient} from "./ngx-utils/services/base-http.client";
+export {BaseHttpService} from "./ngx-utils/services/base-http.service";
 export {EventsService} from "./ngx-utils/services/events.service";
 export {FormatterService} from "./ngx-utils/services/formatter.service";
 export {IconService} from "./ngx-utils/services/icon.service";

@@ -2,6 +2,7 @@ import {EmbeddedViewRef, EventEmitter, InjectionToken, NgZone, TemplateRef, Type
 import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
+import {HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 
 // --- Utils
 export interface IResolveFactory {
@@ -242,6 +243,75 @@ export class PaginationItemContext {
             if (testValue.match(filterRx)) return true;
         }
         return false;
+    }
+}
+
+
+// --- Http service ---
+export interface IHttpHeaders {
+    [header: string]: string | string[];
+}
+
+export interface IHttpParams {
+    [key: string]: any;
+}
+
+export interface IRequestOptions {
+    method?: string;
+    body?: any;
+    headers?: IHttpHeaders | HttpHeaders;
+    params?: IHttpParams;
+    observe?: "body";
+    reportProgress?: boolean;
+    responseType?: "arraybuffer" | "blob" | "json" | "text";
+    withCredentials?: boolean;
+}
+
+export interface IIssueContext {
+    url: string;
+}
+
+export interface IProgress {
+    percentage?: number;
+    loaded?: number;
+    total?: number;
+}
+
+export type ProgressListener = (progress: IProgress) => void;
+
+export type PromiseExecutor = (resolve: (value?: any | PromiseLike<any>) => void, reject: (reason?: any) => void) => void;
+
+export class HttpPromise extends Promise<any> {
+
+    protected rejectHandler: (reason?: HttpErrorResponse) => void;
+    protected hasRejectHandler: boolean;
+    protected attachCount: number;
+    protected runCount: number;
+
+    constructor(rejectHandler: (reason?: HttpErrorResponse) => void, executor: PromiseExecutor) {
+        super(executor);
+        this.rejectHandler = rejectHandler;
+        this.attachCount = 0;
+        this.runCount = 0;
+    }
+
+    then<TResult1, TResult2>(onFulfilled?: ((value: any) => (PromiseLike<TResult1> | TResult1)) | null | undefined,
+                             onRejected?: ((reason: HttpErrorResponse) => (PromiseLike<TResult2> | TResult2)) | null | undefined): Promise<TResult1 | TResult2> {
+        this.attachCount++;
+        return super.then(value => {
+            this.runCount++;
+            return onFulfilled ? onFulfilled(value) : null;
+        }, (reason: HttpErrorResponse) => {
+            const result: any = onRejected ? onRejected(reason) : null;
+            this.hasRejectHandler = this.hasRejectHandler || (onRejected && result !== false);
+            this.runCount++;
+            this.rejectHandler(this.runCount == this.attachCount && !this.hasRejectHandler ? reason : null);
+            return result;
+        });
+    }
+
+    catch<TResult = never>(onRejected?: ((reason: HttpErrorResponse) => (PromiseLike<TResult> | TResult)) | null | undefined): Promise<any | TResult> {
+        return this.then(null, onRejected);
     }
 }
 
