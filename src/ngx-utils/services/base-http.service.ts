@@ -1,4 +1,4 @@
-import {Inject, Optional} from "@angular/core";
+import {Inject, Injectable, Optional} from "@angular/core";
 import {HttpErrorResponse, HttpEventType, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {Request} from "express";
 import {REQUEST} from "@nguniversal/express-engine/tokens";
@@ -19,11 +19,14 @@ import {BaseHttpClient} from "./base-http.client";
 import {UniversalService} from "./universal.service";
 import {StorageService} from "./storage.service";
 
-export abstract class BaseHttpService {
+@Injectable()
+export class BaseHttpService {
 
     protected static failedRequests: Array<() => void> = [];
 
-    abstract get name(): string;
+    get name(): string {
+        return "base";
+    }
 
     protected get withCredentials(): boolean {
         return true;
@@ -49,7 +52,9 @@ export abstract class BaseHttpService {
         this.cache = {};
     }
 
-    abstract url(url: string): string;
+    url(url: string): string {
+        return url;
+    }
 
     createUrl(url: string, params: IHttpParams): string {
         const httpParams = this.client.makeParams(params, this.language.currentLanguage);

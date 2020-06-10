@@ -16,9 +16,11 @@ import {AclService} from "./services/acl.service";
 import {ApiService} from "./services/api.service";
 import {StaticAuthService} from "./services/auth.service";
 import {BaseHttpClient} from "./services/base-http.client";
+import {BaseHttpService} from "./services/base-http.service";
 import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
 import {IconService} from "./services/icon.service";
+import {PromiseService} from "./services/promise.service";
 import {StaticLanguageService} from "./services/language.service";
 import {StateService} from "./services/state.service";
 import {StorageService} from "./services/storage.service";
@@ -64,7 +66,6 @@ import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.co
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {SafeHtmlPipe} from "./pipes/safe-html.pipe";
-import {PromiseService} from "./services/promise.service";
 
 // --- Pipes ---
 export const pipes = [
@@ -119,6 +120,7 @@ export const components = [
 export const providers = [
     ...pipes,
     BaseHttpClient,
+    BaseHttpService,
     AuthGuard,
     AclService,
     ApiService,
