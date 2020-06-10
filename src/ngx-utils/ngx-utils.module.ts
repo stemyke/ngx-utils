@@ -1,6 +1,7 @@
 import {ModuleWithProviders, NgModule} from "@angular/core";
 import {EVENT_MANAGER_PLUGINS} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
+import {FormsModule} from "@angular/forms";
 import {DeviceDetectorModule} from "ngx-device-detector";
 import {
     AUTH_SERVICE,
@@ -14,6 +15,7 @@ import {AuthGuard} from "./utils/auth.guard";
 import {AclService} from "./services/acl.service";
 import {ApiService} from "./services/api.service";
 import {StaticAuthService} from "./services/auth.service";
+import {BaseHttpClient} from "./services/base-http.client";
 import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
 import {IconService} from "./services/icon.service";
@@ -63,7 +65,6 @@ import {PaginationMenuComponent} from "./components/pagination-menu/pagination-m
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {SafeHtmlPipe} from "./pipes/safe-html.pipe";
 import {PromiseService} from "./services/promise.service";
-import {FormsModule} from "@angular/forms";
 
 // --- Pipes ---
 export const pipes = [
@@ -117,6 +118,7 @@ export const components = [
 
 export const providers = [
     ...pipes,
+    BaseHttpClient,
     AuthGuard,
     AclService,
     ApiService,

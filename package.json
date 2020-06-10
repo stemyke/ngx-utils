@@ -1,6 +1,6 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "9.0.1",
+    "version": "9.0.4",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -21,7 +21,7 @@
         "@angular/forms": "^9.0.0",
         "@angular/router": "^9.0.0",
         "@angular/platform-browser": "^9.0.0",
-        "@nguniversal/express-engine": "^9.0.0",
+        "@nguniversal/express-engine": "9.0.0-rc.2",
         "express": "^4.0.0",
         "resize-detector": "^0.2.0",
         "core-js": "^2.6.5 || ^3.3.4 || 3.",
@@ -36,7 +36,7 @@
         "@angular/forms": "9.1.6",
         "@angular/router": "9.1.6",
         "@angular/platform-browser": "9.1.6",
-        "@nguniversal/express-engine": "9.1.1",
+        "@nguniversal/express-engine": "9.0.0-rc.2",
         "express": "4.17.1",
         "resize-detector": "0.2.0",
         "core-js": "3.6.5",
