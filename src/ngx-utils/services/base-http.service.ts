@@ -261,7 +261,7 @@ export class BaseHttpService {
         if (this.checkHeaders(headers)) {
             options.headers["Cookie"] = headers.cookie;
         }
-        options.headers = this.client.makeHeaders(options.headers as IHttpHeaders, options.withCredentials);
+        options.headers = this.client.makeHeaders(options.headers as IHttpHeaders);
         return options;
     }
 

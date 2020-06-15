@@ -16,11 +16,8 @@ export class BaseHttpClient extends HttpClient {
         this.requestParams = {};
     }
 
-    makeHeaders(headers?: IHttpHeaders, withCredentials: boolean = true): HttpHeaders {
+    makeHeaders(headers?: IHttpHeaders): HttpHeaders {
         headers = Object.assign({}, this.requestHeaders, headers);
-        if (!withCredentials) {
-            delete headers["Authorization"];
-        }
         return new HttpHeaders(headers);
     }
 
