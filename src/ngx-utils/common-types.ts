@@ -120,7 +120,7 @@ export interface IAsyncMessage {
     context?: any;
 }
 
-export type AsyncMethod = () => Promise<IAsyncMessage>;
+export type AsyncMethod = (context?: any) => Promise<IAsyncMessage>;
 
 // --- Unordered list ---
 export abstract class UnorederedListTemplate extends TemplateRef<any> {

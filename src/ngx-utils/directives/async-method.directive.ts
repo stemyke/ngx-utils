@@ -9,6 +9,7 @@ export class AsyncMethodDirective {
 
     @Input("async-method") method: AsyncMethod;
     @Input() disabled: boolean;
+    @Input() context: any;
 
     @Output() onSuccess: EventEmitter<IAsyncMessage>;
     @Output() onError: EventEmitter<IAsyncMessage>;
@@ -39,7 +40,7 @@ export class AsyncMethodDirective {
     callMethod(): void {
         if (this.loading) return;
         this.loading = true;
-        this.method().then(result => {
+        this.method(this.context).then(result => {
             this.loading = false;
             if (result) {
                 this.onSuccess.emit(result);
