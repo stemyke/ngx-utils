@@ -18,6 +18,8 @@ import {MathUtils} from "../utils/math.utils";
 import {BaseHttpClient} from "./base-http.client";
 import {UniversalService} from "./universal.service";
 import {StorageService} from "./storage.service";
+import {timeout} from "rxjs/operators";
+import {TimeoutError} from "rxjs";
 
 @Injectable()
 export class BaseHttpService {
@@ -188,7 +190,10 @@ export class BaseHttpService {
         }, (resolve, reject) => {
             this.absoluteUrl(url, options).then(absoluteUrl => {
                 issueContext.url = absoluteUrl;
-                this.client.request(options.method, absoluteUrl, options).subscribe((event: any) => {
+                const request = this.client.request(options.method, absoluteUrl, options);
+                const finalRequest = ObjectUtils.isNumber(options.timeout) && options.timeout > 0
+                    ? request.pipe(timeout(options.timeout)) : request;
+                finalRequest.subscribe((event: any) => {
                     if (options.reportProgress && event.type === HttpEventType.UploadProgress) {
                         const progress = {
                             percentage: MathUtils.round(event.loaded / event.total, 2, 0.01),
@@ -213,8 +218,8 @@ export class BaseHttpService {
                             this.client.renewTokenFunc();
                         }
                     }
-                }, (response: HttpErrorResponse) => {
-                    if (response.status == 0 || response.status == 301) {
+                }, (response: HttpErrorResponse | TimeoutError) => {
+                    if (response instanceof TimeoutError || response.status == 0 || response.status == 301) {
                         reject(response);
                         return;
                     }

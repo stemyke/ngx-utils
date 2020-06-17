@@ -265,6 +265,7 @@ export interface IRequestOptions {
     reportProgress?: boolean;
     responseType?: "arraybuffer" | "blob" | "json" | "text";
     withCredentials?: boolean;
+    timeout?: number;
 }
 
 export interface IIssueContext {
