@@ -19,6 +19,7 @@ import {BaseHttpClient} from "./services/base-http.client";
 import {BaseHttpService} from "./services/base-http.service";
 import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
+import {GlobalTemplateService} from "./services/global-template.service";
 import {IconService} from "./services/icon.service";
 import {PromiseService} from "./services/promise.service";
 import {StaticLanguageService} from "./services/language.service";
@@ -30,6 +31,8 @@ import {ResizeEventPlugin} from "./plugins/resize-event.plugin";
 import {ScrollEventPlugin} from "./plugins/scroll-event.plugin";
 import {AsyncMethodDirective} from "./directives/async-method.directive";
 import {BackgroundDirective} from "./directives/background.directive";
+import {DynamicTableTemplateDirective} from "./directives/dynamic-table-template.directive";
+import {GlobalTemplateDirective} from "./directives/global-template.directive";
 import {IconDirective} from "./directives/icon.directive";
 import {NgxTemplateOutletDirective} from "./directives/ngx-template-outlet.directive";
 import {PaginationDirective} from "./directives/pagination.directive";
@@ -39,7 +42,7 @@ import {StickyDirective} from "./directives/sticky.directive";
 import {StickyClassDirective} from "./directives/sticky-class.directive";
 import {UnorderedListItemDirective} from "./directives/unordered-list-item.directive";
 import {UnorderedListTemplateDirective} from "./directives/unordered-list-template.directive";
-import {DynamicTableTemplateDirective} from "./directives/dynamic-table-template.directive";
+
 import {ChunkPipe} from "./pipes/chunk.pipe";
 import {EntriesPipe} from "./pipes/entries.pipe";
 import {ExtraItemPropertiesPipe} from "./pipes/extra-item-properties.pipe";
@@ -48,6 +51,7 @@ import {FindPipe} from "./pipes/find.pipe";
 import {FormatNumberPipe} from "./pipes/format-number.pipe";
 import {GetOffsetPipe} from "./pipes/get-offset.pipe";
 import {GetTypePipe} from "./pipes/get-type.pipe";
+import {GlobalTemplatePipe} from "./pipes/global-template.pipe";
 import {GroupByPipe} from "./pipes/group-by.pipe";
 import {IsTypePipe} from "./pipes/is-type.pipe";
 import {JoinPipe} from "./pipes/join.pipe";
@@ -60,12 +64,13 @@ import {RemapPipe} from "./pipes/remap.pipe";
 import {ReplacePipe} from "./pipes/replace.pipe";
 import {ReversePipe} from "./pipes/reverse.pipe";
 import {RoundPipe} from "./pipes/round.pipe";
+import {SafeHtmlPipe} from "./pipes/safe-html.pipe";
 import {TranslatePipe} from "./pipes/translate.pipe";
 import {ValuesPipe} from "./pipes/values.pipe";
+
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
-import {SafeHtmlPipe} from "./pipes/safe-html.pipe";
 
 // --- Pipes ---
 export const pipes = [
@@ -77,6 +82,7 @@ export const pipes = [
     FormatNumberPipe,
     GetOffsetPipe,
     GetTypePipe,
+    GlobalTemplatePipe,
     GroupByPipe,
     IsTypePipe,
     JoinPipe,
@@ -98,6 +104,8 @@ export const pipes = [
 export const directives = [
     AsyncMethodDirective,
     BackgroundDirective,
+    DynamicTableTemplateDirective,
+    GlobalTemplateDirective,
     IconDirective,
     NgxTemplateOutletDirective,
     PaginationDirective,
@@ -106,8 +114,7 @@ export const directives = [
     StickyDirective,
     StickyClassDirective,
     UnorderedListItemDirective,
-    UnorderedListTemplateDirective,
-    DynamicTableTemplateDirective
+    UnorderedListTemplateDirective
 ];
 
 // --- Components ---
@@ -127,6 +134,7 @@ export const providers = [
     StaticAuthService,
     EventsService,
     FormatterService,
+    GlobalTemplateService,
     IconService,
     StaticLanguageService,
     StateService,

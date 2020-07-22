@@ -79,6 +79,7 @@ export {BaseHttpClient} from "./ngx-utils/services/base-http.client";
 export {BaseHttpService} from "./ngx-utils/services/base-http.service";
 export {EventsService} from "./ngx-utils/services/events.service";
 export {FormatterService} from "./ngx-utils/services/formatter.service";
+export {GlobalTemplateService} from "./ngx-utils/services/global-template.service";
 export {IconService} from "./ngx-utils/services/icon.service";
 export {StaticLanguageService} from "./ngx-utils/services/language.service";
 export {StorageService} from "./ngx-utils/services/storage.service";
@@ -96,6 +97,7 @@ export {FindPipe} from "./ngx-utils/pipes/find.pipe";
 export {FormatNumberPipe} from "./ngx-utils/pipes/format-number.pipe";
 export {GetOffsetPipe} from "./ngx-utils/pipes/get-offset.pipe";
 export {GetTypePipe} from "./ngx-utils/pipes/get-type.pipe";
+export {GlobalTemplatePipe} from "./ngx-utils/pipes/global-template.pipe";
 export {GroupByPipe} from "./ngx-utils/pipes/group-by.pipe";
 export {IsTypePipe} from "./ngx-utils/pipes/is-type.pipe";
 export {JoinPipe} from "./ngx-utils/pipes/join.pipe";
@@ -114,6 +116,8 @@ export {ValuesPipe} from "./ngx-utils/pipes/values.pipe";
 
 export {AsyncMethodDirective} from "./ngx-utils/directives/async-method.directive";
 export {BackgroundDirective} from "./ngx-utils/directives/background.directive";
+export {DynamicTableTemplateDirective} from "./ngx-utils/directives/dynamic-table-template.directive";
+export {GlobalTemplateDirective} from "./ngx-utils/directives/global-template.directive";
 export {IconDirective} from "./ngx-utils/directives/icon.directive";
 export {NgxTemplateOutletDirective} from "./ngx-utils/directives/ngx-template-outlet.directive";
 export {PaginationDirective} from "./ngx-utils/directives/pagination.directive";
@@ -122,7 +126,6 @@ export {ResourceIfDirective} from "./ngx-utils/directives/resource-if.directive"
 export {StickyDirective} from "./ngx-utils/directives/sticky.directive";
 export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-item.directive";
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
-export {DynamicTableTemplateDirective} from "./ngx-utils/directives/dynamic-table-template.directive";
 
 export {UnorderedListComponent} from "./ngx-utils/components/unordered-list/unordered-list.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";
