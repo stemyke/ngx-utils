@@ -322,6 +322,7 @@ export interface IHttpService {
 // --- Api service ---
 
 export interface IApiService extends IHttpService {
+    cache: any;
     client: HttpClient;
     get(url: string, options?: IRequestOptions): Promise<any>;
     delete(url: string, options?: IRequestOptions): Promise<any>;
