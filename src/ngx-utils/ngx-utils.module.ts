@@ -4,6 +4,7 @@ import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {
+    API_SERVICE,
     AUTH_SERVICE,
     ICON_SERVICE,
     IModuleConfig,
@@ -182,7 +183,7 @@ export class NgxUtilsModule {
             providers: [
                 ...providers,
                 {
-                    provide: ApiService,
+                    provide: API_SERVICE,
                     useExisting: (!config ? null : config.apiService) || ApiService
                 },
                 {
