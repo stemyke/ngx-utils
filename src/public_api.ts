@@ -48,6 +48,10 @@ export {
     HttpPromise,
     IHttpService,
     IApiService,
+    API_SERVICE,
+    IOpenApiSchemaProperty,
+    IOpenApiSchema,
+    IOpenApiSchemas,
     ITableColumns,
     ITableTemplate,
     ITableTemplates,
@@ -84,6 +88,7 @@ export {FormatterService} from "./ngx-utils/services/formatter.service";
 export {GlobalTemplateService} from "./ngx-utils/services/global-template.service";
 export {IconService} from "./ngx-utils/services/icon.service";
 export {StaticLanguageService} from "./ngx-utils/services/language.service";
+export {OpenApiService} from "./ngx-utils/services/open-api.service";
 export {StorageService} from "./ngx-utils/services/storage.service";
 export {ConsoleToasterService} from "./ngx-utils/services/toaster.service";
 export {PromiseService} from "./ngx-utils/services/promise.service";

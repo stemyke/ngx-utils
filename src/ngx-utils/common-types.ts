@@ -2,7 +2,7 @@ import {EventEmitter, InjectionToken, NgZone, TemplateRef, Type, TypeProvider} f
 import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
-import {HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 
 // --- Utils
 export interface IResolveFactory {
@@ -246,7 +246,6 @@ export class PaginationItemContext {
     }
 }
 
-
 // --- Http service ---
 export interface IHttpHeaders {
     [header: string]: string | string[];
@@ -320,7 +319,10 @@ export interface IHttpService {
     url(url: string): string;
 }
 
+// --- Api service ---
+
 export interface IApiService extends IHttpService {
+    client: HttpClient;
     get(url: string, options?: IRequestOptions): Promise<any>;
     delete(url: string, options?: IRequestOptions): Promise<any>;
     post(url: string, body?: any, options?: IRequestOptions): Promise<any>;
@@ -328,6 +330,31 @@ export interface IApiService extends IHttpService {
     patch(url: string, body?: any, options?: IRequestOptions): Promise<any>;
     upload(url: string, body: any, listener?: ProgressListener, options?: IRequestOptions): Promise<any>;
     list(url: string, params: IHttpParams): Promise<IPaginationData>;
+}
+
+export const API_SERVICE: InjectionToken<IApiService> = new InjectionToken<IApiService>("api-service");
+
+// --- OpenApi service ---
+export interface IOpenApiSchemaProperty {
+    id: string;
+    type: string;
+    format: string;
+    column: boolean;
+    additionalProperties: any;
+    $ref: string;
+    enum: string[];
+    [key: string]: any;
+}
+
+export interface IOpenApiSchema {
+    properties: {
+        [name: string]: IOpenApiSchemaProperty;
+    };
+    required: string[];
+}
+
+export interface IOpenApiSchemas {
+    [name: string]: IOpenApiSchema;
 }
 
 // --- Dynamic table ---
