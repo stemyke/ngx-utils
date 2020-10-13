@@ -1,4 +1,4 @@
-import {EmbeddedViewRef, EventEmitter, InjectionToken, NgZone, TemplateRef, Type, TypeProvider} from "@angular/core";
+import {EventEmitter, InjectionToken, NgZone, TemplateRef, Type, TypeProvider} from "@angular/core";
 import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
@@ -316,6 +316,20 @@ export class HttpPromise extends Promise<any> {
     }
 }
 
+export interface IHttpService {
+    url(url: string): string;
+}
+
+export interface IApiService extends IHttpService {
+    get(url: string, options?: IRequestOptions): Promise<any>;
+    delete(url: string, options?: IRequestOptions): Promise<any>;
+    post(url: string, body?: any, options?: IRequestOptions): Promise<any>;
+    put(url: string, body?: any, options?: IRequestOptions): Promise<any>;
+    patch(url: string, body?: any, options?: IRequestOptions): Promise<any>;
+    upload(url: string, body: any, listener?: ProgressListener, options?: IRequestOptions): Promise<any>;
+    list(url: string, params: IHttpParams): Promise<IPaginationData>;
+}
+
 // --- Dynamic table ---
 export interface ITableColumns {
     [column: string]: string;
@@ -341,6 +355,7 @@ export class ResourceIfContext {
 
 // --- Module ---
 export interface IModuleConfig {
+    apiService?: Type<IApiService>
     authService?: Type<IAuthService>;
     iconService?: Type<IIconService>;
     languageService?: Type<ILanguageService>;

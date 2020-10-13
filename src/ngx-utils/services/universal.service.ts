@@ -34,7 +34,7 @@ export class UniversalService {
     }
 
     get browserVersion(): string {
-        return this.dds.browserVersion;
+        return this.dds.browser_version;
     }
 
     get isExplorer(): boolean {

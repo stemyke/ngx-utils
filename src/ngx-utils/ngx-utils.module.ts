@@ -2,7 +2,7 @@ import {ModuleWithProviders, NgModule} from "@angular/core";
 import {EVENT_MANAGER_PLUGINS} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-import {DeviceDetectorModule} from "ngx-device-detector";
+import {DeviceDetectorService} from "ngx-device-detector";
 import {
     AUTH_SERVICE,
     ICON_SERVICE,
@@ -142,6 +142,7 @@ export const providers = [
     ConsoleToasterService,
     UniversalService,
     PromiseService,
+    DeviceDetectorService,
     {
         provide: EVENT_MANAGER_PLUGINS,
         useClass: ResizeEventPlugin,
@@ -162,15 +163,13 @@ export const providers = [
     ],
     imports: [
         CommonModule,
-        FormsModule,
-        DeviceDetectorModule
+        FormsModule
     ],
     exports: [
         ...pipes,
         ...directives,
         ...components,
-        FormsModule,
-        DeviceDetectorModule
+        FormsModule
     ],
     providers: pipes
 })
@@ -180,6 +179,10 @@ export class NgxUtilsModule {
             ngModule: NgxUtilsModule,
             providers: [
                 ...providers,
+                {
+                    provide: ApiService,
+                    useExisting: (!config ? null : config.apiService) || ApiService
+                },
                 {
                     provide: AUTH_SERVICE,
                     useExisting: (!config ? null : config.authService) || StaticAuthService

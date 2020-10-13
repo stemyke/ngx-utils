@@ -1,11 +1,11 @@
 import {Injectable} from "@angular/core";
 
-import {IHttpParams, IRequestOptions, ProgressListener} from "../common-types";
+import {IApiService, IHttpParams, IRequestOptions, ProgressListener} from "../common-types";
 import {BaseHttpService} from "./base-http.service";
 import {IPaginationData} from "../common-types";
 
 @Injectable()
-export class ApiService extends BaseHttpService {
+export class ApiService extends BaseHttpService implements IApiService {
 
     get name(): string {
         return "api";

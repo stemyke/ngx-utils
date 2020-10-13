@@ -46,6 +46,8 @@ export {
     ProgressListener,
     PromiseExecutor,
     HttpPromise,
+    IHttpService,
+    IApiService,
     ITableColumns,
     ITableTemplate,
     ITableTemplates,
