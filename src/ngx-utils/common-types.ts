@@ -317,6 +317,7 @@ export class HttpPromise extends Promise<any> {
 
 export interface IHttpService {
     url(url: string): string;
+    makeListParams(page: number, itemsPerPage: number, orderBy?: string, orderDescending?: boolean, filter?: string): IHttpParams;
 }
 
 // --- Api service ---
