@@ -339,12 +339,13 @@ export const API_SERVICE: InjectionToken<IApiService> = new InjectionToken<IApiS
 // --- OpenApi service ---
 export interface IOpenApiSchemaProperty {
     id: string;
-    type: string;
-    format: string;
-    column: boolean;
-    additionalProperties: any;
-    $ref: string;
-    enum: string[];
+    type?: string;
+    format?: string;
+    column?: boolean;
+    additionalProperties?: any;
+    $ref?: string;
+    items?: IOpenApiSchemaProperty;
+    enum?: string[];
     [key: string]: any;
 }
 
