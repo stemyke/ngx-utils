@@ -127,7 +127,7 @@ export class StateService {
             snapshots.push(snapshot);
             segments = segments.concat(snapshot.url);
             if (context) {
-                if (context.outlet.isActivated)
+                if (context.outlet && context.outlet.isActivated)
                     components.push(context.outlet.component);
                 context = context.children.getContext("primary");
             }
