@@ -1,7 +1,7 @@
-export type FilterPrecidate = (value: any, key?: any, target?: any, source?: any) => boolean;
+export type FilterPredicate = (value: any, key?: any, target?: any, source?: any) => boolean;
 export type IterateCallback = (value: any, key?: any) => void;
 
-const defaultPredicate: FilterPrecidate = () => true;
+const defaultPredicate: FilterPredicate = () => true;
 const hasBlob = typeof Blob !== "undefined";
 const hasFile = typeof File !== "undefined";
 
@@ -25,6 +25,14 @@ export class ObjectUtils {
             }
             return 0;
         }
+    }
+
+    static getProperties(obj: any): string[] {
+        if (!ObjectUtils.isObject(obj) && !ObjectUtils.isFunction(obj)) return [];
+        const props = new Set<string>();
+        Object.keys(obj).forEach(p => props.add(p));
+        Object.getOwnPropertyNames(obj).forEach(p => props.add(p));
+        return Array.from(props);
     }
 
     static equals(a: any, b: any): boolean {
@@ -139,7 +147,7 @@ export class ObjectUtils {
         return isNaN(key) || isArray ? target : Object.values(target);
     }
 
-    static filter(obj: any, predicate: FilterPrecidate): any {
+    static filter(obj: any, predicate: FilterPredicate): any {
         return ObjectUtils.copyRecursive(null, obj, predicate);
     }
 
@@ -147,7 +155,7 @@ export class ObjectUtils {
         return ObjectUtils.copyRecursive(null, obj);
     }
 
-    static assign<T>(target: T, source: any, predicate?: FilterPrecidate): T {
+    static assign<T>(target: T, source: any, predicate?: FilterPredicate): T {
         return ObjectUtils.copyRecursive(target, source, predicate);
     }
 
@@ -225,7 +233,7 @@ export class ObjectUtils {
         return str.length >= width ? str : new Array(width - str.length + 1).join(chr) + str;
     }
 
-    private static copyRecursive(target: any, source: any, predicate?: FilterPrecidate): any {
+    private static copyRecursive(target: any, source: any, predicate?: FilterPredicate): any {
         predicate = predicate || defaultPredicate;
         if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source) || ObjectUtils.isBlob(source) || ObjectUtils.isFunction(source)) return source;
         if (ObjectUtils.isArray(source)) {

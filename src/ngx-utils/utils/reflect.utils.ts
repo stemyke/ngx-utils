@@ -22,7 +22,7 @@ export class ReflectUtils {
         const factory = <IResolveFactory>obj;
         let depends: TypeProvider[] = [];
         if (factory.type) {
-            const method = Object.keys(factory.type).find(function (key) {
+            const method = ObjectUtils.getProperties(factory.type).find(function (key) {
                 return factory.type[key] === factory.func;
             });
             depends = ReflectUtils.getMetadata("factoryDependencies", factory.type, method) || [];
