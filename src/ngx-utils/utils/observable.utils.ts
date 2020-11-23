@@ -5,8 +5,8 @@ import {canReportError} from "rxjs/internal/util/canReportError";
 import {ISearchObservable} from "../common-types";
 
 export interface ISubscriberInfo {
-    subjects: Subject<any>[],
-    cb: (ev?: Subject<any>, ...args: any[]) => any,
+    subjects: Observable<any>[],
+    cb: (ev?: Observable<any>, ...args: any[]) => any,
 }
 
 export class ObservableUtils {
@@ -25,6 +25,14 @@ export class ObservableUtils {
         );
     }
 
+    static multiSubscription(...subscriptions: Subscription[]): Subscription {
+        return new Subscription(() => {
+            subscriptions.forEach(s => {
+                s.unsubscribe();
+            });
+        });
+    }
+
     static subscribe(...subscribers: ISubscriberInfo[]): Subscription {
         const subscriptions: Subscription[] = [];
         subscribers.forEach(info => {
@@ -38,11 +46,7 @@ export class ObservableUtils {
             });
             info.cb();
         });
-        return new Subscription(() => {
-            subscriptions.forEach(s => {
-                s.unsubscribe();
-            });
-        });
+        return ObservableUtils.multiSubscription(...subscriptions);
     }
 
     static fromFunction(callbackFunc: () => any): Observable<any> {
