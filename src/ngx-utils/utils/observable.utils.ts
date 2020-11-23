@@ -26,11 +26,13 @@ export class ObservableUtils {
     }
 
     static multiSubscription(...subscriptions: Subscription[]): Subscription {
-        return new Subscription(() => {
+        // @dynamic
+        const lambda = () => {
             subscriptions.forEach(s => {
                 s.unsubscribe();
             });
-        });
+        };
+        return new Subscription(lambda);
     }
 
     static subscribe(...subscribers: ISubscriberInfo[]): Subscription {
