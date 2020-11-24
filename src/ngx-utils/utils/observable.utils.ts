@@ -38,14 +38,17 @@ export class ObservableUtils {
     static subscribe(...subscribers: ISubscriberInfo[]): Subscription {
         const subscriptions: Subscription[] = [];
         subscribers.forEach(info => {
+            let alreadyCalled = false;
             info.subjects.forEach(subject => {
                 const ss = subject.subscribe(function () {
                     const args = Array.from(arguments);
                     args.unshift(subject);
+                    alreadyCalled = true;
                     info.cb.apply(null, args);
                 });
                 subscriptions.push(ss);
             });
+            if (alreadyCalled) return;
             info.cb();
         });
         return ObservableUtils.multiSubscription(...subscriptions);
