@@ -13,7 +13,8 @@ import {
     UrlSegment,
     UrlTree
 } from "@angular/router";
-import {Subject, Subscription} from "rxjs";
+import {BehaviorSubject, Subscription} from "rxjs";
+import {skipWhile} from "rxjs/operators";
 import {ObjectUtils} from "../utils/object.utils";
 import {IRoute} from "../common-types";
 
@@ -30,13 +31,12 @@ export interface IStateInfo {
 }
 
 @Injectable()
-export class StateService {
+export class StateService extends BehaviorSubject<any> {
 
     private shot: ActivatedRouteSnapshot;
     private comp: any;
     private stateInfo: IStateInfo;
     private contexts: ChildrenOutletContexts;
-    private subject: Subject<ActivatedRouteSnapshot>;
 
     static toPath(route: Route, params: any): string {
         let path = route.path || "";
@@ -79,7 +79,7 @@ export class StateService {
     }
 
     constructor(private zone: NgZone, @Optional() private router: Router = null) {
-        this.subject = new Subject<ActivatedRouteSnapshot>();
+        super(null);
         if (!this.router) return;
         this.router.events.subscribe(this.handleRouterEvent);
         this.stateInfo = {
@@ -106,13 +106,8 @@ export class StateService {
         });
     }
 
-    subscribe(next?: (value: ActivatedRouteSnapshot) => void, error?: (error: any) => void, complete?: () => void): Subscription {
-        return this.subject.subscribe(next, error, complete);
-    }
-
     subscribeImmediately(next?: (value: ActivatedRouteSnapshot) => void, error?: (error: any) => void, complete?: () => void): Subscription {
-        if (next && this.shot) next(this.shot);
-        return this.subject.subscribe(next, error, complete);
+        return this.pipe(skipWhile(v => v == null)).subscribe(next, error, complete);
     }
 
     private handleRouterEvent = (event: Event): void => {
@@ -140,6 +135,6 @@ export class StateService {
             segments: segments,
             components: components
         };
-        this.subject.next(this.shot);
+        this.next(this.shot);
     };
 }
