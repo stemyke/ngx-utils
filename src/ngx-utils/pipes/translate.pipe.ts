@@ -1,4 +1,4 @@
-import {Inject, Injectable, Pipe, PipeTransform} from "@angular/core";
+import {ChangeDetectorRef, Inject, Injectable, Pipe, PipeTransform} from "@angular/core";
 import {ILanguageService, LANGUAGE_SERVICE, TranslationQuery} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 
@@ -20,7 +20,7 @@ export class TranslatePipe implements PipeTransform {
         return this.language.currentLanguage
     }
 
-    constructor(@Inject(LANGUAGE_SERVICE) protected language: ILanguageService) {
+    constructor(readonly cdr: ChangeDetectorRef, @Inject(LANGUAGE_SERVICE) readonly language: ILanguageService) {
 
     }
 
@@ -71,6 +71,7 @@ export class TranslatePipe implements PipeTransform {
             }
             this.language.getTranslation(query, this.params).then(value => {
                 this.lastValue = value;
+                this.cdr.detectChanges();
             });
         }
         return this.lastValue;
