@@ -7,9 +7,15 @@ import {
     HttpPromise,
     IHttpHeaders,
     IHttpParams,
-    IIssueContext, ILanguageService, IPaginationData,
-    IRequestOptions, IToasterService, LANGUAGE_SERVICE,
-    ProgressListener, TOASTER_SERVICE
+    IHttpService,
+    IIssueContext,
+    ILanguageService,
+    IPaginationData,
+    IRequestOptions,
+    IToasterService,
+    LANGUAGE_SERVICE,
+    ProgressListener,
+    TOASTER_SERVICE
 } from "../common-types";
 
 import {ObjectUtils} from "../utils/object.utils";
@@ -22,7 +28,7 @@ import {timeout} from "rxjs/operators";
 import {TimeoutError} from "rxjs";
 
 @Injectable()
-export class BaseHttpService {
+export class BaseHttpService implements IHttpService {
 
     protected static failedRequests: Array<() => void> = [];
 

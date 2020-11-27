@@ -41,6 +41,12 @@ export class StaticLanguageService implements ILanguageService {
         });
     }
 
+    getTranslationSync(key: string, params: any = null): string {
+        const lowerKey = (key || "").toLocaleLowerCase();
+        const translation = this.dictionary[lowerKey] || lowerKey;
+        return this.interpolate(translation == lowerKey ? key : translation, params);
+    }
+
     getTranslation(key: string, params?: any): Promise<string> {
         if (!ObjectUtils.isString(key) || !key.length) {
             throw new Error(`Parameter "key" required`);

@@ -43,6 +43,7 @@ export interface ILanguageService {
     defaultLanguage: string;
     dictionary: any;
     addLanguages(languages: string[]): void;
+    getTranslationSync(key: string, params?: any): string;
     getTranslation(key: string, params?: any): Promise<string>;
     getTranslations(...keys: string[]): Promise<ITranslations>;
     getTranslationFromObject(translations: ITranslations, params?: any, lang?: string): string;
@@ -316,6 +317,7 @@ export class HttpPromise extends Promise<any> {
 }
 
 export interface IHttpService {
+    language: ILanguageService;
     url(url: string): string;
     makeListParams(page: number, itemsPerPage: number, orderBy?: string, orderDescending?: boolean, filter?: string): IHttpParams;
 }
