@@ -1,11 +1,59 @@
 import {Inject, Injectable, Injector} from "@angular/core";
-import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from "@angular/router";
-import {AUTH_SERVICE, IAuthService, IRoute, RouteValidator} from "../common-types";
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlSegment} from "@angular/router";
+import {AUTH_SERVICE, FactoryDependencies, IAuthService, IRoute, RouteValidator} from "../common-types";
 import {ReflectUtils} from "./reflect.utils";
 import {ObjectUtils} from "./object.utils";
+import {StateService} from "../services/state.service";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+
+    static guardAuthenticated(auth: IAuthService): Promise<boolean> {
+        return Promise.resolve(auth.isAuthenticated);
+    }
+
+    static guardNotAuthenticated(auth: IAuthService): Promise<boolean> {
+        return Promise.resolve(!auth.isAuthenticated);
+    }
+
+    static guardNothing(): Promise<boolean> {
+        return Promise.resolve(true);
+    }
+
+    @FactoryDependencies(AUTH_SERVICE)
+    static guardAuthField(auth: IAuthService, expression: string = `auth.isAuthenticated`): RouteValidator {
+        // @dynamic
+        const lambda = (): Promise<boolean> => {
+            return Promise.resolve(ObjectUtils.evaluate(expression, {auth}));
+        };
+        return lambda;
+    }
+
+    @FactoryDependencies(StateService)
+    static guardStateField(state: StateService, expression: string = `state.data`): RouteValidator {
+        // @dynamic
+        const lambda = (): Promise<boolean> => {
+            return Promise.resolve(ObjectUtils.evaluate(expression, {state}));
+        };
+        return lambda;
+    }
+
+    @FactoryDependencies(AUTH_SERVICE, StateService)
+    static guardAuthStateField(auth: IAuthService, state: StateService, expression: string = `auth.isAuthenticated`): RouteValidator {
+        // @dynamic
+        const lambda = (): Promise<boolean> => {
+            return Promise.resolve(ObjectUtils.evaluate(expression, {auth, state}));
+        };
+        return lambda;
+    }
+
+    static wildRouteMatch(segments: UrlSegment[]) {
+        return {consumed: segments};
+    }
+
+    static noRouteMatch() {
+        return null;
+    }
 
     constructor(@Inject(Injector) protected injector: Injector, @Inject(Router) protected router: Router, @Inject(AUTH_SERVICE) protected auth: IAuthService) {
     }

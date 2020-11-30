@@ -1,4 +1,4 @@
-import {EventEmitter, InjectionToken, NgZone, TemplateRef, Type, TypeProvider} from "@angular/core";
+import {EventEmitter, InjectionToken, NgZone, Provider, TemplateRef, Type} from "@angular/core";
 import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
@@ -159,7 +159,7 @@ export interface ISearchObservable {
 }
 
 // --- Reflect utils ---
-export function FactoryDependencies(...dependencies: TypeProvider[]): MethodDecorator {
+export function FactoryDependencies(...dependencies: Array<InjectionToken<any> | Provider>): MethodDecorator {
     return function (target: any, method: string): void {
         ReflectUtils.defineMetadata("factoryDependencies", dependencies, target, method);
     };
