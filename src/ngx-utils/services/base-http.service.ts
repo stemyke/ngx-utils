@@ -51,11 +51,11 @@ export class BaseHttpService implements IHttpService {
         return this.storage.universal;
     }
 
-    constructor(@Inject(BaseHttpClient) public readonly client: BaseHttpClient,
-                @Inject(StorageService) public readonly storage: StorageService,
-                @Inject(LANGUAGE_SERVICE) public readonly language: ILanguageService,
-                @Inject(TOASTER_SERVICE) public readonly toaster: IToasterService,
-                @Optional() @Inject(REQUEST) public readonly request: Request = null
+    constructor(@Inject(BaseHttpClient) readonly client: BaseHttpClient,
+                @Inject(StorageService) readonly storage: StorageService,
+                @Inject(LANGUAGE_SERVICE) readonly language: ILanguageService,
+                @Inject(TOASTER_SERVICE) readonly toaster: IToasterService,
+                @Optional() @Inject(REQUEST) readonly request: Request = null
     ) {
         this.cache = {};
     }
@@ -65,7 +65,7 @@ export class BaseHttpService implements IHttpService {
     }
 
     createUrl(url: string, params: IHttpParams): string {
-        const httpParams = this.client.makeParams(params, this.language.currentLanguage);
+        const httpParams = this.client.makeParams(params);
         const query = httpParams.keys().map(key => {
             return `${key}=${httpParams.get(key)}`;
         }).join("&");
@@ -261,7 +261,7 @@ export class BaseHttpService implements IHttpService {
     protected makeOptions(options?: IRequestOptions, method: string = "GET", body: any = {}): IRequestOptions {
         // Set base options
         options = options ? {...options} : {};
-        options.params = this.client.makeParams(options.params, this.language.currentLanguage);
+        options.params = this.client.makeParams(options.params);
         options.observe = "body";
         options.headers = options.headers || {};
         options.method = method;

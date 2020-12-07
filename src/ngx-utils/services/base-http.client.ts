@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpHandler, HttpHeaders, HttpParams, HttpUrlEncodingCodec} from "@angular/common/http";
-import {ObjectUtils} from "../utils/object.utils";
 import {IHttpHeaders, IHttpParams} from "../common-types";
+import {ObjectUtils} from "../utils/object.utils";
 
 @Injectable()
 export class BaseHttpClient extends HttpClient {
@@ -10,20 +10,27 @@ export class BaseHttpClient extends HttpClient {
     requestParams: IHttpParams;
     renewTokenFunc: () => void;
 
+    protected extraRequestParams: IHttpParams;
+
     constructor(handler: HttpHandler) {
         super(handler);
         this.requestHeaders = {};
-        this.requestParams = {};
+        this.extraRequestParams = {
+            language: "en"
+        };
     }
 
-    makeHeaders(headers?: IHttpHeaders): HttpHeaders {
+    makeHeaders(headers?: IHttpHeaders, withCredentials: boolean = true): HttpHeaders {
         headers = Object.assign({}, this.requestHeaders, headers);
+        if (!withCredentials) {
+            delete headers["Authorization"];
+        }
         return new HttpHeaders(headers);
     }
 
-    makeParams(params?: IHttpParams, language: string = "de"): HttpParams {
-        params = Object.assign({}, this.requestParams, params);
-        const httpParams = new HttpParams({
+    makeParams(params?: IHttpParams): HttpParams {
+        params = Object.assign({}, this.extraRequestParams, this.requestParams, params);
+        return new HttpParams({
             encoder: new HttpUrlEncodingCodec(),
             fromObject: Object.keys(params || {}).reduce((result, key) => {
                 const value = params[key];
@@ -31,6 +38,9 @@ export class BaseHttpClient extends HttpClient {
                 return result;
             }, {})
         });
-        return httpParams.set("language", httpParams.get("language") || language);
+    }
+
+    setExtraRequestParam(name: string, value: any): void {
+        this.extraRequestParams[name] = value;
     }
 }
