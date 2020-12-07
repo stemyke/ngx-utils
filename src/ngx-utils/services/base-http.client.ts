@@ -15,6 +15,7 @@ export class BaseHttpClient extends HttpClient {
     constructor(handler: HttpHandler) {
         super(handler);
         this.requestHeaders = {};
+        this.requestParams = {};
         this.extraRequestParams = {
             language: "en"
         };
