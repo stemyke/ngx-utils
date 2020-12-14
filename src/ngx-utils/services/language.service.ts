@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {ILanguageService, ITranslation, ITranslations} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
+import {EventsService} from "./events.service";
 
 @Injectable()
 export class StaticLanguageService implements ILanguageService {
@@ -17,7 +18,14 @@ export class StaticLanguageService implements ILanguageService {
         this.translations[this.currentLanguage] = value;
     }
 
-    currentLanguage: string = "none";
+    get currentLanguage(): string {
+        return this.currentLang;
+    }
+
+    set currentLanguage(lang: string) {
+        this.currentLang = lang;
+        this.events.languageChanged.emit(lang);
+    }
 
     get editLanguage(): string {
         return this.editLang || this.currentLanguage;
@@ -27,13 +35,28 @@ export class StaticLanguageService implements ILanguageService {
         this.editLang = lang || this.currentLanguage;
     }
 
+    get disableTranslations(): boolean {
+        return this.disableTrans;
+    }
+
+    set disableTranslations(value: boolean) {
+        this.disableTrans = value;
+        this.events.languageChanged.emit(this.currentLang);
+    }
+
     private editLang: string;
+    private currentLang: string;
+    private disableTrans: boolean;
+    private readonly translations: ITranslations;
 
-    private translations: ITranslations = {
-        none: {}
-    };
-
-    disableTranslations: boolean = false;
+    constructor(readonly events: EventsService) {
+        this.editLang = null;
+        this.currentLang = "none";
+        this.disableTrans = false;
+        this.translations = {
+            none: {}
+        };
+    }
 
     addLanguages(languages: string[]): void {
         languages.forEach(lang => {

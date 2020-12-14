@@ -3,8 +3,9 @@ import {EventEmitter, Injectable} from "@angular/core";
 @Injectable()
 export class EventsService {
 
-    public eventForwarded: EventEmitter<Event>;
-    public stickyUpdated: EventEmitter<boolean>;
+    readonly eventForwarded: EventEmitter<Event>;
+    readonly stickyUpdated: EventEmitter<boolean>;
+    readonly languageChanged: EventEmitter<string>;
 
     private sticky: boolean;
 
@@ -15,6 +16,7 @@ export class EventsService {
     constructor() {
         this.eventForwarded = new EventEmitter<Event>();
         this.stickyUpdated = new EventEmitter<boolean>();
+        this.languageChanged = new EventEmitter<string>();
         this.sticky = false;
     }
 
