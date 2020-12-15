@@ -41,7 +41,11 @@ export class BaseHttpClient extends HttpClient {
         });
     }
 
-    setExtraRequestParam(name: string, value: any): void {
+    setExtraRequestParam(name: string, value?: any): void {
+        if (typeof value == "undefined") {
+            delete this.extraRequestParams[name];
+            return;
+        }
         this.extraRequestParams[name] = value;
     }
 }
