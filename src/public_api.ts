@@ -65,6 +65,7 @@ export {DateUtils} from "./ngx-utils/utils/date.utils";
 export {CanvasUtils} from "./ngx-utils/utils/canvas.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {GenericValue} from "./ngx-utils/utils/generic-value";
+export {Initializer} from "./ngx-utils/utils/initializer";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
