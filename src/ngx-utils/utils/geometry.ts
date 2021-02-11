@@ -1,4 +1,45 @@
-export class Circle {
+export interface IShape {
+    x: number;
+    y: number;
+
+    distance(shape: IShape): number;
+}
+
+export class Rect implements IShape {
+
+    get center(): Point {
+        return new Point(this.x, this.y);
+    }
+
+    get left(): number {
+        return this.x - this.width * .5;
+    }
+
+    get right(): number {
+        return this.x + this.width * .5;
+    }
+
+    get bottom(): number {
+        return this.y - this.height * .5;
+    }
+
+    get top(): number {
+        return this.y + this.height * .5;
+    }
+
+    constructor(readonly x: number, readonly y: number, readonly width: number, readonly height: number, readonly rotation: number = 0) {
+
+    }
+
+    distance(p: Point): number {
+        p = p.rotateAround(this.center, -this.rotation);
+        const x = Math.max(this.left - p.x, 0, p.x - this.right);
+        const y = Math.max(this.bottom - p.y, 0, p.y - this.top);
+        return Math.sqrt(x*x + y*y);
+    }
+}
+
+export class Circle implements IShape {
 
     get center(): Point {
         return new Point(this.x, this.y);
@@ -20,12 +61,20 @@ export class Circle {
         return new Point(this.x, this.y - this.radius);
     }
 
+    get rect(): Rect {
+        return new Rect(this.x, this.y, this.radius * 2, this.radius * 2);
+    }
+
     constructor(readonly x: number, readonly y: number, readonly radius: number) {
 
     }
+
+    distance(p: Point): number {
+        return this.center.distance(p) - this.radius;
+    }
 }
 
-export class Point {
+export class Point implements IShape {
 
     static Zero: Point = new Point(0, 0);
 
@@ -103,5 +152,12 @@ export class Point {
     angle(p: Point): number {
         const diff = p.subtract(this);
         return Math.atan2(diff.y, diff.x) * 180 / Math.PI;
+    }
+
+    rotateAround(p: Point, angle: number): Point {
+        const rotation = (p.angle(this) + angle) * Math.PI / 180;
+        const distance = p.distance(this);
+        const rotated = new Point(Math.cos(rotation) * distance, Math.sin(rotation) * distance);
+        return p.add(rotated);
     }
 }
