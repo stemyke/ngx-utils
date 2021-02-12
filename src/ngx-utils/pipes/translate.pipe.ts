@@ -71,7 +71,9 @@ export class TranslatePipe implements PipeTransform {
             }
             this.language.getTranslation(query, this.params).then(value => {
                 this.lastValue = value;
-                this.cdr.detectChanges();
+                if (!this.cdr["destroyed"]) {
+                    this.cdr.detectChanges();
+                }
             });
         }
         return this.lastValue;
