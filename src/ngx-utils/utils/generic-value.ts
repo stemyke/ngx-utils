@@ -14,9 +14,9 @@ export class GenericValue<T> extends Subject<T> {
 
     private _value: T;
 
-    constructor() {
+    constructor(value: T = null) {
         super();
-        this._value = null;
+        this._value = value;
     }
 
     setJustValue(value: T): void {
