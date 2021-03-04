@@ -129,13 +129,15 @@ export class BaseHttpService implements IHttpService {
                 if (ObjectUtils.isArray(data)) {
                     resolve({
                         total: data.length,
-                        items: data
+                        items: data,
+                        meta: {}
                     });
                     return;
                 }
                 resolve({
-                    total: data.meta.total,
-                    items: data.items
+                    total: data.meta?.total || data?.total || data.items?.length || 0,
+                    items: data.items || [],
+                    meta: data.meta || {}
                 });
             }, response => {
                 if (response.status == 0 || response.status == 301) {
@@ -144,13 +146,15 @@ export class BaseHttpService implements IHttpService {
                         items: [{
                             id: null,
                             label: "Not implemented."
-                        }]
+                        }],
+                        meta: {}
                     });
                     return true;
                 }
                 resolve({
                     total: 0,
-                    items: []
+                    items: [],
+                    meta: {}
                 });
                 return false;
             });

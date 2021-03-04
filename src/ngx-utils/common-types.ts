@@ -198,6 +198,7 @@ export interface IPageInfo {
 export interface IPaginationData {
     total: number;
     items: any[];
+    meta?: any;
 }
 
 export type PaginationDataLoader = (page: number, itemsPerPage: number) => Promise<IPaginationData>;
