@@ -66,6 +66,10 @@ export class StateService extends BehaviorSubject<any> {
         return this.snapshot.params || emptyParams;
     }
 
+    get queryParams(): Params {
+        return this.snapshot.queryParams || emptyParams;
+    }
+
     get url(): string {
         return this.stateInfo.url || "";
     }
