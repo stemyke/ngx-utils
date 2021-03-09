@@ -28,6 +28,7 @@ import {OpenApiService} from "./services/open-api.service";
 import {StateService} from "./services/state.service";
 import {StorageService} from "./services/storage.service";
 import {ConsoleToasterService} from "./services/toaster.service";
+import {TranslatedUrlSerializer} from "./services/translated-url.serializer";
 import {UniversalService} from "./services/universal.service";
 import {ResizeEventPlugin} from "./plugins/resize-event.plugin";
 import {ScrollEventPlugin} from "./plugins/scroll-event.plugin";
@@ -73,6 +74,7 @@ import {ValuesPipe} from "./pipes/values.pipe";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
+import {UrlSerializer} from "@angular/router";
 
 // --- Pipes ---
 export const pipes = [
@@ -144,6 +146,7 @@ export const providers = [
     StateService,
     StorageService,
     ConsoleToasterService,
+    TranslatedUrlSerializer,
     UniversalService,
     DeviceDetectorService,
     {
@@ -155,6 +158,10 @@ export const providers = [
         provide: EVENT_MANAGER_PLUGINS,
         useClass: ScrollEventPlugin,
         multi: true
+    },
+    {
+        provide: UrlSerializer,
+        useExisting: TranslatedUrlSerializer
     }
 ];
 

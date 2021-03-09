@@ -94,6 +94,7 @@ export {StaticLanguageService} from "./ngx-utils/services/language.service";
 export {OpenApiService} from "./ngx-utils/services/open-api.service";
 export {StorageService} from "./ngx-utils/services/storage.service";
 export {ConsoleToasterService} from "./ngx-utils/services/toaster.service";
+export {IUrlDictionary, TranslatedUrlSerializer} from "./ngx-utils/services/translated-url.serializer";
 export {PromiseService} from "./ngx-utils/services/promise.service";
 
 export {ResizeEventPlugin} from "./ngx-utils/plugins/resize-event.plugin";

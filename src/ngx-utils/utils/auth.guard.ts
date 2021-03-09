@@ -1,5 +1,5 @@
 import {Inject, Injectable, Injector} from "@angular/core";
-import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlSegment} from "@angular/router";
+import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlSegment} from "@angular/router";
 import {AUTH_SERVICE, FactoryDependencies, IAuthService, IRoute, RouteValidator} from "../common-types";
 import {ReflectUtils} from "./reflect.utils";
 import {ObjectUtils} from "./object.utils";
@@ -55,7 +55,9 @@ export class AuthGuard implements CanActivate {
         return null;
     }
 
-    constructor(@Inject(Injector) protected injector: Injector, @Inject(Router) protected router: Router, @Inject(AUTH_SERVICE) protected auth: IAuthService) {
+    constructor(@Inject(Injector) readonly injector: Injector,
+                @Inject(StateService) readonly state: StateService,
+                @Inject(AUTH_SERVICE) readonly auth: IAuthService) {
     }
 
     checkRouteMenu(route: IRoute): Promise<boolean> {
@@ -87,7 +89,8 @@ export class AuthGuard implements CanActivate {
                     if (!hasRights) {
                         this.getReturnState(route).then(returnState => {
                             if (!returnState) return;
-                            this.router.navigate(returnState);
+                            console.log(returnState, next.queryParams);
+                            this.state.navigate(returnState, {queryParams: next.queryParams});
                         });
                     }
                 });
@@ -101,7 +104,7 @@ export class AuthGuard implements CanActivate {
             return Promise.resolve(route.data.returnState);
         }
         const path = [];
-        const config = this.getConfig(route, this.router.config, path);
+        const config = this.getConfig(route, this.state.routerConfig, path);
         return new Promise<string[]>(resolve => {
             this.getReturnStateRecursive(config).then(rs => {
                 if (!ObjectUtils.isArray(rs)) {

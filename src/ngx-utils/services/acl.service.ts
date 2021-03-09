@@ -27,7 +27,7 @@ export class AclService {
         component.onUserChanged();
     }
 
-    constructor(public injector: Injector, public state: StateService, @Inject(AUTH_SERVICE) public auth: IAuthService) {
+    constructor(readonly injector: Injector, readonly state: StateService, @Inject(AUTH_SERVICE) readonly auth: IAuthService) {
         this.components = [];
         this.auth.userChanged.subscribe(() => {
             this.components.forEach(t => t.dirty = true);

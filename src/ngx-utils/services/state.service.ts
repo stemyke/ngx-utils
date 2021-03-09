@@ -33,6 +33,8 @@ export interface IStateInfo {
 @Injectable()
 export class StateService extends BehaviorSubject<any> {
 
+    readonly globalExtras: NavigationExtras;
+
     private shot: ActivatedRouteSnapshot;
     private comp: any;
     private stateInfo: IStateInfo;
@@ -82,9 +84,16 @@ export class StateService extends BehaviorSubject<any> {
         return this.stateInfo.components || emptyComponents;
     }
 
-    constructor(private zone: NgZone, @Optional() private router: Router = null) {
+    get routerConfig(): IRoute[] {
+        return this.router.config;
+    }
+
+    constructor(readonly zone: NgZone, @Optional() readonly router: Router = null) {
         super(null);
         if (!this.router) return;
+        this.globalExtras = {
+            queryParamsHandling: "merge"
+        };
         this.router.events.subscribe(this.handleRouterEvent);
         this.stateInfo = {
             url: "",
@@ -95,14 +104,20 @@ export class StateService extends BehaviorSubject<any> {
     }
 
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean> {
-        return new Promise<boolean>(resolve => {
-            this.zone.run(() => {
-                this.router.navigate(commands, extras).then(resolve, () => resolve(false));
-            })
-        });
+        if (!this.router) return Promise.resolve(false);
+        console.log("navigate", commands, extras);
+        extras = Object.assign({}, this.globalExtras, extras || {});
+        console.log("navigate", commands, extras);
+        const tree = this.router.createUrlTree(commands, extras);
+        return this.navigateByUrl(tree, extras);
     }
 
     navigateByUrl(url: string | UrlTree, extras?: NavigationExtras): Promise<boolean> {
+        if (!this.router) return Promise.resolve(false);
+        extras = Object.assign({}, this.globalExtras, extras || {});
+        console.log("navigateByUrl", url, extras);
+        extras = Object.assign({}, this.globalExtras, extras || {});
+        console.log("navigateByUrl", url, extras);
         return new Promise<boolean>(resolve => {
             this.zone.run(() => {
                 this.router.navigateByUrl(url, extras).then(resolve, () => resolve(false));
