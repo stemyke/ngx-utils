@@ -239,12 +239,7 @@ export class BaseHttpService implements IHttpService {
                     // If an authorization header exists and we still have an Unauthorized response prompt the user to log in again
                     if (headers.has(authKey) && response.status == 401) {
                         BaseHttpService.failedRequests.push(() => {
-                            const extraHeaders = this.client.makeHeaders();
-                            if (extraHeaders.has(authKey)) {
-                                options.headers = headers.set(authKey, extraHeaders.get(authKey));
-                            } else {
-                                options.headers = headers.delete(authKey);
-                            }
+                            options.headers = this.makeHeaders(options.originalHeaders);
                             this.toPromise(url, options, listener).then(resolve, reject);
                         });
                         this.handleUnauthorizedError(absoluteUrl, options, () => reject(response));
@@ -268,7 +263,7 @@ export class BaseHttpService implements IHttpService {
         options = options ? {...options} : {};
         options.params = this.client.makeParams(options.params);
         options.observe = "body";
-        options.headers = options.headers || {};
+        options.originalHeaders = options.originalHeaders || (options.headers as IHttpHeaders) || {};
         options.method = method;
         options.withCredentials = ObjectUtils.isBoolean(options.withCredentials) ? options.withCredentials : this.withCredentials;
         options.body = body || {};
@@ -277,12 +272,12 @@ export class BaseHttpService implements IHttpService {
         if (this.checkHeaders(headers)) {
             options.headers["Cookie"] = headers.cookie;
         }
-        options.headers = this.makeHeaders(options.headers as IHttpHeaders, method);
+        options.headers = this.makeHeaders(options.originalHeaders, method);
         return options;
     }
 
-    protected makeHeaders(options?: IRequestOptions, method: string = "GET"): HttpHeaders {
-        return this.client.makeHeaders(options.headers as IHttpHeaders);
+    protected makeHeaders(headers: IHttpHeaders, method: string = "GET"): HttpHeaders {
+        return this.client.makeHeaders(headers);
     }
 
     protected parseResponse(response: any, url: string, options: IRequestOptions): any {

@@ -261,6 +261,7 @@ export interface IRequestOptions {
     method?: string;
     body?: any;
     headers?: IHttpHeaders | HttpHeaders;
+    originalHeaders?: IHttpHeaders;
     params?: IHttpParams;
     observe?: "body";
     reportProgress?: boolean;
