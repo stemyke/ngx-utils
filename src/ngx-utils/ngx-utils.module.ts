@@ -1,23 +1,28 @@
-import {ModuleWithProviders, NgModule} from "@angular/core";
+import {APP_INITIALIZER, ModuleWithProviders, NgModule, Provider} from "@angular/core";
 import {EVENT_MANAGER_PLUGINS} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {UrlSerializer} from "@angular/router";
 import {DeviceDetectorService} from "ngx-device-detector";
+
 import {
     API_SERVICE,
     AUTH_SERVICE,
-    ICON_SERVICE,
+    CONFIG_SERVICE,
+    ICON_SERVICE, IConfigService,
     IModuleConfig,
     LANGUAGE_SERVICE,
     PROMISE_SERVICE,
     TOASTER_SERVICE
 } from "./common-types";
+
 import {AuthGuard} from "./utils/auth.guard";
 import {AclService} from "./services/acl.service";
 import {ApiService} from "./services/api.service";
 import {StaticAuthService} from "./services/auth.service";
 import {BaseHttpClient} from "./services/base-http.client";
 import {BaseHttpService} from "./services/base-http.service";
+import {ConfigService} from "./services/config.service";
 import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
 import {GlobalTemplateService} from "./services/global-template.service";
@@ -74,7 +79,6 @@ import {ValuesPipe} from "./pipes/values.pipe";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
-import {UrlSerializer} from "@angular/router";
 
 // --- Pipes ---
 export const pipes = [
@@ -136,6 +140,7 @@ export const providers = [
     AclService,
     ApiService,
     StaticAuthService,
+    ConfigService,
     EventsService,
     FormatterService,
     GlobalTemplateService,
@@ -165,6 +170,10 @@ export const providers = [
     }
 ];
 
+export function loadConfig(config: IConfigService): any {
+    return config.load;
+}
+
 @NgModule({
     declarations: [
         ...pipes,
@@ -185,6 +194,15 @@ export const providers = [
 })
 export class NgxUtilsModule {
     static forRoot(config?: IModuleConfig): ModuleWithProviders<NgxUtilsModule> {
+        const optionalProviders: Array<Provider> = [];
+        if (config && config.configService) {
+            optionalProviders.push({
+                provide: APP_INITIALIZER,
+                useFactory: loadConfig,
+                multi: true,
+                deps: [config.configService]
+            });
+        }
         return {
             ngModule: NgxUtilsModule,
             providers: [
@@ -212,7 +230,12 @@ export class NgxUtilsModule {
                 {
                     provide: PROMISE_SERVICE,
                     useExisting: (!config ? null : config.promiseService) || PromiseService
-                }
+                },
+                {
+                    provide: CONFIG_SERVICE,
+                    useExisting: (!config ? null : config.configService) || ConfigService
+                },
+                ...optionalProviders
             ]
         };
     }

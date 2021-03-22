@@ -56,7 +56,11 @@ export {
     ITableTemplate,
     ITableTemplates,
     TableDataLoader,
-    ResourceIfContext
+    ResourceIfContext,
+    IConfiguration,
+    IConfigService,
+    CONFIG_SERVICE,
+    BASE_CONFIG
 } from "./ngx-utils/common-types";
 
 export {AjaxRequestHandler} from "./ngx-utils/utils/ajax-request-handler";
@@ -86,6 +90,7 @@ export {ApiService} from "./ngx-utils/services/api.service";
 export {StaticAuthService} from "./ngx-utils/services/auth.service";
 export {BaseHttpClient} from "./ngx-utils/services/base-http.client";
 export {BaseHttpService} from "./ngx-utils/services/base-http.service";
+export {ConfigService} from "./ngx-utils/services/config.service";
 export {EventsService} from "./ngx-utils/services/events.service";
 export {FormatterService} from "./ngx-utils/services/formatter.service";
 export {GlobalTemplateService} from "./ngx-utils/services/global-template.service";

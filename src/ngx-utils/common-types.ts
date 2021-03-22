@@ -387,6 +387,24 @@ export class ResourceIfContext {
     url: string;
 }
 
+// --- ConfigService ---
+export class IConfiguration {
+    baseUrl?: string;
+    [key: string]: any;
+}
+
+export interface IConfigService {
+    config: IConfiguration;
+    readonly load: () => Promise<IConfiguration>;
+    prepareUrl(url: string, ending: string): string;
+    getConfigValue(key: string): any;
+    getQueryParameter(name: string, url?: string): string;
+}
+
+export const CONFIG_SERVICE = new InjectionToken<IConfigService>("config-service");
+
+export const BASE_CONFIG = new InjectionToken<IConfiguration>("base-config");
+
 // --- Module ---
 export interface IModuleConfig {
     apiService?: Type<IApiService>
@@ -395,4 +413,5 @@ export interface IModuleConfig {
     languageService?: Type<ILanguageService>;
     toasterService?: Type<IToasterService>;
     promiseService?: Type<IPromiseService>;
+    configService?: Type<IConfigService>;
 }

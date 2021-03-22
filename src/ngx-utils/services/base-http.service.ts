@@ -4,7 +4,9 @@ import {Request} from "express";
 import {REQUEST} from "@nguniversal/express-engine/tokens";
 
 import {
+    CONFIG_SERVICE,
     HttpPromise,
+    IConfigService,
     IHttpHeaders,
     IHttpParams,
     IHttpService,
@@ -55,6 +57,7 @@ export class BaseHttpService implements IHttpService {
                 @Inject(StorageService) readonly storage: StorageService,
                 @Inject(LANGUAGE_SERVICE) readonly language: ILanguageService,
                 @Inject(TOASTER_SERVICE) readonly toaster: IToasterService,
+                @Inject(CONFIG_SERVICE) readonly configs: IConfigService,
                 @Optional() @Inject(REQUEST) readonly request: Request = null
     ) {
         this.cache = {};
