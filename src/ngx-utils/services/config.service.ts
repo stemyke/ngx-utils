@@ -1,6 +1,5 @@
 import {Inject, Injectable, Optional} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import {first} from "rxjs/operators";
 import {UniversalService} from "./universal.service";
 import {BASE_CONFIG, IConfigService, IConfiguration} from "../common-types";
 
@@ -55,8 +54,7 @@ export class ConfigService implements IConfigService {
         }
         const configUrl = this.configUrl;
         return new Promise<any>((resolve, reject) => {
-            const get: any = this.http.get(configUrl);
-            first()(get).subscribe((response: any) => {
+            this.http.get(configUrl).toPromise().then(response => {
                 resolve(response);
             }, () => {
                 reject("Config file not found at: " + configUrl);

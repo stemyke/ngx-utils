@@ -5,6 +5,7 @@ export {
     ICON_SERVICE,
     ITranslation,
     ITranslations,
+    ILanguageSettings,
     ILanguageService,
     LANGUAGE_SERVICE,
     IAuthService,
@@ -84,7 +85,6 @@ export {UniqueUtils} from "./ngx-utils/utils/unique.utils";
 export {Vector} from "./ngx-utils/utils/vector";
 
 export {UniversalService} from "./ngx-utils/services/universal.service";
-export {IStateInfo, StateService} from "./ngx-utils/services/state.service";
 export {AclService} from "./ngx-utils/services/acl.service";
 export {ApiService} from "./ngx-utils/services/api.service";
 export {StaticAuthService} from "./ngx-utils/services/auth.service";
@@ -95,8 +95,10 @@ export {EventsService} from "./ngx-utils/services/events.service";
 export {FormatterService} from "./ngx-utils/services/formatter.service";
 export {GlobalTemplateService} from "./ngx-utils/services/global-template.service";
 export {IconService} from "./ngx-utils/services/icon.service";
-export {StaticLanguageService} from "./ngx-utils/services/language.service";
+export {LanguageService} from "./ngx-utils/services/language.service";
 export {OpenApiService} from "./ngx-utils/services/open-api.service";
+export {IStateInfo, StateService} from "./ngx-utils/services/state.service";
+export {StaticLanguageService} from "./ngx-utils/services/static-language.service";
 export {StorageService} from "./ngx-utils/services/storage.service";
 export {ConsoleToasterService} from "./ngx-utils/services/toaster.service";
 export {IUrlDictionary, TranslatedUrlSerializer} from "./ngx-utils/services/translated-url.serializer";

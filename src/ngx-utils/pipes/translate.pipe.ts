@@ -60,6 +60,7 @@ export class TranslatePipe implements PipeTransform {
             }
             dirty = true;
         }
+        console.log(dirty, query);
         if (dirty) {
             if (typeof query === "object") {
                 this.lastValue = Array.isArray(query) ? this.language.getTranslationFromArray(query, this.params, lang) : this.language.getTranslationFromObject(query, this.params, lang);
@@ -69,7 +70,9 @@ export class TranslatePipe implements PipeTransform {
                 this.lastValue = query;
                 return this.lastValue;
             }
+            console.log(dirty, query, "2");
             this.language.getTranslation(query, this.params).then(value => {
+                console.log(dirty, query, "3");
                 this.lastValue = value;
                 if (!this.cdr["destroyed"]) {
                     this.cdr.detectChanges();

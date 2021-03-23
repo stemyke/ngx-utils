@@ -8,7 +8,7 @@ import {UniversalService} from "./universal.service";
 @Injectable()
 export class StorageService {
 
-    constructor(public universal: UniversalService) {
+    constructor(readonly universal: UniversalService) {
     }
 
     get(key: string, defaultValue?: any, mode: StorageMode = StorageMode.Local): any {

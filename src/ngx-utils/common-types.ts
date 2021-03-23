@@ -36,12 +36,21 @@ export interface ITranslations {
     [key: string]: any;
 }
 
+export interface ILanguageSettings {
+    languages: string[];
+    devLanguages: string[];
+    defaultLanguage: string;
+    settings?: any;
+}
+
 export interface ILanguageService {
     currentLanguage: string;
     editLanguage: string;
     disableTranslations: boolean;
     defaultLanguage: string;
-    dictionary: any;
+    dictionary: ITranslations;
+    readonly languages: string[];
+    readonly httpClient: HttpClient;
     addLanguages(languages: string[]): void;
     getTranslationSync(key: string, params?: any): string;
     getTranslation(key: string, params?: any): Promise<string>;
@@ -390,6 +399,7 @@ export class ResourceIfContext {
 // --- ConfigService ---
 export class IConfiguration {
     baseUrl?: string;
+    translationUrl?: string;
     [key: string]: any;
 }
 

@@ -27,10 +27,11 @@ import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
 import {GlobalTemplateService} from "./services/global-template.service";
 import {IconService} from "./services/icon.service";
+import {LanguageService} from "./services/language.service";
 import {PromiseService} from "./services/promise.service";
-import {StaticLanguageService} from "./services/language.service";
 import {OpenApiService} from "./services/open-api.service";
 import {StateService} from "./services/state.service";
+import {StaticLanguageService} from "./services/static-language.service";
 import {StorageService} from "./services/storage.service";
 import {ConsoleToasterService} from "./services/toaster.service";
 import {TranslatedUrlSerializer} from "./services/translated-url.serializer";
@@ -145,10 +146,11 @@ export const providers = [
     FormatterService,
     GlobalTemplateService,
     IconService,
-    StaticLanguageService,
+    LanguageService,
     OpenApiService,
     PromiseService,
     StateService,
+    StaticLanguageService,
     StorageService,
     ConsoleToasterService,
     TranslatedUrlSerializer,
@@ -200,7 +202,7 @@ export class NgxUtilsModule {
                 provide: APP_INITIALIZER,
                 useFactory: loadConfig,
                 multi: true,
-                deps: [config.configService]
+                deps: [CONFIG_SERVICE]
             });
         }
         return {

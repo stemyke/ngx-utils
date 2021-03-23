@@ -1,120 +1,123 @@
 import {Injectable} from "@angular/core";
-import {ILanguageService, ITranslation, ITranslations} from "../common-types";
-import {ObjectUtils} from "../utils/object.utils";
-import {EventsService} from "./events.service";
+import {BehaviorSubject, combineLatest, Observable} from "rxjs";
+import {map} from "rxjs/operators";
+import {ILanguageSettings, ITranslations} from "../common-types";
+import {StaticLanguageService} from "./static-language.service";
 
 @Injectable()
-export class StaticLanguageService implements ILanguageService {
+export class LanguageService extends StaticLanguageService {
 
-    get defaultLanguage(): string {
-        return "none";
-    }
-
-    get dictionary(): any {
-        return this.translations[this.currentLanguage];
-    }
-
-    set dictionary(value: any) {
-        this.translations[this.currentLanguage] = value;
-    }
+    protected translationRequests: ITranslations;
+    protected settingsPromise: Promise<ILanguageSettings>;
+    protected languageSettings: BehaviorSubject<ILanguageSettings>;
 
     get currentLanguage(): string {
         return this.currentLang;
     }
 
     set currentLanguage(lang: string) {
-        this.currentLang = lang;
-        this.events.languageChanged.emit(lang);
+        this.useLanguage(lang).then(() => {
+            this.events.languageChanged.emit(lang);
+        });
     }
 
-    get editLanguage(): string {
-        return this.editLang || this.currentLanguage;
+    get settings(): ILanguageSettings {
+        const settings = this.languageSettings.value;
+        return !settings ? {} : settings.settings[this.currentLanguage] || {};
     }
 
-    set editLanguage(lang: string) {
-        this.editLang = lang || this.currentLanguage;
+    get $settings(): Observable<any> {
+        this.loadSettings().then(s => this.languageSettings.next(s));
+        return combineLatest([this.languageSettings, this.events.languageChanged]).pipe(map(([settings, lang]) => {
+            return !settings ? {} : settings.settings[lang as string] || {};
+        }));
     }
 
-    get disableTranslations(): boolean {
-        return this.disableTrans;
-    }
-
-    set disableTranslations(value: boolean) {
-        this.disableTrans = value;
-        this.events.languageChanged.emit(this.currentLang);
-    }
-
-    private editLang: string;
-    private currentLang: string;
-    private disableTrans: boolean;
-    private readonly translations: ITranslations;
-
-    constructor(readonly events: EventsService) {
-        this.editLang = null;
-        this.currentLang = "none";
-        this.disableTrans = false;
-        this.translations = {
-            none: {}
+    protected initService(): void {
+        this.client.setExtraRequestParam("language", "de");
+        this.translationRequests = {};
+        this.languageSettings = new BehaviorSubject<ILanguageSettings>(null);
+        if (this.universal.isServer) return;
+        window["setLanguage"] = (lang: string) => {
+            this.currentLanguage = lang;
         };
     }
 
-    addLanguages(languages: string[]): void {
-        languages.forEach(lang => {
-            this.translations[lang] = {};
-        });
+    async initFromSettings(): Promise<any> {
+        const defaultLanguage = this.defaultLanguage;
+        const settings = await this.loadSettings();
+        this.languageSettings.next(settings);
+        const devLanguages = settings.devLanguages || [];
+        this.addLanguages((settings.languages || []).filter(lang => {
+            return devLanguages.indexOf(lang) < 0;
+        }));
+        const lang = this.languages.indexOf(defaultLanguage) < 0 ? settings.defaultLanguage : defaultLanguage;
+        await this.useLanguage(lang);
+        this.events.languageChanged.emit(lang);
     }
 
-    getTranslationSync(key: string, params: any = null): string {
-        const lowerKey = (key || "").toLocaleLowerCase();
-        const translation = this.dictionary[lowerKey] || lowerKey;
-        return this.interpolate(translation == lowerKey ? key : translation, params);
-    }
-
-    getTranslation(key: string, params?: any): Promise<string> {
-        if (!ObjectUtils.isString(key) || !key.length) {
-            throw new Error(`Parameter "key" required`);
+    async getTranslation(key: string, params: any = null): Promise<string> {
+        if (!key) return "";
+        try {
+            const lowerKey = key.toLocaleLowerCase();
+            const dict = await this.loadDictionary();
+            return this.interpolate(dict[lowerKey] || key, params);
+        } catch (reason) {
+            console.log("ERROR IN TRANSLATIONS", reason);
+            return key;
         }
-        const translation = ObjectUtils.getValue(this.dictionary, key, key) || key;
-        return Promise.resolve(this.interpolate(translation, params));
     }
 
-    getTranslations(...keys: string[]): Promise<ITranslations> {
-        return new Promise<ITranslations>(resolve => {
-            Promise.all(keys.map(key => this.getTranslation(key))).then(translations => {
-                resolve(keys.reduce((result, key, i) => {
-                    result[key] = translations[i];
-                    return result;
-                }, {}));
+    async getTranslations(...keys: string[]): Promise<ITranslations> {
+        const lowerKeys = keys.map(k => !k ? " " : k.toLocaleLowerCase());
+        const dict = await this.loadDictionary();
+        return lowerKeys.reduce((res, key, ix) => {
+            res[keys[ix]] = dict[key] == key ? keys[ix] : dict[key];
+            return res;
+        }, {});
+    }
+
+    protected async useLanguage(lang: string): Promise<ITranslations> {
+        lang = this.languages.indexOf(lang) < 0 ? this.languages[0] : lang;
+        this.client.setExtraRequestParam("language", lang);
+        if (lang == this.currentLanguage) return this.dictionary;
+        this.storage.set("language", lang);
+        this.currentLang = lang;
+        const dict = await this.loadDictionary();
+        this.translations[lang] = dict;
+        return dict;
+    }
+
+    protected loadDictionary(): Promise<any> {
+        const lang = this.currentLanguage;
+        this.translationRequests[lang] = this.translationRequests[lang] || new Promise(resolve => {
+            this.httpClient.get(`${this.config.translationUrl}${lang}`).toPromise().then(res => {
+                resolve(res || {});
+            }, () => {
+                resolve({});
             });
         });
+        return this.translationRequests[lang];
     }
 
-    getTranslationFromObject(translations: ITranslations, params?: any, lang?: string): string {
-        lang = lang || this.currentLanguage;
-        return this.interpolate(translations ? (translations[lang] || "") : "")
-    }
-
-    getTranslationFromArray(translations: ITranslation[], params?: any, lang?: string): string {
-        lang = lang || this.currentLanguage;
-        const translation = translations ? translations.find(t => t.lang == lang) : null;
-        return this.interpolate(translation ? translation.translation : "", params);
-    }
-
-    protected interpolate(expr: string | Function, params?: any): string {
-        if (typeof expr === "string") {
-            return this.interpolateString(expr, params);
-        }
-        if (typeof expr === "function") {
-            return expr(params);
-        }
-        return expr as string;
-    }
-
-    protected interpolateString(expr: string, params?: any) {
-        if (!expr || !params) return expr;
-        return expr.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, b: string) => {
-            const r = ObjectUtils.getValue(params, b);
-            return ObjectUtils.isDefined(r) ? r : substring;
-        });
+    protected loadSettings(): Promise<ILanguageSettings> {
+        this.settingsPromise = this.settingsPromise || this.client.get(`${this.config.translationUrl}languageSettings`).toPromise()
+            .then(
+                (settings: ILanguageSettings) => {
+                    return settings;
+                }, () => {
+                    return {
+                        languages: ["de", "en", "hu"],
+                        devLanguages: [],
+                        defaultLanguage: "de",
+                        settings: {
+                            de: {},
+                            hu: {},
+                            end: {}
+                        }
+                    };
+                }
+            );
+        return this.settingsPromise;
     }
 }
