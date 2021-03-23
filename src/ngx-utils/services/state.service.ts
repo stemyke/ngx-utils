@@ -105,9 +105,7 @@ export class StateService extends BehaviorSubject<any> {
 
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean> {
         if (!this.router) return Promise.resolve(false);
-        console.log("navigate", commands, extras);
         extras = Object.assign({}, this.globalExtras, extras || {});
-        console.log("navigate", commands, extras);
         const tree = this.router.createUrlTree(commands, extras);
         return this.navigateByUrl(tree, extras);
     }
@@ -115,9 +113,6 @@ export class StateService extends BehaviorSubject<any> {
     navigateByUrl(url: string | UrlTree, extras?: NavigationExtras): Promise<boolean> {
         if (!this.router) return Promise.resolve(false);
         extras = Object.assign({}, this.globalExtras, extras || {});
-        console.log("navigateByUrl", url, extras);
-        extras = Object.assign({}, this.globalExtras, extras || {});
-        console.log("navigateByUrl", url, extras);
         return new Promise<boolean>(resolve => {
             this.zone.run(() => {
                 this.router.navigateByUrl(url, extras).then(resolve, () => resolve(false));
