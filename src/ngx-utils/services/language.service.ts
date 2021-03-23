@@ -48,9 +48,9 @@ export class LanguageService extends StaticLanguageService {
         const settings = await this.loadSettings();
         this.languageSettings.next(settings);
         const devLanguages = settings.devLanguages || [];
-        this.addLanguages((settings.languages || []).filter(lang => {
+        this.languageList = (settings.languages || []).filter(lang => {
             return devLanguages.indexOf(lang) < 0;
-        }));
+        });
         const lang = this.languages.indexOf(defaultLanguage) < 0 ? settings.defaultLanguage : defaultLanguage;
         await this.useLanguage(lang);
         this.events.languageChanged.emit(lang);

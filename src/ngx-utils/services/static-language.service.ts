@@ -31,7 +31,7 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     get languages(): string[] {
-        return Object.keys(this.translations);
+        return this.languageList;
     }
 
     get currentLanguage(): string {
@@ -91,6 +91,7 @@ export class StaticLanguageService implements ILanguageService {
     protected editLang: string;
     protected currentLang: string;
     protected disableTrans: boolean;
+    protected languageList: string[];
     protected readonly translations: ITranslations;
 
     constructor(@Inject(EventsService) readonly events: EventsService,
@@ -100,6 +101,7 @@ export class StaticLanguageService implements ILanguageService {
         this.editLang = null;
         this.currentLang = "none";
         this.disableTrans = false;
+        this.languageList = [];
         this.translations = {
             none: {}
         };
@@ -113,6 +115,7 @@ export class StaticLanguageService implements ILanguageService {
     addLanguages(languages: string[]): void {
         languages.forEach(lang => {
             this.translations[lang] = {};
+            this.languageList.push(lang);
         });
     }
 
