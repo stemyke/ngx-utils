@@ -45,7 +45,12 @@ export class ConfigService implements IConfigService {
                 }, reject);
             });
             return this.loader;
-        }
+        };
+        this.initService()
+    }
+
+    protected initService(): void {
+
     }
 
     protected loadJson(): Promise<IConfiguration> {
