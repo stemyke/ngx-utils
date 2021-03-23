@@ -46,7 +46,7 @@ export class ConfigService implements IConfigService {
             });
             return this.loader;
         };
-        this.initService()
+        this.initService();
     }
 
     protected initService(): void {
