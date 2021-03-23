@@ -196,15 +196,6 @@ export function loadConfig(config: IConfigService): any {
 })
 export class NgxUtilsModule {
     static forRoot(config?: IModuleConfig): ModuleWithProviders<NgxUtilsModule> {
-        const optionalProviders: Array<Provider> = [];
-        if (config && config.configService) {
-            optionalProviders.push({
-                provide: APP_INITIALIZER,
-                useFactory: loadConfig,
-                multi: true,
-                deps: [CONFIG_SERVICE]
-            });
-        }
         return {
             ngModule: NgxUtilsModule,
             providers: [
@@ -237,7 +228,14 @@ export class NgxUtilsModule {
                     provide: CONFIG_SERVICE,
                     useExisting: (!config ? null : config.configService) || ConfigService
                 },
-                ...optionalProviders
+                ...(config && config.configService ? [
+                    {
+                        provide: APP_INITIALIZER,
+                        useFactory: loadConfig,
+                        multi: true,
+                        deps: [CONFIG_SERVICE]
+                    }
+                ] : [])
             ]
         };
     }
