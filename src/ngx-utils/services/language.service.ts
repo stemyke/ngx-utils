@@ -68,15 +68,6 @@ export class LanguageService extends StaticLanguageService {
         }
     }
 
-    async getTranslations(...keys: string[]): Promise<ITranslations> {
-        const lowerKeys = keys.map(k => !k ? " " : k.toLocaleLowerCase());
-        const dict = await this.loadDictionary();
-        return lowerKeys.reduce((res, key, ix) => {
-            res[keys[ix]] = dict[key] == key ? keys[ix] : dict[key];
-            return res;
-        }, {});
-    }
-
     protected async useLanguage(lang: string): Promise<ITranslations> {
         lang = this.languages.indexOf(lang) < 0 ? this.languages[0] : lang;
         this.client.setExtraRequestParam("language", lang);
@@ -91,8 +82,12 @@ export class LanguageService extends StaticLanguageService {
     protected loadDictionary(): Promise<any> {
         const lang = this.currentLanguage;
         this.translationRequests[lang] = this.translationRequests[lang] || new Promise(resolve => {
-            this.httpClient.get(`${this.config.translationUrl}${lang}`).toPromise().then(res => {
-                resolve(res || {});
+            this.httpClient.get(`${this.config.translationUrl}${lang}`).toPromise().then(response => {
+                response = response || {};
+                resolve(Object.keys(response).reduce((result, key) => {
+                    result[key.toLocaleLowerCase()] = response[key];
+                    return result;
+                }, {}));
             }, () => {
                 resolve({});
             });
