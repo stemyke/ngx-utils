@@ -1,4 +1,4 @@
-import {Injectable, NgZone, Optional} from "@angular/core";
+import {Injectable, Injector, NgZone, Optional} from "@angular/core";
 import {
     ActivatedRouteSnapshot,
     ChildrenOutletContexts,
@@ -8,12 +8,13 @@ import {
     NavigationExtras,
     OutletContext,
     Params,
+    Resolve,
     Route,
     Router,
     UrlSegment,
     UrlTree
 } from "@angular/router";
-import {BehaviorSubject, Subscription} from "rxjs";
+import {BehaviorSubject, Observable, Subscription} from "rxjs";
 import {skipWhile} from "rxjs/operators";
 import {ObjectUtils} from "../utils/object.utils";
 import {IRoute} from "../common-types";
@@ -88,7 +89,7 @@ export class StateService extends BehaviorSubject<any> {
         return this.router.config;
     }
 
-    constructor(readonly zone: NgZone, @Optional() readonly router: Router = null) {
+    constructor(readonly injector: Injector, readonly zone: NgZone, @Optional() readonly router: Router = null) {
         super(null);
         if (!this.router) return;
         this.globalExtras = {
@@ -101,6 +102,23 @@ export class StateService extends BehaviorSubject<any> {
             components: []
         };
         this.contexts = (<any>router).rootContexts;
+    }
+
+    async reload(): Promise<any> {
+        const routerStateSnapshot = this.router.routerState.snapshot;
+        const resolvers = this.route.resolve || {};
+        const keys = Object.keys(resolvers);
+        for (const key of keys) {
+            const resolver = this.injector.get(resolvers[key]) as Resolve<any>;
+            let resolved = resolver.resolve(this.snapshot, routerStateSnapshot);
+            if (resolved instanceof Observable) {
+                resolved = resolved.toPromise();
+            }
+            if (resolved instanceof Promise) {
+                resolved = await resolved;
+            }
+            this.data[key] = resolved;
+        }
     }
 
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean> {
