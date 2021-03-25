@@ -12,8 +12,7 @@ export class OpenApiService {
 
     getSchemas(): Promise<IOpenApiSchemas> {
         this.schemasPromise = this.schemasPromise || new Promise((resolve => {
-            const baseUrl = this.api.url("").replace("api/", "api-docs");
-            this.api.client.get(baseUrl).subscribe((res: any) => {
+            this.api.get("api-docs").then(res => {
                 const schemas: IOpenApiSchemas = res.components?.schemas || res.definitions || {};
                 Object.values(schemas).forEach(schema => {
                     Object.keys(schema.properties || {}).forEach(p => {

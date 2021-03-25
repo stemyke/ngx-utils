@@ -291,8 +291,12 @@ export class BaseHttpService implements IHttpService {
         return this.url(url).replace(/(?:((?!:).\/)\/)/g, "$1");
     }
 
-    protected absoluteUrl(url: string, options: IRequestOptions): Promise<string> {
-        return Promise.resolve(this.parseUrl(url));
+    protected async absoluteUrl(url: string, options: IRequestOptions): Promise<string> {
+        const absoluteUrl = this.parseUrl(url);
+        if (url == "api-docs") {
+            return absoluteUrl.replace("/api", "");
+        }
+        return absoluteUrl;
     }
 
     protected expressRequestUrl(url: string): string {
