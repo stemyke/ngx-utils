@@ -5,5 +5,7 @@
         "umdModuleIds": {
             "moment": "moment"
         }
-    }
+    },
+    "deleteDestPath": false,
+    "whitelistedNonPeerDependencies": ["."]
 }
