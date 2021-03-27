@@ -48,6 +48,7 @@ export {
     PromiseExecutor,
     HttpPromise,
     IHttpService,
+    EXPRESS_REQUEST,
     IApiService,
     API_SERVICE,
     IOpenApiSchemaProperty,

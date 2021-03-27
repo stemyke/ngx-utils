@@ -1,8 +1,9 @@
 import {EventEmitter, InjectionToken, NgZone, Provider, TemplateRef, Type} from "@angular/core";
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
+import {Request} from "express";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 
 // --- Utils
 export interface IResolveFactory {
@@ -332,6 +333,8 @@ export interface IHttpService {
     url(url: string): string;
     makeListParams(page: number, itemsPerPage: number, orderBy?: string, orderDescending?: boolean, filter?: string): IHttpParams;
 }
+
+export const EXPRESS_REQUEST = new InjectionToken<Request>("express-request");
 
 // --- Api service ---
 

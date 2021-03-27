@@ -1,10 +1,10 @@
 import {Inject, Injectable, Optional} from "@angular/core";
 import {HttpErrorResponse, HttpEventType, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {Request} from "express";
-import {REQUEST} from "@nguniversal/express-engine/tokens";
 
 import {
     CONFIG_SERVICE,
+    EXPRESS_REQUEST,
     HttpPromise,
     IConfigService,
     IHttpHeaders,
@@ -58,7 +58,7 @@ export class BaseHttpService implements IHttpService {
                 @Inject(LANGUAGE_SERVICE) readonly language: ILanguageService,
                 @Inject(TOASTER_SERVICE) readonly toaster: IToasterService,
                 @Inject(CONFIG_SERVICE) readonly configs: IConfigService,
-                @Optional() @Inject(REQUEST) readonly request: Request = null
+                @Optional() @Inject(EXPRESS_REQUEST) readonly request: Request = null
     ) {
         this.cache = {};
     }
