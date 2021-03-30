@@ -62,7 +62,8 @@ export {
     IConfiguration,
     IConfigService,
     CONFIG_SERVICE,
-    BASE_CONFIG
+    BASE_CONFIG,
+    SCRIPT_PARAMS
 } from "./ngx-utils/common-types";
 
 export {AjaxRequestHandler} from "./ngx-utils/utils/ajax-request-handler";

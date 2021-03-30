@@ -418,6 +418,8 @@ export const CONFIG_SERVICE = new InjectionToken<IConfigService>("config-service
 
 export const BASE_CONFIG = new InjectionToken<IConfiguration>("base-config");
 
+export const SCRIPT_PARAMS = new InjectionToken<any>("script-params");
+
 // --- Module ---
 export interface IModuleConfig {
     apiService?: Type<IApiService>

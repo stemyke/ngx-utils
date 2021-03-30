@@ -1,12 +1,13 @@
 import {Inject, Injectable, Optional} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {UniversalService} from "./universal.service";
-import {BASE_CONFIG, IConfigService, IConfiguration} from "../common-types";
+import {BASE_CONFIG, IConfigService, IConfiguration, SCRIPT_PARAMS} from "../common-types";
 
 @Injectable()
 export class ConfigService implements IConfigService {
 
     protected loadedConfig: IConfiguration;
+    protected scriptParameters: any;
     protected loader: Promise<IConfiguration>;
     protected readonly loaderFunc: () => Promise<IConfiguration>;
 
@@ -22,7 +23,10 @@ export class ConfigService implements IConfigService {
         return `${this.loadedConfig.baseUrl}config/config.json`;
     }
 
-    constructor(readonly http: HttpClient, readonly universal: UniversalService, @Optional() @Inject(BASE_CONFIG) baseConfig: IConfiguration = null) {
+    constructor(readonly http: HttpClient,
+                readonly universal: UniversalService,
+                @Optional() @Inject(BASE_CONFIG) baseConfig: IConfiguration = null,
+                @Optional() @Inject(SCRIPT_PARAMS) scriptParams: any = null) {
         for (const key in []) {
             Object.defineProperty(Array.prototype, key, {
                 enumerable: false
@@ -37,6 +41,7 @@ export class ConfigService implements IConfigService {
         this.loadedConfig = Object.assign({
             baseUrl
         }, baseConfig || {});
+        this.scriptParameters = scriptParams || {};
         this.loaderFunc = () => {
             this.loader = this.loader || new Promise<any>((resolve, reject) => {
                 this.loadJson().then(config => {
