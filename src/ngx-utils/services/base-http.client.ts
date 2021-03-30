@@ -23,7 +23,8 @@ export class BaseHttpClient extends HttpClient {
 
     makeHeaders(headers?: IHttpHeaders, withCredentials: boolean = true): HttpHeaders {
         headers = Object.assign({}, this.requestHeaders, headers);
-        if (!withCredentials) {
+        const authHeader = headers["Authorization"] as string || "";
+        if (!withCredentials && !authHeader.startsWith("Bearer")) {
             delete headers["Authorization"];
         }
         return new HttpHeaders(headers);
