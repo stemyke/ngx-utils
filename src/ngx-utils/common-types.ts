@@ -420,6 +420,11 @@ export const BASE_CONFIG = new InjectionToken<IConfiguration>("base-config");
 
 export const SCRIPT_PARAMS = new InjectionToken<any>("script-params");
 
+// --- Error handler service ---
+export type ErrorHandlerCallback = (error: string) => any;
+
+export const ERROR_HANDLER = new InjectionToken<ErrorHandlerCallback>("error-handler-callback");
+
 // --- Module ---
 export interface IModuleConfig {
     apiService?: Type<IApiService>

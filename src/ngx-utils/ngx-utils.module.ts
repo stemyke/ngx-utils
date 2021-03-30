@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, ModuleWithProviders, NgModule, Provider} from "@angular/core";
+import {APP_INITIALIZER, ErrorHandler, ModuleWithProviders, NgModule} from "@angular/core";
 import {EVENT_MANAGER_PLUGINS} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
@@ -9,7 +9,8 @@ import {
     API_SERVICE,
     AUTH_SERVICE,
     CONFIG_SERVICE,
-    ICON_SERVICE, IConfigService,
+    ICON_SERVICE,
+    IConfigService,
     IModuleConfig,
     LANGUAGE_SERVICE,
     PROMISE_SERVICE,
@@ -23,6 +24,7 @@ import {StaticAuthService} from "./services/auth.service";
 import {BaseHttpClient} from "./services/base-http.client";
 import {BaseHttpService} from "./services/base-http.service";
 import {ConfigService} from "./services/config.service";
+import {ErrorHandlerService} from "./services/error-handler.service";
 import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
 import {GlobalTemplateService} from "./services/global-template.service";
@@ -142,6 +144,7 @@ export const providers = [
     ApiService,
     StaticAuthService,
     ConfigService,
+    ErrorHandlerService,
     EventsService,
     FormatterService,
     GlobalTemplateService,
@@ -169,7 +172,12 @@ export const providers = [
     {
         provide: UrlSerializer,
         useExisting: TranslatedUrlSerializer
+    },
+    {
+        provide: ErrorHandler,
+        useExisting: ErrorHandlerService
     }
+
 ];
 
 export function loadConfig(config: IConfigService): any {

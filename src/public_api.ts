@@ -63,7 +63,9 @@ export {
     IConfigService,
     CONFIG_SERVICE,
     BASE_CONFIG,
-    SCRIPT_PARAMS
+    SCRIPT_PARAMS,
+    ErrorHandlerCallback,
+    ERROR_HANDLER
 } from "./ngx-utils/common-types";
 
 export {AjaxRequestHandler} from "./ngx-utils/utils/ajax-request-handler";
@@ -93,6 +95,7 @@ export {StaticAuthService} from "./ngx-utils/services/auth.service";
 export {BaseHttpClient} from "./ngx-utils/services/base-http.client";
 export {BaseHttpService} from "./ngx-utils/services/base-http.service";
 export {ConfigService} from "./ngx-utils/services/config.service";
+export {ErrorHandlerService} from "./ngx-utils/services/error-handler.service";
 export {EventsService} from "./ngx-utils/services/events.service";
 export {FormatterService} from "./ngx-utils/services/formatter.service";
 export {GlobalTemplateService} from "./ngx-utils/services/global-template.service";
