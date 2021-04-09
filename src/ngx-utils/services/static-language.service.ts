@@ -35,7 +35,7 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     get currentLanguage(): string {
-        return this.currentLang || this.browserLang;
+        return this.currentLang || this.defaultLanguage;
     }
 
     set currentLanguage(lang: string) {

@@ -12,7 +12,7 @@ export class LanguageService extends StaticLanguageService {
     protected languageSettings: BehaviorSubject<ILanguageSettings>;
 
     get currentLanguage(): string {
-        return this.currentLang;
+        return this.currentLang || this.defaultLanguage;
     }
 
     set currentLanguage(lang: string) {
