@@ -61,7 +61,10 @@ export class LanguageService extends StaticLanguageService {
         try {
             const lowerKey = key.toLocaleLowerCase();
             const dict = await this.loadDictionary();
-            return this.interpolate(dict[lowerKey] || key, params);
+            if (lowerKey in dict) {
+                return this.interpolate(dict[lowerKey], params);
+            }
+            return this.interpolate(key, params);
         } catch (reason) {
             console.log("ERROR IN TRANSLATIONS", reason);
             return key;
