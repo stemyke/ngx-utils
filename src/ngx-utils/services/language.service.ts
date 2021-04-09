@@ -74,7 +74,7 @@ export class LanguageService extends StaticLanguageService {
     protected async useLanguage(lang: string): Promise<ITranslations> {
         lang = this.languages.indexOf(lang) < 0 ? this.languages[0] : lang;
         this.client.setExtraRequestParam("language", lang);
-        if (lang == this.currentLanguage) return this.dictionary;
+        if (lang == this.currentLang) return this.dictionary;
         this.storage.set("language", lang);
         this.currentLang = lang;
         const dict = await this.loadDictionary();
