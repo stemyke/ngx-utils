@@ -35,7 +35,7 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     get currentLanguage(): string {
-        return this.currentLang;
+        return this.currentLang || this.browserLang;
     }
 
     set currentLanguage(lang: string) {
@@ -70,7 +70,7 @@ export class StaticLanguageService implements ILanguageService {
 
     get browserLang(): string {
         if (this.universal.isServer || typeof window.navigator === "undefined") {
-            return null;
+            return "de";
         }
         let browserLang: string = (window.navigator.languages ? window.navigator.languages[0] : null)
             || window.navigator.language || window.navigator["browserLanguage"] || window.navigator["userLanguage"] || null;
