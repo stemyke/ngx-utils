@@ -99,7 +99,7 @@ export class StaticLanguageService implements ILanguageService {
                 @Inject(CONFIG_SERVICE) readonly configs: IConfigService,
                 protected client: BaseHttpClient) {
         this.editLang = null;
-        this.currentLang = "none";
+        this.currentLang = null;
         this.disableTrans = false;
         this.languageList = [];
         this.translations = {
