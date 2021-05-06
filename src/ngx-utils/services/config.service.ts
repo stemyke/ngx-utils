@@ -34,19 +34,26 @@ export class ConfigService implements IConfigService {
         }
         let baseUrl = "";
         if (this.universal.isBrowser) {
-            const scriptSrc = (document.currentScript as HTMLScriptElement).src;
-            const srcParts = scriptSrc.split(".js");
-            baseUrl = scriptSrc.substr(0, srcParts[0].lastIndexOf("/") + 1);
+            const currentScript = (document.currentScript as HTMLScriptElement);
+            if (!!currentScript) {
+                const scriptSrc = currentScript.src;
+                const srcParts = scriptSrc.split(".js");
+                baseUrl = scriptSrc.substr(0, srcParts[0].lastIndexOf("/") + 1);
+            }
         }
-        this.loadedConfig = Object.assign({
-            baseUrl
-        }, baseConfig || {});
+        this.loadedConfig = Object.assign(
+            !baseUrl ? {} : {baseUrl},
+            baseConfig || {}
+        );
         this.scriptParameters = scriptParams || {};
         this.loaderFunc = () => {
             this.loader = this.loader || new Promise<any>((resolve, reject) => {
                 this.loadJson().then(config => {
                     this.loadedConfig = config = Object.assign(this.loadedConfig, config);
-                    this.prepareConfig(config).then(resolve);
+                    this.prepareConfig(config).then(c => {
+                        c.baseUrl = c.baseUrl || "/";
+                        resolve(c);
+                    });
                 }, reject);
             });
             return this.loader;
