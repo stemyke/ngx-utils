@@ -21,6 +21,8 @@ export class PaginationDirective implements OnChanges {
     @Input() itemsPerPage: number;
     @Input() updateTime: number;
     @Input() waitFor: Promise<any>;
+
+    @Output() pageChange: EventEmitter<number>;
     @Output() onRefresh: EventEmitter<PaginationDirective>;
 
     maxPage: number;
@@ -29,6 +31,7 @@ export class PaginationDirective implements OnChanges {
     private updateTimer: ITimer;
 
     constructor(private zone: NgZone) {
+        this.pageChange = new EventEmitter<number>();
         this.onRefresh = new EventEmitter<PaginationDirective>();
         this.updateTimer = TimerUtils.createTimeout(() => this.loadData(), this.updateTime);
     }
@@ -48,6 +51,7 @@ export class PaginationDirective implements OnChanges {
 
     paginate(page: number): void {
         this.page = page;
+        this.pageChange.emit(page);
         this.refresh();
     }
 
