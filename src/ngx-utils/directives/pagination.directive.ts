@@ -37,16 +37,18 @@ export class PaginationDirective implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes.loader && !changes.itemsPerPage) return;
+        if (!changes.loader && !changes.itemsPerPage && !changes.page) return;
         this.page = isNaN(this.page) || this.page < 1 ? 1 : this.page;
         this.itemsPerPage = isNaN(this.itemsPerPage) || this.itemsPerPage < 1 ? 20 : this.itemsPerPage;
         this.updateTimer.time = isNaN(this.updateTime) || this.updateTime < 0 ? 100 : this.updateTime;
         this.waitFor = this.waitFor || Promise.resolve(true);
-        this.waitFor.then(() => this.refresh());
+        this.refresh();
     }
 
     refresh(): void {
-        this.updateTimer.run();
+        this.waitFor.then(() => {
+            this.updateTimer.run();
+        });
     }
 
     paginate(page: number): void {
