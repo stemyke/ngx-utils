@@ -15,12 +15,12 @@ export class ApiService extends BaseHttpService implements IApiService {
         return this.expressRequestUrl(`/api/${url}`);
     }
 
-    get(url: string, options?: IRequestOptions): Promise<any> {
-        return this.getPromise(url, options);
+    get(url: string, options?: IRequestOptions, body?: any): Promise<any> {
+        return this.getPromise(url, options, body);
     }
 
-    delete(url: string, options?: IRequestOptions): Promise<any> {
-        return this.deletePromise(url, options);
+    delete(url: string, options?: IRequestOptions, body?: any): Promise<any> {
+        return this.deletePromise(url, options, body);
     }
 
     post(url: string, body?: any, options?: IRequestOptions): Promise<any> {

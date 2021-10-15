@@ -89,13 +89,13 @@ export class BaseHttpService implements IHttpService {
         return params;
     }
 
-    protected getPromise(url: string, options?: IRequestOptions): HttpPromise {
-        options = this.makeOptions(options, "GET");
+    protected getPromise(url: string, options?: IRequestOptions, body?: any): HttpPromise {
+        options = this.makeOptions(options, "GET", body);
         return this.toPromise(url, options);
     }
 
-    protected deletePromise(url: string, options?: IRequestOptions): HttpPromise {
-        options = this.makeOptions(options, "DELETE");
+    protected deletePromise(url: string, options?: IRequestOptions, body?: any): HttpPromise {
+        options = this.makeOptions(options, "DELETE", body);
         return this.toPromise(url, options);
     }
 
@@ -261,7 +261,7 @@ export class BaseHttpService implements IHttpService {
         return headers.referer.indexOf(headers.host) >= 0;
     }
 
-    protected makeOptions(options?: IRequestOptions, method: string = "GET", body: any = {}): IRequestOptions {
+    protected makeOptions(options?: IRequestOptions, method: string = "GET", body?: any): IRequestOptions {
         // Set base options
         options = options ? {...options} : {};
         options.params = this.client.makeParams(options.params);
