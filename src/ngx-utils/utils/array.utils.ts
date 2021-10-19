@@ -21,7 +21,7 @@ export class ArrayUtils {
         return false;
     }
 
-    static any(arr: any[], cb: (item: any) => boolean): boolean {
+    static any<T>(arr: T[], cb: (item: T) => boolean): boolean {
         if (!ObjectUtils.isArray(arr) || !ObjectUtils.isFunction(cb)) return false;
         for (let i = 0; i < arr.length; i++) {
             if (cb(arr[i])) return true;
@@ -29,7 +29,7 @@ export class ArrayUtils {
         return false;
     }
 
-    static move(arr: any[], oldIndex: number, newIndex: number): any[] {
+    static move<T>(arr: T[], oldIndex: number, newIndex: number): T[] {
         if (!ObjectUtils.isArray(arr)) return [];
         const length = arr.length;
         while (oldIndex < 0) {
@@ -57,7 +57,7 @@ export class ArrayUtils {
         return result;
     }
 
-    static min(arr: any[], cb: (item: any, index?: number) => number): any {
+    static min<T>(arr: T[], cb: (item: T, index?: number) => number): number {
         if (!ObjectUtils.isArray(arr)) return 0;
         let min = Number.MAX_SAFE_INTEGER;
         let result = null;
@@ -71,7 +71,7 @@ export class ArrayUtils {
         return result;
     }
 
-    static max(arr: any[], cb: (item: any, index?: number) => number): any {
+    static max<T>(arr: T[], cb: (item: T, index?: number) => number): number {
         if (!ObjectUtils.isArray(arr)) return 0;
         let max = Number.MIN_SAFE_INTEGER;
         let result = null;
@@ -83,5 +83,15 @@ export class ArrayUtils {
             }
         }
         return result;
+    }
+
+    static chunk<T>(arr: T[], size: number): Array<T[]> {
+        if (!ObjectUtils.isArray(arr)) return [];
+        size = Math.max(1, size);
+        const result = []
+        for (let i = 0; i < arr.length; i += size) {
+            result.push(arr.slice(i, i + size))
+        }
+        return result
     }
 }
