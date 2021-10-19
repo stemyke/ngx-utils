@@ -57,8 +57,8 @@ export class ArrayUtils {
         return result;
     }
 
-    static min<T>(arr: T[], cb: (item: T, index?: number) => number): number {
-        if (!ObjectUtils.isArray(arr)) return 0;
+    static min<T>(arr: T[], cb: (item: T, index?: number) => number): T {
+        if (!ObjectUtils.isArray(arr)) return null;
         let min = Number.MAX_SAFE_INTEGER;
         let result = null;
         for (let i = 0; i < arr.length; i++) {
@@ -71,8 +71,8 @@ export class ArrayUtils {
         return result;
     }
 
-    static max<T>(arr: T[], cb: (item: T, index?: number) => number): number {
-        if (!ObjectUtils.isArray(arr)) return 0;
+    static max<T>(arr: T[], cb: (item: T, index?: number) => number): T {
+        if (!ObjectUtils.isArray(arr)) return null;
         let max = Number.MIN_SAFE_INTEGER;
         let result = null;
         for (let i = 0; i < arr.length; i++) {
