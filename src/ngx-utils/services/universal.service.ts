@@ -24,8 +24,10 @@ export class UniversalService {
                 browser: "node",
                 device: "node",
                 os_version: "unknown",
-                browser_version: "unknown"
-            }
+                browser_version: "unknown",
+                deviceType: "unknown",
+                orientation: "landscape"
+            } as any
             : this.dds.getDeviceInfo();
     }
 
