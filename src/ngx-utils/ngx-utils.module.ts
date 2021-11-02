@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, ErrorHandler, ModuleWithProviders, NgModule} from "@angular/core";
+import {APP_INITIALIZER, ErrorHandler, Inject, Injector, ModuleWithProviders, NgModule} from "@angular/core";
 import {EVENT_MANAGER_PLUGINS} from "@angular/platform-browser";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
@@ -236,14 +236,12 @@ export class NgxUtilsModule {
                     provide: CONFIG_SERVICE,
                     useExisting: (!config ? null : config.configService) || ConfigService
                 },
-                ...(config && config.configService ? [
-                    {
-                        provide: APP_INITIALIZER,
-                        useFactory: loadConfig,
-                        multi: true,
-                        deps: [CONFIG_SERVICE]
-                    }
-                ] : [])
+                {
+                    provide: APP_INITIALIZER,
+                    useFactory: (!config ? null : config.initializeApp) || loadConfig,
+                    multi: true,
+                    deps: [(!config ? null : config.initializeApp) ? Injector : CONFIG_SERVICE]
+                }
             ]
         };
     }

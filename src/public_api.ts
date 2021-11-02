@@ -65,7 +65,10 @@ export {
     BASE_CONFIG,
     SCRIPT_PARAMS,
     ErrorHandlerCallback,
-    ERROR_HANDLER
+    ERROR_HANDLER,
+    AppInitializerFunc,
+    IModuleConfig,
+    ValuedPromise
 } from "./ngx-utils/common-types";
 
 export {AjaxRequestHandler} from "./ngx-utils/utils/ajax-request-handler";

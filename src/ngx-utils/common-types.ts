@@ -1,4 +1,4 @@
-import {EventEmitter, InjectionToken, NgZone, Provider, TemplateRef, Type} from "@angular/core";
+import {EventEmitter, InjectionToken, Injector, NgZone, Provider, TemplateRef, Type} from "@angular/core";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
 import {Request} from "express";
@@ -426,6 +426,8 @@ export type ErrorHandlerCallback = (error: string) => any;
 export const ERROR_HANDLER = new InjectionToken<ErrorHandlerCallback>("error-handler-callback");
 
 // --- Module ---
+export type AppInitializerFunc = () => Promise<void> | void;
+
 export interface IModuleConfig {
     apiService?: Type<IApiService>
     authService?: Type<IAuthService>;
@@ -434,4 +436,10 @@ export interface IModuleConfig {
     toasterService?: Type<IToasterService>;
     promiseService?: Type<IPromiseService>;
     configService?: Type<IConfigService>;
+    initializeApp?: (injector: Injector) => AppInitializerFunc;
+}
+
+// --- Valued promise ---
+export class ValuedPromise<T> extends Promise<T> {
+    value: T;
 }

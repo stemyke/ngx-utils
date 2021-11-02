@@ -74,7 +74,8 @@ export class ConfigService implements IConfigService {
             this.http.get(configUrl).toPromise().then(response => {
                 resolve(response);
             }, () => {
-                reject("Config file not found at: " + configUrl);
+                console.error(`Config file not found at: ${configUrl}`);
+                resolve({});
             });
         });
     }
