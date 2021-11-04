@@ -14,17 +14,17 @@ export class AclService {
     private static checkStateDirty(info: IRouteStateInfo) {
         if (!info || !info.dirty) return;
         info.dirty = false;
-        if (!ObjectUtils.checkInterface(info.component, {
-            onUserInitialized: "function",
-            onUserChanged: "function"
-        })) return;
         const component: IAclComponent = info.component;
         if (info.first) {
-            component.onUserInitialized();
+            if (ObjectUtils.isFunction(component.onUserInitialized)) {
+                component.onUserInitialized();
+            }
             info.first = false;
             return;
         }
-        component.onUserChanged();
+        if (ObjectUtils.isFunction(component.onUserChanged)) {
+            component.onUserChanged();
+        }
     }
 
     constructor(readonly injector: Injector, readonly state: StateService, @Inject(AUTH_SERVICE) readonly auth: IAuthService) {

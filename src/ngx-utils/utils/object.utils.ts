@@ -221,9 +221,20 @@ export class ObjectUtils {
     }
 
     static checkInterface(obj: any, interFaceObject: any): boolean {
-        if (!obj) return false;
-        for (const key in interFaceObject) {
-            if (interFaceObject.hasOwnProperty(key) && typeof obj[key] !== interFaceObject[key]) return false;
+        return ObjectUtils.isInterface(obj, interFaceObject);
+    }
+
+    static isInterface(obj: any, interFaceObject: any): boolean {
+        if (!obj || typeof obj !== "object" || ObjectUtils.isArray(obj) || !ObjectUtils.isObject(interFaceObject)) return false;
+        const keys = Object.keys(interFaceObject);
+        for (const key of keys) {
+            let type = interFaceObject[key] || "";
+            if (type.startsWith("*")) {
+                type = type.substr(1);
+                if (obj.hasOwnProperty(key) && ObjectUtils.getType(obj[key]) !== type) return false;
+            } else if (!obj.hasOwnProperty(key) || ObjectUtils.getType(obj[key]) !== type) {
+                return false;
+            }
         }
         return true;
     }

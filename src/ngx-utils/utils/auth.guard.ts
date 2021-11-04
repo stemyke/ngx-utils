@@ -89,7 +89,6 @@ export class AuthGuard implements CanActivate {
                     if (!hasRights) {
                         this.getReturnState(route).then(returnState => {
                             if (!returnState) return;
-                            console.log(returnState, next.queryParams);
                             this.state.navigate(returnState, {queryParams: next.queryParams});
                         });
                     }
