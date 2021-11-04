@@ -98,6 +98,20 @@ export class AuthGuard implements CanActivate {
         });
     }
 
+    getConfig(route: IRoute, config: IRoute[], path: string[]): IRoute[] {
+        if (!config) return null;
+        const match = config.findIndex(t => t == route);
+        if (match >= 0) return config;
+        for (const subConfig of config) {
+            path.push(subConfig.path);
+            const loadedChildren = (subConfig["_loadedConfig"] || {routes: null}).routes;
+            const match = this.getConfig(route, subConfig.children || loadedChildren, path);
+            if (!!match) return match;
+            path.length -= 1;
+        }
+        return null;
+    }
+
     getReturnState(route: IRoute): Promise<string[]> {
         if (!route) return Promise.resolve(null);
         if (ObjectUtils.isObject(route.data) && ObjectUtils.isArray(route.data.returnState)) {
@@ -129,19 +143,5 @@ export class AuthGuard implements CanActivate {
                 this.getReturnStateRecursive(config, c + 1).then(resolve);
             });
         });
-    }
-
-    private getConfig(route: IRoute, config: IRoute[], path: string[]): IRoute[] {
-        if (!config) return null;
-        const match = config.findIndex(t => t == route);
-        if (match >= 0) return config;
-        for (const subConfig of config) {
-            path.push(subConfig.path);
-            const loadedChildren = (subConfig["_loadedConfig"] || {routes: null}).routes;
-            const match = this.getConfig(route, subConfig.children || loadedChildren, path);
-            if (!!match) return match;
-            path.length -= 1;
-        }
-        return null;
     }
 }
