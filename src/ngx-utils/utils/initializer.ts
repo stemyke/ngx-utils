@@ -4,6 +4,10 @@ export class Initializer<T> {
 
     private initialized: boolean;
 
+    get isInitialized(): boolean {
+        return this.initialized;
+    }
+
     constructor(private callback: () => T, private shouldInit: boolean = true) {
         this.initialized = !this.shouldInit;
         // @ts-ignore
