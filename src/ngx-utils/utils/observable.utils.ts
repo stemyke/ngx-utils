@@ -1,6 +1,5 @@
 import {from, Observable, Subject, Subscription} from "rxjs";
 import {mergeMap} from "rxjs/operators";
-import {canReportError} from "rxjs/internal/util/canReportError";
 
 import {ISearchObservable} from "../common-types";
 
@@ -62,11 +61,7 @@ export class ObservableUtils {
                 try {
                     subject = from(callbackFunc());
                 } catch (err) {
-                    if (canReportError(subject)) {
-                        subject.error(err);
-                    } else {
-                        console.warn(err);
-                    }
+                    subject.error(err);
                 }
             }
             return subject.subscribe(subscriber);

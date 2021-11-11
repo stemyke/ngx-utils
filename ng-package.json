@@ -3,7 +3,10 @@
     "lib": {
         "entryFile": "./src/public_api.ts",
         "umdModuleIds": {
-            "moment": "moment"
+            "moment": "moment",
+            "ngx-device-detector": "ngx-device-detector",
+            "resize-detector": "resize-detector",
+            "invokable": "invokable"
         }
     },
     "deleteDestPath": false,

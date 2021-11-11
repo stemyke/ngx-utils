@@ -269,6 +269,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
+        console.log(ObjectUtils.evaluate("adam + eva.test", {adam: 3, eva: {test: 5}}))
         console.log(this.universal.isFirefox, this.universal.isChrome);
         if (!this.manufacturing) return;
         let ids = Object.keys(this.manufacturing);

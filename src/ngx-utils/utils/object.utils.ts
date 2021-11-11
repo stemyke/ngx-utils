@@ -75,10 +75,14 @@ export class ObjectUtils {
     }
 
     static evaluate(expr: string, context: any = {}, res: any = {}): any {
-        expr = Object.keys(context).reduce((res, key) => `var ${key} = this['${key}']; ${res}`, expr);
+        expr = Object.keys(context).reduce((res, key) => `var ${key} = this['${key}'];\n${res}`, expr);
+        const lines = expr.split("\n");
+        const lastLine = "return " + lines.pop().replace("return ", "");
+        lines.push(lastLine);
+        expr = lines.join("\n");
         let result = null;
         try {
-            result = (() => eval(expr)).call(context);
+            result = new Function(expr).call(context);
         } catch (e) {
             res.exception = e;
             console.log(`Failed to parse expression: ${e.message}`, expr, context);
