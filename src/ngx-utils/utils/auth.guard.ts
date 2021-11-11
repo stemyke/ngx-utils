@@ -102,11 +102,16 @@ export class AuthGuard implements CanActivate {
         const match = config.findIndex(t => t == route);
         if (match >= 0) return config;
         for (const subConfig of config) {
-            path.push(subConfig.path);
+            if (subConfig.path)
+                path.push(subConfig.path);
             const loadedChildren = (subConfig["_loadedConfig"] || {routes: null}).routes;
             const match = this.getConfig(route, subConfig.children || loadedChildren, path);
-            if (!!match) return match;
-            path.length -= 1;
+            if (!match) {
+                if (subConfig.path)
+                    path.length -= 1;
+                continue;
+            }
+            return match;
         }
         return null;
     }
@@ -119,6 +124,7 @@ export class AuthGuard implements CanActivate {
         const path = [];
         const config = this.getConfig(route, this.state.routerConfig, path);
         return new Promise<string[]>(resolve => {
+            console.log("GET RETURN STATE", route, this.getReturnStateRecursive(config));
             this.getReturnStateRecursive(config).then(rs => {
                 if (!ObjectUtils.isArray(rs)) {
                     resolve(rs);
