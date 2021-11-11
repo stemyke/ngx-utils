@@ -124,7 +124,6 @@ export class AuthGuard implements CanActivate {
         const path = [];
         const config = this.getConfig(route, this.state.routerConfig, path);
         return new Promise<string[]>(resolve => {
-            console.log("GET RETURN STATE", route, this.getReturnStateRecursive(config));
             this.getReturnStateRecursive(config).then(rs => {
                 if (!ObjectUtils.isArray(rs)) {
                     resolve(rs);
