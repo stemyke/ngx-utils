@@ -50,7 +50,7 @@ export interface ILanguageService {
     disableTranslations: boolean;
     defaultLanguage: string;
     dictionary: ITranslations;
-    readonly languages: string[];
+    readonly languages: ReadonlyArray<string>;
     readonly httpClient: HttpClient;
     addLanguages(languages: string[]): void;
     getTranslationSync(key: string, params?: any): string;

@@ -30,7 +30,7 @@ export class StaticLanguageService implements ILanguageService {
         this.translations[this.currentLanguage] = value;
     }
 
-    get languages(): string[] {
+    get languages(): ReadonlyArray<string> {
         return this.languageList;
     }
 
@@ -113,10 +113,12 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     addLanguages(languages: string[]): void {
+        const languageSet = new Set<string>(this.languageList);
         languages.forEach(lang => {
             this.translations[lang] = {};
-            this.languageList.push(lang);
+            languageSet.add(lang);
         });
+        this.languageList = Array.from(languageSet);
     }
 
     getTranslationSync(key: string, params: any = null): string {
