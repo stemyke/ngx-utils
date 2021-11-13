@@ -112,13 +112,17 @@ export class StaticLanguageService implements ILanguageService {
 
     }
 
-    addLanguages(languages: string[]): void {
-        const languageSet = new Set<string>(this.languageList);
-        languages.forEach(lang => {
-            this.translations[lang] = {};
-            languageSet.add(lang);
+    replaceLanguages(languages: string[]): void {
+        languages = Array.isArray(languages) && languages.length > 0 ? languages : this.languageList;
+        this.languageList = Array.from(new Set<string>(languages));
+        this.languageList.forEach(lang => {
+            this.translations[lang] = this.translations[lang] || {};
         });
-        this.languageList = Array.from(languageSet);
+    }
+
+    addLanguages(languages: string[]): void {
+        if (!Array.isArray(languages) || languages.length == 0) return;
+        this.replaceLanguages(this.languageList.concat(languages));
     }
 
     getTranslationSync(key: string, params: any = null): string {

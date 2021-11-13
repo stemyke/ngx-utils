@@ -52,6 +52,7 @@ export interface ILanguageService {
     dictionary: ITranslations;
     readonly languages: ReadonlyArray<string>;
     readonly httpClient: HttpClient;
+    replaceLanguages(languages: string[]): void;
     addLanguages(languages: string[]): void;
     getTranslationSync(key: string, params?: any): string;
     getTranslation(key: string, params?: any): Promise<string>;

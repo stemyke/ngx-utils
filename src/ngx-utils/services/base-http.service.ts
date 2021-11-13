@@ -1,5 +1,5 @@
 import {Inject, Injectable, Optional} from "@angular/core";
-import {HttpErrorResponse, HttpEventType, HttpHeaders, HttpResponse} from "@angular/common/http";
+import {HttpErrorResponse, HttpEventType, HttpHeaders, HttpParams, HttpResponse} from "@angular/common/http";
 import {Request} from "express";
 
 import {
@@ -42,6 +42,8 @@ export class BaseHttpService implements IHttpService {
         return true;
     }
 
+    requestHeaders: IHttpHeaders;
+    requestParams: IHttpParams;
     cache: any;
 
     protected static retryFailedRequests(): void {
@@ -60,6 +62,8 @@ export class BaseHttpService implements IHttpService {
                 @Inject(CONFIG_SERVICE) readonly configs: IConfigService,
                 @Optional() @Inject(EXPRESS_REQUEST) readonly request: Request = null
     ) {
+        this.requestHeaders = {};
+        this.requestParams = {};
         this.cache = {};
     }
 
@@ -269,10 +273,9 @@ export class BaseHttpService implements IHttpService {
     protected makeOptions(options?: IRequestOptions, method: string = "GET", body?: any): IRequestOptions {
         // Set base options
         options = options ? {...options} : {};
-        options.params = this.client.makeParams(options.params);
+        options.method = method;
         options.observe = "body";
         options.originalHeaders = options.originalHeaders || (options.headers as IHttpHeaders) || {};
-        options.method = method;
         options.withCredentials = ObjectUtils.isBoolean(options.withCredentials) ? options.withCredentials : this.withCredentials;
         options.body = body || {};
         // Set cookies from server side request
@@ -280,12 +283,17 @@ export class BaseHttpService implements IHttpService {
         if (this.checkHeaders(headers)) {
             options.headers["Cookie"] = headers.cookie;
         }
-        options.headers = this.makeHeaders(options.originalHeaders, method);
+        options.headers = this.makeHeaders(options);
+        options.params = this.makeParams(options);
         return options;
     }
 
-    protected makeHeaders(headers: IHttpHeaders, method: string = "GET"): HttpHeaders {
-        return this.client.makeHeaders(headers);
+    protected makeHeaders(options: IRequestOptions): HttpHeaders {
+        return this.client.makeHeaders(Object.assign({}, this.requestHeaders, options?.headers || {}));
+    }
+
+    protected makeParams(options: IRequestOptions): HttpParams {
+        return this.client.makeParams(Object.assign({}, this.requestParams, options?.params || {}));
     }
 
     protected parseResponse(response: any, url: string, options: IRequestOptions): any {
