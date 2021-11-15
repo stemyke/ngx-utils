@@ -12,10 +12,10 @@ export class PromiseService implements IPromiseService {
         return this.promiseChanged;
     }
 
-    private promiseCount: number;
-    private readonly promiseChanged: EventEmitter<number>;
+    protected promiseCount: number;
+    protected readonly promiseChanged: EventEmitter<number>;
 
-    constructor(@Inject(NgZone) public readonly zone: NgZone) {
+    constructor(@Inject(NgZone) readonly zone: NgZone) {
         this.promiseCount = 0;
         this.promiseChanged = new EventEmitter<number>();
     }
@@ -32,13 +32,17 @@ export class PromiseService implements IPromiseService {
         return this.add(this.zone.runOutsideAngular(() => Promise.resolve(value)));
     }
 
-    private promiseFinished(): void {
+    reject<T>(value: T | PromiseLike<T>): Promise<T> {
+        return this.add(this.zone.runOutsideAngular(() => Promise.reject(value)));
+    }
+
+    protected promiseFinished(): void {
         if (this.promiseCount == 0) return;
         this.promiseCount--;
         this.promiseChanged.emit(this.promiseCount);
     }
 
-    private add<T>(promise: Promise<T>): Promise<T> {
+    protected add<T>(promise: Promise<T>): Promise<T> {
         this.promiseCount++;
         this.promiseChanged.emit(this.promiseCount);
         return new Promise<any>((resolve, reject) => {

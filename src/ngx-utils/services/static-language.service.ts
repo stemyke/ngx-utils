@@ -9,11 +9,11 @@ import {
 } from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 import {EventsService} from "./events.service";
-import {ConfigService} from "./config.service";
 import {StorageService} from "./storage.service";
 import {UniversalService} from "./universal.service";
 import {BaseHttpClient} from "./base-http.client";
 import {HttpClient} from "@angular/common/http";
+import {PromiseService} from "./promise.service";
 
 @Injectable()
 export class StaticLanguageService implements ILanguageService {
@@ -97,7 +97,8 @@ export class StaticLanguageService implements ILanguageService {
     constructor(@Inject(EventsService) readonly events: EventsService,
                 @Inject(StorageService) readonly storage: StorageService,
                 @Inject(CONFIG_SERVICE) readonly configs: IConfigService,
-                protected client: BaseHttpClient) {
+                @Inject(PromiseService) protected promises: PromiseService,
+                @Inject(BaseHttpClient) protected client: BaseHttpClient) {
         this.editLang = null;
         this.currentLang = null;
         this.disableTrans = false;
@@ -136,12 +137,12 @@ export class StaticLanguageService implements ILanguageService {
             throw new Error(`Parameter "key" required`);
         }
         const translation = ObjectUtils.getValue(this.dictionary, key, key) || key;
-        return Promise.resolve(this.interpolate(translation, params));
+        return this.promises.resolve(this.interpolate(translation, params));
     }
 
     getTranslations(...keys: string[]): Promise<ITranslations> {
-        return new Promise<ITranslations>(resolve => {
-            Promise.all(keys.map(key => this.getTranslation(key))).then(translations => {
+        return this.promises.create<ITranslations>(resolve => {
+            this.promises.all(keys.map(key => this.getTranslation(key))).then(translations => {
                 resolve(keys.reduce((result, key, i) => {
                     result[key] = translations[i];
                     return result;
