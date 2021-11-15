@@ -4,8 +4,10 @@ import {
     IConfigService,
     IConfiguration,
     ILanguageService,
+    IPromiseService,
     ITranslation,
-    ITranslations
+    ITranslations,
+    PROMISE_SERVICE
 } from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 import {EventsService} from "./events.service";
@@ -13,7 +15,6 @@ import {StorageService} from "./storage.service";
 import {UniversalService} from "./universal.service";
 import {BaseHttpClient} from "./base-http.client";
 import {HttpClient} from "@angular/common/http";
-import {PromiseService} from "./promise.service";
 
 @Injectable()
 export class StaticLanguageService implements ILanguageService {
@@ -97,7 +98,7 @@ export class StaticLanguageService implements ILanguageService {
     constructor(@Inject(EventsService) readonly events: EventsService,
                 @Inject(StorageService) readonly storage: StorageService,
                 @Inject(CONFIG_SERVICE) readonly configs: IConfigService,
-                @Inject(PromiseService) protected promises: PromiseService,
+                @Inject(PROMISE_SERVICE) protected promises: IPromiseService,
                 @Inject(BaseHttpClient) protected client: BaseHttpClient) {
         this.editLang = null;
         this.currentLang = null;

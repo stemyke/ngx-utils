@@ -122,6 +122,7 @@ export interface IPromiseService {
     create<T>(executor: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void): Promise<T>;
     all(promises: Promise<any>[]): Promise<any>;
     resolve<T>(value: T | PromiseLike<T>): Promise<T>;
+    reject<T>(value: T | PromiseLike<T>): Promise<T>;
 }
 
 export const PROMISE_SERVICE = new InjectionToken<IPromiseService>("promise-service");
