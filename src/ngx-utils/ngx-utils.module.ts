@@ -13,7 +13,7 @@ import {
     IConfigService,
     IModuleConfig,
     LANGUAGE_SERVICE,
-    PROMISE_SERVICE,
+    PROMISE_SERVICE, ROOT_ELEMENT,
     TOASTER_SERVICE
 } from "./common-types";
 
@@ -235,6 +235,10 @@ export class NgxUtilsModule {
                 {
                     provide: CONFIG_SERVICE,
                     useExisting: (!config ? null : config.configService) || ConfigService
+                },
+                {
+                    provide: ROOT_ELEMENT,
+                    useValue: null
                 },
                 {
                     provide: APP_INITIALIZER,

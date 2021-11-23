@@ -64,6 +64,7 @@ export {
     CONFIG_SERVICE,
     BASE_CONFIG,
     SCRIPT_PARAMS,
+    ROOT_ELEMENT,
     ErrorHandlerCallback,
     ERROR_HANDLER,
     AppInitializerFunc,

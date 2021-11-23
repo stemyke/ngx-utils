@@ -422,6 +422,8 @@ export const BASE_CONFIG = new InjectionToken<IConfiguration>("base-config");
 
 export const SCRIPT_PARAMS = new InjectionToken<any>("script-params");
 
+export const ROOT_ELEMENT: InjectionToken<HTMLElement> = new InjectionToken<HTMLElement>("app-root-element");
+
 // --- Error handler service ---
 export type ErrorHandlerCallback = (error: string) => any;
 

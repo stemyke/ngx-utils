@@ -1,11 +1,12 @@
 import {Inject, Injectable, Optional} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {UniversalService} from "./universal.service";
-import {BASE_CONFIG, IConfigService, IConfiguration, SCRIPT_PARAMS} from "../common-types";
+import {BASE_CONFIG, IConfigService, IConfiguration, ROOT_ELEMENT, SCRIPT_PARAMS} from "../common-types";
 
 @Injectable()
 export class ConfigService implements IConfigService {
 
+    protected baseConfig: IConfiguration;
     protected loadedConfig: IConfiguration;
     protected scriptParameters: any;
     protected loader: Promise<IConfiguration>;
@@ -25,6 +26,7 @@ export class ConfigService implements IConfigService {
 
     constructor(readonly http: HttpClient,
                 readonly universal: UniversalService,
+                @Inject(ROOT_ELEMENT) readonly rootElement: any,
                 @Optional() @Inject(BASE_CONFIG) baseConfig: IConfiguration = null,
                 @Optional() @Inject(SCRIPT_PARAMS) scriptParams: any = null) {
         for (const key in []) {
@@ -41,9 +43,10 @@ export class ConfigService implements IConfigService {
                 baseUrl = scriptSrc.substr(0, srcParts[0].lastIndexOf("/") + 1);
             }
         }
+        this.baseConfig = baseConfig || {};
         this.loadedConfig = Object.assign(
             !baseUrl ? {} : {baseUrl},
-            baseConfig || {}
+            this.baseConfig
         );
         this.scriptParameters = scriptParams || {};
         this.loaderFunc = () => {
