@@ -54,6 +54,7 @@ export class ConfigService implements IConfigService {
                 this.loadJson().then(config => {
                     this.loadedConfig = config = Object.assign(this.loadedConfig, config);
                     this.prepareConfig(config).then(c => {
+                        this.loadedConfig = c;
                         c.baseUrl = c.baseUrl || "/";
                         resolve(c);
                     });
