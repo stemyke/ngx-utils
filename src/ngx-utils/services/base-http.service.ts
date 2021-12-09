@@ -245,11 +245,12 @@ export class BaseHttpService implements IHttpService {
                     const authKey = "Authorization";
                     // If an authorization header exists and we still have an Unauthorized response prompt the user to log in again
                     if (headers.has(authKey) && response.status == 401) {
-                        this.pushFailedRequest(url, options, () => {
+                        const pushed = this.pushFailedRequest(url, options, () => {
                             options.headers = this.makeHeaders(options.originalHeaders);
                             this.toPromise(url, options, listener).then(resolve, reject);
                         });
-                        this.handleUnauthorizedError(absoluteUrl, options, () => reject(response));
+                        if (pushed)
+                            this.handleUnauthorizedError(absoluteUrl, options, () => reject(response));
                         return;
                     }
                     reject(response);
@@ -258,9 +259,10 @@ export class BaseHttpService implements IHttpService {
         });
     }
 
-    protected pushFailedRequest(url: string, options: IRequestOptions, req: () => void): void {
-        if (url.indexOf("tokens") >= 0) return;
+    protected pushFailedRequest(url: string, options: IRequestOptions, req: () => void): boolean {
+        if (url.indexOf("tokens") >= 0) return false;
         BaseHttpService.failedRequests.push(req);
+        return true;
     }
 
     protected checkHeaders(headers: any): boolean {
