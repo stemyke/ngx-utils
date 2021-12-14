@@ -9,7 +9,7 @@ export function defaultReducer(result) {
     name: "reduce"
 })
 export class ReducePipe implements PipeTransform {
-    transform(values: any[], source: any, reducer: any = defaultReducer, params: any = {}): any[] {
+    transform(values: any[], source: any, reducer: any = defaultReducer, params: any = {}): any {
         if (!ObjectUtils.isArray(values)) return [];
         const mapperFunc = ObjectUtils.isFunction(reducer) ? reducer : (result, value, index, params) => {
             return ObjectUtils.evaluate(reducer, {
