@@ -91,10 +91,10 @@ export interface IAclComponent {
 
 export interface IRouteStateInfo {
     route: IRoute;
-    component: any;
     guard: any;
     dirty: boolean;
     first: boolean;
+    component?: any;
 }
 
 // --- Storage Service ---

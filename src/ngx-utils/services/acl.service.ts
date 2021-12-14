@@ -9,23 +9,7 @@ const emptyGuards: any[] = [];
 @Injectable()
 export class AclService {
 
-    private components: IRouteStateInfo[];
-
-    private static checkStateDirty(info: IRouteStateInfo) {
-        if (!info || !info.dirty) return;
-        info.dirty = false;
-        const component: IAclComponent = info.component;
-        if (info.first) {
-            if (ObjectUtils.isFunction(component.onUserInitialized)) {
-                component.onUserInitialized();
-            }
-            info.first = false;
-            return;
-        }
-        if (ObjectUtils.isFunction(component.onUserChanged)) {
-            component.onUserChanged();
-        }
-    }
+    protected components: IRouteStateInfo[];
 
     constructor(readonly injector: Injector, readonly state: StateService, @Inject(AUTH_SERVICE) readonly auth: IAuthService) {
         this.components = [];
@@ -35,7 +19,19 @@ export class AclService {
             const check: Promise<boolean> = info && info.guard instanceof AuthGuard ? info.guard.checkRoute(info.route) : Promise.resolve(true);
             check.then(result => {
                 if (result) {
-                    AclService.checkStateDirty(info);
+                    if (!info || !info.dirty) return;
+                    info.dirty = false;
+                    const component: IAclComponent = info.component;
+                    if (info.first) {
+                        if (ObjectUtils.isFunction(component.onUserInitialized)) {
+                            component.onUserInitialized();
+                        }
+                        info.first = false;
+                        return;
+                    }
+                    if (ObjectUtils.isFunction(component.onUserChanged)) {
+                        component.onUserChanged();
+                    }
                     return;
                 }
                 (info.guard as AuthGuard).getReturnState(info.route).then(returnState => {
@@ -46,11 +42,15 @@ export class AclService {
         });
         this.state.subscribe(() => {
             const info = this.getStateInfo();
-            AclService.checkStateDirty(info);
+            if (!info?.component) return;
+            const component: IAclComponent = info.component;
+            if (ObjectUtils.isFunction(component.onUserInitialized)) {
+                component.onUserInitialized();
+            }
         });
     }
 
-    private getStateInfo(): IRouteStateInfo {
+    protected getStateInfo(): IRouteStateInfo {
         const route = this.state.route;
         if (!route) return null;
         let info = this.components.find(t => t.route == this.state.route);
@@ -58,13 +58,13 @@ export class AclService {
             const guardType: Type<AuthGuard> = (route.canActivate || emptyGuards)[0];
             info = {
                 route: this.state.route,
-                component: this.state.component,
                 guard: guardType ? this.injector.get(guardType) : null,
-                dirty: false,
+                dirty: true,
                 first: true
             };
             this.components.push(info);
         }
+        info.component = this.state.component;
         return info;
     }
 }
