@@ -404,6 +404,7 @@ export class ResourceIfContext {
 // --- ConfigService ---
 export class IConfiguration {
     baseUrl?: string;
+    baseDomain?: string;
     translationUrl?: string;
     [key: string]: any;
 }
