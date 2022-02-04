@@ -45,16 +45,9 @@ export class ConfigService implements IConfigService {
         }
         this.baseConfig = baseConfig || {};
         this.loadedConfig = Object.assign(
-            !baseUrl ? {} : {baseUrl},
-            this.baseConfig
+            this.baseConfig,
+            !baseUrl ? {} : {baseUrl, baseDomain: this.parseDomain(baseUrl)},
         );
-        try {
-            const url = new URL(this.loadedConfig.baseUrl);
-            const port = url.port && url.port !== "443" && url.port !== "80" ? `:${url.port}` : ``;
-            this.loadedConfig.baseDomain = `${url.protocol}://${url.hostname}${port}/`;
-        } catch {
-            this.loadedConfig.baseDomain = "/";
-        }
         this.scriptParameters = scriptParams || {};
         this.loaderFunc = () => {
             this.loader = this.loader || new Promise<any>((resolve, reject) => {
@@ -70,6 +63,16 @@ export class ConfigService implements IConfigService {
             return this.loader;
         };
         this.initService();
+    }
+
+    protected parseDomain(baseUrl: string): string {
+        try {
+            const url = new URL(baseUrl);
+            const port = url.port && url.port !== "443" && url.port !== "80" ? `:${url.port}` : ``;
+            return `${url.protocol}://${url.hostname}${port}/`;
+        } catch {
+            return "/";
+        }
     }
 
     protected initService(): void {
