@@ -69,7 +69,7 @@ export class ConfigService implements IConfigService {
         try {
             const url = new URL(baseUrl);
             const port = url.port && url.port !== "443" && url.port !== "80" ? `:${url.port}` : ``;
-            return `${url.protocol}://${url.hostname}${port}/`;
+            return `${url.protocol}//${url.hostname}${port}/`;
         } catch {
             return "/";
         }
