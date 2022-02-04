@@ -99,9 +99,10 @@ export class ConfigService implements IConfigService {
 
     prepareUrl(url: string, ending: string): string {
         const project = !this.loadedConfig ? "" : this.loadedConfig.project;
-        url = url?.startsWith("/") ? this.loadedConfig.baseDomain + url.substr(1) : url || "";
+        const needsProtocol = url?.startsWith("//") ?? false;
+        url = !needsProtocol && url?.startsWith("/") ? this.loadedConfig.baseDomain + url.substr(1) : url || "";
         url = `${url.replace(/\/+$/, "")}${ending}`.replace("[project]", project);
-        return this.universal.isServer && url.startsWith("//") ? `http:${url}` : url;
+        return this.universal.isServer && needsProtocol ? `http:${url}` : url;
     }
 
     getConfigValue(key: string): any {
