@@ -45,8 +45,8 @@ export class ConfigService implements IConfigService {
         }
         this.baseConfig = baseConfig || {};
         this.loadedConfig = Object.assign(
-            this.baseConfig,
             !baseUrl ? {} : {baseUrl, baseDomain: this.parseDomain(baseUrl)},
+            this.baseConfig
         );
         this.scriptParameters = scriptParams || {};
         this.loaderFunc = () => {
