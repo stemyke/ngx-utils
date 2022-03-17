@@ -2,10 +2,12 @@ import {from, Observable, Subject, Subscription} from "rxjs";
 import {mergeMap} from "rxjs/operators";
 
 import {ISearchObservable} from "../common-types";
+import {TimerUtils} from "./timer.utils";
 
 export interface ISubscriberInfo {
-    subjects: Observable<any>[],
-    cb: (ev?: Observable<any>, ...args: any[]) => any,
+    subjects: Observable<any>[];
+    cb: (ev?: Observable<any>, ...args: any[]) => any;
+    timeout?: number;
 }
 
 export class ObservableUtils {
@@ -38,17 +40,22 @@ export class ObservableUtils {
         const subscriptions: Subscription[] = [];
         subscribers.forEach(info => {
             let alreadyCalled = false;
-            info.subjects.forEach(subject => {
-                const ss = subject.subscribe(function () {
-                    const args = Array.from(arguments);
-                    args.unshift(subject);
-                    alreadyCalled = true;
+            const timer = info.timeout > 0 ? TimerUtils.createTimeout() : 0;
+            const cb = timer ? function () {
+                const args = Array.from(arguments);
+                timer.set(() => {
                     info.cb.apply(null, args);
+                }, info.timeout);
+            } : info.cb;
+            info.subjects.forEach(subject => {
+                const ss = subject.subscribe((value) => {
+                    alreadyCalled = true;
+                    cb.call(null, subject, value);
                 });
                 subscriptions.push(ss);
             });
             if (alreadyCalled) return;
-            info.cb();
+            cb();
         });
         return ObservableUtils.multiSubscription(...subscriptions);
     }
