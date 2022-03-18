@@ -9,6 +9,10 @@ function emptyRemove(): void {
 
 }
 
+function isWindow(el: any): boolean {
+    return typeof window !== "undefined" && el === window;
+}
+
 @Injectable()
 export class ResizeEventPlugin extends EventManagerPlugin {
 
@@ -29,28 +33,21 @@ export class ResizeEventPlugin extends EventManagerPlugin {
             const cb = el => {
                 zone.run(() => handler(el));
             };
-            addListener(element, cb);
+            if (isWindow(element)) {
+                element.addEventListener(eventName, cb);
+            } else {
+                addListener(element, cb);
+            }
             return () => {
                 try {
-                    removeListener(element, cb);
+                    if (isWindow(element)) {
+                        element.removeEventListener(eventName, cb);
+                    } else {
+                        removeListener(element, cb);
+                    }
                 } catch (e) {
                 }
             }
-        });
-    }
-
-    addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
-        const zone = this.manager.getZone();
-        return zone.runOutsideAngular(() => {
-            if (this.universal.isServer) return emptyRemove;
-            if (!StringUtils.has(element, "document", "window")) {
-                console.error("Global resize event other than window or document?", element);
-                return emptyRemove;
-            }
-            const target: EventTarget = "window" == element ? window : document;
-            const listener = <EventListenerOrEventListenerObject>handler;
-            target.addEventListener(eventName, listener);
-            return () => target.removeEventListener(eventName, listener);
         });
     }
 }
