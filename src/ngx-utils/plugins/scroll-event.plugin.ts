@@ -32,19 +32,4 @@ export class ScrollEventPlugin extends EventManagerPlugin {
             return () => element.removeEventListener(eventName, callback);
         });
     }
-
-    addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
-        const zone = this.manager.getZone();
-        return zone.runOutsideAngular(() => {
-            if (this.universal.isServer) return emptyRemove;
-            if (!StringUtils.has(element, "document", "window")) {
-                console.error("Global scroll event other than window or document?", element);
-                return emptyRemove;
-            }
-            const target: EventTarget = "window" == element ? window : document;
-            const listener = <EventListenerOrEventListenerObject>handler;
-            target.addEventListener(eventName, listener);
-            return () => target.removeEventListener(eventName, listener);
-        });
-    }
 }
