@@ -38,7 +38,7 @@ export class ScrollEventPlugin extends EventManagerPlugin {
         return zone.runOutsideAngular(() => {
             if (this.universal.isServer) return emptyRemove;
             if (!StringUtils.has(element, "document", "window")) {
-                console.error("Global resize event other than window or document?", element);
+                console.error("Global scroll event other than window or document?", element);
                 return emptyRemove;
             }
             const target: EventTarget = "window" == element ? window : document;
