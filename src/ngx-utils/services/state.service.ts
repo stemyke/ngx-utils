@@ -11,13 +11,14 @@ import {
     Resolve,
     Route,
     Router,
-    UrlSegment,
+    UrlSegment, UrlSerializer,
     UrlTree
 } from "@angular/router";
 import {BehaviorSubject, Observable, Subscription} from "rxjs";
 import {skipWhile} from "rxjs/operators";
 import {ObjectUtils} from "../utils/object.utils";
-import {IRoute} from "../common-types";
+import {IRoute, NavigationUrlParam} from "../common-types";
+import {UniversalService} from "./universal.service";
 
 export const emptySnapshot: ActivatedRouteSnapshot = new ActivatedRouteSnapshot();
 export const emptyData: Data = {id: ""};
@@ -89,7 +90,10 @@ export class StateService extends BehaviorSubject<any> {
         return this.router.config;
     }
 
-    constructor(readonly injector: Injector, readonly zone: NgZone, @Optional() readonly router: Router = null) {
+    constructor(readonly injector: Injector,
+                readonly zone: NgZone,
+                readonly universal: UniversalService,
+                @Optional() readonly router: Router = null) {
         super(null);
         if (!this.router) return;
         this.globalExtras = {
@@ -121,20 +125,23 @@ export class StateService extends BehaviorSubject<any> {
         }
     }
 
-    navigate(commands: any[], extras?: NavigationExtras): Promise<boolean> {
-        if (!this.router) return Promise.resolve(false);
-        extras = Object.assign({}, this.globalExtras, extras || {});
-        const tree = this.router.createUrlTree(commands, extras);
-        return this.navigateByUrl(tree, extras);
+    async navigateByUrl(url: string | UrlTree, navigationExtras: NavigationExtras = {}): Promise<boolean> {
+        return this.navigate(url, navigationExtras);
     }
 
-    navigateByUrl(url: string | UrlTree, extras?: NavigationExtras): Promise<boolean> {
-        if (!this.router) return Promise.resolve(false);
-        extras = Object.assign({}, this.globalExtras, extras || {});
-        return new Promise<boolean>(resolve => {
-            this.zone.run(() => {
-                this.router.navigateByUrl(url, extras).then(resolve, () => resolve(false));
-            })
+    async navigate(url: NavigationUrlParam, navigationExtras: NavigationExtras = {}): Promise<boolean> {
+        if (!this.router) return false;
+        const [tree, extras] = this.createUrlTree(url, navigationExtras);
+        return this.zone.run(() => {
+            return this.router.navigateByUrl(tree, extras);
+        });
+    }
+
+    async open(url: NavigationUrlParam, target = "_blank", navigationExtras: NavigationExtras = {}): Promise<boolean> {
+        if (!this.router) return false;
+        const [tree, extras] = this.createUrlTree(url, navigationExtras);
+        return this.zone.run(() => {
+            return this.openInNewWindow(tree, target) || this.router.navigateByUrl(tree, extras);
         });
     }
 
@@ -142,7 +149,33 @@ export class StateService extends BehaviorSubject<any> {
         return this.pipe(skipWhile(v => v == null)).subscribe(next, error, complete);
     }
 
-    private handleRouterEvent = (event: Event): void => {
+    protected openInNewWindow(tree: UrlTree, target: string): boolean {
+        if (!this.universal.isBrowser) return false;
+        const baseUrl = window.location.href.replace(this.router.url, "");
+        try {
+            const serialized = this.router.serializeUrl(tree);
+            const separator = serialized.startsWith("/") ? "" : "/";
+            window.open(baseUrl + separator + serialized, target);
+            return true;
+        } catch (e) {
+            console.log(`Can't open new window: ${e}`);
+            return false;
+        }
+    }
+
+    protected createUrlTree(url: NavigationUrlParam, extras?: NavigationExtras): [UrlTree, NavigationExtras] {
+        if (!this.router) return null;
+        extras = Object.assign(extras, this.globalExtras, extras || {});
+        if (ObjectUtils.isArray(url)) {
+            return [this.router.createUrlTree(url, extras), extras]
+        }
+        if (ObjectUtils.isString(url)) {
+            return [this.router.parseUrl(url), extras];
+        }
+        return [url, extras];
+    }
+
+    protected handleRouterEvent = (event: Event): void => {
         if (!(event instanceof NavigationEnd)) return;
         const routerStateSnapshot = this.router.routerState.snapshot;
         let snapshot = routerStateSnapshot.root;

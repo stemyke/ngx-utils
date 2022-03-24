@@ -17,6 +17,7 @@ export {
     IPromiseService,
     PROMISE_SERVICE,
     IRouteStateInfo,
+    NavigationUrlParam,
     StorageMode,
     IToasterService,
     TOASTER_SERVICE,

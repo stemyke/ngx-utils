@@ -1,6 +1,6 @@
 import {EventEmitter, InjectionToken, Injector, NgZone, Provider, TemplateRef, Type} from "@angular/core";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
-import {ActivatedRouteSnapshot, Data, Route} from "@angular/router";
+import {ActivatedRouteSnapshot, Data, Route, UrlTree} from "@angular/router";
 import {Request} from "express";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
@@ -96,6 +96,9 @@ export interface IRouteStateInfo {
     first: boolean;
     component?: any;
 }
+
+// --- State Service ---
+export type NavigationUrlParam = any[] | string | UrlTree;
 
 // --- Storage Service ---
 export enum StorageMode {
