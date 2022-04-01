@@ -433,6 +433,20 @@ export type ErrorHandlerCallback = (error: string) => any;
 
 export const ERROR_HANDLER = new InjectionToken<ErrorHandlerCallback>("error-handler-callback");
 
+// --- Global templates service
+
+export type GlobalComponentModifier = (component: any) => any;
+
+export interface IGlobalTemplates {
+    readonly templatesUpdated: EventEmitter<void>;
+    get(id: string, component?: any): TemplateRef<any>;
+    add(id: string, template: TemplateRef<any>): void;
+    remove(id: string): void;
+    addComponentModifier(id: string, modifier: GlobalComponentModifier): void;
+}
+
+export const GLOBAL_TEMPLATES = new InjectionToken<ErrorHandlerCallback>("global-templates");
+
 // --- Module ---
 export type AppInitializerFunc = () => Promise<void> | void;
 
@@ -444,6 +458,7 @@ export interface IModuleConfig {
     toasterService?: Type<IToasterService>;
     promiseService?: Type<IPromiseService>;
     configService?: Type<IConfigService>;
+    globalTemplates?: Type<IGlobalTemplates>;
     initializeApp?: (injector: Injector) => AppInitializerFunc;
 }
 

@@ -8,7 +8,7 @@ import {DeviceDetectorService} from "ngx-device-detector";
 import {
     API_SERVICE,
     AUTH_SERVICE,
-    CONFIG_SERVICE,
+    CONFIG_SERVICE, GLOBAL_TEMPLATES,
     ICON_SERVICE,
     IConfigService,
     IModuleConfig,
@@ -235,6 +235,10 @@ export class NgxUtilsModule {
                 {
                     provide: CONFIG_SERVICE,
                     useExisting: (!config ? null : config.configService) || ConfigService
+                },
+                {
+                    provide: GLOBAL_TEMPLATES,
+                    useExisting: (!config ? null : config.globalTemplates) || GlobalTemplateService
                 },
                 {
                     provide: ROOT_ELEMENT,

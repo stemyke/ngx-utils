@@ -1,15 +1,14 @@
 import {EventEmitter, Injectable, TemplateRef} from "@angular/core";
 import {ObjectUtils} from "../utils/object.utils";
-
-export type GlobalComponentModifier = (component: any) => any;
+import {GlobalComponentModifier, IGlobalTemplates} from "../common-types";
 
 @Injectable()
-export class GlobalTemplateService {
+export class GlobalTemplateService implements IGlobalTemplates {
 
-    public readonly templatesUpdated: EventEmitter<void>;
+    readonly templatesUpdated: EventEmitter<void>;
 
-    protected globalTemplates: {[id: string]: TemplateRef<any>};
-    protected componentModifiers: {[id: string]: GlobalComponentModifier};
+    protected globalTemplates: { [id: string]: TemplateRef<any> };
+    protected componentModifiers: { [id: string]: GlobalComponentModifier };
 
     constructor() {
         this.templatesUpdated = new EventEmitter<any>();
@@ -19,7 +18,7 @@ export class GlobalTemplateService {
 
     get(id: string, component?: any): TemplateRef<any> {
         const template = this.globalTemplates[id];
-        if (!template) return null;
+        if (!template) return undefined;
         const modifier = this.componentModifiers[id];
         if (ObjectUtils.isFunction(modifier) && component) {
             modifier(component);
