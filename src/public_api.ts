@@ -145,6 +145,7 @@ export {SafeHtmlPipe} from "./ngx-utils/pipes/safe-html.pipe";
 export {TranslatePipe} from "./ngx-utils/pipes/translate.pipe";
 export {ValuesPipe} from "./ngx-utils/pipes/values.pipe";
 
+export {AsyncMethodBase} from "./ngx-utils/directives/async-method.base";
 export {AsyncMethodDirective} from "./ngx-utils/directives/async-method.directive";
 export {BackgroundDirective} from "./ngx-utils/directives/background.directive";
 export {DynamicTableTemplateDirective} from "./ngx-utils/directives/dynamic-table-template.directive";
