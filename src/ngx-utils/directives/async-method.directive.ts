@@ -37,10 +37,12 @@ export class AsyncMethodDirective {
         this.callMethod();
     }
 
-    callMethod(): void {
-        if (this.loading) return;
+    callMethod(): boolean {
+        if (this.loading) return true;
+        const result = this.method(this.context);
+        if (!(result instanceof Promise)) return false;
         this.loading = true;
-        this.method(this.context).then(result => {
+        result.then(result => {
             this.loading = false;
             if (result) {
                 this.onSuccess.emit(result);
@@ -53,5 +55,6 @@ export class AsyncMethodDirective {
             this.onError.emit(reason);
             this.toaster.error(reason.message, reason.context);
         });
+        return true;
     }
 }
