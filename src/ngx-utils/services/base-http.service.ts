@@ -223,8 +223,7 @@ export class BaseHttpService implements IHttpService {
                         }
                         return;
                     }
-                    const response = event instanceof HttpResponse ? event.body : event;
-                    resolve(this.parseResponse(response, url, options));
+                    resolve(this.parseResponse(event, url, options));
                     const headers = options.headers as HttpHeaders;
                     const authKey = "Authorization";
                     // If we use token auth
@@ -276,7 +275,7 @@ export class BaseHttpService implements IHttpService {
         // Set base options
         options = options ? {...options} : {};
         options.method = method;
-        options.observe = "body";
+        options.observe = options.observe || "body";
         options.originalHeaders = options.originalHeaders || (options.headers as IHttpHeaders) || {};
         options.withCredentials = ObjectUtils.isBoolean(options.withCredentials) ? options.withCredentials : this.withCredentials;
         options.body = body || {};

@@ -278,7 +278,7 @@ export interface IRequestOptions {
     headers?: IHttpHeaders | HttpHeaders;
     originalHeaders?: IHttpHeaders;
     params?: IHttpParams;
-    observe?: "body";
+    observe?: "body" | "response";
     reportProgress?: boolean;
     responseType?: "arraybuffer" | "blob" | "json" | "text";
     withCredentials?: boolean;
