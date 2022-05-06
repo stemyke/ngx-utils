@@ -6,7 +6,8 @@
             "moment": "moment",
             "ngx-device-detector": "ngx-device-detector",
             "resize-detector": "resize-detector",
-            "invokable": "invokable"
+            "invokable": "invokable",
+            "json5": "json5"
         }
     },
     "deleteDestPath": false,
