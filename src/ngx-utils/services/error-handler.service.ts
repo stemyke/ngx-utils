@@ -32,7 +32,7 @@ export class ErrorHandlerService extends ErrorHandler {
             }
         }
         if (this.universal.isServer) return;
-        const key = btoa(unescape(encodeURIComponent(`${error.message} ${error.stack}`)));
+        const key = typeof btoa !== "undefined" ? btoa(unescape(encodeURIComponent(`${error.message} ${error.stack}`))) : error.message;
         if (this.errorMap[key] && this.errorMap[key].getTime() > date.getTime() - 5000) return;
         this.errorMap[key] = date;
         try {
