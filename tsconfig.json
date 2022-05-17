@@ -1,7 +1,9 @@
 {
     "compileOnSave": false,
     "angularCompilerOptions": {
-        "enableIvy": true
+        "enableIvy": true,
+        "compilationMode": "partial",
+        "strictMetadataEmit": true
     },
     "compilerOptions": {
         "module": "esnext",
