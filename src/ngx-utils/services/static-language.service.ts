@@ -20,7 +20,7 @@ import {HttpClient} from "@angular/common/http";
 export class StaticLanguageService implements ILanguageService {
 
     get defaultLanguage(): string {
-        return this.configs.getQueryParameter("lang") || this.storage.get("language", this.browserLang);
+        return this.configs.getQueryParameter("lang") || this.storage.get("language", this.getDefaultLanguage());
     }
 
     get dictionary(): ITranslations {
@@ -67,22 +67,6 @@ export class StaticLanguageService implements ILanguageService {
 
     get config(): IConfiguration {
         return this.configs.config;
-    }
-
-    get browserLang(): string {
-        if (this.universal.isServer || typeof window.navigator === "undefined") {
-            return "de";
-        }
-        let browserLang: string = (window.navigator.languages ? window.navigator.languages[0] : null)
-            || window.navigator.language || window.navigator["browserLanguage"] || window.navigator["userLanguage"] || null;
-        if (!browserLang) return browserLang;
-
-        ["-", "_"].forEach(splitter => {
-            if (browserLang.indexOf(splitter) >= 0) {
-                browserLang = browserLang.split(splitter)[0];
-            }
-        })
-        return browserLang;
     }
 
     get universal(): UniversalService {
@@ -179,5 +163,21 @@ export class StaticLanguageService implements ILanguageService {
             const r = ObjectUtils.getValue(params, b);
             return ObjectUtils.isDefined(r) ? r : substring;
         });
+    }
+
+    protected getDefaultLanguage(): string {
+        if (!this.universal.isBrowser || typeof window.navigator === "undefined") {
+            return "de";
+        }
+        let browserLang: string = (window.navigator.languages ? window.navigator.languages[0] : null)
+            || window.navigator.language || window.navigator["browserLanguage"] || window.navigator["userLanguage"] || null;
+        if (!browserLang) return browserLang;
+
+        ["-", "_"].forEach(splitter => {
+            if (browserLang.indexOf(splitter) >= 0) {
+                browserLang = browserLang.split(splitter)[0];
+            }
+        })
+        return browserLang;
     }
 }

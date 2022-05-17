@@ -1,8 +1,9 @@
 import {Inject, Injectable, Optional, isDevMode} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import {parse} from "json5";
 import {UniversalService} from "./universal.service";
 import {BASE_CONFIG, IConfigService, IConfiguration, ROOT_ELEMENT, SCRIPT_PARAMS} from "../common-types";
+
+const JSON5 = require("json5");
 
 @Injectable()
 export class ConfigService implements IConfigService {
@@ -87,7 +88,7 @@ export class ConfigService implements IConfigService {
         const configUrl = this.configUrl;
         try {
             const config5 = await this.http.get(isDevMode() ? `${configUrl}5` : configUrl, {responseType: "text"}).toPromise();
-            return parse(config5);
+            return JSON5.parse(config5);
         } catch (e) {
             try {
                 const config = await this.http.get(configUrl).toPromise();
@@ -116,7 +117,7 @@ export class ConfigService implements IConfigService {
     }
 
     getQueryParameter(name: string, url?: string): string {
-        url = url || (this.universal.isServer ? "" : window.location.href);
+        url = url || (this.universal.isBrowser ? window.location.href : "");
         name = name.replace(/[\[\]]/g, "\\$&");
         const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
             results = regex.exec(url);

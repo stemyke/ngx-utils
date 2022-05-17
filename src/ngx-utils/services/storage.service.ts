@@ -12,7 +12,7 @@ export class StorageService {
     }
 
     get(key: string, defaultValue?: any, mode: StorageMode = StorageMode.Local): any {
-        if (this.universal.isServer) return defaultValue;
+        if (!this.universal.isBrowser) return defaultValue;
         const storage = mode == StorageMode.Local ? localStorage : sessionStorage;
         const item = storage.getItem(key);
         if (!item) return defaultValue;
@@ -24,7 +24,7 @@ export class StorageService {
     }
 
     set(key: string, value: any, mode: StorageMode = StorageMode.Local): void {
-        if (this.universal.isServer) return;
+        if (!this.universal.isBrowser) return;
         const storage = mode == StorageMode.Local ? localStorage : sessionStorage;
         if (typeof value == "string") {
             storage.setItem(key, value);
@@ -34,7 +34,7 @@ export class StorageService {
     }
 
     remove(key: string, mode: StorageMode = StorageMode.Local): void {
-        if (this.universal.isServer) return;
+        if (!this.universal.isBrowser) return;
         const storage = mode == StorageMode.Local ? localStorage : sessionStorage;
         storage.removeItem(key);
     }
