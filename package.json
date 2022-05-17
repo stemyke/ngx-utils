@@ -1,12 +1,12 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "13.0.1",
+    "version": "13.0.2",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
         "build": "node build/build.js",
-        "public": "npm publish dist --access public",
+        "public": "npm publish dist --access public --ignore-scripts",
         "circular": "ts-node ./tools/circular.ts ./src",
         "notify": "sudo sysctl fs.inotify.max_user_watches=524288 && sudo sysctl -p --system"
     },
