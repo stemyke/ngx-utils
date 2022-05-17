@@ -3,8 +3,6 @@ import {HttpClient} from "@angular/common/http";
 import {UniversalService} from "./universal.service";
 import {BASE_CONFIG, IConfigService, IConfiguration, ROOT_ELEMENT, SCRIPT_PARAMS} from "../common-types";
 
-const JSON5 = require("json5");
-
 @Injectable()
 export class ConfigService implements IConfigService {
 
@@ -88,7 +86,7 @@ export class ConfigService implements IConfigService {
         const configUrl = this.configUrl;
         try {
             const config5 = await this.http.get(isDevMode() ? `${configUrl}5` : configUrl, {responseType: "text"}).toPromise();
-            return JSON5.parse(config5);
+            return require("json5").parse(config5);
         } catch (e) {
             try {
                 const config = await this.http.get(configUrl).toPromise();
