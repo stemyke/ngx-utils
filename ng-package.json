@@ -1,14 +1,7 @@
 {
     "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
     "lib": {
-        "entryFile": "./src/public_api.ts",
-        "umdModuleIds": {
-            "moment": "moment",
-            "ngx-device-detector": "ngx-device-detector",
-            "resize-detector": "resize-detector",
-            "invokable": "invokable",
-            "json5": "json5"
-        }
+        "entryFile": "./src/public_api.ts"
     },
     "deleteDestPath": false,
     "allowedNonPeerDependencies": ["."]

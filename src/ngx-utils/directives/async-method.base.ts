@@ -1,6 +1,7 @@
-import {EventEmitter, HostBinding, HostListener, Input, Output} from "@angular/core";
+import {EventEmitter, HostBinding, HostListener, Injectable, Input, Output} from "@angular/core";
 import {AsyncMethod, IAsyncMessage, IToasterService} from "../common-types";
 
+@Injectable()
 export abstract class AsyncMethodBase {
 
     @Input() disabled: boolean;
