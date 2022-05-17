@@ -1,7 +1,10 @@
 {
     "compileOnSave": false,
+    "angularCompilerOptions": {
+        "compilationMode": "partial"
+    },
     "compilerOptions": {
-    "module": "esnext",
+        "module": "esnext",
         "outDir": "./dist/out-tsc",
         "baseUrl": ".",
         "sourceMap": true,
