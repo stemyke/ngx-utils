@@ -1,4 +1,5 @@
-import {Inject, Injectable, Optional, isDevMode} from "@angular/core";
+import {Inject, Injectable, isDevMode, Optional} from "@angular/core";
+import {APP_BASE_HREF} from "@angular/common";
 import {HttpClient} from "@angular/common/http";
 import {UniversalService} from "./universal.service";
 import {BASE_CONFIG, IConfigService, IConfiguration, ROOT_ELEMENT, SCRIPT_PARAMS} from "../common-types";
@@ -27,6 +28,7 @@ export class ConfigService implements IConfigService {
     constructor(readonly http: HttpClient,
                 readonly universal: UniversalService,
                 @Inject(ROOT_ELEMENT) readonly rootElement: any,
+                @Inject(APP_BASE_HREF) readonly baseHref: string,
                 @Optional() @Inject(BASE_CONFIG) baseConfig: IConfiguration = null,
                 @Optional() @Inject(SCRIPT_PARAMS) scriptParams: any = null) {
         for (const key in []) {
@@ -34,18 +36,9 @@ export class ConfigService implements IConfigService {
                 enumerable: false
             });
         }
-        let baseUrl = "";
-        if (this.universal.isBrowser) {
-            const currentScript = (document.currentScript as HTMLScriptElement);
-            if (!!currentScript) {
-                const scriptSrc = currentScript.src;
-                const srcParts = scriptSrc.split(".js");
-                baseUrl = scriptSrc.substr(0, srcParts[0].lastIndexOf("/") + 1);
-            }
-        }
         this.baseConfig = baseConfig || {};
         this.loadedConfig = Object.assign(
-            !baseUrl ? {} : {baseUrl, baseDomain: this.parseDomain(baseUrl)},
+            !this.baseHref ? {} : {baseUrl: this.baseHref, baseDomain: this.parseDomain(this.baseHref)},
             this.baseConfig
         );
         this.scriptParameters = scriptParams || {};

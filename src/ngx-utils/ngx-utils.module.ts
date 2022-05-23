@@ -1,5 +1,5 @@
 import {APP_INITIALIZER, Injector, ModuleWithProviders, NgModule} from "@angular/core";
-import {CommonModule} from "@angular/common";
+import {APP_BASE_HREF, CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {
     API_SERVICE,
@@ -22,6 +22,26 @@ import {ConsoleToasterService} from "./services/toaster.service";
 import {PromiseService} from "./services/promise.service";
 import {ConfigService} from "./services/config.service";
 import {GlobalTemplateService} from "./services/global-template.service";
+
+export function loadBaseHref(): string {
+    if (typeof (document) === "undefined" || typeof (location) === "undefined") return "/";
+    const currentScript = (document.currentScript as HTMLScriptElement);
+    if (!currentScript) {
+        try {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error();
+        }
+        catch (e) {
+            const qualifiedUrl = location.protocol + "//" + location.host
+            const srcUrl = (e.stack || "").match(new RegExp(qualifiedUrl + ".*?\\.js", "g")) || e.stack.match(/http([A-Z:\/\-\.]+)\.js/gi).shift();
+            const lastIndex = srcUrl.lastIndexOf("/");
+            return lastIndex < 0 ? "/" : srcUrl.substring(0, lastIndex + 1);
+        }
+    }
+    const scriptSrc = currentScript.src;
+    const lastIndex = scriptSrc.lastIndexOf("/");
+    return lastIndex < 0 ? "/" : scriptSrc.substring(0, lastIndex + 1);
+}
 
 @NgModule({
     declarations: [
@@ -89,6 +109,11 @@ export class NgxUtilsModule {
                     useFactory: (!config ? null : config.initializeApp) || loadConfig,
                     multi: true,
                     deps: [(!config ? null : config.initializeApp) ? Injector : CONFIG_SERVICE]
+                },
+                {
+                    provide: APP_BASE_HREF,
+                    useFactory: (!config ? null : config.baseHref) || loadBaseHref,
+                    deps: [Injector]
                 }
             ]
         };

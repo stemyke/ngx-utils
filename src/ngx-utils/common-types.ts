@@ -460,6 +460,7 @@ export interface IModuleConfig {
     configService?: Type<IConfigService>;
     globalTemplates?: Type<IGlobalTemplates>;
     initializeApp?: (injector: Injector) => AppInitializerFunc;
+    baseHref?: (injector: Injector) => string;
 }
 
 // --- Valued promise ---
