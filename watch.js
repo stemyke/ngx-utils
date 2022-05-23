@@ -1,4 +1,3 @@
-const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const program = require('commander');
@@ -8,7 +7,7 @@ const copy = require('./build/copy');
 const {runCommand} = require("./build/run-command");
 
 program
-    .version('10.x', '-v, --version')
+    .version('13.x', '-v, --version')
     .option('-p, --project [path]', 'Project path where ngx-utils is used')
     .option('-b, --skip-build', 'Skip first build')
     .option('-m, --skip-modules', 'Skip copying node modules to project')
@@ -22,8 +21,12 @@ let builds = 0;
 function deployToProject() {
     if (noProject) return Promise.resolve();
     const stemyPath = path.join(projectPath, 'node_modules', '@stemy');
+    const angularCachePath = path.join(projectPath, '.angular');
     return copy('./dist/', stemyPath, 'dist folder to project').then(() => {
         const targetPath = path.join(stemyPath, 'ngx-utils');
+        if (fs.existsSync(angularCachePath)) {
+            rimraf.sync(angularCachePath);
+        }
         if (fs.existsSync(targetPath)) {
             rimraf.sync(targetPath);
         }
