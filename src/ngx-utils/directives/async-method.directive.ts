@@ -1,5 +1,5 @@
-import {Directive, Inject, Input} from "@angular/core";
-import {AsyncMethod, IToasterService, TOASTER_SERVICE} from "../common-types";
+import {Directive, Input} from "@angular/core";
+import {AsyncMethod} from "../common-types";
 import {AsyncMethodBase} from "./async-method.base";
 
 @Directive({
@@ -9,10 +9,6 @@ import {AsyncMethodBase} from "./async-method.base";
 export class AsyncMethodDirective extends AsyncMethodBase {
 
     @Input("async-method") method: AsyncMethod;
-
-    constructor(@Inject(TOASTER_SERVICE) toaster: IToasterService) {
-        super(toaster);
-    }
 
     protected getMethod(): AsyncMethod {
         return this.method;

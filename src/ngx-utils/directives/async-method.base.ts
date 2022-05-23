@@ -1,8 +1,10 @@
-import {EventEmitter, HostBinding, HostListener, Injectable, Input, Output} from "@angular/core";
-import {AsyncMethod, IAsyncMessage, IToasterService} from "../common-types";
+import {Directive, EventEmitter, HostBinding, HostListener, Inject, Input, Output} from "@angular/core";
+import {AsyncMethod, IAsyncMessage, IToasterService, TOASTER_SERVICE} from "../common-types";
 
-@Injectable()
-export abstract class AsyncMethodBase {
+@Directive({
+    selector: "[__asmb__]"
+})
+export class AsyncMethodBase {
 
     @Input() disabled: boolean;
     @Input() context: any;
@@ -22,12 +24,14 @@ export abstract class AsyncMethodBase {
         return this.loading;
     }
 
-    protected constructor(protected toaster: IToasterService) {
+    constructor(@Inject(TOASTER_SERVICE) protected toaster: IToasterService) {
         this.onSuccess = new EventEmitter<IAsyncMessage>();
         this.onError = new EventEmitter<IAsyncMessage>();
     }
 
-    protected abstract getMethod(): AsyncMethod;
+    protected getMethod(): AsyncMethod {
+        return async () => null;
+    }
 
     @HostListener("click")
     click(): void {

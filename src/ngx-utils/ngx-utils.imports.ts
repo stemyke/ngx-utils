@@ -1,21 +1,9 @@
-import {APP_INITIALIZER, ErrorHandler, Inject, Injector, ModuleWithProviders, NgModule} from "@angular/core";
+import {ErrorHandler} from "@angular/core";
 import {EVENT_MANAGER_PLUGINS} from "@angular/platform-browser";
-import {CommonModule} from "@angular/common";
-import {FormsModule} from "@angular/forms";
 import {UrlSerializer} from "@angular/router";
 import {DeviceDetectorService} from "ngx-device-detector";
 
-import {
-    API_SERVICE,
-    AUTH_SERVICE,
-    CONFIG_SERVICE, GLOBAL_TEMPLATES,
-    ICON_SERVICE,
-    IConfigService,
-    IModuleConfig,
-    LANGUAGE_SERVICE,
-    PROMISE_SERVICE, ROOT_ELEMENT,
-    TOASTER_SERVICE
-} from "./common-types";
+import {IConfigService} from "./common-types";
 
 import {AuthGuard} from "./utils/auth.guard";
 import {AclService} from "./services/acl.service";
@@ -40,6 +28,7 @@ import {TranslatedUrlSerializer} from "./services/translated-url.serializer";
 import {UniversalService} from "./services/universal.service";
 import {ResizeEventPlugin} from "./plugins/resize-event.plugin";
 import {ScrollEventPlugin} from "./plugins/scroll-event.plugin";
+import {AsyncMethodBase} from "./directives/async-method.base";
 import {AsyncMethodDirective} from "./directives/async-method.directive";
 import {BackgroundDirective} from "./directives/background.directive";
 import {DynamicTableTemplateDirective} from "./directives/dynamic-table-template.directive";
@@ -113,6 +102,7 @@ export const pipes = [
 
 // --- Directives ---
 export const directives = [
+    AsyncMethodBase,
     AsyncMethodDirective,
     BackgroundDirective,
     DynamicTableTemplateDirective,
