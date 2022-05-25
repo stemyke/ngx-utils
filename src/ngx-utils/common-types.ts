@@ -365,6 +365,7 @@ export interface IOpenApiSchemaProperty {
     column?: boolean;
     additionalProperties?: any;
     $ref?: string;
+    allOf?: ReadonlyArray<{$ref?: string}>
     items?: IOpenApiSchemaProperty;
     enum?: string[];
     [key: string]: any;
