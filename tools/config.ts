@@ -77,5 +77,3 @@ export function createConfig(config: any, alternatives?: IEnvironmentAlternative
     console.log("Parsing config...");
     return createConfigRecursive(null, parseConfig(config), "", alternatives);
 }
-
-export default createConfig;
