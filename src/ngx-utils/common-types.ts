@@ -406,6 +406,8 @@ export class ResourceIfContext {
 }
 
 // --- ConfigService ---
+export const APP_BASE_URL = new InjectionToken<string>("app-base-url");
+
 export class IConfiguration {
     baseUrl?: string;
     baseDomain?: string;
@@ -461,7 +463,7 @@ export interface IModuleConfig {
     configService?: Type<IConfigService>;
     globalTemplates?: Type<IGlobalTemplates>;
     initializeApp?: (injector: Injector) => AppInitializerFunc;
-    baseHref?: (injector: Injector) => string;
+    baseUrl?: (injector: Injector) => string;
 }
 
 // --- Valued promise ---

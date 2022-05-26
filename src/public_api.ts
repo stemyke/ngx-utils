@@ -60,6 +60,7 @@ export {
     ITableTemplates,
     TableDataLoader,
     ResourceIfContext,
+    APP_BASE_URL,
     IConfiguration,
     IConfigService,
     CONFIG_SERVICE,

@@ -28,4 +28,14 @@ export class StringUtils {
     static ucFirst(str: string): string {
         return str ? str.charAt(0).toUpperCase() + str.substring(1) : "";
     }
+
+    static parseDomain(baseUrl: string): string {
+        try {
+            const url = new URL(baseUrl);
+            const port = url.port && url.port !== "443" && url.port !== "80" ? `:${url.port}` : ``;
+            return `${url.protocol}//${url.hostname}${port}/`;
+        } catch {
+            return "/";
+        }
+    }
 }

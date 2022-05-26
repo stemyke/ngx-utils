@@ -3,6 +3,7 @@ import {APP_BASE_HREF, CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {
     API_SERVICE,
+    APP_BASE_URL,
     AUTH_SERVICE,
     CONFIG_SERVICE,
     GLOBAL_TEMPLATES,
@@ -23,17 +24,17 @@ import {PromiseService} from "./services/promise.service";
 import {ConfigService} from "./services/config.service";
 import {GlobalTemplateService} from "./services/global-template.service";
 
-export function loadBaseHref(): string {
+export function loadBaseUrl(): string {
     if (typeof (document) === "undefined" || typeof (location) === "undefined") return "/";
     const currentScript = (document.currentScript as HTMLScriptElement);
     if (!currentScript) {
         try {
             // noinspection ExceptionCaughtLocallyJS
             throw new Error();
-        }
-        catch (e) {
-            const qualifiedUrl = location.protocol + "//" + location.host
-            const srcUrl = (e.stack || "").match(new RegExp(qualifiedUrl + ".*?\\.js", "g")) || e.stack.match(/http([A-Z:\/\-\.]+)\.js/gi).shift();
+        } catch (e) {
+            const qualifiedUrl = location.protocol + "//" + location.host;
+            const stack = (e.stack || "") as string;
+            const srcUrl = (stack.match(new RegExp(qualifiedUrl + ".*?\\.js", "g")) || stack.match(/http([A-Z:\/\-.]+)\.js/gi)).shift();
             const lastIndex = srcUrl.lastIndexOf("/");
             return lastIndex < 0 ? "/" : srcUrl.substring(0, lastIndex + 1);
         }
@@ -41,6 +42,15 @@ export function loadBaseHref(): string {
     const scriptSrc = currentScript.src;
     const lastIndex = scriptSrc.lastIndexOf("/");
     return lastIndex < 0 ? "/" : scriptSrc.substring(0, lastIndex + 1);
+}
+
+export function loadBaseHref(baseUrl: string): string {
+    try {
+        return new URL(baseUrl).pathname;
+    } catch (e) {
+        console.log(e);
+        return "/";
+    }
 }
 
 @NgModule({
@@ -101,6 +111,11 @@ export class NgxUtilsModule {
                     useExisting: (!config ? null : config.globalTemplates) || GlobalTemplateService
                 },
                 {
+                    provide: APP_BASE_URL,
+                    useFactory: (!config ? null : config.baseUrl) || loadBaseUrl,
+                    deps: [Injector]
+                },
+                {
                     provide: ROOT_ELEMENT,
                     useValue: null
                 },
@@ -112,8 +127,8 @@ export class NgxUtilsModule {
                 },
                 {
                     provide: APP_BASE_HREF,
-                    useFactory: (!config ? null : config.baseHref) || loadBaseHref,
-                    deps: [Injector]
+                    useFactory: loadBaseHref,
+                    deps: [APP_BASE_URL]
                 }
             ]
         };

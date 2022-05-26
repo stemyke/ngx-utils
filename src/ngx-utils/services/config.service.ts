@@ -1,9 +1,9 @@
 import {Inject, Injectable, isDevMode, Optional} from "@angular/core";
-import {APP_BASE_HREF} from "@angular/common";
 import {HttpClient} from "@angular/common/http";
 import * as JSON5 from "json5";
 import {UniversalService} from "./universal.service";
-import {BASE_CONFIG, IConfigService, IConfiguration, ROOT_ELEMENT, SCRIPT_PARAMS} from "../common-types";
+import {APP_BASE_URL, BASE_CONFIG, IConfigService, IConfiguration, ROOT_ELEMENT, SCRIPT_PARAMS} from "../common-types";
+import {StringUtils} from "../utils/string.utils";
 
 @Injectable()
 export class ConfigService implements IConfigService {
@@ -29,7 +29,7 @@ export class ConfigService implements IConfigService {
     constructor(readonly http: HttpClient,
                 readonly universal: UniversalService,
                 @Inject(ROOT_ELEMENT) readonly rootElement: any,
-                @Inject(APP_BASE_HREF) readonly baseHref: string,
+                @Inject(APP_BASE_URL) readonly baseUrl: string,
                 @Optional() @Inject(BASE_CONFIG) baseConfig: IConfiguration = null,
                 @Optional() @Inject(SCRIPT_PARAMS) scriptParams: any = null) {
         for (const key in []) {
@@ -39,7 +39,7 @@ export class ConfigService implements IConfigService {
         }
         this.baseConfig = baseConfig || {};
         this.loadedConfig = Object.assign(
-            !this.baseHref ? {} : {baseUrl: this.baseHref, baseDomain: this.parseDomain(this.baseHref)},
+            !this.baseUrl ? {} : {baseUrl: this.baseUrl, baseDomain: StringUtils.parseDomain(this.baseUrl)},
             this.baseConfig
         );
         this.scriptParameters = scriptParams || {};
@@ -57,16 +57,6 @@ export class ConfigService implements IConfigService {
             return this.loader;
         };
         this.initService();
-    }
-
-    protected parseDomain(baseUrl: string): string {
-        try {
-            const url = new URL(baseUrl);
-            const port = url.port && url.port !== "443" && url.port !== "80" ? `:${url.port}` : ``;
-            return `${url.protocol}//${url.hostname}${port}/`;
-        } catch {
-            return "/";
-        }
     }
 
     protected initService(): void {
