@@ -29,6 +29,10 @@ export class StringUtils {
         return str ? str.charAt(0).toUpperCase() + str.substring(1) : "";
     }
 
+    static isObjectId(id: string): boolean {
+        return typeof id === "string" && id.length == 12 && !isNaN(Number("0x" + id));
+    }
+
     static parseDomain(baseUrl: string): string {
         try {
             const url = new URL(baseUrl);
