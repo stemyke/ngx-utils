@@ -30,7 +30,7 @@ export class StringUtils {
     }
 
     static isObjectId(id: string): boolean {
-        return typeof id === "string" && id.length == 12 && !isNaN(Number("0x" + id));
+        return typeof id === "string" && id.length == 24 && !isNaN(Number("0x" + id));
     }
 
     static parseDomain(baseUrl: string): string {
