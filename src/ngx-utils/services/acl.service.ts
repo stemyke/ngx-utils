@@ -22,6 +22,7 @@ export class AclService {
                     if (!info || !info.dirty) return;
                     info.dirty = false;
                     const component: IAclComponent = info.component;
+                    if (!info.component) return;
                     if (info.first) {
                         if (ObjectUtils.isFunction(component.onUserInitialized)) {
                             component.onUserInitialized();
