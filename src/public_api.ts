@@ -83,6 +83,7 @@ export {DateUtils} from "./ngx-utils/utils/date.utils";
 export {CanvasUtils} from "./ngx-utils/utils/canvas.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {GenericValue} from "./ngx-utils/utils/generic-value";
+export {FileSystemEntryOpenResult, FileSystemEntryOpenCb, FileSystemEntry} from "./ngx-utils/utils/file-system";
 export {IShape, Rect, Circle, Point} from "./ngx-utils/utils/geometry";
 export {Initializer} from "./ngx-utils/utils/initializer";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
