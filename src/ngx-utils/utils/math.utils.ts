@@ -2,8 +2,10 @@ import {ObjectUtils} from "./object.utils";
 
 export class MathUtils {
 
+    static readonly EPSILON: number = 1e-9;
+
     static equal(a: number, b: number, epsilon: number = null): boolean {
-        epsilon = ObjectUtils.isNumber(epsilon) ? epsilon : Math.E;
+        epsilon = ObjectUtils.isNumber(epsilon) ? epsilon : MathUtils.EPSILON;
         return Math.abs(a - b) < epsilon;
     }
 
