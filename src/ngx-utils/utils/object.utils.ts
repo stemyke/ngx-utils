@@ -35,18 +35,22 @@ export class ObjectUtils {
         return Array.from(props);
     }
 
-    static equals(a: any, b: any): boolean {
+    static equals(a: any, b: any, visited: Set<any> = null): boolean {
+        visited = visited || new Set();
+        if (visited.has(a) && visited.has(b)) return true;
         if (a === b) return true;
         if (a === null || b === null) return false;
         if (a !== a && b !== b) return true; // NaN === NaN
         const at = typeof a, bt = typeof b;
         let length: number, key: any, keySet: any;
         if (at == bt && at == "object") {
+            visited.add(a);
+            visited.add(b);
             if (Array.isArray(a)) {
                 if (!Array.isArray(b)) return false;
                 if ((length = a.length) == b.length) {
                     for (key = 0; key < length; key++) {
-                        if (!ObjectUtils.equals(a[key], b[key])) return false;
+                        if (!ObjectUtils.equals(a[key], b[key], visited)) return false;
                     }
                     return true;
                 }
@@ -57,7 +61,7 @@ export class ObjectUtils {
                 keySet = Object.create(null);
                 for (key in a) {
                     if (a.hasOwnProperty(key)) {
-                        if (!ObjectUtils.equals(a[key], b[key])) {
+                        if (!ObjectUtils.equals(a[key], b[key], visited)) {
                             return false;
                         }
                         keySet[key] = true;
@@ -152,15 +156,15 @@ export class ObjectUtils {
     }
 
     static filter(obj: any, predicate: FilterPredicate): any {
-        return ObjectUtils.copyRecursive(null, obj, predicate);
+        return ObjectUtils.copyRecursive(null, obj, predicate, new Map());
     }
 
     static copy<T>(obj: T): T {
-        return ObjectUtils.copyRecursive(null, obj);
+        return ObjectUtils.copyRecursive(null, obj, null, new Map());
     }
 
     static assign<T>(target: T, source: any, predicate?: FilterPredicate): T {
-        return ObjectUtils.copyRecursive(target, source, predicate);
+        return ObjectUtils.copyRecursive(target, source, predicate, new Map());
     }
 
     static getType(obj: any): string {
@@ -248,24 +252,29 @@ export class ObjectUtils {
         return str.length >= width ? str : new Array(width - str.length + 1).join(chr) + str;
     }
 
-    private static copyRecursive(target: any, source: any, predicate?: FilterPredicate): any {
+    private static copyRecursive(target: any, source: any, predicate: FilterPredicate, copies: Map<any, any>): any {
         predicate = predicate || defaultPredicate;
         if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source) || ObjectUtils.isBlob(source) || ObjectUtils.isFunction(source)) return source;
-        if (ObjectUtils.isArray(source)) {
-            target = ObjectUtils.isArray(target) ? Array.from(target) : [];
-            source.forEach((item, index) => {
-                if (!predicate(item, index, target, source)) return;
-                if (target.length > index)
-                    target[index] = ObjectUtils.copyRecursive(target[index], item, predicate);
-                else
-                    target.push(ObjectUtils.copyRecursive(null, item, predicate));
-            });
-            return target;
+        if (!copies.has(source)) {
+            if (ObjectUtils.isArray(source)) {
+                target = ObjectUtils.isArray(target) ? Array.from(target) : [];
+                copies.set(source, target);
+                source.forEach((item, index) => {
+                    if (!predicate(item, index, target, source)) return;
+                    if (target.length > index)
+                        target[index] = ObjectUtils.copyRecursive(target[index], item, predicate, copies);
+                    else
+                        target.push(ObjectUtils.copyRecursive(null, item, predicate, copies));
+                });
+            } else {
+                target = Object.assign({}, target);
+                copies.set(source, target);
+                Object.keys(source).forEach((key) => {
+                    if (!predicate(source[key], key, target, source)) return;
+                    target[key] = ObjectUtils.copyRecursive(target[key], source[key], predicate, copies);
+                });
+            }
         }
-        return Object.keys(source).reduce((result, key) => {
-            if (!predicate(source[key], key, result, source)) return result;
-            result[key] = ObjectUtils.copyRecursive(result[key], source[key], predicate);
-            return result;
-        }, Object.assign({}, target));
+        return copies.get(source);
     }
 }
