@@ -32,7 +32,8 @@ export class FormatterService {
         const num = ObjectUtils.isNumber(value) ? <number>value : parseFloat(<string>value) || 0;
         const str = (num / divider).toLocaleString(this.language.currentLanguage, {
             minimumFractionDigits: precision,
-            maximumFractionDigits: precision
+            maximumFractionDigits: precision,
+            useGrouping: false
         });
         return ObjectUtils.evaluate(format || this.defaultNumberFormat, {num: str});
     }
