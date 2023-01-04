@@ -138,12 +138,15 @@ export {KeysPipe} from "./ngx-utils/pipes/keys.pipe";
 export {MapPipe} from "./ngx-utils/pipes/map.pipe";
 export {MaxPipe} from "./ngx-utils/pipes/max.pipe";
 export {MinPipe} from "./ngx-utils/pipes/min.pipe";
+export {PopPipe} from "./ngx-utils/pipes/pop.pipe";
 export {ReducePipe} from "./ngx-utils/pipes/reduce.pipe";
 export {RemapPipe} from "./ngx-utils/pipes/remap.pipe";
 export {ReplacePipe} from "./ngx-utils/pipes/replace.pipe";
 export {ReversePipe} from "./ngx-utils/pipes/reverse.pipe";
 export {RoundPipe} from "./ngx-utils/pipes/round.pipe";
 export {SafeHtmlPipe} from "./ngx-utils/pipes/safe-html.pipe";
+export {ShiftPipe} from "./ngx-utils/pipes/shift.pipe";
+export {SplitPipe} from "./ngx-utils/pipes/split.pipe";
 export {TranslatePipe} from "./ngx-utils/pipes/translate.pipe";
 export {ValuesPipe} from "./ngx-utils/pipes/values.pipe";
 

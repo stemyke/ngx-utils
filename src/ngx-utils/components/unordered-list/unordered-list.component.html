@@ -3,7 +3,9 @@
 </ng-template>
 <ng-template let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-val="item.value" let-path="path"
              let-templates="templates" let-isObject="valueIsObject" let-isArray="valueIsArray" #defaultValueTemplate>
-    <ng-template #value>{{ val }}</ng-template>
+    <ng-template #value>
+        <span [innerHTML]="val"></span>
+    </ng-template>
     <unordered-list [data]="val"
                     [keyPrefix]="keyPrefix"
                     [listStyle]="listStyle"
@@ -45,7 +47,7 @@
     </td>
 </ng-template>
 <ng-template #value>
-    {{ data }}
+    <span [innerHTML]="data"></span>
 </ng-template>
 <ng-container *ngIf="(isObject || isArray); else value" [ngSwitch]="listStyle">
     <ul [ngClass]="'level-' + level" *ngSwitchCase="'list'">

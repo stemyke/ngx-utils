@@ -94,4 +94,11 @@ export class ArrayUtils {
         }
         return result
     }
+
+    static unique<T>(arr: T[]): T[] {
+        if (!ObjectUtils.isArray(arr)) return [];
+        return arr.filter((value, index, self) => {
+            return self.indexOf(value) === index;
+        });
+    }
 }

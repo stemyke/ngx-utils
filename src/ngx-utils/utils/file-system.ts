@@ -25,6 +25,10 @@ export class FileSystemEntry {
 
     open(): Promise<FileSystemEntryOpenResult> {
         this.result = this.result || this.openCb(this.data, this);
+        this.result.then(res => {
+            if (Array.isArray(res)) return;
+            this.result = null;
+        });
         return this.result;
     }
 }
