@@ -59,12 +59,15 @@ import {KeysPipe} from "./pipes/keys.pipe";
 import {MapPipe} from "./pipes/map.pipe";
 import {MaxPipe} from "./pipes/max.pipe";
 import {MinPipe} from "./pipes/min.pipe";
+import {PopPipe} from "./pipes/pop.pipe";
 import {ReducePipe} from "./pipes/reduce.pipe";
 import {RemapPipe} from "./pipes/remap.pipe";
 import {ReplacePipe} from "./pipes/replace.pipe";
 import {ReversePipe} from "./pipes/reverse.pipe";
 import {RoundPipe} from "./pipes/round.pipe";
 import {SafeHtmlPipe} from "./pipes/safe-html.pipe";
+import {ShiftPipe} from "./pipes/shift.pipe";
+import {SplitPipe} from "./pipes/split.pipe";
 import {TranslatePipe} from "./pipes/translate.pipe";
 import {ValuesPipe} from "./pipes/values.pipe";
 
@@ -90,12 +93,15 @@ export const pipes = [
     MapPipe,
     MaxPipe,
     MinPipe,
+    PopPipe,
     ReducePipe,
     RemapPipe,
     ReplacePipe,
     ReversePipe,
     RoundPipe,
     SafeHtmlPipe,
+    ShiftPipe,
+    SplitPipe,
     TranslatePipe,
     ValuesPipe
 ];
