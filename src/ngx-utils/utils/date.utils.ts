@@ -1,17 +1,18 @@
-import {DurationInputArg1, DurationInputArg2, utc} from "moment";
+import {DurationInputArg1, DurationInputArg2} from "moment";
+import * as moment from "moment";
 
 export class DateUtils {
 
     static isHoliday(date: Date): boolean {
-        return utc(date).isoWeekday() > 5;
+        return moment(date).isoWeekday() > 5;
     }
 
     static isBusinessDay(date: Date): boolean {
-        return utc(date).isoWeekday() < 6;
+        return moment(date).isoWeekday() < 6;
     }
 
     static add(date: Date, amount?: DurationInputArg1, unit?: DurationInputArg2): Date {
-        return utc(date).add(amount, unit).toDate();
+        return moment(date).add(amount, unit).toDate();
     }
 
     static businessAdd(date: Date, amount: number, unit?: DurationInputArg2): Date {

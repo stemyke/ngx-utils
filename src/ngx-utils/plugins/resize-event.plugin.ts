@@ -1,7 +1,7 @@
 import {ɵDomEventsPlugin as EventManagerPlugin} from "@angular/platform-browser";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
-import {addListener, removeListener} from "resize-detector";
+import * as detector from "resize-detector";
 import {UniversalService} from "../services/universal.service";
 
 function emptyRemove(): void {
@@ -35,14 +35,14 @@ export class ResizeEventPlugin extends EventManagerPlugin {
             if (isWindow(element)) {
                 element.addEventListener(eventName, cb);
             } else {
-                addListener(element, cb);
+                detector.addListener(element, cb);
             }
             return () => {
                 try {
                     if (isWindow(element)) {
                         element.removeEventListener(eventName, cb);
                     } else {
-                        removeListener(element, cb);
+                        detector.removeListener(element, cb);
                     }
                 } catch (e) {
                 }
