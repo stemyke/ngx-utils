@@ -1,7 +1,8 @@
-import {EventEmitter, HostBinding, HostListener, Input, Output} from "@angular/core";
+import {EventEmitter, HostBinding, HostListener, Input, Output, Injectable} from "@angular/core";
 import {AsyncMethod, IAsyncMessage, IToasterService} from "../common-types";
 
-export abstract class AsyncMethodBase {
+@Injectable()
+export class AsyncMethodBase {
 
     @Input() disabled: boolean;
     @Input() context: any;
@@ -26,7 +27,9 @@ export abstract class AsyncMethodBase {
         this.onError = new EventEmitter<IAsyncMessage>();
     }
 
-    protected abstract getMethod(): AsyncMethod;
+    protected getMethod(): AsyncMethod {
+        return null;
+    }
 
     @HostListener("click")
     click(): void {

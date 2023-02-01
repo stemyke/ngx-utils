@@ -1,5 +1,5 @@
 import {DurationInputArg1, DurationInputArg2} from "moment";
-import * as moment from "moment";
+import moment from "moment";
 
 export class DateUtils {
 
