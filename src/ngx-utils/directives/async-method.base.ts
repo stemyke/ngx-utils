@@ -1,7 +1,9 @@
-import {EventEmitter, HostBinding, HostListener, Input, Output, Injectable} from "@angular/core";
-import {AsyncMethod, IAsyncMessage, IToasterService} from "../common-types";
+import {Directive, EventEmitter, HostBinding, HostListener, Inject, Input, Output} from "@angular/core";
+import {AsyncMethod, IAsyncMessage, IToasterService, TOASTER_SERVICE} from "../common-types";
 
-@Injectable()
+@Directive({
+    selector: "[_abstract_asyncMethodBase]"
+})
 export class AsyncMethodBase {
 
     @Input() disabled: boolean;
@@ -22,7 +24,7 @@ export class AsyncMethodBase {
         return this.loading;
     }
 
-    protected constructor(protected toaster: IToasterService) {
+    constructor(@Inject(TOASTER_SERVICE) readonly toaster: IToasterService) {
         this.onSuccess = new EventEmitter<IAsyncMessage>();
         this.onError = new EventEmitter<IAsyncMessage>();
     }

@@ -40,6 +40,7 @@ import {TranslatedUrlSerializer} from "./services/translated-url.serializer";
 import {UniversalService} from "./services/universal.service";
 import {ResizeEventPlugin} from "./plugins/resize-event.plugin";
 import {ScrollEventPlugin} from "./plugins/scroll-event.plugin";
+import {AsyncMethodBase} from "./directives/async-method.base";
 import {AsyncMethodDirective} from "./directives/async-method.directive";
 import {BackgroundDirective} from "./directives/background.directive";
 import {DynamicTableTemplateDirective} from "./directives/dynamic-table-template.directive";
@@ -119,6 +120,7 @@ export const pipes = [
 
 // --- Directives ---
 export const directives = [
+    AsyncMethodBase,
     AsyncMethodDirective,
     BackgroundDirective,
     DynamicTableTemplateDirective,
