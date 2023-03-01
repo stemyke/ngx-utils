@@ -79,6 +79,6 @@ export class UniversalService {
 
     constructor(@Inject(PLATFORM_ID) private platformId: string, private dds: DeviceDetectorService) {
         const info = this.dds.getDeviceInfo();
-        this.crawler = /(bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex|lighthouse|angular-universal|PTST)/gi.test(info.userAgent);
+        this.crawler = /(bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex|lighthouse|angular-universal|PTST|PostmanRuntime)/gi.test(info.userAgent);
     }
 }
