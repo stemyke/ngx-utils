@@ -2,8 +2,8 @@ export type FilterPredicate = (value: any, key?: any, target?: any, source?: any
 export type IterateCallback = (value: any, key?: any) => void;
 
 const defaultPredicate: FilterPredicate = () => true;
-const hasBlob = typeof Blob !== "undefined";
-const hasFile = typeof File !== "undefined";
+const hasBlob = typeof Blob !== "undefined" && !!Blob;
+const hasFile = typeof File !== "undefined" && !!File;
 
 export class ObjectUtils {
 

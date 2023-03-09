@@ -7,6 +7,7 @@
     },
     "compilerOptions": {
         "module": "esnext",
+        "allowSyntheticDefaultImports": true,
         "outDir": "./dist/out-tsc",
         "baseUrl": ".",
         "sourceMap": true,
