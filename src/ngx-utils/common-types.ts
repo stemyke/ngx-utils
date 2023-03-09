@@ -416,7 +416,8 @@ export class IConfiguration {
 }
 
 export interface IConfigService {
-    config: IConfiguration;
+    readonly config: IConfiguration;
+    readonly injector: Injector;
     readonly load: () => Promise<IConfiguration>;
     prepareUrl(url: string, ending: string): string;
     getConfigValue(key: string): any;
