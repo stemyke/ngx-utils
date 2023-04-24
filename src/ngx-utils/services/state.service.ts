@@ -11,7 +11,7 @@ import {
     Resolve,
     Route,
     Router,
-    UrlSegment, UrlSerializer,
+    UrlSegment,
     UrlTree
 } from "@angular/router";
 import {BehaviorSubject, Observable, Subscription} from "rxjs";
@@ -179,7 +179,7 @@ export class StateService extends BehaviorSubject<any> {
         if (!(event instanceof NavigationEnd)) return;
         const routerStateSnapshot = this.router.routerState.snapshot;
         let snapshot = routerStateSnapshot.root;
-        let context: OutletContext = this.contexts.getContext("primary");
+        let context: OutletContext = this.contexts?.getContext("primary");
         let segments = snapshot.url;
         const components: any[] = [];
         const snapshots: ActivatedRouteSnapshot[] = [];
