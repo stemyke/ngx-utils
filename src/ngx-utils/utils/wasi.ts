@@ -1,23 +1,6 @@
 import {Injectable} from "@angular/core";
 import {IWasi, IWasmExports, TypedArray} from "../common-types";
 
-const WASI_ESUCCESS = 0;
-const WASI_EBADF = 8;
-const WASI_EINVAL = 28;
-const WASI_ENOSYS = 52;
-const WASI_STDOUT_FILENO = 1;
-
-const wasi_fns: string[] = [
-    "emscripten_notify_memory_growth",
-    "proc_exit",
-    "environ_get",
-    "environ_sizes_get",
-    "fd_close",
-    "fd_write",
-    "fd_read",
-    "fd_seek",
-]
-
 @Injectable({
     providedIn: "root"
 })
@@ -32,7 +15,16 @@ export class Wasi implements IWasi {
     constructor() {
         this.env = {};
         this.instantiated = false;
-        this.wasi = wasi_fns.reduce((res, key) => {
+        this.wasi = [
+            "emscripten_notify_memory_growth",
+            "proc_exit",
+            "environ_get",
+            "environ_sizes_get",
+            "fd_close",
+            "fd_write",
+            "fd_read",
+            "fd_seek",
+        ].reduce((res, key) => {
             if (typeof this[key] === "function") {
                 res[key] = this[key].bind(this);
             }
@@ -143,30 +135,36 @@ export class Wasi implements IWasi {
             bufSize += string.length + 1
         });
         HEAPU32[penviron_buf_size >> 2] = bufSize;
+        // WASI_ESUCCESS
         return 0
     }
 
     fd_close(fd: number): number {
-        return WASI_ESUCCESS;
+        // WASI_ESUCCESS
+        return 0;
     }
 
     fd_write(fd: number, iovs: number, iovs_len: number, nwritten: number): number {
-        if (fd !== WASI_STDOUT_FILENO) {
-            return WASI_EBADF;
+        if (fd !== 1) {
+            // WASI_EBADF
+            return 8;
         }
         if (iovs_len !== 1) {
-            return WASI_ENOSYS;
+            // WASI_ENOSYS
+            return 52;
         }
-        const len = this.wasm.HEAPU32[iovs + 4 >> 2];
-        this.wasm.HEAPU32[nwritten >> 2] = len;
-        return WASI_ESUCCESS;
+        this.wasm.HEAPU32[nwritten >> 2] = this.wasm.HEAPU32[iovs + 4 >> 2];
+        // WASI_ESUCCESS
+        return 0;
     }
 
     fd_read(fd: number, iovs: number, iovs_len: number, nread: number): number {
-        return WASI_EINVAL;
+        // WASI_EINVAL
+        return 28;
     }
 
     fd_seek(fd: number, offset: number, whence: number, newOffset: number): number {
-        return WASI_EINVAL;
+        // WASI_EINVAL
+        return 28;
     }
 }
