@@ -130,6 +130,49 @@ export interface IPromiseService {
 
 export const PROMISE_SERVICE = new InjectionToken<IPromiseService>("promise-service");
 
+// --- Wasm service ---
+export type TypedArray =
+    | Int8Array
+    | Int16Array
+    | Int32Array
+    | Uint8Array
+    | Uint8ClampedArray
+    | Uint16Array
+    | Uint32Array
+    | Float32Array
+    | Float64Array;
+
+export interface IWasmExports {
+    HEAP8: Int8Array;
+    HEAP16: Int16Array,
+    HEAP32: Int32Array,
+    HEAPU8: Uint8Array;
+    HEAPU16: Uint16Array,
+    HEAPU32: Uint32Array,
+    HEAPF32: Float32Array,
+    HEAPF64: Float64Array,
+    memory: WebAssembly.Memory;
+    [key: string]: any;
+}
+
+export interface IWasi {
+    instantiate(bytes: ArrayBuffer): Promise<IWasmExports>;
+}
+
+export interface IWasm {
+    writeArrayToMemory(array: TypedArray): Promise<number> | number;
+    readArrayFromMemory<T = TypedArray>(pointer: number, array: T): Promise<T> | T;
+    [key: string]: (...args: any[]) => any;
+}
+
+export interface IWasmAsync {
+    writeArrayToMemory(array: TypedArray): Promise<number>;
+    readArrayFromMemory<T = TypedArray>(pointer: number, array: T): T;
+    [key: string]: (...args: any[]) => Promise<any>;
+}
+
+export const WASI_IMPLEMENTATION = new InjectionToken<Type<IWasi>>("wasi-implementation");
+
 // --- Async method ---
 export interface IAsyncMessage {
     message: string;
@@ -409,6 +452,7 @@ export class ResourceIfContext {
 export const APP_BASE_URL = new InjectionToken<string>("app-base-url");
 
 export class IConfiguration {
+    cdnUrl?: string;
     baseUrl?: string;
     baseDomain?: string;
     translationUrl?: string;
@@ -463,6 +507,7 @@ export interface IModuleConfig {
     promiseService?: Type<IPromiseService>;
     configService?: Type<IConfigService>;
     globalTemplates?: Type<IGlobalTemplates>;
+    wasiImplementation?: Type<IWasi>;
     initializeApp?: (injector: Injector) => AppInitializerFunc;
     baseUrl?: (injector: Injector) => string;
 }

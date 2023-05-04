@@ -18,6 +18,7 @@ import {FormatterService} from "./services/formatter.service";
 import {GlobalTemplateService} from "./services/global-template.service";
 import {IconService} from "./services/icon.service";
 import {LanguageService} from "./services/language.service";
+import {LocalHttpService} from "./services/local-http.service";
 import {PromiseService} from "./services/promise.service";
 import {OpenApiService} from "./services/open-api.service";
 import {StateService} from "./services/state.service";
@@ -26,6 +27,7 @@ import {StorageService} from "./services/storage.service";
 import {ConsoleToasterService} from "./services/toaster.service";
 import {TranslatedUrlSerializer} from "./services/translated-url.serializer";
 import {UniversalService} from "./services/universal.service";
+import {WasmService} from "./services/wasm.service";
 import {ResizeEventPlugin} from "./plugins/resize-event.plugin";
 import {ScrollEventPlugin} from "./plugins/scroll-event.plugin";
 import {AsyncMethodBase} from "./directives/async-method.base";
@@ -146,6 +148,7 @@ export const providers = [
     GlobalTemplateService,
     IconService,
     LanguageService,
+    LocalHttpService,
     OpenApiService,
     PromiseService,
     StateService,
@@ -154,6 +157,7 @@ export const providers = [
     ConsoleToasterService,
     TranslatedUrlSerializer,
     UniversalService,
+    WasmService,
     DeviceDetectorService,
     {
         provide: EVENT_MANAGER_PLUGINS,

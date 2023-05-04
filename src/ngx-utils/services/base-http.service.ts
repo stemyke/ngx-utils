@@ -65,6 +65,11 @@ export class BaseHttpService implements IHttpService {
         this.requestHeaders = {};
         this.requestParams = {};
         this.cache = {};
+        this.initService();
+    }
+
+    protected initService(): void {
+
     }
 
     url(url: string): string {

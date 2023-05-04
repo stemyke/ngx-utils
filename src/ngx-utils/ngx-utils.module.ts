@@ -12,7 +12,8 @@ import {
     LANGUAGE_SERVICE,
     PROMISE_SERVICE,
     ROOT_ELEMENT,
-    TOASTER_SERVICE
+    TOASTER_SERVICE,
+    WASI_IMPLEMENTATION
 } from "./common-types";
 import {components, directives, loadConfig, pipes, providers} from "./ngx-utils.imports";
 import {ApiService} from "./services/api.service";
@@ -23,6 +24,7 @@ import {ConsoleToasterService} from "./services/toaster.service";
 import {PromiseService} from "./services/promise.service";
 import {ConfigService} from "./services/config.service";
 import {GlobalTemplateService} from "./services/global-template.service";
+import {Wasi} from "./utils/wasi";
 
 export function loadBaseUrl(): string {
     if (typeof (document) === "undefined" || typeof (location) === "undefined") return "/";
@@ -109,6 +111,10 @@ export class NgxUtilsModule {
                 {
                     provide: GLOBAL_TEMPLATES,
                     useExisting: (!config ? null : config.globalTemplates) || GlobalTemplateService
+                },
+                {
+                    provide: WASI_IMPLEMENTATION,
+                    useExisting: (!config ? null : config.wasiImplementation) || Wasi
                 },
                 {
                     provide: APP_BASE_URL,

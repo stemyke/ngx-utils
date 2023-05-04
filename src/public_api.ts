@@ -16,6 +16,11 @@ export {
     IAclComponent,
     IPromiseService,
     PROMISE_SERVICE,
+    IWasi,
+    IWasmExports,
+    IWasm,
+    IWasmAsync,
+    WASI_IMPLEMENTATION,
     IRouteStateInfo,
     NavigationUrlParam,
     StorageMode,
@@ -86,6 +91,7 @@ export {GenericValue} from "./ngx-utils/utils/generic-value";
 export {FileSystemEntryOpenResult, FileSystemEntryOpenCb, FileSystemEntry} from "./ngx-utils/utils/file-system";
 export {IShape, Rect, Circle, Point} from "./ngx-utils/utils/geometry";
 export {Initializer} from "./ngx-utils/utils/initializer";
+export {JSONfn} from "./ngx-utils/utils/jsonfn";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
@@ -99,6 +105,7 @@ export {UniqueUtils} from "./ngx-utils/utils/unique.utils";
 export {Vector} from "./ngx-utils/utils/vector";
 
 export {UniversalService} from "./ngx-utils/services/universal.service";
+export {WasmService} from "./ngx-utils/services/wasm.service";
 export {AclService} from "./ngx-utils/services/acl.service";
 export {ApiService} from "./ngx-utils/services/api.service";
 export {StaticAuthService} from "./ngx-utils/services/auth.service";
@@ -111,6 +118,7 @@ export {FormatterService} from "./ngx-utils/services/formatter.service";
 export {GlobalTemplateService} from "./ngx-utils/services/global-template.service";
 export {IconService} from "./ngx-utils/services/icon.service";
 export {LanguageService} from "./ngx-utils/services/language.service";
+export {LocalHttpService} from "./ngx-utils/services/local-http.service";
 export {OpenApiService} from "./ngx-utils/services/open-api.service";
 export {IStateInfo, StateService} from "./ngx-utils/services/state.service";
 export {StaticLanguageService} from "./ngx-utils/services/static-language.service";
