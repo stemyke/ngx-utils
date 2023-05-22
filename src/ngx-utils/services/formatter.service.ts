@@ -26,12 +26,13 @@ export class FormatterService {
         return MathUtils.round(value, this.getPrecision(precision), divider || this.defaultDivider);
     }
 
-    formatNumber(value: number | string, format?: string, precision?: number, divider?: number): string {
+    formatNumber(value: number | string, format?: string, precision?: number, divider?: number, minDigits?: number): string {
         precision = this.getPrecision(precision);
+        minDigits = minDigits ?? precision;
         divider = divider || this.defaultDivider;
         const num = ObjectUtils.isNumber(value) ? <number>value : parseFloat(<string>value) || 0;
         const str = (num / divider).toLocaleString(this.language.currentLanguage, {
-            minimumFractionDigits: precision,
+            minimumFractionDigits: minDigits,
             maximumFractionDigits: precision,
             useGrouping: false
         });
