@@ -10,7 +10,7 @@ import {
     ICON_SERVICE,
     IModuleConfig,
     LANGUAGE_SERVICE,
-    PROMISE_SERVICE,
+    PROMISE_SERVICE, RESIZE_DELAY,
     ROOT_ELEMENT,
     TOASTER_SERVICE,
     WASI_IMPLEMENTATION
@@ -124,6 +124,10 @@ export class NgxUtilsModule {
                 {
                     provide: ROOT_ELEMENT,
                     useValue: null
+                },
+                {
+                    provide: RESIZE_DELAY,
+                    useValue: (!config ? null : config.resizeDelay) ?? 200,
                 },
                 {
                     provide: APP_INITIALIZER,

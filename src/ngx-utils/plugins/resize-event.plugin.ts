@@ -3,6 +3,8 @@ import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
 import elementResizeDetectorMaker from "element-resize-detector";
 import {UniversalService} from "../services/universal.service";
+import {TimerUtils} from "../utils/timer.utils";
+import {RESIZE_DELAY} from "../common-types";
 
 function emptyRemove(): void {
 
@@ -21,7 +23,9 @@ export class ResizeEventPlugin extends EventManagerPlugin {
 
     private static EVENT_NAME: string = "resize";
 
-    constructor(@Inject(DOCUMENT) doc: any, public universal: UniversalService) {
+    constructor(@Inject(DOCUMENT) doc: any,
+                @Inject(RESIZE_DELAY) protected resizeDelay: number,
+                readonly universal: UniversalService) {
         super(doc);
     }
 
@@ -34,9 +38,11 @@ export class ResizeEventPlugin extends EventManagerPlugin {
         return zone.runOutsideAngular(() => {
             if (this.universal.isServer)
                 return emptyRemove;
+            const timer = TimerUtils.createTimeout();
             const cb = el => {
-                zone.run(() => handler(el));
-                console.log("HI", el)
+                timer.set(() => {
+                    zone.run(() => handler(el));
+                }, this.resizeDelay);
             };
             if (isWindow(element)) {
                 element.addEventListener(eventName, cb);
@@ -54,6 +60,8 @@ export class ResizeEventPlugin extends EventManagerPlugin {
                     }
                 }
                 catch (e) {
+                } finally {
+                    timer.clear();
                 }
             };
         });

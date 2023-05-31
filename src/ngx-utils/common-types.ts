@@ -476,6 +476,8 @@ export const SCRIPT_PARAMS = new InjectionToken<any>("script-params");
 
 export const ROOT_ELEMENT: InjectionToken<HTMLElement> = new InjectionToken<HTMLElement>("app-root-element");
 
+export const RESIZE_DELAY: InjectionToken<number> = new InjectionToken<number>("resize-event-delay");
+
 // --- Error handler service ---
 export type ErrorHandlerCallback = (error: string) => any;
 
@@ -510,6 +512,7 @@ export interface IModuleConfig {
     wasiImplementation?: Type<IWasi>;
     initializeApp?: (injector: Injector) => AppInitializerFunc;
     baseUrl?: (injector: Injector) => string;
+    resizeDelay?: number;
 }
 
 // --- Valued promise ---

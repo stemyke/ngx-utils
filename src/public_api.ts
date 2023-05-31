@@ -72,6 +72,7 @@ export {
     BASE_CONFIG,
     SCRIPT_PARAMS,
     ROOT_ELEMENT,
+    RESIZE_DELAY,
     ErrorHandlerCallback,
     ERROR_HANDLER,
     GlobalComponentModifier,
