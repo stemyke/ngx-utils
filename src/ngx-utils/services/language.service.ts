@@ -109,7 +109,7 @@ export class LanguageService extends StaticLanguageService {
     }
 
     protected loadSettings(): Promise<ILanguageSettings> {
-        this.settingsPromise = this.settingsPromise || firstValueFrom(this.client.get(`${this.config.translationUrl}languageSettings`))
+        this.settingsPromise = this.settingsPromise || (this.client.get(`${this.config.translationUrl}languageSettings`).toPromise())
             .then(
                 (settings: ILanguageSettings) => {
                     return settings;
