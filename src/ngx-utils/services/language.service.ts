@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {BehaviorSubject, combineLatest, firstValueFrom, Observable} from "rxjs";
+import {BehaviorSubject, combineLatest, Observable} from "rxjs";
 import {map} from "rxjs/operators";
 import {ILanguageSetting, ILanguageSettings, ITranslations} from "../common-types";
 import {StaticLanguageService} from "./static-language.service";
