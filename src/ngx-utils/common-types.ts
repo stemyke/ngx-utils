@@ -37,11 +37,16 @@ export interface ITranslations {
     [key: string]: any;
 }
 
+export interface ILanguageSetting {
+    unavailable?: string;
+    [key: string]: string | boolean | number;
+}
+
 export interface ILanguageSettings {
     languages: string[];
     devLanguages: string[];
     defaultLanguage: string;
-    settings?: any;
+    settings?: {[lang: string]: ILanguageSetting};
 }
 
 export interface ILanguageService {

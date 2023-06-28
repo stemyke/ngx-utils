@@ -5,6 +5,7 @@ export {
     ICON_SERVICE,
     ITranslation,
     ITranslations,
+    ILanguageSetting,
     ILanguageSettings,
     ILanguageService,
     LANGUAGE_SERVICE,
