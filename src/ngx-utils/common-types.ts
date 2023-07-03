@@ -420,6 +420,8 @@ export class IConfiguration {
 export interface IConfigService {
     config: IConfiguration;
     readonly load: () => Promise<IConfiguration>;
+    readonly rootElement: any;
+    cloneRootElem(): any;
     prepareUrl(url: string, ending: string): string;
     getConfigValue(key: string): any;
     getQueryParameter(name: string, url?: string): string;

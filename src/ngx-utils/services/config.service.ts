@@ -105,6 +105,20 @@ export class ConfigService implements IConfigService {
         return Promise.resolve(config);
     }
 
+    cloneRootElem(): any {
+        if (this.rootElement instanceof HTMLElement) {
+            const clone = this.rootElement.cloneNode(true) as HTMLElement
+            const children = Array.from(clone.childNodes);
+            children.forEach(child => {
+                if (child instanceof HTMLElement) {
+                    child.remove();
+                }
+            });
+            return clone;
+        }
+        return this.rootElement.cloneNode(true);
+    }
+
     prepareUrl(url: string, ending: string): string {
         const project = !this.loadedConfig ? "" : this.loadedConfig.project;
         const needsProtocol = url?.startsWith("//") ?? false;
