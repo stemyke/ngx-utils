@@ -12,7 +12,9 @@ export class FindPipe implements PipeTransform {
     transform(values: any[], filter: any = defaultFilter, params?: any): any {
         if (!ObjectUtils.isArray(values)) return [];
         params = params || {};
-        params.values = values;
+        if (ObjectUtils.isObject(params)) {
+            params.values = values;
+        }
         const filterFunc = ObjectUtils.isFunction(filter) ? filter : (value, index, params, values) => {
             return ObjectUtils.evaluate(filter, {value, index, params, values});
         };
