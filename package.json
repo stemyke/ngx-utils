@@ -41,7 +41,7 @@
         "@angular/router": "12.2.16",
         "@angular/platform-browser": "12.2.16",
         "@angular/platform-server": "12.2.16",
-        "express": "4.0.0",
+        "express": "4.17.3",
         "resize-detector": "0.3.0",
         "core-js": "3.19.0",
         "rxjs": "6.6.7",
