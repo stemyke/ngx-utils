@@ -33,6 +33,7 @@ export {
     IStylePromises,
     ISearchObservable,
     FactoryDependencies,
+    ObjectType,
     ITimer,
     IExtraProperties,
     IGroupMap,

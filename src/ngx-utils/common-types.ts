@@ -185,6 +185,12 @@ export function FactoryDependencies(...dependencies: Array<InjectionToken<any> |
     };
 }
 
+export function ObjectType(type: string): ClassDecorator {
+    return function (target: any): void {
+        ReflectUtils.defineMetadata("objectType", type, target);
+    };
+}
+
 // --- Timer utils ---
 export interface ITimer {
     id?: any;

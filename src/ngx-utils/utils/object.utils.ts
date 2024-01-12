@@ -1,3 +1,5 @@
+import {ReflectUtils} from "./reflect.utils";
+
 export type FilterPredicate = (value: any, key?: any, target?: any, source?: any) => boolean;
 export type IterateCallback = (value: any, key?: any) => void;
 
@@ -176,7 +178,9 @@ export class ObjectUtils {
 
     static getType(obj: any): string {
         const regex = new RegExp("\\s([a-zA-Z]+)");
-        return Object.prototype.toString.call(obj).match(regex)[1].toLowerCase();
+        const target = !obj ? null : obj.constructor;
+        const type = !target ? null : Reflect.getMetadata("objectType", target);
+        return (type || Object.prototype.toString.call(obj).match(regex)[1]).toLowerCase();
     }
 
     static isPrimitive(value: any): boolean {
