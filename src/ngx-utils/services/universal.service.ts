@@ -32,7 +32,7 @@ export class UniversalService {
     }
 
     get browserName(): string {
-        return this.dds.browser;
+        return (this.dds.browser || "").toLowerCase();
     }
 
     get browserVersion(): string {
@@ -40,23 +40,23 @@ export class UniversalService {
     }
 
     get isExplorer(): boolean {
-        return this.dds.browser == "ie";
+        return this.checkBrowser("ie");
     }
 
     get isEdge(): boolean {
-        return this.dds.browser == "ms-edge";
+        return this.checkBrowser("edge");
     }
 
     get isChrome(): boolean {
-        return this.dds.browser == "chrome";
+        return this.checkBrowser("chrome");
     }
 
     get isFirefox(): boolean {
-        return this.dds.browser == "firefox";
+        return this.checkBrowser("firefox");
     }
 
     get isSafari(): boolean {
-        return this.dds.browser == "safari";
+        return this.checkBrowser("safari");
     }
 
     get isTablet(): boolean {
@@ -77,8 +77,12 @@ export class UniversalService {
 
     private readonly crawler: boolean;
 
-    constructor(@Inject(PLATFORM_ID) private platformId: string, private dds: DeviceDetectorService) {
+    constructor(@Inject(PLATFORM_ID) readonly platformId: string, readonly dds: DeviceDetectorService) {
         const info = this.dds.getDeviceInfo();
         this.crawler = /(bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex|lighthouse|angular-universal|PTST|PostmanRuntime)/gi.test(info.userAgent);
+    }
+
+    protected checkBrowser(name: string): boolean {
+        return this.browserName.includes(name) || false;
     }
 }
