@@ -49,7 +49,7 @@
         "moment": "2.27.0",
         "invokable": "1.0.3",
         "ngx-device-detector": "2.1.1",
-        "json5": "2.2.1",
+        "json5": "2.2.2",
         "@angular/platform-browser-dynamic": "12.2.16",
         "@angular-devkit/build-angular": "12.2.16",
         "@angular/cli": "12.2.16",
