@@ -4,6 +4,7 @@
     "files": ["src/public_api.ts"],
     "compilerOptions": {
         "downlevelIteration": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true
     }
 }
