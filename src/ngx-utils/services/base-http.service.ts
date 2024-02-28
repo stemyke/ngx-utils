@@ -310,11 +310,7 @@ export class BaseHttpService implements IHttpService {
     }
 
     protected async absoluteUrl(url: string, options: IRequestOptions): Promise<string> {
-        const absoluteUrl = this.parseUrl(url);
-        if (url == "api-docs") {
-            return absoluteUrl.replace("/api", "");
-        }
-        return absoluteUrl;
+        return this.parseUrl(url);
     }
 
     protected expressRequestUrl(url: string): string {
