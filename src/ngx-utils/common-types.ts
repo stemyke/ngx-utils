@@ -37,11 +37,16 @@ export interface ITranslations {
     [key: string]: any;
 }
 
+export interface ILanguageSetting {
+    unavailable?: string;
+    [key: string]: string | boolean | number;
+}
+
 export interface ILanguageSettings {
     languages: string[];
     devLanguages: string[];
     defaultLanguage: string;
-    settings?: any;
+    settings?: {[lang: string]: ILanguageSetting};
 }
 
 export interface ILanguageService {
@@ -220,6 +225,12 @@ export interface ISearchObservable {
 export function FactoryDependencies(...dependencies: Array<InjectionToken<any> | Provider>): MethodDecorator {
     return function (target: any, method: string): void {
         ReflectUtils.defineMetadata("factoryDependencies", dependencies, target, method);
+    };
+}
+
+export function ObjectType(type: string): ClassDecorator {
+    return function (target: any): void {
+        ReflectUtils.defineMetadata("objectType", type, target);
     };
 }
 
@@ -463,6 +474,8 @@ export interface IConfigService {
     readonly config: IConfiguration;
     readonly injector: Injector;
     readonly load: () => Promise<IConfiguration>;
+    readonly rootElement: any;
+    cloneRootElem(): any;
     prepareUrl(url: string, ending: string): string;
     getConfigValue(key: string): any;
     getQueryParameter(name: string, url?: string): string;

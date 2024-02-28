@@ -1,7 +1,16 @@
+import {ReflectUtils} from "./reflect.utils";
+
 export type FilterPredicate = (value: any, key?: any, target?: any, source?: any) => boolean;
 export type IterateCallback = (value: any, key?: any) => void;
 
-const defaultPredicate: FilterPredicate = () => true;
+export function defaultPredicate(value: any, key?: any, target?: any, source?: any): boolean {
+    return true;
+}
+
+export function shouldCopyDefault(key: any, value: any): boolean {
+    return true;
+}
+
 const hasBlob = typeof Blob !== "undefined" && !!Blob;
 const hasFile = typeof File !== "undefined" && !!File;
 
@@ -156,20 +165,22 @@ export class ObjectUtils {
     }
 
     static filter(obj: any, predicate: FilterPredicate): any {
-        return ObjectUtils.copyRecursive(null, obj, predicate, new Map());
+        return ObjectUtils.copyRecursive(null, obj, predicate || defaultPredicate, new Map());
     }
 
     static copy<T>(obj: T): T {
-        return ObjectUtils.copyRecursive(null, obj, null, new Map());
+        return ObjectUtils.copyRecursive(null, obj, defaultPredicate, new Map());
     }
 
     static assign<T>(target: T, source: any, predicate?: FilterPredicate): T {
-        return ObjectUtils.copyRecursive(target, source, predicate, new Map());
+        return ObjectUtils.copyRecursive(target, source, predicate || defaultPredicate, new Map());
     }
 
     static getType(obj: any): string {
         const regex = new RegExp("\\s([a-zA-Z]+)");
-        return Object.prototype.toString.call(obj).match(regex)[1].toLowerCase();
+        const target = !obj ? null : obj.constructor;
+        const type = !target ? null : Reflect.getMetadata("objectType", target);
+        return (type || Object.prototype.toString.call(obj).match(regex)[1]).toLowerCase();
     }
 
     static isPrimitive(value: any): boolean {
@@ -228,6 +239,10 @@ export class ObjectUtils {
         return value instanceof Set;
     }
 
+    static isConstructor(value: any): boolean {
+        return (value && typeof value === "function" && value.prototype && value.prototype.constructor) === value && value.name !== "Object";
+    }
+
     static checkInterface(obj: any, interFaceObject: any): boolean {
         return ObjectUtils.isInterface(obj, interFaceObject);
     }
@@ -253,28 +268,65 @@ export class ObjectUtils {
     }
 
     private static copyRecursive(target: any, source: any, predicate: FilterPredicate, copies: Map<any, any>): any {
-        predicate = predicate || defaultPredicate;
         if (ObjectUtils.isPrimitive(source) || ObjectUtils.isDate(source) || ObjectUtils.isBlob(source) || ObjectUtils.isFunction(source)) return source;
-        if (!copies.has(source)) {
-            if (ObjectUtils.isArray(source)) {
-                target = ObjectUtils.isArray(target) ? Array.from(target) : [];
-                copies.set(source, target);
-                source.forEach((item, index) => {
-                    if (!predicate(item, index, target, source)) return;
-                    if (target.length > index)
-                        target[index] = ObjectUtils.copyRecursive(target[index], item, predicate, copies);
-                    else
-                        target.push(ObjectUtils.copyRecursive(null, item, predicate, copies));
-                });
-            } else {
-                target = Object.assign({}, target);
-                copies.set(source, target);
-                Object.keys(source).forEach((key) => {
-                    if (!predicate(source[key], key, target, source)) return;
-                    target[key] = ObjectUtils.copyRecursive(target[key], source[key], predicate, copies);
-                });
+        if (copies.has(source)) return copies.get(source);
+        if (ObjectUtils.isArray(source)) {
+            target = ObjectUtils.isArray(target) ? Array.from(target) : [];
+            copies.set(source, target);
+            for (let index = 0; index < source.length; index++) {
+                const item = source[index];
+                if (!predicate(item, index, target, source)) continue;
+                if (target.length > index)
+                    target[index] = ObjectUtils.copyRecursive(target[index], item, predicate, copies);
+                else
+                    target.push(ObjectUtils.copyRecursive(null, item, predicate, copies));
             }
+            return target;
         }
-        return copies.get(source);
+
+        // If object defines __shouldCopy as false, then don't copy it
+        if (source.__shouldCopy === false) return source;
+        // Copy object
+        const shouldCopy = ObjectUtils.isFunction(source.__shouldCopy) ? source.__shouldCopy : shouldCopyDefault;
+        if (ObjectUtils.isConstructor(source.constructor)) {
+            if (!target) {
+                try {
+                    target = new source.constructor();
+                } catch (e) {
+                    const proto = source.constructor.prototype || source.prototype;
+                    target = Object.create(proto);
+                }
+            }
+        } else {
+            target = Object.assign({}, target || {});
+        }
+        // Set to copies to prevent circular references
+        copies.set(source, target);
+
+        // Copy map entries
+        if (target instanceof Map) {
+            if (source instanceof Map) {
+                for (const [key, value] of source.entries()) {
+                    if (!predicate(value, key, target, source)) continue;
+                    target.set(key, !shouldCopy(key, value) ? value : ObjectUtils.copyRecursive(target.get(key), value, predicate, copies));
+                }
+            }
+            return target;
+        }
+
+        // Copy object members
+        const keys = Object.keys(source);
+        for (const key of keys) {
+            if (!predicate(source[key], key, target, source)) continue;
+            target[key] = !shouldCopy(key, source[key]) ? source[key] : ObjectUtils.copyRecursive(target[key], source[key], predicate, copies);
+        }
+
+        // Copy object properties
+        const descriptors = Object.getOwnPropertyDescriptors(source);
+        for (const key of Object.keys(descriptors)) {
+            if (keys.indexOf(key) >= 0) continue;
+            Object.defineProperty(target, key, descriptors[key]);
+        }
+        return target;
     }
 }

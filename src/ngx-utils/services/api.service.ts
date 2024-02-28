@@ -12,7 +12,11 @@ export class ApiService extends BaseHttpService implements IApiService {
     }
 
     url(url: string): string {
-        return this.expressRequestUrl(`/api/${url}`);
+        const baseUrl = this.expressRequestUrl(`/api/${url}`);
+        if (url == "api-docs" || url == "socket") {
+            return baseUrl.replace("/api/", "/");
+        }
+        return baseUrl;
     }
 
     get(url: string, options?: IRequestOptions, body?: any): Promise<any> {

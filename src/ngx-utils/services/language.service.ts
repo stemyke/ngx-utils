@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {BehaviorSubject, combineLatest, Observable} from "rxjs";
 import {map} from "rxjs/operators";
-import {ILanguageSettings, ITranslations} from "../common-types";
+import {ILanguageSetting, ILanguageSettings, ITranslations} from "../common-types";
 import {StaticLanguageService} from "./static-language.service";
 
 @Injectable()
@@ -21,12 +21,12 @@ export class LanguageService extends StaticLanguageService {
         });
     }
 
-    get settings(): ILanguageSettings {
+    get settings(): ILanguageSetting {
         const settings = this.languageSettings.value;
         return !settings ? {} : settings.settings[this.currentLanguage] || {};
     }
 
-    get $settings(): Observable<any> {
+    get $settings(): Observable<ILanguageSetting> {
         this.loadSettings().then(s => this.languageSettings.next(s));
         return combineLatest([this.languageSettings, this.events.languageChanged]).pipe(map(([settings, lang]) => {
             return !settings ? {} : settings.settings[lang as string] || {};
@@ -49,9 +49,19 @@ export class LanguageService extends StaticLanguageService {
         this.languageSettings.next(settings);
         const devLanguages = settings.devLanguages || [];
         this.languageList = (settings.languages || []).filter(lang => {
+            const unavailable = settings.settings[lang]?.unavailable;
+            if (unavailable) {
+                const parts = unavailable.split("/");
+                const value = parts[0] || parts[1];
+                const flags = parts.length > 1 ? parts[parts.length - 1] : "g";
+                if (new RegExp(value, flags).test(this.config.baseDomain)) return false;
+            }
             return devLanguages.indexOf(lang) < 0;
         });
-        const lang = this.languages.indexOf(defaultLanguage) < 0 ? settings.defaultLanguage : defaultLanguage;
+        if (this.languageList.length === 0) {
+            this.languageList = [defaultLanguage];
+        }
+        const lang = this.languages.indexOf(defaultLanguage) < 0 ? settings.defaultLanguage || this.languageList[0] : defaultLanguage;
         await this.useLanguage(lang);
         this.events.languageChanged.emit(lang);
     }
@@ -99,7 +109,7 @@ export class LanguageService extends StaticLanguageService {
     }
 
     protected loadSettings(): Promise<ILanguageSettings> {
-        this.settingsPromise = this.settingsPromise || this.client.get(`${this.config.translationUrl}languageSettings`).toPromise()
+        this.settingsPromise = this.settingsPromise || (this.client.get(`${this.config.translationUrl}languageSettings`).toPromise())
             .then(
                 (settings: ILanguageSettings) => {
                     return settings;
@@ -111,7 +121,7 @@ export class LanguageService extends StaticLanguageService {
                         settings: {
                             de: {},
                             hu: {},
-                            end: {}
+                            en: {}
                         }
                     };
                 }

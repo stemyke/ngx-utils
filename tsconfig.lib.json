@@ -3,6 +3,7 @@
     "compileOnSave": false,
     "files": ["src/public_api.ts"],
     "compilerOptions": {
+        "downlevelIteration": true,
         "allowSyntheticDefaultImports": true
     }
 }

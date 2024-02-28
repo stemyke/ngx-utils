@@ -234,8 +234,8 @@ export class BaseHttpService implements IHttpService {
                     // If we use token auth
                     if (this.client.renewTokenFunc && headers.has(authKey)) {
                         const currentTime = new Date().getTime();
-                        const userTokenTime = this.storage.get("userTokenTime") || currentTime;
-                        // And the last request was a long long time ago
+                        const userTokenTime = this.getUserTokenTime() || currentTime;
+                        // And the last request was a long-long time ago
                         if (currentTime - 600000 > userTokenTime) {
                             this.client.renewTokenFunc();
                         }
@@ -262,6 +262,10 @@ export class BaseHttpService implements IHttpService {
                 });
             });
         });
+    }
+
+    protected getUserTokenTime(): number {
+        return this.storage.get("userTokenTime");
     }
 
     protected pushFailedRequest(url: string, options: IRequestOptions, req: () => void): boolean {
@@ -312,11 +316,7 @@ export class BaseHttpService implements IHttpService {
     }
 
     protected async absoluteUrl(url: string, options: IRequestOptions): Promise<string> {
-        const absoluteUrl = this.parseUrl(url);
-        if (url == "api-docs") {
-            return absoluteUrl.replace("/api", "");
-        }
-        return absoluteUrl;
+        return this.parseUrl(url);
     }
 
     protected expressRequestUrl(url: string): string {
