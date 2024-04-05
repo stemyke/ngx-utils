@@ -42,6 +42,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() boundaryLinks: boolean;
     @Input() orderBy: string;
     @Input() orderDescending: boolean;
+    @Input() testId: string;
 
     tableId: string;
     templates: ITableTemplates;
@@ -92,6 +93,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.tableId = UniqueUtils.uuid();
         this.templates = {};
         this.filter = "";
+        this.testId = "table";
         this.orders = {};
     }
 

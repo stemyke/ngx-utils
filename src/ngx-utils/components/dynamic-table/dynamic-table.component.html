@@ -5,6 +5,7 @@
             <input type="text"
                    class="form-control"
                    [attr.id]="tableId"
+                   [attr.data-testid]="testId + '-filter-input'"
                    [placeholder]="placeholder | translate"
                    [ngModel]="table.filter"
                    (ngModelChange)="table.setFilter($event)"/>
@@ -13,7 +14,6 @@
     <ng-container [ngxTemplateOutlet]="filterTemplate || defaultFilterTemplate" [context]="this"></ng-container>
     <pagination-menu [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
     <div class="table-responsive">
-
         <ng-template #columnTemplate let-context let-column="column" let-template="template">
             <ng-template #defaultTemplate let-column="column" let-item="item">
                 <span>{{ item[column] == undefined || item[column] == null ? '-' : item[column] }}</span>
@@ -21,7 +21,8 @@
             <ng-template #pureTemplate>
                 <ng-container [ngxTemplateOutlet]="template.ref" [context]="context"></ng-container>
             </ng-template>
-            <td [ngClass]="'column-' + column" *ngIf="!template || !template.pure; else pureTemplate">
+            <td [ngClass]="'column-' + column"
+                [attr.data-testid]="testId + '-' + column + '-' + context.rowIndex" *ngIf="!template || !template.pure; else pureTemplate">
                 <ng-container [ngxTemplateOutlet]="!template ? defaultTemplate : template.ref" [context]="context"></ng-container>
             </td>
         </ng-template>
