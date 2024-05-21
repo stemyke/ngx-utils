@@ -1,6 +1,6 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "13.4.3",
+    "version": "13.5.0",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -25,7 +25,7 @@
         "express": "^4.0.0",
         "element-resize-detector": "^1.2.4",
         "core-js": "^3.6.5 || ^3.22.5",
-        "rxjs": "^6.6.2 || ^7.5.0",
+        "rxjs": "^6.6.2 || ^7.8.1",
         "zone.js": "^0.10.3 || ^0.11.4 || ^0.11.5",
         "moment": "^2.27.0",
         "invokable": "^1.0.3",
@@ -44,7 +44,7 @@
         "express": "4.0.0",
         "element-resize-detector": "1.2.4",
         "core-js": "3.22.5",
-        "rxjs": "7.5.0",
+        "rxjs": "7.8.1",
         "zone.js": "0.11.5",
         "moment": "2.27.0",
         "invokable": "1.0.3",
