@@ -23,8 +23,9 @@ export class PaginationItemDirective implements OnInit, OnDestroy {
 
     private renderView(): void {
         this.viewContainer.clear();
-        this.pagination.items.forEach((item: any) => {
+        this.pagination.items.forEach((item: any, ix: number) => {
             item.$implicit = item;
+            item.rowIndex = ix;
             this.viewContainer.createEmbeddedView(this.templateRef, item);
         });
     }
