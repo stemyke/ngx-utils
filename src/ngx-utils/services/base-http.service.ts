@@ -1,4 +1,4 @@
-import {Inject, Injectable, Optional} from "@angular/core";
+import {Inject, Injectable, Injector, Optional} from "@angular/core";
 import {HttpErrorResponse, HttpEventType, HttpHeaders, HttpParams, HttpResponse} from "@angular/common/http";
 import {Request} from "express";
 
@@ -55,7 +55,8 @@ export class BaseHttpService implements IHttpService {
         return this.storage.universal;
     }
 
-    constructor(@Inject(BaseHttpClient) readonly client: BaseHttpClient,
+    constructor(@Inject(Injector) readonly injector: Injector,
+                @Inject(BaseHttpClient) readonly client: BaseHttpClient,
                 @Inject(StorageService) readonly storage: StorageService,
                 @Inject(LANGUAGE_SERVICE) readonly language: ILanguageService,
                 @Inject(TOASTER_SERVICE) readonly toaster: IToasterService,
