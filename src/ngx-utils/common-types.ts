@@ -437,8 +437,18 @@ export interface IOpenApiSchemas {
 }
 
 // --- Dynamic table ---
-export interface ITableColumns {
+export interface ITableOrders {
     [column: string]: string;
+}
+
+export interface ITableColumn {
+    title?: string;
+    sort?: string;
+    filter?: boolean;
+}
+
+export interface ITableColumns {
+    [column: string]: ITableColumn;
 }
 
 export interface ITableTemplate {

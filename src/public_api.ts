@@ -62,6 +62,8 @@ export {
     IOpenApiSchemaProperty,
     IOpenApiSchema,
     IOpenApiSchemas,
+    ITableOrders,
+    ITableColumn,
     ITableColumns,
     ITableTemplate,
     ITableTemplates,

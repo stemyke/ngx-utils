@@ -1,5 +1,6 @@
 import {
-    AfterContentInit, AfterViewInit,
+    AfterContentInit,
+    AfterViewInit,
     Component,
     ContentChild,
     ContentChildren,
@@ -13,6 +14,7 @@ import {
 import {
     IPaginationData,
     ITableColumns,
+    ITableOrders,
     ITableTemplates,
     PaginationItemContext,
     TableDataLoader
@@ -33,7 +35,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() dataLoader: TableDataLoader;
     @Input() data: any[];
     @Input() parallelData: any[];
-    @Input() columns: ITableColumns | string[];
+    @Input() columns: ITableOrders | ITableColumns | string[];
     @Input() showFilter: boolean;
     @Input() itemsPerPage: number;
     @Input() updateTime: number;
@@ -47,7 +49,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     tableId: string;
     templates: ITableTemplates;
     filter: string;
-    orders: ITableColumns;
+    realColumns: ITableColumns;
     cols: string[];
 
     get items(): any[] {
@@ -94,7 +96,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.templates = {};
         this.filter = "";
         this.testId = "table";
-        this.orders = {};
+        this.realColumns = {};
     }
 
     ngAfterContentInit(): void {
@@ -119,15 +121,21 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.columns) {
             const columns = changes.columns.currentValue || [];
-            this.orders = ObjectUtils.isArray(columns) ? columns.reduce((result, column) => {
+            this.realColumns = ObjectUtils.isArray(columns) ? columns.reduce((result, column) => {
                 result[column] = column;
                 return result;
-            }, {}) : columns;
-            this.cols = Object.keys(this.orders);
-            this.orderBy = this.orderBy in this.orders ? this.orderBy : this.columns[0];
+            }, {}) : Object.keys(columns).reduce((result, key) => {
+                const value = columns[key];
+                result[key] = !value || ObjectUtils.isString(value)
+                    ? {title: `title.${key}`, sort: value}
+                    : value;
+                return result;
+            }, {} as ITableColumns);
+            this.cols = Object.keys(this.realColumns);
+            this.orderBy = this.orderBy in this.realColumns ? this.orderBy : this.cols[0];
         }
-        if (changes.orderBy && this.orders) {
-            this.orderBy = this.orderBy in this.orders ? this.orderBy : this.columns[0];
+        if (changes.orderBy && this.realColumns) {
+            this.orderBy = this.orderBy in this.realColumns ? this.orderBy : this.cols[0];
         }
         if (!changes.data && !changes.parallelData && !changes.itemsPerPage && !changes.orderBy && !changes.orderDescending) return;
         this.refresh();
@@ -150,7 +158,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     }
 
     loadData = (page: number, itemsPerPage: number): Promise<IPaginationData> => {
-        const orderBy = this.orders[this.orderBy];
+        const orderBy = this.realColumns[this.orderBy]?.sort;
         return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter);
     };
 

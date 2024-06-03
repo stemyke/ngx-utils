@@ -46,23 +46,25 @@
         <ng-template #defaultWrapperTemplate>
             <table class="table table-striped">
                 <thead>
-                <tr>
-                    <th *ngFor="let column of cols" [ngClass]="'column-' + column">
-                        <a *ngIf="orders[column]" (click)="setOrder(column)">
-                            <span>{{ 'label.' + column | translate }}</span>
-                            <i *ngIf="orderBy == column"
-                               [icon]="orderDescending ? 'sort-desc' : 'sort-asc'"
-                               [ngClass]="orderBy == column ? (orderDescending ? 'sort-desc': 'sort-asc') : ''"></i>
-                        </a>
-                        <span *ngIf="!orders[column]">{{ 'label.' + column | translate }}</span>
-                    </th>
-                </tr>
+                    <tr>
+                        <th *ngFor="let column of cols" [ngClass]="'column-' + column">
+                            <ng-template #defaultCol>
+                                <span>{{ realColumns[column].title | translate }}</span>
+                            </ng-template>
+                            <a *ngIf="realColumns[column].sort; else defaultCol" (click)="setOrder(column)">
+                                <span>{{ realColumns[column].title | translate }}</span>
+                                <i *ngIf="orderBy == column"
+                                   [icon]="orderDescending ? 'sort-desc' : 'sort-asc'"
+                                   [ngClass]="orderBy == column ? (orderDescending ? 'sort-desc': 'sort-asc') : ''"></i>
+                            </a>
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                <ng-container *paginationItem="let context"
-                              [ngxTemplateOutlet]="rowTemplate"
-                              [context]="context"
-                              [additionalContext]="this"></ng-container>
+                    <ng-container *paginationItem="let context"
+                                  [ngxTemplateOutlet]="rowTemplate"
+                                  [context]="context"
+                                  [additionalContext]="this"></ng-container>
                 </tbody>
             </table>
         </ng-template>
