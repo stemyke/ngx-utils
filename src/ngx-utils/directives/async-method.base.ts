@@ -33,8 +33,12 @@ export class AsyncMethodBase {
         return async () => null;
     }
 
-    @HostListener("click")
-    click(): void {
+    @HostListener("click", ["$event"])
+    click(ev: Event): void {
+        if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
         if (this.disabled) return;
         this.callMethod();
     }
