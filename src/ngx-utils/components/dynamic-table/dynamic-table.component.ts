@@ -78,10 +78,10 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     defaultFilterTemplate: TemplateRef<any>;
 
     @ViewChild("pagination")
-    private pagination: PaginationDirective;
+    protected pagination: PaginationDirective;
 
     @ContentChildren(DynamicTableTemplateDirective)
-    private templateDirectives: QueryList<DynamicTableTemplateDirective>;
+    protected templateDirectives: QueryList<DynamicTableTemplateDirective>;
 
     private static compare(orderBy: string, a: PaginationItemContext, b: PaginationItemContext): number {
         a = a.item ? a.item[orderBy] : null;

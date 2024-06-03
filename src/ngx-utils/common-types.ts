@@ -445,6 +445,7 @@ export interface ITableColumn {
     title?: string;
     sort?: string;
     filter?: boolean;
+    [key: string]: any;
 }
 
 export interface ITableColumns {
