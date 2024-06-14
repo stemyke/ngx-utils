@@ -28,6 +28,7 @@ import {Wasi} from "./utils/wasi";
 
 export function loadBaseUrl(): string {
     if (typeof (document) === "undefined" || typeof (location) === "undefined") return "/";
+    const scripts = Array.from(document.scripts);
     const currentScript = (document.currentScript as HTMLScriptElement);
     if (!currentScript) {
         try {
@@ -41,7 +42,12 @@ export function loadBaseUrl(): string {
             return lastIndex < 0 ? "/" : srcUrl.substring(0, lastIndex + 1);
         }
     }
-    const scriptSrc = currentScript.src;
+    const currentUrl = new URL(currentScript.src);
+    const mainScript = scripts.find(s => {
+        const sUrl = new URL(s.src);
+        return currentUrl.hostname === sUrl.hostname && sUrl.pathname.includes("main");
+    });
+    const scriptSrc = (mainScript ?? currentScript).src;
     const lastIndex = scriptSrc.lastIndexOf("/");
     return lastIndex < 0 ? "/" : scriptSrc.substring(0, lastIndex + 1);
 }
