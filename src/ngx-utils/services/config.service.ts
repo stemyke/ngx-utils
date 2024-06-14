@@ -1,6 +1,6 @@
 import {Inject, Injectable, Injector, isDevMode, Optional} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import * as JSON5 from "json5";
+import JSON5 from "json5";
 import {UniversalService} from "./universal.service";
 import {APP_BASE_URL, BASE_CONFIG, IConfigService, IConfiguration, ROOT_ELEMENT, SCRIPT_PARAMS} from "../common-types";
 import {StringUtils} from "../utils/string.utils";

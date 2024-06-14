@@ -30,6 +30,7 @@ export function loadBaseUrl(): string {
     if (typeof (document) === "undefined" || typeof (location) === "undefined") return "/";
     const scripts = Array.from(document.scripts);
     const currentScript = (document.currentScript as HTMLScriptElement);
+    let currentUrl = new URL(currentScript?.src ?? "http://localhost:4200/");
     if (!currentScript) {
         try {
             // noinspection ExceptionCaughtLocallyJS
@@ -38,18 +39,18 @@ export function loadBaseUrl(): string {
             const qualifiedUrl = location.protocol + "//" + location.host;
             const stack = (e.stack || "") as string;
             const srcUrl = (stack.match(new RegExp(qualifiedUrl + ".*?\\.js", "g")) || stack.match(/http([A-Z:\/\-.]+)\.js/gi)).shift();
-            const lastIndex = srcUrl.lastIndexOf("/");
-            return lastIndex < 0 ? "/" : srcUrl.substring(0, lastIndex + 1);
+            currentUrl = new URL(srcUrl ?? "");
         }
     }
-    const currentUrl = new URL(currentScript.src);
     const mainScript = scripts.find(s => {
+        if (!s.src) return false;
         const sUrl = new URL(s.src);
-        return currentUrl.hostname === sUrl.hostname && sUrl.pathname.includes("main");
+        return currentUrl.host === sUrl.host && sUrl.pathname.includes("main");
     });
-    const scriptSrc = (mainScript ?? currentScript).src;
-    const lastIndex = scriptSrc.lastIndexOf("/");
-    return lastIndex < 0 ? "/" : scriptSrc.substring(0, lastIndex + 1);
+    const scriptUrl = !mainScript ? currentUrl : new URL(mainScript.src);
+    const path = scriptUrl.pathname?.split("/") ?? [];
+    path.pop();
+    return `${scriptUrl.protocol}//${scriptUrl.host}${path.join("/")}/`;
 }
 
 export function loadBaseHref(baseUrl: string): string {
