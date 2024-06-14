@@ -1,15 +1,15 @@
-import {IScriptPromises, IStylePromises} from "../common-types";
+import {ScriptType, IScriptPromises, IStylePromises} from "../common-types";
 
 export class LoaderUtils {
 
     static scriptPromises: IScriptPromises = {};
     static stylePromises: IStylePromises = {};
 
-    static loadScript(src: string, async: boolean = false): Promise<HTMLScriptElement> {
+    static loadScript(src: string, async: boolean = false, type: ScriptType = "text/javascript"): Promise<HTMLScriptElement> {
         this.scriptPromises[src] = this.scriptPromises[src] || new Promise<any>((resolve, reject) => {
             // Load script
             const script: any = document.createElement("script");
-            script.type = "text/javascript";
+            script.type = type;
             script.src = src;
             script.async = async;
             if (script.readyState) {

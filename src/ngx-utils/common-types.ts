@@ -208,6 +208,8 @@ export interface IAjaxRequestDetails {
 export type AjaxRequestCallback = (details: IAjaxRequestDetails, params: any) => void;
 
 // --- Loader utils ---
+export type ScriptType = "text/javascript" | "module";
+
 export interface IScriptPromises {
     [src: string]: Promise<HTMLScriptElement>;
 }

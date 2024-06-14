@@ -34,6 +34,7 @@ export {
     UnorderedListStyle,
     IAjaxRequestDetails,
     AjaxRequestCallback,
+    ScriptType,
     IScriptPromises,
     IStylePromises,
     ISearchObservable,
