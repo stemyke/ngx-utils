@@ -78,6 +78,8 @@ export {
     SCRIPT_PARAMS,
     ROOT_ELEMENT,
     RESIZE_DELAY,
+    ResizeEventStrategy,
+    RESIZE_STRATEGY,
     ErrorHandlerCallback,
     ERROR_HANDLER,
     GlobalComponentModifier,

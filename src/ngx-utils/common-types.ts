@@ -500,9 +500,13 @@ export const BASE_CONFIG = new InjectionToken<IConfiguration>("base-config");
 
 export const SCRIPT_PARAMS = new InjectionToken<any>("script-params");
 
-export const ROOT_ELEMENT: InjectionToken<HTMLElement> = new InjectionToken<HTMLElement>("app-root-element");
+export const ROOT_ELEMENT = new InjectionToken<HTMLElement>("app-root-element");
 
-export const RESIZE_DELAY: InjectionToken<number> = new InjectionToken<number>("resize-event-delay");
+export const RESIZE_DELAY = new InjectionToken<number>("resize-event-delay");
+
+export type ResizeEventStrategy = "scroll" | "object";
+
+export const RESIZE_STRATEGY = new InjectionToken<ResizeEventStrategy>("resize-event-strategy");
 
 // --- Error handler service ---
 export type ErrorHandlerCallback = (error: string) => any;
@@ -539,6 +543,7 @@ export interface IModuleConfig {
     initializeApp?: (injector: Injector) => AppInitializerFunc;
     baseUrl?: (injector: Injector) => string;
     resizeDelay?: number;
+    resizeStrategy?: ResizeEventStrategy;
 }
 
 // --- Valued promise ---

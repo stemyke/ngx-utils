@@ -2,9 +2,11 @@ import {ɵDomEventsPlugin as EventManagerPlugin} from "@angular/platform-browser
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
 import elementResizeDetectorMaker from "element-resize-detector";
+import type {Erd} from "element-resize-detector";
+
+import {RESIZE_DELAY, RESIZE_STRATEGY, ResizeEventStrategy} from "../common-types";
 import {UniversalService} from "../services/universal.service";
 import {TimerUtils} from "../utils/timer.utils";
-import {RESIZE_DELAY} from "../common-types";
 
 function emptyRemove(): void {
 
@@ -14,22 +16,24 @@ function isWindow(el: any): boolean {
     return typeof window !== "undefined" && el === window;
 }
 
-const detector = elementResizeDetectorMaker({
-    strategy: "scroll" // For ultra performance.
-});
-
 @Injectable()
 export class ResizeEventPlugin extends EventManagerPlugin {
 
-    private static EVENT_NAME: string = "resize";
+    static readonly EVENT_NAME: string = "resize";
+
+    readonly detector: Erd;
 
     constructor(@Inject(DOCUMENT) doc: any,
                 @Inject(RESIZE_DELAY) protected resizeDelay: number,
+                @Inject(RESIZE_STRATEGY) protected resizeStrategy: ResizeEventStrategy,
                 readonly universal: UniversalService) {
         super(doc);
+        this.detector = elementResizeDetectorMaker({
+            strategy: resizeStrategy
+        });
     }
 
-    supports(eventName) {
+    supports(eventName: string) {
         return eventName === ResizeEventPlugin.EVENT_NAME;
     }
 
@@ -48,7 +52,7 @@ export class ResizeEventPlugin extends EventManagerPlugin {
                 element.addEventListener(eventName, cb);
             }
             else {
-                detector.listenTo(element, cb);
+                this.detector.listenTo(element, cb);
             }
             return () => {
                 try {
@@ -56,7 +60,7 @@ export class ResizeEventPlugin extends EventManagerPlugin {
                         element.removeEventListener(eventName, cb);
                     }
                     else {
-                        detector.uninstall(element);
+                        this.detector.uninstall(element);
                     }
                 }
                 catch (e) {
