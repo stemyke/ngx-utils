@@ -464,7 +464,14 @@ export interface ITableTemplates {
     [column: string]: ITableTemplate;
 }
 
-export type TableDataLoader = (page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string) => Promise<IPaginationData>;
+export interface ITableDataQuery {
+    [column: string]: string;
+}
+
+export type TableDataLoader = (
+    page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean,
+    filter: string, query: ITableDataQuery
+) => Promise<IPaginationData>;
 
 // --- Resource if ---
 export class ResourceIfContext {

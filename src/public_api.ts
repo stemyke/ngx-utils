@@ -68,6 +68,7 @@ export {
     ITableColumns,
     ITableTemplate,
     ITableTemplates,
+    ITableDataQuery,
     TableDataLoader,
     ResourceIfContext,
     APP_BASE_URL,

@@ -13,7 +13,7 @@ import {
 } from "@angular/core";
 import {
     IPaginationData,
-    ITableColumns,
+    ITableColumns, ITableDataQuery,
     ITableOrders,
     ITableTemplates,
     PaginationItemContext,
@@ -49,6 +49,8 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     tableId: string;
     templates: ITableTemplates;
     filter: string;
+    query: ITableDataQuery;
+    hasQuery: boolean;
     realColumns: ITableColumns;
     cols: string[];
 
@@ -95,6 +97,8 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.tableId = UniqueUtils.uuid();
         this.templates = {};
         this.filter = "";
+        this.query = {};
+        this.hasQuery = false;
         this.testId = "table";
         this.realColumns = {};
     }
@@ -122,7 +126,9 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         if (changes.columns) {
             const columns = changes.columns.currentValue || [];
             this.realColumns = ObjectUtils.isArray(columns) ? columns.reduce((result, column) => {
-                result[column] = column;
+                if (!ObjectUtils.isString(column) || column.length == 0)
+                    return result;
+                result[column] = {title: `title.${column}`, sort: column};
                 return result;
             }, {}) : Object.keys(columns).reduce((result, key) => {
                 const value = columns[key];
@@ -134,6 +140,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             this.cols = Object.keys(this.realColumns);
             this.orderBy = this.orderBy in this.realColumns ? this.orderBy : this.cols[0];
         }
+        this.hasQuery = this.cols.some(col => this.realColumns[col].filter);
         if (changes.orderBy && this.realColumns) {
             this.orderBy = this.orderBy in this.realColumns ? this.orderBy : this.cols[0];
         }
@@ -157,9 +164,18 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.refresh();
     }
 
+    updateQuery(col: string, value: string): void {
+        if (!value) {
+            delete this.query[col];
+        } else {
+            this.query[col] = value;
+        }
+        this.refresh();
+    }
+
     loadData = (page: number, itemsPerPage: number): Promise<IPaginationData> => {
         const orderBy = this.realColumns[this.orderBy]?.sort;
-        return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter);
+        return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query);
     };
 
     private loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string): Promise<IPaginationData> {

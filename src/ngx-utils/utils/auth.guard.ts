@@ -104,7 +104,7 @@ export class AuthGuard implements CanActivate {
         for (const subConfig of config) {
             if (subConfig.path)
                 path.push(subConfig.path);
-            const loadedChildren = (subConfig["_loadedConfig"] || {routes: null}).routes;
+            const loadedChildren = (subConfig["_loadedConfig"] || {routes: null}).routes || subConfig["_loadedRoutes"];
             const match = this.getConfig(route, subConfig.children || loadedChildren, path);
             if (!match) {
                 if (subConfig.path)

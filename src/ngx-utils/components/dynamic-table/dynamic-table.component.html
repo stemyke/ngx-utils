@@ -59,6 +59,16 @@
                             </a>
                         </th>
                     </tr>
+                    <tr *ngIf="hasQuery">
+                        <th *ngFor="let column of cols" [ngClass]="['column-' + column, 'filter-column']">
+                            <input type="text"
+                                   class="form-control"
+                                   [attr.data-testid]="testId + '-filter-' + column"
+                                   [placeholder]="realColumns[column].title | translate"
+                                   [ngModel]="query[column]"
+                                   (ngModelChange)="updateQuery(column, $event)"/>
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
                     <ng-container *paginationItem="let context"
