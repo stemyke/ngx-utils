@@ -29,7 +29,7 @@ export {
     TOASTER_SERVICE,
     IAsyncMessage,
     AsyncMethod,
-    UnorederedListTemplate,
+    UnorderedListTemplate,
     UnorderedListTemplates,
     UnorderedListStyle,
     IAjaxRequestDetails,

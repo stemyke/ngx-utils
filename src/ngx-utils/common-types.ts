@@ -187,9 +187,10 @@ export interface IAsyncMessage {
 export type AsyncMethod = (context?: any) => Promise<IAsyncMessage>;
 
 // --- Unordered list ---
-export abstract class UnorederedListTemplate extends TemplateRef<any> {
-    abstract type: string;
-    abstract selector: string;
+export interface UnorderedListTemplate {
+    readonly type: string;
+    readonly selector: string;
+    readonly templateRef: TemplateRef<any>
 }
 
 export interface UnorderedListTemplates {

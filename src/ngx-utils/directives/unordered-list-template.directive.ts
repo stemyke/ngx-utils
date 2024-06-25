@@ -1,20 +1,16 @@
-import {Directive, ElementRef, EmbeddedViewRef, Input, TemplateRef} from "@angular/core";
-import {UnorederedListTemplate} from "../common-types";
+import {Directive, Input, TemplateRef} from "@angular/core";
+import {UnorderedListTemplate} from "../common-types";
 
 @Directive({
     selector: "ng-template[type][selector]"
 })
 
-export class UnorderedListTemplateDirective extends UnorederedListTemplate {
+export class UnorderedListTemplateDirective implements UnorderedListTemplate {
 
     @Input() type: string;
     @Input() selector: string;
 
-    constructor(public elementRef: ElementRef, public templateRef: TemplateRef<any>) {
-        super();
-    }
+    constructor(readonly templateRef: TemplateRef<any>) {
 
-    createEmbeddedView(context: any): EmbeddedViewRef<any> {
-        return this.templateRef.createEmbeddedView(context);
     }
 }

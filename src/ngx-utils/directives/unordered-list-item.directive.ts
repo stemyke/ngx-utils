@@ -1,5 +1,5 @@
 import {Directive, ElementRef, Input, OnChanges, Renderer2, SimpleChanges, ViewContainerRef} from "@angular/core";
-import {UnorderedListStyle, UnorderedListTemplates, UnorederedListTemplate} from "../common-types";
+import {UnorderedListStyle, UnorderedListTemplates, UnorderedListTemplate} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 import {StringUtils} from "../utils/string.utils";
 
@@ -15,7 +15,7 @@ export class UnorderedListItemDirective implements OnChanges {
     @Input() listStyle: UnorderedListStyle;
     @Input() path: string;
     @Input() level: number;
-    @Input() templates: UnorederedListTemplate[];
+    @Input() templates: UnorderedListTemplate[];
     @Input() defaultTemplates: UnorderedListTemplates;
 
     isArray: boolean;
@@ -44,7 +44,9 @@ export class UnorderedListItemDirective implements OnChanges {
             this.valueIsObject = ObjectUtils.isObject(this.item.value);
             this.valueType = ObjectUtils.getType(this.item.value);
             const context: any = this;
-            const template = this.templates.find(t => t.type == this.type && ObjectUtils.evaluate(t.selector, context)) || this.defaultTemplates[this.type];
+            const template = this
+                .templates
+                .find(t => t.type == this.type && ObjectUtils.evaluate(t.selector, context))?.templateRef || this.defaultTemplates[this.type];
             // Set view
             this.viewContainer.clear();
             this.viewContainer.createEmbeddedView(template, context);

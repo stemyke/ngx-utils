@@ -9,7 +9,7 @@ import {
     QueryList,
     SimpleChanges, TemplateRef, ViewChild
 } from "@angular/core";
-import {UnorderedListStyle, UnorderedListTemplates, UnorederedListTemplate} from "../../common-types";
+import {UnorderedListStyle, UnorderedListTemplates, UnorderedListTemplate} from "../../common-types";
 import {ObjectUtils} from "../../utils/object.utils";
 import {UnorderedListTemplateDirective} from "../../directives/unordered-list-template.directive";
 
@@ -24,7 +24,7 @@ export class UnorderedListComponent implements OnChanges, AfterContentInit, Afte
     @Input() listStyle: UnorderedListStyle;
     @Input() path: string;
     @Input() level: number;
-    @Input() templates: UnorederedListTemplate[];
+    @Input() templates: UnorderedListTemplate[];
 
     isArray: boolean;
     isObject: boolean;
