@@ -148,20 +148,20 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.refresh();
     }
 
-    refresh(): void {
+    refresh(time?: number): void {
         if (!this.pagination) return;
-        this.pagination.refresh();
+        this.pagination.refresh(time);
     }
 
     setFilter(filter: string): void {
         this.filter = filter;
-        this.refresh();
+        this.refresh(450);
     }
 
     setOrder(column: string): void {
         this.orderDescending = column == this.orderBy && !this.orderDescending;
         this.orderBy = column;
-        this.refresh();
+        this.refresh(450);
     }
 
     updateQuery(col: string, value: string): void {

@@ -40,12 +40,13 @@ export class PaginationDirective implements OnChanges {
         if (!changes.loader && !changes.itemsPerPage && !changes.page) return;
         this.page = isNaN(this.page) || this.page < 1 ? 1 : this.page;
         this.itemsPerPage = isNaN(this.itemsPerPage) || this.itemsPerPage < 1 ? 20 : this.itemsPerPage;
-        this.updateTimer.time = isNaN(this.updateTime) || this.updateTime < 0 ? 100 : this.updateTime;
         this.waitFor = this.waitFor || Promise.resolve(true);
         this.refresh();
     }
 
-    refresh(): void {
+    refresh(time?: number): void {
+        time = isNaN(time) || time < 0 ? this.updateTime : time;
+        this.updateTimer.time = isNaN(time) || time < 0 ? 100 : this.updateTime;
         this.waitFor.then(() => {
             this.updateTimer.run();
         });
