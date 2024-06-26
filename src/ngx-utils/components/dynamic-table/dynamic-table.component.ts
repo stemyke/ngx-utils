@@ -39,6 +39,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() showFilter: boolean;
     @Input() itemsPerPage: number;
     @Input() updateTime: number;
+    @Input() filterTime: number;
     @Input() maxPages: number;
     @Input() directionLinks: boolean;
     @Input() boundaryLinks: boolean;
@@ -155,7 +156,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
 
     setFilter(filter: string): void {
         this.filter = filter;
-        this.refresh(450);
+        this.refresh(this.filterTime ?? 300);
     }
 
     setOrder(column: string): void {
@@ -170,7 +171,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         } else {
             this.query[col] = value;
         }
-        this.refresh(450);
+        this.refresh(this.filterTime ?? 300);
     }
 
     loadData = (page: number, itemsPerPage: number): Promise<IPaginationData> => {
