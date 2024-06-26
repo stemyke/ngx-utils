@@ -161,7 +161,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     setOrder(column: string): void {
         this.orderDescending = column == this.orderBy && !this.orderDescending;
         this.orderBy = column;
-        this.refresh(450);
+        this.refresh();
     }
 
     updateQuery(col: string, value: string): void {
@@ -170,7 +170,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         } else {
             this.query[col] = value;
         }
-        this.refresh();
+        this.refresh(450);
     }
 
     loadData = (page: number, itemsPerPage: number): Promise<IPaginationData> => {
