@@ -46,7 +46,7 @@ export class PaginationDirective implements OnChanges {
 
     refresh(time?: number): void {
         time = isNaN(time) || time < 0 ? this.updateTime : time;
-        this.updateTimer.time = isNaN(time) || time < 0 ? 100 : this.updateTime;
+        this.updateTimer.time = isNaN(time) || time < 0 ? 100 : time;
         this.waitFor.then(() => {
             this.updateTimer.run();
         });
