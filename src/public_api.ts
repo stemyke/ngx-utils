@@ -92,9 +92,11 @@ export {
 } from "./ngx-utils/common-types";
 
 export {AjaxRequestHandler} from "./ngx-utils/utils/ajax-request-handler";
-export {ObjectUtils} from "./ngx-utils/utils/object.utils";
-export {DateUtils} from "./ngx-utils/utils/date.utils";
+export {ArrayUtils} from "./ngx-utils/utils/array.utils";
+export {AuthGuard} from "./ngx-utils/utils/auth.guard";
+export {CachedFactory, cachedFactory} from "./ngx-utils/utils/cached-factory";
 export {CanvasUtils} from "./ngx-utils/utils/canvas.utils";
+export {DateUtils} from "./ngx-utils/utils/date.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {GenericValue} from "./ngx-utils/utils/generic-value";
 export {FileSystemEntryOpenResult, FileSystemEntryOpenCb, FileSystemEntry} from "./ngx-utils/utils/file-system";
@@ -104,10 +106,9 @@ export {JSONfn} from "./ngx-utils/utils/jsonfn";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
-export {AuthGuard} from "./ngx-utils/utils/auth.guard";
+export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
 export {StringUtils} from "./ngx-utils/utils/string.utils";
-export {ArrayUtils} from "./ngx-utils/utils/array.utils";
 export {SetUtils} from "./ngx-utils/utils/set.utils";
 export {TimerUtils} from "./ngx-utils/utils/timer.utils";
 export {UniqueUtils} from "./ngx-utils/utils/unique.utils";
