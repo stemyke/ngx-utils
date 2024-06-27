@@ -40,7 +40,11 @@ export function loadBaseUrl(): string {
         } catch (e) {
             const qualifiedUrl = location.protocol + "//" + location.host;
             const stack = (e.stack || "") as string;
-            const srcUrl = (stack.match(new RegExp(qualifiedUrl + ".*?\\.js", "g")) || stack.match(/http([A-Z:\/\-.]+)\.js/gi)).shift();
+            const srcUrl = (
+                stack.match(new RegExp(qualifiedUrl + ".*?\\.js", "g")) ||
+                stack.match(/http([A-Z0-9:\/\-.]+)\.js/gi) ||
+                [`${qualifiedUrl}/main.js`]
+            ).shift();
             currentUrl = new URL(srcUrl ?? "");
         }
     }
