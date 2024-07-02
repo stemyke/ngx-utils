@@ -218,7 +218,7 @@ export class BaseHttpService implements IHttpService {
                 const finalRequest = ObjectUtils.isNumber(options.timeout) && options.timeout > 0
                     ? request.pipe(timeout(options.timeout)) : request;
                 finalRequest.subscribe((event: any) => {
-                    if (options.reportProgress && event.type === HttpEventType.UploadProgress) {
+                    if (options.reportProgress && event?.type === HttpEventType.UploadProgress) {
                         const progress = {
                             percentage: MathUtils.round(event.loaded / event.total, 2, 0.01),
                             loaded: event.loaded,

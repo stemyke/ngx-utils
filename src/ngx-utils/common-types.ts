@@ -5,7 +5,22 @@ import {Request} from "express";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
 
-// --- Utils
+// --- Util
+export interface TypedFactoryProvider<T> {
+    useFactory: (...args: any[]) => T;
+    deps: any[];
+}
+
+export interface TypedValueProvider<T> {
+    useValue: T;
+}
+
+export type CachedProvider<T> = Type<T> | TypedFactoryProvider<T> | TypedValueProvider<T>;
+
+export type CachedFactory<T> = (injector: Injector) => ReadonlyArray<T>;
+
+export const OPTIONS_TOKEN = new InjectionToken("custom-options-token");
+
 export interface IResolveFactory {
     func: Function;
     type?: any;

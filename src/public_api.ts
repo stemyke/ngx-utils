@@ -1,4 +1,9 @@
 export {
+    TypedFactoryProvider,
+    TypedValueProvider,
+    CachedProvider,
+    CachedFactory,
+    OPTIONS_TOKEN,
     IResolveFactory,
     CanvasColor,
     IIconService,
@@ -94,7 +99,7 @@ export {
 export {AjaxRequestHandler} from "./ngx-utils/utils/ajax-request-handler";
 export {ArrayUtils} from "./ngx-utils/utils/array.utils";
 export {AuthGuard} from "./ngx-utils/utils/auth.guard";
-export {CachedFactory, cachedFactory} from "./ngx-utils/utils/cached-factory";
+export {cachedFactory} from "./ngx-utils/utils/cached-factory";
 export {CanvasUtils} from "./ngx-utils/utils/canvas.utils";
 export {DateUtils} from "./ngx-utils/utils/date.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
@@ -113,6 +118,7 @@ export {SetUtils} from "./ngx-utils/utils/set.utils";
 export {TimerUtils} from "./ngx-utils/utils/timer.utils";
 export {UniqueUtils} from "./ngx-utils/utils/unique.utils";
 export {Vector} from "./ngx-utils/utils/vector";
+export {provideWithOptions} from "./ngx-utils/utils/with-options-provider";
 
 export {UniversalService} from "./ngx-utils/services/universal.service";
 export {WasmService} from "./ngx-utils/services/wasm.service";

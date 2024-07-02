@@ -1,23 +1,32 @@
-import {Injector, Type} from "@angular/core";
+import {InjectionToken, Injector, Type} from "@angular/core";
+import {CachedFactory, CachedProvider} from "../common-types";
 
-export type CachedFactory<T> = (injector: Injector) => ReadonlyArray<T>;
+const CACHED_TOKEN = new InjectionToken("cached-factory-token");
 
-export function cachedFactory<T>(types: ReadonlyArray<Type<T>>): CachedFactory<T> {
+export function cachedFactory<T>(providers: CachedProvider<T>[]): CachedFactory<T> {
     let cached: ReadonlyArray<T> = null;
     return (injector: Injector) => {
         if (cached !== null) {
             return cached;
         }
         const subInjector = Injector.create({
-            providers: types.map(type => {
-                return {
-                    provide: type,
-                    useClass: type,
+            providers: providers.map(p => {
+                if (("useFactory" in p && "deps" in p) || "useValue" in p) {
+                    return {
+                        provide: CACHED_TOKEN,
+                        multi: true,
+                        ...p
+                    } as any;
                 }
+                return {
+                    provide: CACHED_TOKEN,
+                    multi: true,
+                    useClass: p as Type<T>
+                };
             }),
             parent: injector
         });
-        cached = types.map(type => subInjector.get(type));
+        cached = subInjector.get(CACHED_TOKEN) as ReadonlyArray<T>;
         return cached;
     };
 }
