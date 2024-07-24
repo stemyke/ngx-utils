@@ -1,4 +1,4 @@
-<div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [itemsPerPage]="itemsPerPage" [updateTime]="updateTime">
+<div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [page]="page" [itemsPerPage]="itemsPerPage" [updateTime]="updateTime">
     <ng-template #defaultFilterTemplate let-table>
         <div class="table-search" *ngIf="table.showFilter">
             <label *ngIf="label" [attr.for]="tableId">{{ label | translate }}</label>
@@ -12,7 +12,7 @@
         </div>
     </ng-template>
     <ng-container [ngxTemplateOutlet]="filterTemplate || defaultFilterTemplate" [context]="this"></ng-container>
-    <pagination-menu [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
+    <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
     <div class="table-responsive">
         <ng-template #columnTemplate let-context let-column="column" let-template="template">
             <ng-template #defaultTemplate let-column="column" let-item="item">
@@ -84,5 +84,5 @@
         <ng-container [ngxTemplateOutlet]="wrapperTemplate || defaultWrapperTemplate"
                       [context]="this"></ng-container>
     </div>
-    <pagination-menu [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
+    <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
 </div>

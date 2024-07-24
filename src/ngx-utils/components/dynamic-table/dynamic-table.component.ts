@@ -34,6 +34,8 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() placeholder: string;
     @Input() dataLoader: TableDataLoader;
     @Input() data: any[];
+    @Input() page: number;
+    @Input() urlParam: string;
     @Input() parallelData: any[];
     @Input() columns: ITableOrders | ITableColumns | string[];
     @Input() showFilter: boolean;
