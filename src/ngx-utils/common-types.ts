@@ -470,6 +470,8 @@ export interface ITableColumns {
     [column: string]: ITableColumn;
 }
 
+export type TableColumns = ITableOrders | ITableColumns | string[];
+
 export interface ITableTemplate {
     column: string | string[];
     pure: boolean;

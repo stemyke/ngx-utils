@@ -71,6 +71,7 @@ export {
     ITableOrders,
     ITableColumn,
     ITableColumns,
+    TableColumns,
     ITableTemplate,
     ITableTemplates,
     ITableDataQuery,

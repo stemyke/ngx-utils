@@ -13,10 +13,11 @@ import {
 } from "@angular/core";
 import {
     IPaginationData,
-    ITableColumns, ITableDataQuery,
-    ITableOrders,
+    ITableColumns,
+    ITableDataQuery,
     ITableTemplates,
     PaginationItemContext,
+    TableColumns,
     TableDataLoader
 } from "../../common-types";
 import {ObjectUtils} from "../../utils/object.utils";
@@ -37,7 +38,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() page: number;
     @Input() urlParam: string;
     @Input() parallelData: any[];
-    @Input() columns: ITableOrders | ITableColumns | string[];
+    @Input() columns: TableColumns;
     @Input() showFilter: boolean;
     @Input() itemsPerPage: number;
     @Input() updateTime: number;
@@ -48,6 +49,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() orderBy: string;
     @Input() orderDescending: boolean;
     @Input() testId: string;
+    @Input() titlePrefix: string;
 
     tableId: string;
     templates: ITableTemplates;
@@ -103,6 +105,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.query = {};
         this.hasQuery = false;
         this.testId = "table";
+        this.titlePrefix = "label";
         this.realColumns = {};
     }
 
@@ -131,12 +134,12 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             this.realColumns = ObjectUtils.isArray(columns) ? columns.reduce((result, column) => {
                 if (!ObjectUtils.isString(column) || column.length == 0)
                     return result;
-                result[column] = {title: `title.${column}`, sort: column};
+                result[column] = {title: `${this.titlePrefix}.${column}`, sort: column};
                 return result;
             }, {}) : Object.keys(columns).reduce((result, key) => {
                 const value = columns[key];
                 result[key] = !value || ObjectUtils.isString(value)
-                    ? {title: `title.${key}`, sort: value}
+                    ? {title: `${this.titlePrefix}.${key}`, sort: value}
                     : value;
                 return result;
             }, {} as ITableColumns);
