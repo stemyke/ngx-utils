@@ -48,6 +48,7 @@ export class AclService {
             if (ObjectUtils.isFunction(component.onUserInitialized)) {
                 component.onUserInitialized();
             }
+            info.first = false;
         });
     }
 

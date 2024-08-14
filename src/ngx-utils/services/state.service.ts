@@ -15,7 +15,7 @@ import {
     UrlTree
 } from "@angular/router";
 import {BehaviorSubject, Observable, Subscription} from "rxjs";
-import {skipWhile} from "rxjs/operators";
+import {skipWhile, distinctUntilChanged, delay} from "rxjs/operators";
 import {ObjectUtils} from "../utils/object.utils";
 import {IRoute, NavigationUrlParam} from "../common-types";
 import {UniversalService} from "./universal.service";
@@ -40,7 +40,6 @@ export class StateService extends BehaviorSubject<any> {
     private shot: ActivatedRouteSnapshot;
     private comp: any;
     private stateInfo: IStateInfo;
-    private contexts: ChildrenOutletContexts;
 
     static toPath(route: Route, params: any): string {
         let path = route.path || "";
@@ -93,19 +92,24 @@ export class StateService extends BehaviorSubject<any> {
     constructor(readonly injector: Injector,
                 readonly zone: NgZone,
                 readonly universal: UniversalService,
-                @Optional() readonly router: Router = null) {
+                @Optional() readonly router: Router = null,
+                @Optional() readonly contexts: ChildrenOutletContexts = null) {
         super(null);
         if (!this.router) return;
         this.globalExtras = {
             queryParamsHandling: "merge"
         };
-        this.router.events.subscribe(this.handleRouterEvent);
+        this.router.events
+            .pipe(
+                distinctUntilChanged(),
+                delay(10)
+            )
+            .subscribe(this.handleRouterEvent);
         this.stateInfo = {
             url: "",
             segments: [],
             components: []
         };
-        this.contexts = (<any>router).rootContexts;
     }
 
     async reload(): Promise<any> {
@@ -187,7 +191,7 @@ export class StateService extends BehaviorSubject<any> {
             snapshots.push(snapshot);
             segments = segments.concat(snapshot.url);
             if (context) {
-                if (context.outlet && context.outlet.isActivated)
+                if (context.outlet && context.outlet.component)
                     components.push(context.outlet.component);
                 context = context.children.getContext("primary");
             }
