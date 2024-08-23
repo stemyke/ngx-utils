@@ -3,7 +3,6 @@ import {
     ActivatedRouteSnapshot,
     ChildrenOutletContexts,
     Data,
-    Event,
     NavigationEnd,
     NavigationExtras,
     OutletContext,
@@ -14,8 +13,8 @@ import {
     UrlSegment,
     UrlTree
 } from "@angular/router";
-import {BehaviorSubject, Observable, Subscription} from "rxjs";
-import {skipWhile, distinctUntilChanged, delay} from "rxjs/operators";
+import {BehaviorSubject, debounceTime, filter, Observable, Observer, Subscription} from "rxjs";
+import {delay, distinctUntilChanged, skipWhile} from "rxjs/operators";
 import {ObjectUtils} from "../utils/object.utils";
 import {IRoute, NavigationUrlParam} from "../common-types";
 import {UniversalService} from "./universal.service";
@@ -33,13 +32,13 @@ export interface IStateInfo {
 }
 
 @Injectable()
-export class StateService extends BehaviorSubject<any> {
+export class StateService {
 
     readonly globalExtras: NavigationExtras;
 
-    private shot: ActivatedRouteSnapshot;
-    private comp: any;
-    private stateInfo: IStateInfo;
+    protected shot: BehaviorSubject<ActivatedRouteSnapshot>;
+    protected comp: any;
+    protected stateInfo: IStateInfo;
 
     static toPath(route: Route, params: any): string {
         let path = route.path || "";
@@ -54,7 +53,7 @@ export class StateService extends BehaviorSubject<any> {
     }
 
     get snapshot(): ActivatedRouteSnapshot {
-        return this.shot || emptySnapshot;
+        return this.shot.value || emptySnapshot;
     }
 
     get route(): IRoute {
@@ -94,7 +93,6 @@ export class StateService extends BehaviorSubject<any> {
                 readonly universal: UniversalService,
                 @Optional() readonly router: Router = null,
                 @Optional() readonly contexts: ChildrenOutletContexts = null) {
-        super(null);
         if (!this.router) return;
         this.globalExtras = {
             queryParamsHandling: "merge"
@@ -102,9 +100,11 @@ export class StateService extends BehaviorSubject<any> {
         this.router.events
             .pipe(
                 distinctUntilChanged(),
+                filter(event => event instanceof NavigationEnd),
                 delay(10)
             )
             .subscribe(this.handleRouterEvent);
+        this.shot = new BehaviorSubject<ActivatedRouteSnapshot>(null);
         this.stateInfo = {
             url: "",
             segments: [],
@@ -149,8 +149,22 @@ export class StateService extends BehaviorSubject<any> {
         });
     }
 
-    subscribeImmediately(next?: (value: ActivatedRouteSnapshot) => void, error?: (error: any) => void, complete?: () => void): Subscription {
-        return this.pipe(skipWhile(v => v == null)).subscribe(next, error, complete);
+    subscribeImmediately(
+        next?: (value: ActivatedRouteSnapshot) => void,
+        error?: (error: any) => void
+    ): Subscription {
+        return this.subscribe({
+            next, error
+        });
+    }
+
+    subscribe(osOrNext?: Partial<Observer<ActivatedRouteSnapshot>> | ((value: ActivatedRouteSnapshot) => void)): Subscription {
+        return this.shot
+            .pipe(
+                skipWhile(v => v == null),
+                debounceTime(20)
+            )
+            .subscribe(osOrNext);
     }
 
     protected openInNewWindow(tree: UrlTree, target: string): boolean {
@@ -179,8 +193,7 @@ export class StateService extends BehaviorSubject<any> {
         return [url, extras];
     }
 
-    protected handleRouterEvent = (event: Event): void => {
-        if (!(event instanceof NavigationEnd)) return;
+    protected handleRouterEvent = (event: NavigationEnd): void => {
         const routerStateSnapshot = this.router.routerState.snapshot;
         let snapshot = routerStateSnapshot.root;
         let context: OutletContext = this.contexts?.getContext("primary");
@@ -198,12 +211,11 @@ export class StateService extends BehaviorSubject<any> {
             snapshot = snapshot.firstChild;
         }
         this.comp = components[components.length - 1];
-        this.shot = snapshots[snapshots.length - 1];
         this.stateInfo = {
             url: routerStateSnapshot.url,
             segments: segments,
             components: components
         };
-        this.next(this.shot);
+        this.shot.next(snapshots[snapshots.length - 1]);
     };
 }
