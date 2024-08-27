@@ -90,8 +90,6 @@ export {
     ErrorHandlerCallback,
     ERROR_HANDLER,
     GlobalComponentModifier,
-    IGlobalTemplates,
-    GLOBAL_TEMPLATES,
     AppInitializerFunc,
     IModuleConfig,
     ValuedPromise

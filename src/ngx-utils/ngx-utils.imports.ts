@@ -159,6 +159,7 @@ export const providers = [
     UniversalService,
     WasmService,
     DeviceDetectorService,
+    GlobalTemplateService,
     {
         provide: EVENT_MANAGER_PLUGINS,
         useClass: ResizeEventPlugin,

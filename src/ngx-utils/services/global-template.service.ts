@@ -1,9 +1,9 @@
 import {EventEmitter, Injectable, TemplateRef} from "@angular/core";
 import {ObjectUtils} from "../utils/object.utils";
-import {GlobalComponentModifier, IGlobalTemplates} from "../common-types";
+import {GlobalComponentModifier} from "../common-types";
 
 @Injectable()
-export class GlobalTemplateService implements IGlobalTemplates {
+export class GlobalTemplateService {
 
     readonly templatesUpdated: EventEmitter<void>;
 

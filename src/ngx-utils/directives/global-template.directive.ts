@@ -1,5 +1,5 @@
-import {Directive, Inject, Input, OnDestroy, OnInit, TemplateRef} from "@angular/core";
-import {GLOBAL_TEMPLATES, IGlobalTemplates} from "../common-types";
+import {Directive, Input, OnDestroy, OnInit, TemplateRef} from "@angular/core";
+import {GlobalTemplateService} from "../services/global-template.service";
 
 @Directive({
     selector: "[globalTemplate]"
@@ -8,7 +8,7 @@ export class GlobalTemplateDirective implements OnInit, OnDestroy {
 
     @Input("globalTemplate") id: string;
 
-    constructor(@Inject(GLOBAL_TEMPLATES) readonly globalTemplates: IGlobalTemplates,
+    constructor(readonly globalTemplates: GlobalTemplateService,
                 readonly template: TemplateRef<any>) {
 
     }

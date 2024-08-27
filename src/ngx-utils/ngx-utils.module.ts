@@ -1,4 +1,11 @@
-import {APP_INITIALIZER, Injector, ModuleWithProviders, NgModule} from "@angular/core";
+import {
+    APP_INITIALIZER, EnvironmentProviders,
+    Injector,
+    makeEnvironmentProviders,
+    ModuleWithProviders,
+    NgModule,
+    Provider
+} from "@angular/core";
 import {APP_BASE_HREF, CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {
@@ -6,7 +13,6 @@ import {
     APP_BASE_URL,
     AUTH_SERVICE,
     CONFIG_SERVICE,
-    GLOBAL_TEMPLATES,
     ICON_SERVICE,
     IModuleConfig,
     LANGUAGE_SERVICE,
@@ -88,77 +94,81 @@ export function loadBaseHref(baseUrl: string): string {
 })
 export class NgxUtilsModule {
 
+    private static getProviders(config?: IModuleConfig): Provider[] {
+        return [
+            ...providers,
+            {
+                provide: API_SERVICE,
+                useExisting: (!config ? null : config.apiService) || ApiService
+            },
+            {
+                provide: AUTH_SERVICE,
+                useExisting: (!config ? null : config.authService) || StaticAuthService
+            },
+            {
+                provide: ICON_SERVICE,
+                useExisting: (!config ? null : config.iconService) || IconService
+            },
+            {
+                provide: LANGUAGE_SERVICE,
+                useExisting: (!config ? null : config.languageService) || StaticLanguageService
+            },
+            {
+                provide: TOASTER_SERVICE,
+                useExisting: (!config ? null : config.toasterService) || ConsoleToasterService
+            },
+            {
+                provide: PROMISE_SERVICE,
+                useExisting: (!config ? null : config.promiseService) || PromiseService
+            },
+            {
+                provide: CONFIG_SERVICE,
+                useExisting: (!config ? null : config.configService) || ConfigService
+            },
+            {
+                provide: WASI_IMPLEMENTATION,
+                useExisting: (!config ? null : config.wasiImplementation) || Wasi
+            },
+            {
+                provide: APP_BASE_URL,
+                useFactory: (!config ? null : config.baseUrl) || loadBaseUrl,
+                deps: [Injector]
+            },
+            {
+                provide: ROOT_ELEMENT,
+                useValue: null
+            },
+            {
+                provide: RESIZE_DELAY,
+                useValue: (!config ? null : config.resizeDelay) ?? 50,
+            },
+            {
+                provide: RESIZE_STRATEGY,
+                useValue: (!config ? null : config.resizeStrategy) ?? "object",
+            },
+            {
+                provide: APP_INITIALIZER,
+                useFactory: (!config ? null : config.initializeApp) || loadConfig,
+                multi: true,
+                deps: [(!config ? null : config.initializeApp) ? Injector : CONFIG_SERVICE]
+            },
+            {
+                provide: APP_BASE_HREF,
+                useFactory: loadBaseHref,
+                deps: [APP_BASE_URL]
+            }
+        ];
+    }
+
     static forRoot(config?: IModuleConfig): ModuleWithProviders<NgxUtilsModule> {
         return {
             ngModule: NgxUtilsModule,
-            providers: [
-                ...providers,
-                {
-                    provide: API_SERVICE,
-                    useExisting: (!config ? null : config.apiService) || ApiService
-                },
-                {
-                    provide: AUTH_SERVICE,
-                    useExisting: (!config ? null : config.authService) || StaticAuthService
-                },
-                {
-                    provide: ICON_SERVICE,
-                    useExisting: (!config ? null : config.iconService) || IconService
-                },
-                {
-                    provide: LANGUAGE_SERVICE,
-                    useExisting: (!config ? null : config.languageService) || StaticLanguageService
-                },
-                {
-                    provide: TOASTER_SERVICE,
-                    useExisting: (!config ? null : config.toasterService) || ConsoleToasterService
-                },
-                {
-                    provide: PROMISE_SERVICE,
-                    useExisting: (!config ? null : config.promiseService) || PromiseService
-                },
-                {
-                    provide: CONFIG_SERVICE,
-                    useExisting: (!config ? null : config.configService) || ConfigService
-                },
-                {
-                    provide: GLOBAL_TEMPLATES,
-                    useExisting: (!config ? null : config.globalTemplates) || GlobalTemplateService
-                },
-                {
-                    provide: WASI_IMPLEMENTATION,
-                    useExisting: (!config ? null : config.wasiImplementation) || Wasi
-                },
-                {
-                    provide: APP_BASE_URL,
-                    useFactory: (!config ? null : config.baseUrl) || loadBaseUrl,
-                    deps: [Injector]
-                },
-                {
-                    provide: ROOT_ELEMENT,
-                    useValue: null
-                },
-                {
-                    provide: RESIZE_DELAY,
-                    useValue: (!config ? null : config.resizeDelay) ?? 50,
-                },
-                {
-                    provide: RESIZE_STRATEGY,
-                    useValue: (!config ? null : config.resizeStrategy) ?? "object",
-                },
-                {
-                    provide: APP_INITIALIZER,
-                    useFactory: (!config ? null : config.initializeApp) || loadConfig,
-                    multi: true,
-                    deps: [(!config ? null : config.initializeApp) ? Injector : CONFIG_SERVICE]
-                },
-                {
-                    provide: APP_BASE_HREF,
-                    useFactory: loadBaseHref,
-                    deps: [APP_BASE_URL]
-                }
-            ]
+            providers: NgxUtilsModule.getProviders(config)
         };
+    }
+
+    static provideUtils(config?: IModuleConfig): EnvironmentProviders {
+        return makeEnvironmentProviders(NgxUtilsModule.getProviders(config));
     }
 
     constructor() {

@@ -1,6 +1,6 @@
-import {Inject, OnDestroy, OnInit, Pipe, PipeTransform, TemplateRef} from "@angular/core";
+import {OnDestroy, OnInit, Pipe, PipeTransform, TemplateRef} from "@angular/core";
 import {Subscription} from "rxjs";
-import {GLOBAL_TEMPLATES, IGlobalTemplates} from "../common-types";
+import {GlobalTemplateService} from "../services/global-template.service";
 
 @Pipe({
     pure: false,
@@ -13,7 +13,7 @@ export class GlobalTemplatePipe implements PipeTransform, OnInit, OnDestroy {
     protected cachedTemplateId: string;
     protected cachedTemplate: TemplateRef<any>;
 
-    constructor(@Inject(GLOBAL_TEMPLATES) protected globalTemplates: IGlobalTemplates) {
+    constructor(protected globalTemplates: GlobalTemplateService) {
         this.cachedTemplateId = null;
         this.cachedTemplate = null;
     }

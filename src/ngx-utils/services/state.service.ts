@@ -10,16 +10,17 @@ import {
     Resolve,
     Route,
     Router,
+    Scroll,
     UrlSegment,
     UrlTree
 } from "@angular/router";
-import {BehaviorSubject, debounceTime, filter, Observable, Observer, Subscription} from "rxjs";
-import {delay, distinctUntilChanged, skipWhile} from "rxjs/operators";
+import {BehaviorSubject, firstValueFrom, Observable, Observer, Subscription} from "rxjs";
+import {debounceTime, distinctUntilChanged, filter, map, skipWhile,} from "rxjs/operators";
 import {ObjectUtils} from "../utils/object.utils";
 import {IRoute, NavigationUrlParam} from "../common-types";
 import {UniversalService} from "./universal.service";
 
-export const emptySnapshot: ActivatedRouteSnapshot = new ActivatedRouteSnapshot();
+export const emptySnapshot = new ActivatedRouteSnapshot();
 export const emptyData: Data = {id: ""};
 export const emptyParams: Params = {};
 export const emptySegments: UrlSegment[] = [];
@@ -36,8 +37,8 @@ export class StateService {
 
     readonly globalExtras: NavigationExtras;
 
-    protected shot: BehaviorSubject<ActivatedRouteSnapshot>;
-    protected comp: any;
+    protected $snapshot: BehaviorSubject<ActivatedRouteSnapshot>;
+    protected $component: BehaviorSubject<any>;
     protected stateInfo: IStateInfo;
 
     static toPath(route: Route, params: any): string {
@@ -48,12 +49,12 @@ export class StateService {
         return path;
     }
 
-    get component(): any {
-        return this.comp;
+    get snapshot(): ActivatedRouteSnapshot {
+        return this.$snapshot.value;
     }
 
-    get snapshot(): ActivatedRouteSnapshot {
-        return this.shot.value || emptySnapshot;
+    get component(): any {
+        return this.$component.value;
     }
 
     get route(): IRoute {
@@ -93,23 +94,52 @@ export class StateService {
                 readonly universal: UniversalService,
                 @Optional() readonly router: Router = null,
                 @Optional() readonly contexts: ChildrenOutletContexts = null) {
-        if (!this.router) return;
         this.globalExtras = {
             queryParamsHandling: "merge"
         };
-        this.router.events
-            .pipe(
-                distinctUntilChanged(),
-                filter(event => event instanceof NavigationEnd),
-                delay(10)
-            )
-            .subscribe(this.handleRouterEvent);
-        this.shot = new BehaviorSubject<ActivatedRouteSnapshot>(null);
+        this.$snapshot = new BehaviorSubject(emptySnapshot);
+        this.$component = new BehaviorSubject(null);
         this.stateInfo = {
             url: "",
             segments: [],
             components: []
         };
+        this.router?.events
+            .pipe(
+                distinctUntilChanged(),
+                map(event => {
+                    if (event instanceof Scroll) {
+                        return event.routerEvent;
+                    }
+                    return event;
+                }),
+                filter(e => e instanceof NavigationEnd),
+            )
+            .subscribe(() => {
+                const routerStateSnapshot = this.router.routerState.snapshot;
+                let snapshot = routerStateSnapshot.root;
+                let context: OutletContext = this.contexts?.getContext("primary");
+                let segments = snapshot.url;
+                const components: any[] = [];
+                const snapshots: ActivatedRouteSnapshot[] = [];
+                while (snapshot) {
+                    snapshots.push(snapshot);
+                    segments = segments.concat(snapshot.url);
+                    if (context) {
+                        if (context.outlet && context.outlet.component)
+                            components.push(context.outlet.component);
+                        context = context.children.getContext("primary");
+                    }
+                    snapshot = snapshot.firstChild;
+                }
+                this.stateInfo = {
+                    url: routerStateSnapshot.url,
+                    segments: segments,
+                    components: components
+                };
+                this.$snapshot.next(snapshots[snapshots.length - 1]);
+                this.$component.next(components[components.length - 1]);
+            });
     }
 
     async reload(): Promise<any> {
@@ -120,7 +150,7 @@ export class StateService {
             const resolver = this.injector.get(resolvers[key]) as Resolve<any>;
             let resolved = resolver.resolve(this.snapshot, routerStateSnapshot);
             if (resolved instanceof Observable) {
-                resolved = resolved.toPromise();
+                resolved = firstValueFrom(resolved);
             }
             if (resolved instanceof Promise) {
                 resolved = await resolved;
@@ -159,12 +189,10 @@ export class StateService {
     }
 
     subscribe(osOrNext?: Partial<Observer<ActivatedRouteSnapshot>> | ((value: ActivatedRouteSnapshot) => void)): Subscription {
-        return this.shot
-            .pipe(
-                skipWhile(v => v == null),
-                debounceTime(20)
-            )
-            .subscribe(osOrNext);
+        return this.$snapshot.pipe(
+            skipWhile(snapshot => snapshot === emptySnapshot),
+            debounceTime(25)
+        ).subscribe(osOrNext);
     }
 
     protected openInNewWindow(tree: UrlTree, target: string): boolean {
@@ -192,30 +220,4 @@ export class StateService {
         }
         return [url, extras];
     }
-
-    protected handleRouterEvent = (event: NavigationEnd): void => {
-        const routerStateSnapshot = this.router.routerState.snapshot;
-        let snapshot = routerStateSnapshot.root;
-        let context: OutletContext = this.contexts?.getContext("primary");
-        let segments = snapshot.url;
-        const components: any[] = [];
-        const snapshots: ActivatedRouteSnapshot[] = [];
-        while (snapshot) {
-            snapshots.push(snapshot);
-            segments = segments.concat(snapshot.url);
-            if (context) {
-                if (context.outlet && context.outlet.component)
-                    components.push(context.outlet.component);
-                context = context.children.getContext("primary");
-            }
-            snapshot = snapshot.firstChild;
-        }
-        this.comp = components[components.length - 1];
-        this.stateInfo = {
-            url: routerStateSnapshot.url,
-            segments: segments,
-            components: components
-        };
-        this.shot.next(snapshots[snapshots.length - 1]);
-    };
 }
