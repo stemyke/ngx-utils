@@ -89,6 +89,13 @@ export class StateService {
         return this.router.config;
     }
 
+    get $observable(): Observable<ActivatedRouteSnapshot> {
+        return this.$snapshot.pipe(
+            skipWhile(snapshot => snapshot === emptySnapshot),
+            debounceTime(25)
+        )
+    }
+
     constructor(readonly injector: Injector,
                 readonly zone: NgZone,
                 readonly universal: UniversalService,
@@ -189,10 +196,7 @@ export class StateService {
     }
 
     subscribe(osOrNext?: Partial<Observer<ActivatedRouteSnapshot>> | ((value: ActivatedRouteSnapshot) => void)): Subscription {
-        return this.$snapshot.pipe(
-            skipWhile(snapshot => snapshot === emptySnapshot),
-            debounceTime(25)
-        ).subscribe(osOrNext);
+        return this.$observable.subscribe(osOrNext);
     }
 
     protected openInNewWindow(tree: UrlTree, target: string): boolean {
