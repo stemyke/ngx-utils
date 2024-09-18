@@ -6,7 +6,7 @@ import {ObjectUtils} from "../utils/object.utils";
 })
 export class GetValuePipe implements PipeTransform {
 
-    transform(value: any, path: string): any {
-        return !value ? value : ObjectUtils.getValue(value, path);
+    transform(value: any, path: string, defaultVal: any = ""): any {
+        return !value ? value : ObjectUtils.getValue(value, path, defaultVal);
     }
 }
