@@ -153,6 +153,7 @@ export {FindPipe} from "./ngx-utils/pipes/find.pipe";
 export {FormatNumberPipe} from "./ngx-utils/pipes/format-number.pipe";
 export {GetOffsetPipe} from "./ngx-utils/pipes/get-offset.pipe";
 export {GetTypePipe} from "./ngx-utils/pipes/get-type.pipe";
+export {GetValuePipe} from "./ngx-utils/pipes/get-value.pipe";
 export {GlobalTemplatePipe} from "./ngx-utils/pipes/global-template.pipe";
 export {GroupByPipe} from "./ngx-utils/pipes/group-by.pipe";
 export {IsTypePipe} from "./ngx-utils/pipes/is-type.pipe";

@@ -53,6 +53,7 @@ import {FindPipe} from "./pipes/find.pipe";
 import {FormatNumberPipe} from "./pipes/format-number.pipe";
 import {GetOffsetPipe} from "./pipes/get-offset.pipe";
 import {GetTypePipe} from "./pipes/get-type.pipe";
+import {GetValuePipe} from "./pipes/get-value.pipe";
 import {GlobalTemplatePipe} from "./pipes/global-template.pipe";
 import {GroupByPipe} from "./pipes/group-by.pipe";
 import {IsTypePipe} from "./pipes/is-type.pipe";
@@ -87,6 +88,7 @@ export const pipes = [
     FormatNumberPipe,
     GetOffsetPipe,
     GetTypePipe,
+    GetValuePipe,
     GlobalTemplatePipe,
     GroupByPipe,
     IsTypePipe,
