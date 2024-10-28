@@ -40,22 +40,18 @@ export class ObservableUtils {
         const subscriptions: Subscription[] = [];
         subscribers.forEach(info => {
             let alreadyCalled = false;
-            const timer = info.timeout > 0 ? TimerUtils.createTimeout() : 0;
-            const cb = timer ? function () {
-                const args = Array.from(arguments);
-                timer.set(() => {
-                    info.cb.apply(null, args);
-                }, info.timeout);
-            } : info.cb;
+            const timer = TimerUtils.createTimeout();
             info.subjects.forEach(subject => {
                 const ss = subject.subscribe((value) => {
                     alreadyCalled = true;
-                    cb.call(null, subject, value);
+                    timer.set(() => {
+                        info.cb(subject, value);
+                    }, info.timeout ?? 0);
                 });
                 subscriptions.push(ss);
             });
             if (alreadyCalled) return;
-            cb();
+            info.cb();
         });
         return ObservableUtils.multiSubscription(...subscriptions);
     }
