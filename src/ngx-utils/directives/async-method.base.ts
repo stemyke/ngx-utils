@@ -1,10 +1,19 @@
-import {Directive, EventEmitter, HostBinding, HostListener, Inject, Input, Output} from "@angular/core";
+import {
+    ChangeDetectorRef,
+    Directive,
+    EventEmitter,
+    HostBinding,
+    HostListener,
+    Inject,
+    Input, OnChanges,
+    Output
+} from "@angular/core";
 import {AsyncMethod, IAsyncMessage, IToasterService, TOASTER_SERVICE} from "../common-types";
 
 @Directive({
     selector: "[__asmb__]"
 })
-export class AsyncMethodBase {
+export class AsyncMethodBase implements OnChanges {
 
     @Input() disabled: boolean;
     @Input() context: any;
@@ -24,13 +33,17 @@ export class AsyncMethodBase {
         return this.loading;
     }
 
-    constructor(@Inject(TOASTER_SERVICE) protected toaster: IToasterService) {
+    constructor(@Inject(TOASTER_SERVICE) protected toaster: IToasterService, protected cdr: ChangeDetectorRef) {
         this.onSuccess = new EventEmitter<IAsyncMessage>();
         this.onError = new EventEmitter<IAsyncMessage>();
     }
 
     protected getMethod(): AsyncMethod {
         return async () => null;
+    }
+
+    ngOnChanges(): void {
+        this.cdr.detectChanges();
     }
 
     @HostListener("click", ["$event"])
@@ -64,6 +77,10 @@ export class AsyncMethodBase {
             this.loading = false;
             this.onError.emit(reason);
             this.toaster.error(reason.message, reason.context);
+        }).finally(() => {
+            if (!this.cdr["destroyed"]) {
+                this.cdr.detectChanges();
+            }
         });
         return true;
     }
