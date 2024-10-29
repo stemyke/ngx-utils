@@ -112,6 +112,7 @@ export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
+export {CancelablePromise, cancelablePromise, impatientPromise} from "./ngx-utils/utils/promise.utils";
 export {StringUtils} from "./ngx-utils/utils/string.utils";
 export {SetUtils} from "./ngx-utils/utils/set.utils";
 export {TimerUtils} from "./ngx-utils/utils/timer.utils";
