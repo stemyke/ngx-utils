@@ -3,6 +3,7 @@ import {IExtraProperties} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 
 @Pipe({
+    standalone: false,
     name: "extraItemProperties"
 })
 export class ExtraItemPropertiesPipe implements PipeTransform {

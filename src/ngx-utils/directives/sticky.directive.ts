@@ -5,6 +5,7 @@ import {TimerUtils} from "../utils/timer.utils";
 import {EventsService} from "../services/events.service";
 
 @Directive({
+    standalone: false,
     selector: "[sticky]"
 })
 export class StickyDirective implements OnInit, OnDestroy {

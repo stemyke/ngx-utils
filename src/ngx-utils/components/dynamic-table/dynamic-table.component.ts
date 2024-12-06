@@ -26,6 +26,7 @@ import {PaginationDirective} from "../../directives/pagination.directive";
 import {UniqueUtils} from "../../utils/unique.utils";
 
 @Component({
+    standalone: false,
     selector: "dynamic-table",
     templateUrl: "./dynamic-table.component.html",
 })

@@ -4,6 +4,7 @@ import {ObjectUtils} from "../utils/object.utils";
 
 @Injectable()
 @Pipe({
+    standalone: false,
     name: "translate",
     pure: false
 })

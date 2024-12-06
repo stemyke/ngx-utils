@@ -2,6 +2,7 @@ import {Pipe, PipeTransform} from "@angular/core";
 import {ObjectUtils} from "../utils/object.utils";
 
 @Pipe({
+    standalone: false,
     name: "getOffset"
 })
 export class GetOffsetPipe implements PipeTransform {

@@ -3,6 +3,7 @@ import {ObjectUtils} from "../utils/object.utils";
 import {ArrayUtils} from "../utils/array.utils";
 
 @Pipe({
+    standalone: false,
     name: "min"
 })
 export class MinPipe implements PipeTransform {

@@ -11,6 +11,7 @@ import {
 import {AsyncMethod, IAsyncMessage, IToasterService, TOASTER_SERVICE} from "../common-types";
 
 @Directive({
+    standalone: false,
     selector: "[__asmb__]"
 })
 export class AsyncMethodBase implements OnChanges {

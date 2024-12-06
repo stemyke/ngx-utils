@@ -6,6 +6,7 @@ export function defaultFilter() {
 }
 
 @Pipe({
+    standalone: false,
     name: "find"
 })
 export class FindPipe implements PipeTransform {

@@ -6,6 +6,7 @@ import {PaginationDirective} from "../../directives/pagination.directive";
 import {ICON_SERVICE, IIconService} from "../../common-types";
 
 @Component({
+    standalone: false,
     selector: "pagination-menu",
     templateUrl: "./pagination-menu.component.html"
 })

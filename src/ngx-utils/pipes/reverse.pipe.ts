@@ -4,6 +4,7 @@ import {ObjectUtils} from "../utils/object.utils";
 const emptyArray: any[] = [];
 
 @Pipe({
+    standalone: false,
     name: "reverse"
 })
 export class ReversePipe implements PipeTransform {

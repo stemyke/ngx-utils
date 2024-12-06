@@ -14,6 +14,7 @@ import {ObjectUtils} from "../../utils/object.utils";
 import {UnorderedListTemplateDirective} from "../../directives/unordered-list-template.directive";
 
 @Component({
+    standalone: false,
     selector: "unordered-list",
     templateUrl: "./unordered-list.component.html"
 })

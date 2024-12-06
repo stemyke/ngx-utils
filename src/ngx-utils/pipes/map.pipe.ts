@@ -6,6 +6,7 @@ export function defaultMapper(item) {
 }
 
 @Pipe({
+    standalone: false,
     name: "map"
 })
 export class MapPipe implements PipeTransform {

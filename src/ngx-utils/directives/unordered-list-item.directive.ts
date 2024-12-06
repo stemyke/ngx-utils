@@ -4,6 +4,7 @@ import {ObjectUtils} from "../utils/object.utils";
 import {StringUtils} from "../utils/string.utils";
 
 @Directive({
+    standalone: false,
     selector: "[unorderedListItem]"
 })
 export class UnorderedListItemDirective implements OnChanges {

@@ -6,6 +6,7 @@ export function defaultFilter() {
 }
 
 @Pipe({
+    standalone: false,
     name: "filter"
 })
 export class FilterPipe implements PipeTransform {

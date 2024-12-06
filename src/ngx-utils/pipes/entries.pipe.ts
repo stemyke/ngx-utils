@@ -10,6 +10,7 @@ export interface IEntry {
 const emptyEntries: IEntry[] = [];
 
 @Pipe({
+    standalone: false,
     name: "entries"
 })
 export class EntriesPipe implements PipeTransform {

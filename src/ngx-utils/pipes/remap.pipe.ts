@@ -4,6 +4,7 @@ import {ObjectUtils} from "../utils/object.utils";
 const empty: any = {};
 
 @Pipe({
+    standalone: false,
     name: "remap"
 })
 export class RemapPipe implements PipeTransform {

@@ -11,6 +11,7 @@ import {
 import {ObjectUtils} from "../utils/object.utils";
 
 @Directive({
+    standalone: false,
     selector: "[ngxTemplateOutlet]"
 })
 export class NgxTemplateOutletDirective implements OnChanges, DoCheck {

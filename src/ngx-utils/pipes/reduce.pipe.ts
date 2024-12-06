@@ -6,6 +6,7 @@ export function defaultReducer(result) {
 }
 
 @Pipe({
+    standalone: false,
     name: "reduce"
 })
 export class ReducePipe implements PipeTransform {

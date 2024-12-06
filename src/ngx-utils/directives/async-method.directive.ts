@@ -3,6 +3,7 @@ import {AsyncMethod} from "../common-types";
 import {AsyncMethodBase} from "./async-method.base";
 
 @Directive({
+    standalone: false,
     selector: "[async-method]",
     exportAs: "async-method"
 })

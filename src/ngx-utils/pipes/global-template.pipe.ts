@@ -3,6 +3,7 @@ import {Subscription} from "rxjs";
 import {GlobalTemplateService} from "../services/global-template.service";
 
 @Pipe({
+    standalone: false,
     pure: false,
     name: "globalTemplate"
 })

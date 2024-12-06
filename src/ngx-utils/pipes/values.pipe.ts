@@ -4,6 +4,7 @@ import {ObjectUtils} from "../utils/object.utils";
 const emptyValues: any[] = [];
 
 @Pipe({
+    standalone: false,
     name: "values"
 })
 export class ValuesPipe implements PipeTransform {

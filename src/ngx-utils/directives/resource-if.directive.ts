@@ -5,6 +5,7 @@ import {FileUtils} from "../utils/file.utils";
 import {UniversalService} from "../services/universal.service";
 
 @Directive({
+    standalone: false,
     selector: "[resourceIf]",
     exportAs: "resourceIf"
 })

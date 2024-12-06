@@ -2,6 +2,7 @@ import {Pipe, PipeTransform} from "@angular/core";
 import {FormatterService} from "../services/formatter.service";
 
 @Pipe({
+    standalone: false,
     name: "round"
 })
 export class RoundPipe implements PipeTransform {

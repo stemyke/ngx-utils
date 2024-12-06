@@ -3,6 +3,7 @@ import {Subscription} from "rxjs";
 import {EventsService} from "../services/events.service";
 
 @Directive({
+    standalone: false,
     selector: "[stickyClass]"
 })
 export class StickyClassDirective implements OnInit, OnDestroy {

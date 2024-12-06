@@ -17,6 +17,7 @@ import {Subscription} from "rxjs";
 import {ICON_SERVICE, IIconService} from "../common-types";
 
 @Directive({
+    standalone: false,
     selector: "[icon]"
 })
 export class IconDirective implements OnChanges, OnInit, OnDestroy {

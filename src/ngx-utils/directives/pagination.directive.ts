@@ -3,6 +3,7 @@ import {IPaginationData, ITimer, PaginationDataLoader, PaginationItemContext} fr
 import {TimerUtils} from "../utils/timer.utils";
 
 @Directive({
+    standalone: false,
     selector: "[pagination]",
     exportAs: "pagination"
 })

@@ -3,6 +3,7 @@ import {IGroupMap} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 
 @Pipe({
+    standalone: false,
     name: "groupBy"
 })
 export class GroupByPipe implements PipeTransform {

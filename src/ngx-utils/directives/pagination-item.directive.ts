@@ -3,6 +3,7 @@ import {Subscription} from "rxjs";
 import {PaginationDirective} from "./pagination.directive";
 
 @Directive({
+    standalone: false,
     selector: "[paginationItem]"
 })
 export class PaginationItemDirective implements OnInit, OnDestroy {

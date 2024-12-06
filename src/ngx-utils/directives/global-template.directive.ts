@@ -2,6 +2,7 @@ import {Directive, Input, OnDestroy, OnInit, TemplateRef} from "@angular/core";
 import {GlobalTemplateService} from "../services/global-template.service";
 
 @Directive({
+    standalone: false,
     selector: "[globalTemplate]"
 })
 export class GlobalTemplateDirective implements OnInit, OnDestroy {

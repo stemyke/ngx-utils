@@ -2,6 +2,7 @@ import {Directive, Input, TemplateRef} from "@angular/core";
 import {UnorderedListTemplate} from "../common-types";
 
 @Directive({
+    standalone: false,
     selector: "ng-template[type][selector]"
 })
 

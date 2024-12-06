@@ -7,6 +7,7 @@ const defaultClass = "default-image";
 const loadingClass = "loading-image";
 
 @Directive({
+    standalone: false,
     selector: "[background]"
 })
 export class BackgroundDirective implements OnChanges {
