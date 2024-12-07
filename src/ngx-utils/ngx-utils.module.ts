@@ -86,6 +86,8 @@ export function loadBaseHref(baseUrl: string): string {
     ],
     exports: [
         ...pipes,
+        ...directives,
+        ...components,
         FormsModule
     ],
     providers: pipes
