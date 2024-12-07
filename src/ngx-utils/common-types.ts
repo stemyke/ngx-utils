@@ -505,6 +505,7 @@ export class IConfiguration {
     baseUrl?: string;
     baseDomain?: string;
     translationUrl?: string;
+    translationExt?: string;
     [key: string]: any;
 }
 

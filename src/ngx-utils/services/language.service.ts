@@ -95,7 +95,8 @@ export class LanguageService extends StaticLanguageService {
     protected loadDictionary(): Promise<any> {
         const lang = this.currentLanguage;
         this.translationRequests[lang] = this.translationRequests[lang] || new Promise(resolve => {
-            this.httpClient.get(`${this.config.translationUrl}${lang}`).toPromise().then(response => {
+            const ext = this.config.translationExt || ``;
+            this.httpClient.get(`${this.config.translationUrl}${lang}${ext}`).toPromise().then(response => {
                 response = response || {};
                 resolve(Object.keys(response).reduce((result, key) => {
                     result[key.toLocaleLowerCase()] = response[key];
@@ -109,7 +110,8 @@ export class LanguageService extends StaticLanguageService {
     }
 
     protected loadSettings(): Promise<ILanguageSettings> {
-        this.settingsPromise = this.settingsPromise || (this.client.get(`${this.config.translationUrl}languageSettings`).toPromise())
+        const ext = this.config.translationExt || ``;
+        this.settingsPromise = this.settingsPromise || (this.client.get(`${this.config.translationUrl}languageSettings${ext}`).toPromise())
             .then(
                 (settings: ILanguageSettings) => {
                     return settings;
