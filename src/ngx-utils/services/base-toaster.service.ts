@@ -6,17 +6,13 @@ export class BaseToasterService implements IToasterService {
 
     protected colorMap: Record<ToastType, string>;
 
-    constructor(@Inject(LANGUAGE_SERVICE) private language: ILanguageService) {
+    constructor(@Inject(LANGUAGE_SERVICE) protected language: ILanguageService) {
         this.colorMap = {
             info: "#2F96B4",
             success: "#51A351",
             warning: "#F89406",
             error: "#BD362F"
         };
-    }
-
-    error(message: string, params?: any): void {
-        this.translateMessage(message, params, "error");
     }
 
     info(message: string, params?: any): void {
@@ -29,6 +25,10 @@ export class BaseToasterService implements IToasterService {
 
     warning(message: string, params?: any): void {
         this.translateMessage(message, params, "warning");
+    }
+
+    error(message: string, params?: any): void {
+        this.translateMessage(message, params, "error");
     }
 
     handleAsyncMethod(method: AsyncMethod): void {

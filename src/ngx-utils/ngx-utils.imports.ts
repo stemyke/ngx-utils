@@ -12,7 +12,7 @@ import {StaticAuthService} from "./services/auth.service";
 import {BaseHttpClient} from "./services/base-http.client";
 import {BaseHttpService} from "./services/base-http.service";
 import {ConfigService} from "./services/config.service";
-import {DialogService} from "./services/dialog.service";
+import {BaseDialogService} from "./services/base-dialog.service";
 import {ErrorHandlerService} from "./services/error-handler.service";
 import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
@@ -25,7 +25,7 @@ import {OpenApiService} from "./services/open-api.service";
 import {StateService} from "./services/state.service";
 import {StaticLanguageService} from "./services/static-language.service";
 import {StorageService} from "./services/storage.service";
-import {BaseToasterService} from "./services/toaster.service";
+import {BaseToasterService} from "./services/base-toaster.service";
 import {TranslatedUrlSerializer} from "./services/translated-url.serializer";
 import {UniversalService} from "./services/universal.service";
 import {WasmService} from "./services/wasm.service";
@@ -145,7 +145,7 @@ export const providers = [
     ApiService,
     StaticAuthService,
     ConfigService,
-    DialogService,
+    BaseDialogService,
     ErrorHandlerService,
     EventsService,
     FormatterService,

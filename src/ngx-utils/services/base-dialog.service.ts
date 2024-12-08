@@ -2,7 +2,7 @@ import {Inject, Injectable} from "@angular/core";
 import {IConfirmDialogConfig, IDialogConfig, IDialogService, IToasterService, TOASTER_SERVICE} from "../common-types";
 
 @Injectable()
-export class DialogService implements IDialogService {
+export class BaseDialogService implements IDialogService {
 
     constructor(@Inject(TOASTER_SERVICE) readonly toaster: IToasterService) {
     }

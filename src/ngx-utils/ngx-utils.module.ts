@@ -30,11 +30,11 @@ import {ApiService} from "./services/api.service";
 import {StaticAuthService} from "./services/auth.service";
 import {IconService} from "./services/icon.service";
 import {StaticLanguageService} from "./services/static-language.service";
-import {BaseToasterService} from "./services/toaster.service";
+import {BaseToasterService} from "./services/base-toaster.service";
 import {PromiseService} from "./services/promise.service";
 import {ConfigService} from "./services/config.service";
 import {Wasi} from "./utils/wasi";
-import {DialogService} from "./services/dialog.service";
+import {BaseDialogService} from "./services/base-dialog.service";
 
 export function loadBaseUrl(): string {
     if (typeof (document) === "undefined" || typeof (location) === "undefined") return "/";
@@ -129,7 +129,7 @@ export class NgxUtilsModule {
             },
             {
                 provide: DIALOG_SERVICE,
-                useExisting: (!config ? null : config.dialogService) || DialogService
+                useExisting: (!config ? null : config.dialogService) || BaseDialogService
             },
             {
                 provide: WASI_IMPLEMENTATION,
