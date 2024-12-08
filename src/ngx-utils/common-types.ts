@@ -127,14 +127,60 @@ export enum StorageMode {
 }
 
 // --- Toaster Service ---
+export type ToastType = "info" | "success" | "warning" | "error";
+
 export interface IToasterService {
-    error(message: string, params?: any, title?: string): void;
-    info(message: string, params?: any, title?: string): void;
-    success(message: string, params?: any, title?: string): void;
-    warning(message: string, params?: any, title?: string): void;
+    error(message: string, params?: any): void;
+    info(message: string, params?: any): void;
+    success(message: string, params?: any): void;
+    warning(message: string, params?: any): void;
+    handleAsyncMethod(method: AsyncMethod, context?: any): void
 }
 
 export const TOASTER_SERVICE: InjectionToken<IToasterService> = new InjectionToken<IToasterService>("toaster-service");
+
+// --- Dialog service ---
+export interface IDialogButtonConfig {
+    icon?: string;
+    text?: string;
+    classes?: string;
+    method?: AsyncMethod;
+}
+
+export interface IDialogConfig {
+    id?: string;
+    title?: string;
+    message: string;
+    messageContext?: any;
+    buttons?: IDialogButtonConfig[];
+    onClose?: AsyncMethod;
+    size?: string;
+    type?: string;
+    templates?: { [id: string]: TemplateRef<any> };
+}
+
+export interface IConfirmDialogConfig {
+    id?: string;
+    title?: string;
+    message: string;
+    messageContext?: any;
+    buttons?: IDialogButtonConfig[];
+    method?: AsyncMethod;
+    cancelMethod?: AsyncMethod;
+    size?: string;
+    templates?: { [id: string]: TemplateRef<any> };
+    okText?: string;
+    okClasses?: string;
+    cancelText?: string;
+    cancelClasses?: string;
+}
+
+export interface IDialogService {
+    dialog(config: IDialogConfig): void;
+    confirm(config: IConfirmDialogConfig): void
+}
+
+export const DIALOG_SERVICE = new InjectionToken<IDialogService>("dialog-service");
 
 // --- Promise Service ---
 
@@ -554,6 +600,7 @@ export interface IModuleConfig {
     toasterService?: Type<IToasterService>;
     promiseService?: Type<IPromiseService>;
     configService?: Type<IConfigService>;
+    dialogService?: Type<IDialogService>;
     wasiImplementation?: Type<IWasi>;
     initializeApp?: (injector: Injector) => AppInitializerFunc;
     baseUrl?: (injector: Injector) => string;

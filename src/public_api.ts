@@ -20,6 +20,11 @@ export {
     IRoute,
     AUTH_SERVICE,
     IAclComponent,
+    IDialogButtonConfig,
+    IDialogConfig,
+    IConfirmDialogConfig,
+    IDialogService,
+    DIALOG_SERVICE,
     IPromiseService,
     PROMISE_SERVICE,
     IWasi,
@@ -30,6 +35,7 @@ export {
     IRouteStateInfo,
     NavigationUrlParam,
     StorageMode,
+    ToastType,
     IToasterService,
     TOASTER_SERVICE,
     IAsyncMessage,
@@ -128,6 +134,7 @@ export {StaticAuthService} from "./ngx-utils/services/auth.service";
 export {BaseHttpClient} from "./ngx-utils/services/base-http.client";
 export {BaseHttpService} from "./ngx-utils/services/base-http.service";
 export {ConfigService} from "./ngx-utils/services/config.service";
+export {DialogService} from "./ngx-utils/services/dialog.service";
 export {ErrorHandlerService} from "./ngx-utils/services/error-handler.service";
 export {EventsService} from "./ngx-utils/services/events.service";
 export {FormatterService} from "./ngx-utils/services/formatter.service";
@@ -139,7 +146,7 @@ export {OpenApiService} from "./ngx-utils/services/open-api.service";
 export {IStateInfo, StateService} from "./ngx-utils/services/state.service";
 export {StaticLanguageService} from "./ngx-utils/services/static-language.service";
 export {StorageService} from "./ngx-utils/services/storage.service";
-export {ConsoleToasterService} from "./ngx-utils/services/toaster.service";
+export {BaseToasterService} from "./ngx-utils/services/toaster.service";
 export {IUrlDictionary, TranslatedUrlSerializer} from "./ngx-utils/services/translated-url.serializer";
 export {PromiseService} from "./ngx-utils/services/promise.service";
 

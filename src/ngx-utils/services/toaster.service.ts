@@ -1,30 +1,56 @@
 import {Inject, Injectable} from "@angular/core";
-import {ILanguageService, IToasterService, LANGUAGE_SERVICE} from "../common-types";
+import {AsyncMethod, ILanguageService, IToasterService, LANGUAGE_SERVICE, ToastType} from "../common-types";
 
 @Injectable()
-export class ConsoleToasterService implements IToasterService {
+export class BaseToasterService<T = any> implements IToasterService {
+
+    protected colorMap: Record<ToastType, string>;
 
     constructor(@Inject(LANGUAGE_SERVICE) private language: ILanguageService) {
-
+        this.colorMap = {
+            info: "#2F96B4",
+            success: "#51A351",
+            warning: "#F89406",
+            error: "#BD362F"
+        };
     }
 
-    error(message: string, params?: any, title?: string): void {
-        this.translateMessage(message, params, str => console.log(str, title, "background: #BD362F; color: #ffffff"));
+    error(message: string, params?: any): void {
+        this.translateMessage(message, params, "error");
     }
 
-    info(message: string, params?: any, title?: string): void {
-        this.translateMessage(message, params, str => console.log(str, title, "background: #2F96B4; color: #ffffff"));
+    info(message: string, params?: any): void {
+        this.translateMessage(message, params, "info");
     }
 
-    success(message: string, params?: any, title?: string): void {
-        this.translateMessage(message, params, str => console.log(str, title, "background: #51A351; color: #ffffff"));
+    success(message: string, params?: any): void {
+        this.translateMessage(message, params, "success");
     }
 
-    warning(message: string, params?: any, title?: string): void {
-        this.translateMessage(message, params, str => console.log(str, title, "background: #F89406; color: #ffffff"));
+    warning(message: string, params?: any): void {
+        this.translateMessage(message, params, "warning");
     }
 
-    private translateMessage(message: string, params: any, callback: (message: string) => void): void {
-        this.language.getTranslation(message, params).then(callback);
+    handleAsyncMethod(method: AsyncMethod): void {
+        if (!method) return;
+        method().then(result => {
+            if (result) {
+                this.success(result.message, result.context);
+            }
+        }, reason => {
+            if (!reason || !reason.message)
+                throw new Error("Reason must implement IAsyncMessage interface");
+            this.error(reason.message, reason.context);
+        });
+    }
+
+    protected translateMessage(message: string, params: any, type: ToastType): void {
+        this.language.getTranslation(message, params).then(str => {
+            this.show(message, type);
+        });
+    }
+
+    protected show(message: string, type: ToastType): any {
+        console.log(message, `background: ${this.colorMap[type]}; color: #ffffff`)
     }
 }

@@ -24,7 +24,7 @@ import {OpenApiService} from "./services/open-api.service";
 import {StateService} from "./services/state.service";
 import {StaticLanguageService} from "./services/static-language.service";
 import {StorageService} from "./services/storage.service";
-import {ConsoleToasterService} from "./services/toaster.service";
+import {BaseToasterService} from "./services/toaster.service";
 import {TranslatedUrlSerializer} from "./services/translated-url.serializer";
 import {UniversalService} from "./services/universal.service";
 import {WasmService} from "./services/wasm.service";
@@ -156,7 +156,7 @@ export const providers = [
     StateService,
     StaticLanguageService,
     StorageService,
-    ConsoleToasterService,
+    BaseToasterService,
     TranslatedUrlSerializer,
     UniversalService,
     WasmService,
