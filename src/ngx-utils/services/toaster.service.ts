@@ -2,7 +2,7 @@ import {Inject, Injectable} from "@angular/core";
 import {AsyncMethod, ILanguageService, IToasterService, LANGUAGE_SERVICE, ToastType} from "../common-types";
 
 @Injectable()
-export class BaseToasterService<T = any> implements IToasterService {
+export class BaseToasterService implements IToasterService {
 
     protected colorMap: Record<ToastType, string>;
 

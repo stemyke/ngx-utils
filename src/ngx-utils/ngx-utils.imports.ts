@@ -12,6 +12,7 @@ import {StaticAuthService} from "./services/auth.service";
 import {BaseHttpClient} from "./services/base-http.client";
 import {BaseHttpService} from "./services/base-http.service";
 import {ConfigService} from "./services/config.service";
+import {DialogService} from "./services/dialog.service";
 import {ErrorHandlerService} from "./services/error-handler.service";
 import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
@@ -144,6 +145,7 @@ export const providers = [
     ApiService,
     StaticAuthService,
     ConfigService,
+    DialogService,
     ErrorHandlerService,
     EventsService,
     FormatterService,
