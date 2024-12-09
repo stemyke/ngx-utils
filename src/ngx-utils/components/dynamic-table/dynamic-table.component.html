@@ -62,9 +62,9 @@
                     <tr *ngIf="hasQuery">
                         <th *ngFor="let column of cols" [ngClass]="['column-' + column, 'filter-column']">
                             <ng-container *ngIf="realColumns[column].filter">
-                                <input type="text"
-                                       class="form-control"
+                                <input class="form-control"
                                        [attr.data-testid]="testId + '-filter-' + column"
+                                       [type]="realColumns[column].filterType || 'text'"
                                        [placeholder]="realColumns[column].title | translate"
                                        [ngModel]="query[column]"
                                        (ngModelChange)="updateQuery(column, $event)"/>

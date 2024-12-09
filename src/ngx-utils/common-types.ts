@@ -509,6 +509,7 @@ export interface ITableColumn {
     title?: string;
     sort?: string;
     filter?: boolean;
+    filterType?: "text" | "checkbox";
     [key: string]: any;
 }
 
@@ -529,7 +530,7 @@ export interface ITableTemplates {
 }
 
 export interface ITableDataQuery {
-    [column: string]: string;
+    [column: string]: string | boolean;
 }
 
 export type TableDataLoader = (

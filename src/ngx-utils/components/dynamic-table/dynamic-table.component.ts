@@ -171,7 +171,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.refresh();
     }
 
-    updateQuery(col: string, value: string): void {
+    updateQuery(col: string, value: string | boolean): void {
         if (!value) {
             delete this.query[col];
         } else {
