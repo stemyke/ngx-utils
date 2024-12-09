@@ -146,6 +146,11 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             }, {} as ITableColumns);
             this.cols = Object.keys(this.realColumns);
             this.orderBy = this.orderBy in this.realColumns ? this.orderBy : this.cols[0];
+            this.query = this.cols.reduce((res, c) => {
+                const col = this.realColumns[c];
+                res[c] = col.filterType == "checkbox" ? false : "";
+                return res;
+            }, {});
         }
         this.hasQuery = this.cols.some(col => this.realColumns[col].filter);
         if (changes.orderBy && this.realColumns) {
@@ -171,11 +176,15 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.refresh();
     }
 
-    updateQuery(col: string, value: string | boolean): void {
-        if (!value) {
-            delete this.query[col];
+    updateQuery(c: string, value: string | boolean): void {
+        const col = this.realColumns[c];
+        if (!col) return;
+        if (col.filterType === "checkbox") {
+            this.query[c] = !this.query[c]
+        } else if (!value) {
+            delete this.query[c];
         } else {
-            this.query[col] = value;
+            this.query[c] = value;
         }
         this.refresh(this.filterTime ?? 300);
     }
