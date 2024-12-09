@@ -160,7 +160,7 @@ export class StaticLanguageService implements ILanguageService {
     protected interpolateString(expr: string, params?: any) {
         if (!expr || !params) return expr;
         return expr.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, b: string) => {
-            const r = ObjectUtils.getValue(params, b);
+            const r = ObjectUtils.getValue(params, b, "");
             return ObjectUtils.isDefined(r) ? r : substring;
         });
     }
