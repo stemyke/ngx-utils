@@ -12,6 +12,7 @@ import {
     ViewChild
 } from "@angular/core";
 import {
+    DynamicTableDragHandler,
     IPaginationData,
     ITableColumns,
     ITableDataQuery,
@@ -51,6 +52,9 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() orderDescending: boolean;
     @Input() testId: string;
     @Input() titlePrefix: string;
+    @Input() dragStartFn: DynamicTableDragHandler;
+    @Input() dragEnterFn: DynamicTableDragHandler;
+    @Input() dropFn: DynamicTableDragHandler;
 
     tableId: string;
     templates: ITableTemplates;
@@ -158,6 +162,43 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         }
         if (!changes.data && !changes.parallelData && !changes.itemsPerPage && !changes.orderBy && !changes.orderDescending) return;
         this.refresh();
+    }
+
+    onDragStart(ev: DragEvent, elem: HTMLElement, item: any): boolean {
+        if (!ev) return true;
+        if (!elem || !item || !ObjectUtils.isFunction(this.dragStartFn)) {
+            return false;
+        }
+        ev.dataTransfer.setData("itemData", JSON.stringify(item));
+        ev.dataTransfer.setData(item.type, JSON.stringify(item));
+        return this.dragStartFn({ev, elem, item});
+    }
+
+    onDragEnter(ev: DragEvent, elem: HTMLElement, item: any): boolean {
+        if (!ev) return true;
+        ev.preventDefault();
+        if (!elem || !item || !ObjectUtils.isFunction(this.dragEnterFn)) {
+            ev.dataTransfer.effectAllowed = "none";
+            ev.dataTransfer.dropEffect = "none";
+            return false;
+        }
+        return this.dragEnterFn({ev, elem, item});
+    }
+
+    onDragOver(ev: DragEvent): boolean {
+        if (!ev) return true;
+        ev.preventDefault();
+        return false;
+    }
+
+    onDrop(ev: DragEvent, elem: HTMLElement, item: any): boolean {
+        if (!ev) return true;
+        ev.preventDefault();
+        if (!elem || !item || !ObjectUtils.isFunction(this.dropFn)) {
+            return false;
+        }
+        const source = JSON.parse(ev.dataTransfer.getData("itemData"));
+        return this.dropFn({ev, elem, item, source});
     }
 
     refresh(time?: number): void {

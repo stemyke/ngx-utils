@@ -38,7 +38,12 @@
         </ng-template>
 
         <ng-template #defaultRowTemplate let-context>
-            <tr>
+            <tr draggable="true"
+                #elem
+                (dragstart)="onDragStart($event, elem, context.item)"
+                (dragenter)="onDragEnter($event, elem, context.item)"
+                (dragover)="onDragOver($event)"
+                (drop)="onDrop($event, elem, context.item)">
                 <ng-container [ngxTemplateOutlet]="columnsTemplate" [context]="context"></ng-container>
             </tr>
         </ng-template>

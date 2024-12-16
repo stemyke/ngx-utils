@@ -82,6 +82,8 @@ export {
     ITableTemplates,
     ITableDataQuery,
     TableDataLoader,
+    ITableDragEvent,
+    DynamicTableDragHandler,
     ResourceIfContext,
     APP_BASE_URL,
     IConfiguration,

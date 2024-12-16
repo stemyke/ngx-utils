@@ -538,6 +538,15 @@ export type TableDataLoader = (
     filter: string, query: ITableDataQuery
 ) => Promise<IPaginationData>;
 
+export interface ITableDragEvent<T = any> {
+    ev: DragEvent;
+    elem: HTMLElement;
+    item: T;
+    source?: T;
+}
+
+export type DynamicTableDragHandler = (ev: ITableDragEvent) => boolean;
+
 // --- Resource if ---
 export class ResourceIfContext {
     resource: string;
