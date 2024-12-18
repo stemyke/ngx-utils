@@ -54,7 +54,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() titlePrefix: string;
     @Input() dragStartFn: DynamicTableDragHandler;
     @Input() dragEnterFn: DynamicTableDragHandler;
-    @Input() dropFn: DynamicTableDragHandler;
+    @Input() dropFn: DynamicTableDragHandler<void>;
 
     tableId: string;
     templates: ITableTemplates;
