@@ -152,6 +152,8 @@ export {BaseToasterService} from "./ngx-utils/services/base-toaster.service";
 export {IUrlDictionary, TranslatedUrlSerializer} from "./ngx-utils/services/translated-url.serializer";
 export {PromiseService} from "./ngx-utils/services/promise.service";
 
+export {DragEventListener} from "./ngx-utils/plugins/drag-drop-handler";
+export {DragDropEventPlugin} from "./ngx-utils/plugins/drag-drop-event.plugin";
 export {ResizeEventPlugin} from "./ngx-utils/plugins/resize-event.plugin";
 export {ScrollEventPlugin} from "./ngx-utils/plugins/scroll-event.plugin";
 

@@ -29,6 +29,7 @@ import {BaseToasterService} from "./services/base-toaster.service";
 import {TranslatedUrlSerializer} from "./services/translated-url.serializer";
 import {UniversalService} from "./services/universal.service";
 import {WasmService} from "./services/wasm.service";
+import {DragDropEventPlugin} from "./plugins/drag-drop-event.plugin";
 import {ResizeEventPlugin} from "./plugins/resize-event.plugin";
 import {ScrollEventPlugin} from "./plugins/scroll-event.plugin";
 import {AsyncMethodBase} from "./directives/async-method.base";
@@ -164,6 +165,11 @@ export const providers = [
     WasmService,
     DeviceDetectorService,
     GlobalTemplateService,
+    {
+        provide: EVENT_MANAGER_PLUGINS,
+        useClass: DragDropEventPlugin,
+        multi: true
+    },
     {
         provide: EVENT_MANAGER_PLUGINS,
         useClass: ResizeEventPlugin,

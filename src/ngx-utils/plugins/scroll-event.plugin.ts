@@ -16,7 +16,7 @@ export class ScrollEventPlugin extends EventManagerPlugin {
         super(doc);
     }
 
-    supports(eventName) {
+    supports(eventName: string) {
         return eventName === ScrollEventPlugin.EVENT_NAME;
     }
 
