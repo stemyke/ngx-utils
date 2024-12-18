@@ -545,7 +545,7 @@ export interface ITableDragEvent<T = any> {
     source?: T;
 }
 
-export type DynamicTableDragHandler<R = boolean> = (ev: ITableDragEvent) => boolean;
+export type DynamicTableDragHandler<R = boolean> = (ev: ITableDragEvent) => R;
 
 // --- Resource if ---
 export class ResourceIfContext {

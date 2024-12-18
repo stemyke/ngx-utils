@@ -196,7 +196,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         ev.preventDefault();
         ev.stopPropagation();
         if (!elem || !item || !ObjectUtils.isFunction(this.dropFn)) {
-            return false;
+            return;
         }
         const source = JSON.parse(ev.dataTransfer.getData("itemData"));
         elem.classList.remove("drop-allowed");
