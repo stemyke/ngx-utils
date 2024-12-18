@@ -164,41 +164,50 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.refresh();
     }
 
-    onDragStart(ev: DragEvent, elem: HTMLElement, item: any): boolean {
-        if (!ev) return true;
-        if (!elem || !item || !ObjectUtils.isFunction(this.dragStartFn)) {
-            return false;
+    onDragStart(ev: DragEvent, elem: HTMLElement, item: any) {
+        if (!elem || !item || !ObjectUtils.isFunction(this.dragStartFn) || !this.dragStartFn({ev, elem, item})) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            return;
         }
         ev.dataTransfer.setData("itemData", JSON.stringify(item));
-        ev.dataTransfer.setData(item.type, JSON.stringify(item));
-        return this.dragStartFn({ev, elem, item});
+        ev.dataTransfer.setData(item.type, "type");
+        ev.dataTransfer.setData(item.id, "id");
     }
 
-    onDragEnter(ev: DragEvent, elem: HTMLElement, item: any): boolean {
-        if (!ev) return true;
-        ev.preventDefault();
-        if (!elem || !item || !ObjectUtils.isFunction(this.dragEnterFn)) {
+    onDragEnter(ev: DragEvent, elem: HTMLElement, item: any) {
+        if (!elem || !item || !ObjectUtils.isFunction(this.dragEnterFn) || !this.dragEnterFn({ev, elem, item})) {
             ev.dataTransfer.effectAllowed = "none";
             ev.dataTransfer.dropEffect = "none";
-            return false;
+            return;
         }
-        return this.dragEnterFn({ev, elem, item});
+        ev.dataTransfer.effectAllowed = "move";
+        ev.dataTransfer.dropEffect = "move";
+        elem.classList.add("drop-allowed");
     }
 
-    onDragOver(ev: DragEvent): boolean {
-        if (!ev) return true;
-        ev.preventDefault();
-        return false;
+    onDragLeave(ev: DragEvent, elem: HTMLElement) {
+        if (!ev) return;
+        elem.classList.remove("drop-allowed");
     }
 
-    onDrop(ev: DragEvent, elem: HTMLElement, item: any): boolean {
-        if (!ev) return true;
+    onDrop(ev: DragEvent, elem: HTMLElement, item: any) {
+        if (!ev) return;
         ev.preventDefault();
+        ev.stopPropagation();
         if (!elem || !item || !ObjectUtils.isFunction(this.dropFn)) {
             return false;
         }
+        elem.classList.remove("drop-allowed");
         const source = JSON.parse(ev.dataTransfer.getData("itemData"));
-        return this.dropFn({ev, elem, item, source});
+        if (!this.dropFn({ev, elem, item, source})) {
+            return;
+        }
+        elem.classList.add("dropped");
+        elem.onanimationend = () => {
+            elem.classList.remove("dropped");
+        };
+        setTimeout(elem.onanimationend, 10000);
     }
 
     refresh(time?: number): void {

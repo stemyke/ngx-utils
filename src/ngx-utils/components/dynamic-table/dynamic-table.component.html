@@ -42,7 +42,7 @@
                 #elem
                 (dragstart)="onDragStart($event, elem, context.item)"
                 (dragenter)="onDragEnter($event, elem, context.item)"
-                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event, elem)"
                 (drop)="onDrop($event, elem, context.item)">
                 <ng-container [ngxTemplateOutlet]="columnsTemplate" [context]="context"></ng-container>
             </tr>
