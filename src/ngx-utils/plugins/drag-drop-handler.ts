@@ -1,7 +1,7 @@
 import {KeyValue} from "@angular/common";
 
 export type DragHandlerEvents = "dragstart" | "dragenter" | "dragleave" | "drop";
-export type DragEventListener = (ev: DragEvent) => any;
+export type DragEventListener = (ev: DragEvent) => boolean | void;
 
 export class DragDropHandler {
 

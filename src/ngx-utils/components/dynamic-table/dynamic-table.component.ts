@@ -187,27 +187,26 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     }
 
     onDragLeave(ev: DragEvent, elem: HTMLElement) {
-        if (!ev) return;
+        ev.dataTransfer.effectAllowed = "none";
+        ev.dataTransfer.dropEffect = "none";
         elem.classList.remove("drop-allowed");
     }
 
     onDrop(ev: DragEvent, elem: HTMLElement, item: any) {
-        if (!ev) return;
         ev.preventDefault();
         ev.stopPropagation();
         if (!elem || !item || !ObjectUtils.isFunction(this.dropFn)) {
             return false;
         }
-        elem.classList.remove("drop-allowed");
         const source = JSON.parse(ev.dataTransfer.getData("itemData"));
-        if (!this.dropFn({ev, elem, item, source})) {
-            return;
-        }
-        elem.classList.add("dropped");
-        elem.onanimationend = () => {
+        elem.classList.remove("drop-allowed");
+        this.checkTransitions(elem, () => {
+            this.checkTransitions(elem, () => {
+                this.dropFn({ev, elem, item, source});
+            });
             elem.classList.remove("dropped");
-        };
-        setTimeout(elem.onanimationend, 10000);
+        });
+        elem.classList.add("dropped");
     }
 
     refresh(time?: number): void {
@@ -244,7 +243,25 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query);
     };
 
-    private loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string): Promise<IPaginationData> {
+    protected checkTransitions(el: HTMLElement, cb: () => any): void {
+        let hasTransitions = false;
+        let called = false;
+        const end = () => {
+            if (called) return;
+            called = true;
+            cb();
+        };
+        el.onanimationstart = () => hasTransitions = true;
+        el.ontransitionstart = () => hasTransitions = true;
+        el.onanimationend = end;
+        el.ontransitionend = end;
+        setTimeout(() => {
+            if (hasTransitions) return;
+            end();
+        }, 100);
+    }
+
+    protected loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string): Promise<IPaginationData> {
         if (!this.data) {
             return Promise.resolve({
                 total: 0,
