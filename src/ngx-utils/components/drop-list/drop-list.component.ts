@@ -40,6 +40,7 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
     @Input() labelField: string;
     @Input() value: DropListId[];
     @Input() context: DropListItem[];
+    @Input() prepareItem: (i: DropListItem) => void;
     @Input() checkFn: DragEventHandler<boolean, "data">;
 
     @ContentChild("itemTemplate")
@@ -57,6 +58,9 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
         this.idField = "id";
         this.labelField = "label";
         this.value = [];
+        this.context = [];
+        this.prepareItem = () => {};
+        this.checkFn = () => false;
         this.valueMap = {};
         this.remove = id => {
             this.changeValue(this.value.filter(t => t !== id));
@@ -103,6 +107,9 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
             this.valueMap = this.context?.reduce((res, item) => {
                 // In case this is a dynamic form option which stores real value under props
                 item = Object.assign({}, item, item.props || {});
+                // Prepare item
+                this.prepareItem(item);
+
                 const id = item[this.idField] || item.id;
                 res[id] = item;
                 return res;
