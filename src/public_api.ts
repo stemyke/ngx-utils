@@ -82,6 +82,8 @@ export {
     ITableTemplates,
     ITableDataQuery,
     TableDataLoader,
+    DragDropEvent,
+    DragDropHandler,
     ITableDragEvent,
     DynamicTableDragHandler,
     ResourceIfContext,

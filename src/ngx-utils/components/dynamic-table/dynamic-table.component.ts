@@ -12,7 +12,7 @@ import {
     ViewChild
 } from "@angular/core";
 import {
-    DynamicTableDragHandler,
+    DragDropHandler,
     IPaginationData,
     ITableColumns,
     ITableDataQuery,
@@ -52,9 +52,9 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() orderDescending: boolean;
     @Input() testId: string;
     @Input() titlePrefix: string;
-    @Input() dragStartFn: DynamicTableDragHandler;
-    @Input() dragEnterFn: DynamicTableDragHandler;
-    @Input() dropFn: DynamicTableDragHandler<void>;
+    @Input() dragStartFn: DragDropHandler;
+    @Input() dragEnterFn: DragDropHandler;
+    @Input() dropFn: DragDropHandler<void>;
 
     tableId: string;
     templates: ITableTemplates;
