@@ -1,0 +1,52 @@
+.drop-list {
+    min-height: 100px;
+    border: 2px #bfbfbf dashed;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: left;
+    gap: 10px;
+    background-color: rgba(0, 0, 0, 0.05);
+    transition: 0.2s;
+    flex-wrap: wrap;
+
+    &.drop-allowed {
+        background-color: rgba(0, 0, 0, 0.5);
+        border-color: darkgrey;
+    }
+
+    .drop-list-item {
+        position: relative;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 7px 23px 7px 10px;
+        border-radius: 5px;
+        user-select: none;
+    }
+
+    .drop-list-item-label:not(.just-id) {
+        min-width: 50px;
+        text-align: center;
+    }
+
+    .drop-list-item-label.just-id {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: grey;
+    }
+
+    .drop-list-item-delete {
+        font-size: 14px;
+        line-height: 14px;
+        text-align: center;
+        cursor: pointer;
+        background: #fff;
+        border-radius: 2px;
+        height: 14px;
+        width: 15px;
+        position: absolute;
+        top: 4px;
+        right: 4px;
+    }
+}

@@ -11,8 +11,9 @@ import {
     TemplateRef,
     ViewChild
 } from "@angular/core";
+
 import {
-    DragDropHandler,
+    DragEventHandler,
     IPaginationData,
     ITableColumns,
     ITableDataQuery,
@@ -22,9 +23,11 @@ import {
     TableDataLoader
 } from "../../common-types";
 import {ObjectUtils} from "../../utils/object.utils";
+import {UniqueUtils} from "../../utils/unique.utils";
+import {checkTransitions} from "../../utils/misc";
+
 import {DynamicTableTemplateDirective} from "../../directives/dynamic-table-template.directive";
 import {PaginationDirective} from "../../directives/pagination.directive";
-import {UniqueUtils} from "../../utils/unique.utils";
 
 @Component({
     standalone: false,
@@ -52,9 +55,9 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() orderDescending: boolean;
     @Input() testId: string;
     @Input() titlePrefix: string;
-    @Input() dragStartFn: DragDropHandler;
-    @Input() dragEnterFn: DragDropHandler;
-    @Input() dropFn: DragDropHandler<void>;
+    @Input() dragStartFn: DragEventHandler;
+    @Input() dragEnterFn: DragEventHandler;
+    @Input() dropFn: DragEventHandler<void>;
 
     tableId: string;
     templates: ITableTemplates;
@@ -200,8 +203,8 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         }
         const source = JSON.parse(ev.dataTransfer.getData("itemData"));
         elem.classList.remove("drop-allowed");
-        this.checkTransitions(elem, () => {
-            this.checkTransitions(elem, () => {
+        checkTransitions(elem, () => {
+            checkTransitions(elem, () => {
                 this.dropFn({ev, elem, item, source});
             });
             elem.classList.remove("dropped");
@@ -242,24 +245,6 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         const orderBy = this.realColumns[this.orderBy]?.sort;
         return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query);
     };
-
-    protected checkTransitions(el: HTMLElement, cb: () => any): void {
-        let hasTransitions = false;
-        let called = false;
-        const end = () => {
-            if (called) return;
-            called = true;
-            cb();
-        };
-        el.onanimationstart = () => hasTransitions = true;
-        el.ontransitionstart = () => hasTransitions = true;
-        el.onanimationend = end;
-        el.ontransitionend = end;
-        setTimeout(() => {
-            if (hasTransitions) return;
-            end();
-        }, 100);
-    }
 
     protected loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string): Promise<IPaginationData> {
         if (!this.data) {

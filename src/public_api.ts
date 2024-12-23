@@ -83,7 +83,7 @@ export {
     ITableDataQuery,
     TableDataLoader,
     DragDropEvent,
-    DragDropHandler,
+    DragEventHandler,
     ITableDragEvent,
     DynamicTableDragHandler,
     ResourceIfContext,
@@ -120,6 +120,7 @@ export {JSONfn} from "./ngx-utils/utils/jsonfn";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
+export {checkTransitions} from "./ngx-utils/utils/misc";
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
 export {CancelablePromise, cancelablePromise, impatientPromise} from "./ngx-utils/utils/promise.utils";
@@ -203,8 +204,9 @@ export {StickyClassDirective} from "./ngx-utils/directives/sticky-class.directiv
 export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-item.directive";
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
 
-export {UnorderedListComponent} from "./ngx-utils/components/unordered-list/unordered-list.component";
+export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";
 export {PaginationMenuComponent} from "./ngx-utils/components/pagination-menu/pagination-menu.component";
+export {UnorderedListComponent} from "./ngx-utils/components/unordered-list/unordered-list.component";
 
 export {NgxUtilsModule} from "./ngx-utils/ngx-utils.module";
