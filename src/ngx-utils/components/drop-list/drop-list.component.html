@@ -8,7 +8,7 @@
      (dragenter)="onDragEnter($event, list, this)"
      (dragleave)="onDragLeave($event, list)"
      (drop)="onDrop($event, list)">
-    <ng-container *ngFor="let id of value">
+    <ng-container *ngFor="let id of value; let ix = index">
         <div class="drop-list-item">
             <ng-template #noItemTemplate>
                 <div class="drop-list-item-label just-id">
@@ -18,7 +18,7 @@
             <ng-container [ngTemplateOutlet]="itemTemplate || defaultTemplate"
                           [ngTemplateOutletContext]="{item: valueMap[id], id: id, remove: remove}"
                           *ngIf="valueMap[id]; else noItemTemplate"></ng-container>
-            <div class="drop-list-item-delete" (click)="remove(id)">x</div>
+            <div class="drop-list-item-delete" (click)="remove(ix)">x</div>
         </div>
     </ng-container>
 </div>

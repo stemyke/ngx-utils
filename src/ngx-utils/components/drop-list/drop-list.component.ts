@@ -50,7 +50,7 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
     onTouched: Function;
     valueMap: Record<DropListId, DropListItem>;
 
-    remove: (id: DropListId) => void;
+    remove: (index: number) => void;
 
     constructor(private cdr: ChangeDetectorRef) {
         this.disabled = false;
@@ -62,8 +62,8 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
         this.prepareItem = () => {};
         this.checkFn = () => false;
         this.valueMap = {};
-        this.remove = id => {
-            this.changeValue(this.value.filter(t => t !== id));
+        this.remove = index => {
+            this.changeValue(this.value.filter((_, i) => i !== index));
         };
     }
 
