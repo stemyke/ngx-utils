@@ -9,11 +9,11 @@ export class FileUtils {
     static readonly base64: RegExp = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/g;
 
     static getExtension(file: File): string {
-        return file ? file.name.substr(file.name.lastIndexOf(".")).toLowerCase() : null;
+        return file ? file.name.substring(file.name.lastIndexOf(".")).toLowerCase() : null;
     }
 
     static getName(file: File): string {
-        return file ? file.name.substr(0, file.name.lastIndexOf(".")) : null;
+        return file ? file.name.substring(0, file.name.lastIndexOf(".")) : null;
     }
 
     static toFile(blob: Blob, fileName: string): File {
