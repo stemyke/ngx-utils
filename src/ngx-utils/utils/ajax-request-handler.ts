@@ -11,7 +11,7 @@ export class AjaxRequestHandler {
         if (typeof XMLHttpRequest !== "undefined" && !AjaxRequestHandler.isOverridden) {
             AjaxRequestHandler.isOverridden = true;
             const originalOpen = XMLHttpRequest.prototype.open;
-            XMLHttpRequest.prototype.open = function (method: string, url?: string, async?: boolean, user?: string, password?: string): void {
+            XMLHttpRequest.prototype.open = function (method: string, url: string): void {
                 originalOpen.apply(this, arguments);
                 window.dispatchEvent(new CustomEvent("ajaxRequest", {
                     detail: {

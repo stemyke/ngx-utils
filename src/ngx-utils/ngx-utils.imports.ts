@@ -80,6 +80,7 @@ import {DropListComponent} from "./components/drop-list/drop-list.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
+import {UploadComponent} from "./components/upload/upload.component";
 
 // --- Pipes ---
 export const pipes = [
@@ -136,7 +137,8 @@ export const components = [
     DropListComponent,
     DynamicTableComponent,
     PaginationMenuComponent,
-    UnorderedListComponent
+    UnorderedListComponent,
+    UploadComponent
 ];
 
 export const providers = [

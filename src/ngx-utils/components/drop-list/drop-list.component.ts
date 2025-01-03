@@ -42,6 +42,7 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
     @Input() context: DropListItem[];
     @Input() prepareItem: (i: DropListItem) => void;
     @Input() checkFn: DragEventHandler<boolean, "data">;
+    @Input() dropFn: DragEventHandler<boolean, "data">;
 
     @ContentChild("itemTemplate")
     itemTemplate: TemplateRef<any>;
@@ -61,6 +62,7 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
         this.context = [];
         this.prepareItem = () => {};
         this.checkFn = () => false;
+        this.dropFn = () => false;
         this.valueMap = {};
         this.remove = index => {
             this.changeValue(this.value.filter((_, i) => i !== index));
@@ -68,6 +70,7 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
     }
 
     onDragEnter(ev: DragEvent, elem: HTMLElement, data: any) {
+        ev.preventDefault();
         if (!elem || !ObjectUtils.isFunction(this.checkFn) || !this.checkFn({ev, elem, data})) {
             ev.dataTransfer.effectAllowed = "none";
             ev.dataTransfer.dropEffect = "none";
@@ -90,11 +93,15 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
         if (!elem) {
             return;
         }
-        const source = JSON.parse(ev.dataTransfer.getData("itemData"));
+        const data = JSON.parse(ev.dataTransfer.getData("itemData") || "{}");
         elem.classList.remove("drop-allowed");
         checkTransitions(elem, () => {
             checkTransitions(elem, () => {
-                const id = source[this.idField] || source.id;
+                if (elem && ObjectUtils.isFunction(this.dropFn) && this.dropFn({ev, elem, data})) {
+                    // If drop is handled from outside function
+                    return;
+                }
+                const id = data[this.idField] || data.id;
                 this.changeValue(this.value.concat([id]));
             });
             elem.classList.remove("dropped");

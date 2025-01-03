@@ -1,0 +1,110 @@
+.upload {
+
+    --background: var(--primary-color, var(--mat-sys-primary, black));
+    --text: var(--text-color, var(--mat-sys-on-primary, white));
+
+    .upload-input {
+        width: 100%;
+        border: 2px #bfbfbf dashed;
+        border-radius: 10px;
+        background-color: rgba(0, 0, 0, 0.05);
+        transition: 0.2s;
+        flex-wrap: wrap;
+        position: relative;
+        padding: 0 10px 10px 10px;
+
+        &.drop-allowed {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-color: darkgrey;
+        }
+
+        input {
+            display: block;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            opacity: 0;
+        }
+
+        .process-container {
+            min-height: 120px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .upload-process {
+            margin-top: 10px;
+            width: 120px;
+            height: 120px;
+            background: rgba(0, 0, 0, .5) center center no-repeat;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-progress {
+            position: relative;
+            width: 90%;
+            height: 15px;
+            border: 1px solid darkgrey;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .upload-progress-bar {
+            position: absolute;
+            height: 15px;
+            background: var(--background);
+            top: 0;
+        }
+
+        .upload-progress-num {
+            position: relative;
+            z-index: 1;
+            font-size: 12px;
+            line-height: 15px;
+            text-align: center;
+            color: var(--text);
+        }
+    }
+
+    .images, .files {
+        list-style-type: none;
+        margin: 10px 0;
+        padding: 0;
+        display: flex;
+        gap: 5px;
+
+        li {
+            position: relative;
+
+            a {
+                position: absolute;
+                right: 8px;
+                top: 8px;
+            }
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 200px;
+            margin: 2px;
+            border-radius: 5px;
+        }
+    }
+    .btn-select {
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+
+        button {
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+        }
+    }
+}

@@ -41,7 +41,6 @@ export class DragDropHandler {
             this.dropEffect = ev.dataTransfer.dropEffect;
         };
         this.onDragEnter = ev => {
-            ev.preventDefault();
             if (this.first) {
                 this.second = true;
             } else {
@@ -67,7 +66,6 @@ export class DragDropHandler {
             }
         };
         this.onDrop = ev => {
-            ev.preventDefault();
             this.first = false;
             this.second = false;
             this.fireEvent("drop", ev);

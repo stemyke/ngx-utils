@@ -179,6 +179,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     }
 
     onDragEnter(ev: DragEvent, elem: HTMLElement, item: any) {
+        ev.preventDefault();
         if (!elem || !item || !ObjectUtils.isFunction(this.dragEnterFn) || !this.dragEnterFn({ev, elem, item})) {
             ev.dataTransfer.effectAllowed = "none";
             ev.dataTransfer.dropEffect = "none";

@@ -43,6 +43,8 @@ export {
     UnorderedListTemplate,
     UnorderedListTemplates,
     UnorderedListStyle,
+    IFileUploadProcess,
+    IFileUploadResult,
     IAjaxRequestDetails,
     AjaxRequestCallback,
     ScriptType,
@@ -208,5 +210,6 @@ export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.comp
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";
 export {PaginationMenuComponent} from "./ngx-utils/components/pagination-menu/pagination-menu.component";
 export {UnorderedListComponent} from "./ngx-utils/components/unordered-list/unordered-list.component";
+export {UploadComponent} from "./ngx-utils/components/upload/upload.component";
 
 export {NgxUtilsModule} from "./ngx-utils/ngx-utils.module";

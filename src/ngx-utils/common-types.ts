@@ -260,6 +260,22 @@ export interface UnorderedListTemplates {
 
 export type UnorderedListStyle = "table" | "list";
 
+// --- Upload ---
+export interface IFileUploadResult {
+    _id?: string;
+    id?: string;
+    contentType?: string;
+    createdAt?: Date;
+    filename?: string;
+}
+
+export interface IFileUploadProcess {
+    file: File;
+    progress: number;
+    preview?: string;
+    promise?: Promise<void>;
+}
+
 // --- Ajax request  ---
 export interface IAjaxRequestDetails {
     request: XMLHttpRequest,
