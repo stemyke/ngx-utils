@@ -88,16 +88,6 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         };
         this.onTouched = () => {
         };
-        this.remove = index => {
-            if (this.multiple) {
-                const current = Array.from(this.value || []);
-                current.splice(index, 1);
-                this.writeValue(current);
-                this.onRemove.emit(current);
-            }
-            this.writeValue(null);
-            this.onRemove.emit([]);
-        };
     }
 
     onDragEnter(ev: DragEvent): void {
