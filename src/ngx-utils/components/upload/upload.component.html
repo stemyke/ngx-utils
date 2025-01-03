@@ -51,11 +51,13 @@
             </li>
         </ul>
         <ul class="files" *ngIf="multiple">
-            <li class="file" *ngFor="let file of value; let i = index">
-                <a [href]="getUrl(file) | safe: 'url'" [target]="'target_' + i">
+            <li class="file" *ngFor="let file of value; let ix = index">
+                <a [href]="getUrl(file) | safe: 'url'" [target]="'target_' + ix">
                     <i class="fas fa-download"></i>
                 </a>
-                <a class="btn btn-danger btn-delete" (click)="remove(i)">x</a>
+                <ng-container [ngTemplateOutlet]="removeButton || defaultRemoveBtn"
+                              [ngTemplateOutletContext]="{remove: remove, index: ix}">
+                </ng-container>
             </li>
         </ul>
     </ng-template>
