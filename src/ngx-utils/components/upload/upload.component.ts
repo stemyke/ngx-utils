@@ -57,9 +57,13 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
 
     onChange: Function;
     onTouched: Function;
+    remove: (index?: number) => void;
 
-    @ContentChild("buttonTemplate")
-    buttonTemplate: TemplateRef<any>;
+    @ContentChild("uploadButton")
+    uploadButton: TemplateRef<any>;
+
+    @ContentChild("removeButton")
+    removeButton: TemplateRef<any>;
 
     protected fileImageCache: any[];
     protected acceptTypes: string[];
@@ -81,6 +85,14 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         this.onChange = () => {
         };
         this.onTouched = () => {
+        };
+        this.remove = index => {
+            if (this.multiple) {
+                const current = Array.from(this.value || []);
+                current.splice(index, 1);
+                this.writeValue(current);
+            }
+            this.writeValue(null);
         };
     }
 
@@ -171,15 +183,6 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
             this.onUploaded.emit(results);
         });
         input.value = "";
-    }
-
-    delete(index?: number): void {
-        if (this.multiple) {
-            const current = Array.from(this.value || []);
-            current.splice(index, 1);
-            this.writeValue(current);
-        }
-        this.writeValue(null);
     }
 
     getUrl(image: any): string {
