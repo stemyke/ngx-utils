@@ -49,6 +49,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
     @Input() makeUpload: (f: File) => any;
     @Input() preProcess: (f: File) => boolean;
     @Output() onUploaded: EventEmitter<IFileUploadResult[]>;
+    @Output() onRemove: EventEmitter<string[]>;
 
     acceptAttr: string;
     isImage: boolean;
@@ -57,9 +58,13 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
 
     onChange: Function;
     onTouched: Function;
+    remove: (index?: number) => void;
 
-    @ContentChild("buttonTemplate")
-    buttonTemplate: TemplateRef<any>;
+    @ContentChild("uploadButton")
+    uploadButton: TemplateRef<any>;
+
+    @ContentChild("removeButton")
+    removeButton: TemplateRef<any>;
 
     protected fileImageCache: any[];
     protected acceptTypes: string[];
@@ -78,9 +83,20 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         this.fileImageCache = [];
         this.buttonText = "button.select-files";
         this.onUploaded = new EventEmitter();
+        this.onRemove = new EventEmitter();
         this.onChange = () => {
         };
         this.onTouched = () => {
+        };
+        this.remove = index => {
+            if (this.multiple) {
+                const current = Array.from(this.value || []);
+                current.splice(index, 1);
+                this.writeValue(current);
+                this.onRemove.emit(current);
+            }
+            this.writeValue(null);
+            this.onRemove.emit([]);
         };
     }
 
@@ -171,15 +187,6 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
             this.onUploaded.emit(results);
         });
         input.value = "";
-    }
-
-    delete(index?: number): void {
-        if (this.multiple) {
-            const current = Array.from(this.value || []);
-            current.splice(index, 1);
-            this.writeValue(current);
-        }
-        this.writeValue(null);
     }
 
     getUrl(image: any): string {

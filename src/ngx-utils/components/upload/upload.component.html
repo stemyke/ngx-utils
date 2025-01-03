@@ -1,6 +1,11 @@
-<ng-template #defaultBtn let-loading="loading">
+<ng-template #defaultUploadBtn let-loading="loading">
     <a class="btn btn-primary" [ngClass]="{loading: loading}">
         {{ buttonText | translate }}
+    </a>
+</ng-template>
+<ng-template #defaultRemoveBtn let-remove="remove" let-index="index">
+    <a class="btn btn-danger btn-delete" (click)="remove(index)">
+        x
     </a>
 </ng-template>
 
@@ -29,7 +34,7 @@
             </div>
         </div>
         <div class="btn-container" (click)="input.click()">
-            <ng-container [ngTemplateOutlet]="buttonTemplate || defaultBtn"
+            <ng-container [ngTemplateOutlet]="uploadButton || defaultUploadBtn"
                           [ngTemplateOutletContext]="{loading: !!processing, buttonText: buttonText}">
             </ng-container>
         </div>
@@ -38,11 +43,11 @@
         <ul class="files" *ngIf="!multiple">
             <li class="file" *ngIf="value">
                 <a [href]="getUrl(value) | safe: 'url'" target="target">
-                    <i class="fas fa-download"></i>
+                    <i class="fas fa-download">download</i>
                 </a>
-                <a class="btn btn-danger btn-delete" (click)="delete()">
-                    <mat-icon>delete</mat-icon>
-                </a>
+                <ng-container [ngTemplateOutlet]="removeButton || defaultRemoveBtn"
+                              [ngTemplateOutletContext]="{remove: remove}">
+                </ng-container>
             </li>
         </ul>
         <ul class="files" *ngIf="multiple">
@@ -50,7 +55,7 @@
                 <a [href]="getUrl(file) | safe: 'url'" [target]="'target_' + i">
                     <i class="fas fa-download"></i>
                 </a>
-                <a class="btn btn-danger btn-delete" (click)="delete(i)">x</a>
+                <a class="btn btn-danger btn-delete" (click)="remove(i)">x</a>
             </li>
         </ul>
     </ng-template>
@@ -58,17 +63,17 @@
         <ul class="images" *ngIf="!multiple">
             <li class="image" *ngIf="value">
                 <img alt="file image" [src]="getUrl(value) | safe: 'url'"/>
-                <a mat-mini-fab (click)="delete()">
-                    <mat-icon>close</mat-icon>
-                </a>
+                <ng-container [ngTemplateOutlet]="removeButton || defaultRemoveBtn"
+                              [ngTemplateOutletContext]="{remove: remove}">
+                </ng-container>
             </li>
         </ul>
         <ul class="images" *ngIf="multiple">
-            <li class="image" *ngFor="let image of value; let i = index">
+            <li class="image" *ngFor="let image of value; let ix = index">
                 <img alt="file image" [src]="getUrl(image) | safe: 'url'"/>
-                <a mat-mini-fab (click)="delete(i)">
-                    <mat-icon>close</mat-icon>
-                </a>
+                <ng-container [ngTemplateOutlet]="removeButton || defaultRemoveBtn"
+                              [ngTemplateOutletContext]="{remove: remove, index: ix}">
+                </ng-container>
             </li>
         </ul>
     </ng-container>
