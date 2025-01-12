@@ -9,7 +9,7 @@ import {
     QueryList,
     SimpleChanges,
     TemplateRef,
-    ViewChild
+    ViewChild, ViewEncapsulation
 } from "@angular/core";
 
 import {
@@ -31,7 +31,9 @@ import {PaginationDirective} from "../../directives/pagination.directive";
 
 @Component({
     standalone: false,
+    encapsulation: ViewEncapsulation.None,
     selector: "dynamic-table",
+    styleUrls: ["./dynamic-table.component.scss"],
     templateUrl: "./dynamic-table.component.html",
 })
 export class DynamicTableComponent implements AfterContentInit, AfterViewInit, OnChanges {
