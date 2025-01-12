@@ -3,6 +3,11 @@
     --table-bg: transparent;
     --table-stripe-bg: rgba(210, 210, 210, 0.35);
 
+    .table-responsive {
+        overflow: hidden;
+        overflow-x: auto;
+    }
+
     .table-filter {
         margin-bottom: 25px;
         display: flex;
