@@ -157,6 +157,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             this.orderBy = this.orderBy in this.realColumns ? this.orderBy : this.cols[0];
             this.query = this.cols.reduce((res, c) => {
                 const col = this.realColumns[c];
+                if (!col.filter) return res;
                 res[c] = col.filterType == "checkbox" ? false : "";
                 return res;
             }, {});
@@ -233,7 +234,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
 
     updateQuery(c: string, value: string | boolean): void {
         const col = this.realColumns[c];
-        if (!col) return;
+        if (!col?.filter) return;
         if (col.filterType === "checkbox") {
             this.query[c] = !this.query[c]
         } else if (!value) {
