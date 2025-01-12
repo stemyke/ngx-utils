@@ -56,11 +56,12 @@
                             <ng-template #defaultCol>
                                 <span>{{ realColumns[column].title | translate }}</span>
                             </ng-template>
-                            <a *ngIf="realColumns[column].sort; else defaultCol" (click)="setOrder(column)">
+                            <a *ngIf="realColumns[column].sort; else defaultCol"
+                               [ngClass]="orderBy !== column ? 'sort' : (orderDescending ? 'sort-desc' : 'sort-asc')"
+                               (click)="setOrder(column)">
                                 <span>{{ realColumns[column].title | translate }}</span>
                                 <i *ngIf="orderBy == column"
-                                   [icon]="orderDescending ? 'sort-desc' : 'sort-asc'"
-                                   [ngClass]="orderBy == column ? (orderDescending ? 'sort-desc': 'sort-asc') : ''"></i>
+                                   [icon]="orderBy !== column ? 'sort' : (orderDescending ? 'sort-desc' : 'sort-asc')"></i>
                             </a>
                         </th>
                     </tr>
@@ -86,8 +87,12 @@
             </table>
         </ng-template>
 
-        <ng-container [ngxTemplateOutlet]="wrapperTemplate || defaultWrapperTemplate"
-                      [context]="this"></ng-container>
+        <div class="table-wrapper">
+            <ng-content select="[table-top]"></ng-content>
+            <ng-container [ngxTemplateOutlet]="wrapperTemplate || defaultWrapperTemplate"
+                          [context]="this"></ng-container>
+            <ng-content select="[table-bottom]"></ng-content>
+        </div>
     </div>
     <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
 </div>
