@@ -2,7 +2,7 @@ import {Inject, Injectable} from "@angular/core";
 import {AsyncMethod, ILanguageService, IToasterService, LANGUAGE_SERVICE, ToastType} from "../common-types";
 
 @Injectable()
-export class BaseToasterService implements IToasterService {
+export class BaseToasterService<T = any> implements IToasterService {
 
     protected colorMap: Record<ToastType, string>;
 
@@ -15,20 +15,36 @@ export class BaseToasterService implements IToasterService {
         };
     }
 
-    info(message: string, params?: any): void {
-        this.translateMessage(message, params, "info");
+    info(message: string, params?: any) {
+        this.translate(message, params, "info");
     }
 
-    success(message: string, params?: any): void {
-        this.translateMessage(message, params, "success");
+    success(message: string, params?: any) {
+        this.translate(message, params, "success");
     }
 
-    warning(message: string, params?: any): void {
-        this.translateMessage(message, params, "warning");
+    warning(message: string, params?: any){
+        this.translate(message, params, "warning");
     }
 
-    error(message: string, params?: any): void {
-        this.translateMessage(message, params, "error");
+    error(message: string, params?: any) {
+        this.translate(message, params, "error");
+    }
+
+    infoPromised(message: string, params?: any) {
+        return this.translatePromised(message, params, "info");
+    }
+
+    successPromised(message: string, params?: any) {
+        return this.translatePromised(message, params, "success");
+    }
+
+    warningPromised(message: string, params?: any) {
+        return this.translatePromised(message, params, "warning");
+    }
+
+    errorPromised(message: string, params?: any) {
+        return this.translatePromised(message, params, "error");
     }
 
     handleAsyncMethod(method: AsyncMethod): void {
@@ -44,13 +60,19 @@ export class BaseToasterService implements IToasterService {
         });
     }
 
-    protected translateMessage(message: string, params: any, type: ToastType): void {
+    protected translate(message: string, params: any, type: ToastType): void {
         this.language.getTranslation(message, params).then(str => {
-            this.show(message, type);
+            this.show(str, type);
         });
     }
 
-    protected show(message: string, type: ToastType): any {
-        console.log(message, `background: ${this.colorMap[type]}; color: #ffffff`)
+    protected async translatePromised(message: string, params: any, type: ToastType): Promise<T> {
+        const str = await this.language.getTranslation(message, params);
+        return this.show(str, type);
+    }
+
+    protected show(message: string, type: ToastType): T {
+        console.log(message, `background: ${this.colorMap[type]}; color: #ffffff`);
+        return null;
     }
 }
