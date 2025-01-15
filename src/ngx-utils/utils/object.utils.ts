@@ -119,7 +119,7 @@ export class ObjectUtils {
         );
     }
 
-    static getValue(obj: any, key: string, defaultValue?: any, treeFallback: boolean = false): any {
+    static getValue(obj: Object, key: string, defaultValue?: any, treeFallback: boolean = false): any {
         key = key || "";
         const keys = key.split(".");
         let curKey = "";

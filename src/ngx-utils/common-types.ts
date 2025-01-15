@@ -74,8 +74,8 @@ export interface ILanguageService {
     readonly httpClient: HttpClient;
     replaceLanguages(languages: string[]): void;
     addLanguages(languages: string[]): void;
-    getTranslationSync(key: string, params?: any): string;
-    getTranslation(key: string, params?: any): Promise<string>;
+    getTranslationSync(key: string, params?: Object): string;
+    getTranslation(key: string, params?: Object): Promise<string>;
     getTranslations(...keys: string[]): Promise<ITranslations>;
     getTranslationFromObject(translations: ITranslations, params?: any, lang?: string): string;
     getTranslationFromArray(translations: ITranslation[], params?: any, lang?: string): string;

@@ -111,13 +111,13 @@ export class StaticLanguageService implements ILanguageService {
         this.replaceLanguages(this.languageList.concat(languages));
     }
 
-    getTranslationSync(key: string, params: any = null): string {
+    getTranslationSync(key: string, params: Object = null): string {
         const lowerKey = (key || "").toLocaleLowerCase();
         const translation = this.dictionary[lowerKey] || lowerKey;
         return this.interpolate(translation == lowerKey ? key : translation, params);
     }
 
-    getTranslation(key: string, params?: any): Promise<string> {
+    getTranslation(key: string, params?: Object): Promise<string> {
         if (!ObjectUtils.isString(key) || !key.length) {
             throw new Error(`Parameter "key" required`);
         }
@@ -147,7 +147,7 @@ export class StaticLanguageService implements ILanguageService {
         return this.interpolate(translation ? translation.translation : "", params);
     }
 
-    protected interpolate(expr: string | Function, params?: any): string {
+    protected interpolate(expr: string | Function, params?: Object): string {
         if (typeof expr === "string") {
             return this.interpolateString(expr, params);
         }
@@ -157,7 +157,7 @@ export class StaticLanguageService implements ILanguageService {
         return expr as string;
     }
 
-    protected interpolateString(expr: string, params?: any) {
+    protected interpolateString(expr: string, params?: Object) {
         if (!expr || !params) return expr;
         return expr.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, b: string) => {
             const r = ObjectUtils.getValue(params, b, "");
