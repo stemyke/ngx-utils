@@ -42,6 +42,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() placeholder: string;
     @Input() dataLoader: TableDataLoader;
     @Input() data: any[];
+    @Input() selected: any;
     @Input() page: number;
     @Input() urlParam: string;
     @Input() parallelData: any[];
@@ -68,6 +69,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     hasQuery: boolean;
     realColumns: ITableColumns;
     cols: string[];
+    sortOpen: boolean;
 
     get items(): any[] {
         return !this.pagination ? [] : this.pagination.items;
@@ -226,7 +228,11 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.refresh(this.filterTime ?? 300);
     }
 
-    setOrder(column: string): void {
+    setSorting(column: string, toggle: boolean): void {
+        if (toggle) {
+            this.sortOpen = !this.sortOpen;
+            return;
+        }
         this.orderDescending = column == this.orderBy && !this.orderDescending;
         this.orderBy = column;
         this.refresh();

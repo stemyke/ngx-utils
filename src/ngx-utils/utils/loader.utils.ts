@@ -30,7 +30,7 @@ export class LoaderUtils {
         return this.scriptPromises[src];
     }
 
-    static loadStyle(src: string): Promise<HTMLLinkElement> {
+    static loadStyle(src: string, parent?: HTMLElement): Promise<HTMLLinkElement> {
         this.stylePromises[src] = this.stylePromises[src] || new Promise<any>((resolve, reject) => {
             // Load script
             const link: any = document.createElement("link");
@@ -51,7 +51,7 @@ export class LoaderUtils {
                 link.onload = () => resolve(link);
             }
             link.onerror = (error: any) => reject(error);
-            document.body.appendChild(link);
+            (parent || document.body).appendChild(link);
         });
         return this.stylePromises[src];
     }

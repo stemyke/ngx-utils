@@ -3,15 +3,19 @@
     --table-bg: transparent;
     --table-stripe-bg: rgba(210, 210, 210, 0.35);
 
+    .sort-toggle {
+        display: none;
+    }
+
     .table-responsive {
         overflow: hidden;
         overflow-x: auto;
     }
 
-    .table-filter {
-        margin-bottom: 25px;
+    .table-filter:not(:empty) {
         display: flex;
         gap: 10px;
+        margin-bottom: 20px;
 
         > input {
             max-width: 400px;
