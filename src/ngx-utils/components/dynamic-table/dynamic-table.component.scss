@@ -3,8 +3,63 @@
     --table-bg: transparent;
     --table-stripe-bg: rgba(210, 210, 210, 0.35);
 
+    --border-size: 2px;
+    --bg-color: #FFFFFF;
+    --text-color: #151515;
+    --highlight-color: var(--primary-color, #888888);
+
     .sort-toggle {
+
         display: none;
+        position: relative;
+        margin: 10px;
+
+        .svg-icon {
+            pointer-events: none;
+        }
+
+        .sort-toggle-content {
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: var(--border-size) solid var(--highlight-color);
+            border-radius: 5px;
+            cursor: pointer;
+            padding-right: 8px;
+        }
+
+        a {
+            padding: 8px 12px;
+        }
+
+        ul {
+            margin: -2px 0 0;
+            padding: 0;
+            list-style: none;
+            position: absolute;
+            z-index: 1;
+            width: 100%;
+            min-height: fit-content;
+            border: var(--border-size) solid var(--highlight-color);
+            border-radius: 0 0 5px 5px;
+            overflow: hidden;
+            display: none;
+        }
+
+        li {
+            background: var(--bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+            padding-right: 8px;
+        }
+
+        .sort-toggle-content:hover, li:hover, li.active {
+            background-color: var(--highlight-color);
+            color: white;
+        }
+    }
+
+    .sort-toggle.open ul {
+        display: block;
     }
 
     .table-responsive {
@@ -78,9 +133,17 @@
         tbody tr td {
             background-color: var(--table-bg);
         }
+
+        tbody tr.active td {
+            background-color: var(--highlight-color);
+        }
     }
 
     .table-striped > tbody > tr:nth-of-type(odd) td {
         background-color: var(--table-stripe-bg);
+    }
+
+    .table-striped > tbody > tr:nth-of-type(odd).active td {
+        background-color: var(--highlight-color);
     }
 }

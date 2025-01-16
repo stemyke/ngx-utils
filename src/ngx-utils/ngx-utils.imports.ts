@@ -44,6 +44,7 @@ import {PaginationItemDirective} from "./directives/pagination-item.directive";
 import {ResourceIfDirective} from "./directives/resource-if.directive";
 import {StickyDirective} from "./directives/sticky.directive";
 import {StickyClassDirective} from "./directives/sticky-class.directive";
+import {ToggleDirective} from "./directives/toggle.directive";
 import {UnorderedListItemDirective} from "./directives/unordered-list-item.directive";
 import {UnorderedListTemplateDirective} from "./directives/unordered-list-template.directive";
 
@@ -128,6 +129,7 @@ export const directives = [
     ResourceIfDirective,
     StickyDirective,
     StickyClassDirective,
+    ToggleDirective,
     UnorderedListItemDirective,
     UnorderedListTemplateDirective
 ];

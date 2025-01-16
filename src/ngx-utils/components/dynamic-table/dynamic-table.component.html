@@ -1,3 +1,51 @@
+<ng-template #columnTemplate let-context let-column="column" let-template="template">
+    <ng-template #defaultTemplate let-column="column" let-item="item">
+        <span>{{ item[column] == undefined || item[column] == null ? '-' : item[column] }}</span>
+    </ng-template>
+    <ng-template #pureTemplate>
+        <ng-container [ngxTemplateOutlet]="template.ref" [context]="context"></ng-container>
+    </ng-template>
+    <td [ngClass]="'column-' + column"
+        [attr.data-testid]="testId + '-' + column + '-' + context.rowIndex" *ngIf="!template || !template.pure; else pureTemplate">
+        <ng-container [ngxTemplateOutlet]="!template ? defaultTemplate : template.ref" [context]="context"></ng-container>
+    </td>
+</ng-template>
+
+<ng-template #columnsTemplate let-context>
+    <ng-container *ngFor="let column of cols"
+                  [ngxTemplateOutlet]="columnTemplate"
+                  [context]="context"
+                  [additionalContext]="{
+                            template: templates[column],
+                            column: column
+                          }"></ng-container>
+</ng-template>
+
+<ng-template #defaultRowTemplate let-context>
+    <tr draggable="true"
+        #elem
+        [ngClass]="{active: selected === context.item}"
+        (dragstart)="onDragStart($event, elem, context.item)"
+        (dragenter)="onDragEnter($event, elem, context.item)"
+        (dragleave)="onDragLeave($event, elem)"
+        (drop)="onDrop($event, elem, context.item)">
+        <ng-container [ngxTemplateOutlet]="columnsTemplate" [context]="context"></ng-container>
+    </tr>
+</ng-template>
+
+<ng-template #headerTemplate let-column="column" let-toggle="toggle">
+    <ng-template #defaultCol>
+        <span>{{ realColumns[column].title | translate }}</span>
+    </ng-template>
+    <a *ngIf="realColumns[column].sort; else defaultCol"
+       [ngClass]="orderBy !== column ? 'sort' : (orderDescending ? 'sort-desc' : 'sort-asc')"
+       (click)="setSorting(column, toggle)">
+        <span>{{ realColumns[column].title | translate }}</span>
+        <i *ngIf="orderBy == column"
+           [icon]="orderBy !== column ? 'sort' : (orderDescending ? 'sort-desc' : 'sort-asc')"></i>
+    </a>
+</ng-template>
+
 <div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [page]="page" [itemsPerPage]="itemsPerPage" [updateTime]="updateTime">
     <ng-template #defaultFilterTemplate let-table>
         <div class="table-filter">
@@ -17,69 +65,27 @@
         </div>
     </ng-template>
     <ng-container [ngxTemplateOutlet]="filterTemplate || defaultFilterTemplate" [context]="this"></ng-container>
+    <div class="sort-toggle" toggle #sortToggle="toggle" *ngIf="orderBy">
+        <div class="sort-toggle-content">
+            <ng-container [ngTemplateOutlet]="headerTemplate"
+                          [ngTemplateOutletContext]="{column: orderBy, toggle: sortToggle}"></ng-container>
+        </div>
+        <ul>
+            <li *ngFor="let column of cols" [ngClass]="'header-column column-' + column">
+                <ng-container [ngTemplateOutlet]="headerTemplate"
+                              [ngTemplateOutletContext]="{column: column}"></ng-container>
+            </li>
+        </ul>
+    </div>
     <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
     <div class="table-responsive">
-        <ng-template #columnTemplate let-context let-column="column" let-template="template">
-            <ng-template #defaultTemplate let-column="column" let-item="item">
-                <span>{{ item[column] == undefined || item[column] == null ? '-' : item[column] }}</span>
-            </ng-template>
-            <ng-template #pureTemplate>
-                <ng-container [ngxTemplateOutlet]="template.ref" [context]="context"></ng-container>
-            </ng-template>
-            <td [ngClass]="'column-' + column"
-                [attr.data-testid]="testId + '-' + column + '-' + context.rowIndex" *ngIf="!template || !template.pure; else pureTemplate">
-                <ng-container [ngxTemplateOutlet]="!template ? defaultTemplate : template.ref" [context]="context"></ng-container>
-            </td>
-        </ng-template>
-
-        <ng-template #columnsTemplate let-context>
-            <ng-container *ngFor="let column of cols"
-                          [ngxTemplateOutlet]="columnTemplate"
-                          [context]="context"
-                          [additionalContext]="{
-                            template: templates[column],
-                            column: column
-                          }"></ng-container>
-        </ng-template>
-
-        <ng-template #defaultRowTemplate let-context>
-            <tr draggable="true"
-                #elem
-                [ngClass]="{active: selected === context.item}"
-                (dragstart)="onDragStart($event, elem, context.item)"
-                (dragenter)="onDragEnter($event, elem, context.item)"
-                (dragleave)="onDragLeave($event, elem)"
-                (drop)="onDrop($event, elem, context.item)">
-                <ng-container [ngxTemplateOutlet]="columnsTemplate" [context]="context"></ng-container>
-            </tr>
-        </ng-template>
-
-        <ng-template #headerTemplate let-column="column" let-toggle="toggle">
-            <ng-template #defaultCol>
-                <span>{{ realColumns[column].title | translate }}</span>
-            </ng-template>
-            <a *ngIf="realColumns[column].sort; else defaultCol"
-               [ngClass]="orderBy !== column ? 'sort' : (orderDescending ? 'sort-desc' : 'sort-asc')"
-               (click)="setSorting(column, toggle)">
-                <span>{{ realColumns[column].title | translate }}</span>
-                <i *ngIf="orderBy == column"
-                   [icon]="orderBy !== column ? 'sort' : (orderDescending ? 'sort-desc' : 'sort-asc')"></i>
-            </a>
-        </ng-template>
-
         <ng-template #defaultWrapperTemplate>
-            <div class="sort-toggle" *ngIf="orderBy">
-                <div class="sort-toggle-content">
-                    <ng-container [ngTemplateOutlet]="headerTemplate"
-                                  [ngTemplateOutletContext]="{column: orderBy, toggle: true}"></ng-container>
-                </div>
-            </div>
             <table class="table table-striped">
                 <thead>
-                    <tr [ngClass]="{'header': true, 'sort-open': sortOpen}">
+                    <tr class="header">
                         <th *ngFor="let column of cols" [ngClass]="'header-column column-' + column">
                             <ng-container [ngTemplateOutlet]="headerTemplate"
-                                          [ngTemplateOutletContext]="{column: column, toggle: false}"></ng-container>
+                                          [ngTemplateOutletContext]="{column: column}"></ng-container>
                         </th>
                     </tr>
                     <tr *ngIf="hasQuery">

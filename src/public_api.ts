@@ -203,6 +203,7 @@ export {PaginationItemDirective} from "./ngx-utils/directives/pagination-item.di
 export {ResourceIfDirective} from "./ngx-utils/directives/resource-if.directive";
 export {StickyDirective} from "./ngx-utils/directives/sticky.directive";
 export {StickyClassDirective} from "./ngx-utils/directives/sticky-class.directive";
+export {ToggleDirective} from "./ngx-utils/directives/toggle.directive";
 export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-item.directive";
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
 

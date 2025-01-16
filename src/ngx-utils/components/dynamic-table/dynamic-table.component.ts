@@ -28,6 +28,7 @@ import {checkTransitions} from "../../utils/misc";
 
 import {DynamicTableTemplateDirective} from "../../directives/dynamic-table-template.directive";
 import {PaginationDirective} from "../../directives/pagination.directive";
+import {ToggleDirective} from "../../directives/toggle.directive";
 
 @Component({
     standalone: false,
@@ -69,7 +70,6 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     hasQuery: boolean;
     realColumns: ITableColumns;
     cols: string[];
-    sortOpen: boolean;
 
     get items(): any[] {
         return !this.pagination ? [] : this.pagination.items;
@@ -228,10 +228,10 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.refresh(this.filterTime ?? 300);
     }
 
-    setSorting(column: string, toggle: boolean): void {
+    setSorting(column: string, toggle: ToggleDirective): boolean {
         if (toggle) {
-            this.sortOpen = !this.sortOpen;
-            return;
+            toggle.show();
+            return false;
         }
         this.orderDescending = column == this.orderBy && !this.orderDescending;
         this.orderBy = column;
