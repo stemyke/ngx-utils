@@ -124,23 +124,20 @@ export class StateService {
             )
             .subscribe(() => {
                 const routerStateSnapshot = this.router.routerState.snapshot;
-                let snapshot = routerStateSnapshot.root;
                 let context: OutletContext = this.contexts?.getContext("primary");
-                let segments = snapshot.url;
+                let segments = [];
                 const components: any[] = [];
                 const snapshots: ActivatedRouteSnapshot[] = [];
-                while (snapshot) {
+                while (context) {
+                    const snapshot = context.route.snapshot;
                     snapshots.push(snapshot);
                     segments = segments.concat(snapshot.url);
-                    if (context) {
-                        if (context.outlet && context.outlet.component)
-                            components.push(context.outlet.component);
-                        context = context.children.getContext("primary");
-                    }
-                    snapshot = snapshot.firstChild;
+                    if (context.outlet && context.outlet.component)
+                        components.push(context.outlet.component);
+                    context = context.children.getContext("primary");
                 }
                 this.stateInfo = {
-                    url: routerStateSnapshot.url,
+                    url: segments.map(s => s.url).join("/"),
                     segments: segments,
                     components: components
                 };

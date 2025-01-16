@@ -5,7 +5,7 @@ export class LoaderUtils {
     static scriptPromises: IScriptPromises = {};
     static stylePromises: IStylePromises = {};
 
-    static loadScript(src: string, async: boolean = false, type: ScriptType = "text/javascript"): Promise<HTMLScriptElement> {
+    static loadScript(src: string, async: boolean = false, type: ScriptType = "text/javascript", parent?: Node): Promise<HTMLScriptElement> {
         this.scriptPromises[src] = this.scriptPromises[src] || new Promise<any>((resolve, reject) => {
             // Load script
             const script: any = document.createElement("script");
@@ -25,12 +25,12 @@ export class LoaderUtils {
                 script.onload = () => resolve(script);
             }
             script.onerror = (error: any) => reject(error);
-            document.body.appendChild(script);
+            (parent || document.body).appendChild(script);
         });
         return this.scriptPromises[src];
     }
 
-    static loadStyle(src: string, parent?: HTMLElement): Promise<HTMLLinkElement> {
+    static loadStyle(src: string, parent?: Node): Promise<HTMLLinkElement> {
         this.stylePromises[src] = this.stylePromises[src] || new Promise<any>((resolve, reject) => {
             // Load script
             const link: any = document.createElement("link");

@@ -29,7 +29,7 @@ export class ConfigService implements IConfigService {
     constructor(readonly http: HttpClient,
                 readonly universal: UniversalService,
                 readonly injector: Injector,
-                @Inject(ROOT_ELEMENT) readonly rootElement: any,
+                @Inject(ROOT_ELEMENT) readonly rootElement: HTMLElement,
                 @Inject(APP_BASE_URL) readonly baseUrl: string,
                 @Optional() @Inject(BASE_CONFIG) baseConfig: IConfiguration = null,
                 @Optional() @Inject(SCRIPT_PARAMS) scriptParams: any = null) {
@@ -98,7 +98,7 @@ export class ConfigService implements IConfigService {
             });
             return clone;
         }
-        return this.rootElement.cloneNode(true);
+        return this.rootElement;
     }
 
     prepareUrl(url: string, ending: string): string {
