@@ -128,6 +128,7 @@ export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.uti
 export {CancelablePromise, cancelablePromise, impatientPromise} from "./ngx-utils/utils/promise.utils";
 export {StringUtils} from "./ngx-utils/utils/string.utils";
 export {SetUtils} from "./ngx-utils/utils/set.utils";
+export {SocketFactory, SocketData, SocketDataValue, SocketDataObj, SocketClient} from "./ngx-utils/utils/socket-client";
 export {TimerUtils} from "./ngx-utils/utils/timer.utils";
 export {UniqueUtils} from "./ngx-utils/utils/unique.utils";
 export {Vector} from "./ngx-utils/utils/vector";
@@ -156,6 +157,7 @@ export {StorageService} from "./ngx-utils/services/storage.service";
 export {BaseToasterService} from "./ngx-utils/services/base-toaster.service";
 export {IUrlDictionary, TranslatedUrlSerializer} from "./ngx-utils/services/translated-url.serializer";
 export {PromiseService} from "./ngx-utils/services/promise.service";
+export {SocketService} from "./ngx-utils/services/socket.service";
 
 export {DragEventListener} from "./ngx-utils/plugins/drag-drop-handler";
 export {DragDropEventPlugin} from "./ngx-utils/plugins/drag-drop-event.plugin";
@@ -203,7 +205,8 @@ export {PaginationItemDirective} from "./ngx-utils/directives/pagination-item.di
 export {ResourceIfDirective} from "./ngx-utils/directives/resource-if.directive";
 export {StickyDirective} from "./ngx-utils/directives/sticky.directive";
 export {StickyClassDirective} from "./ngx-utils/directives/sticky-class.directive";
-export {ToggleDirective} from "./ngx-utils/directives/toggle.directive";
+export {DropdownDirective} from "./ngx-utils/directives/dropdown.directive";
+export {DropdownToggleDirective} from "./ngx-utils/directives/dropdown-toggle.directive";
 export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-item.directive";
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
 

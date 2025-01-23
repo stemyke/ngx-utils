@@ -22,6 +22,7 @@ import {
     RESIZE_DELAY,
     RESIZE_STRATEGY,
     ROOT_ELEMENT,
+    SOCKET_IO_PATH,
     TOASTER_SERVICE,
     WASI_IMPLEMENTATION
 } from "./common-types";
@@ -151,6 +152,10 @@ export class NgxUtilsModule {
             {
                 provide: RESIZE_STRATEGY,
                 useValue: (!config ? null : config.resizeStrategy) ?? "object",
+            },
+            {
+                provide: SOCKET_IO_PATH,
+                useValue: (!config ? null : config.socketPath) ?? "/socket",
             },
             {
                 provide: APP_INITIALIZER,

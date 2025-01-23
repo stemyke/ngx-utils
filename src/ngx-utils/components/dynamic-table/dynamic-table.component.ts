@@ -28,7 +28,7 @@ import {checkTransitions} from "../../utils/misc";
 
 import {DynamicTableTemplateDirective} from "../../directives/dynamic-table-template.directive";
 import {PaginationDirective} from "../../directives/pagination.directive";
-import {ToggleDirective} from "../../directives/toggle.directive";
+import {DropdownDirective} from "../../directives/dropdown.directive";
 
 @Component({
     standalone: false,
@@ -228,7 +228,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.refresh(this.filterTime ?? 300);
     }
 
-    setSorting(column: string, toggle: ToggleDirective): boolean {
+    setSorting(column: string, toggle: DropdownDirective): boolean {
         if (toggle) {
             toggle.show();
             return false;

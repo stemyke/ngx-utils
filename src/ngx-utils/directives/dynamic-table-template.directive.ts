@@ -11,6 +11,6 @@ export class DynamicTableTemplateDirective implements ITableTemplate {
     @Input() column: string | string[];
     @Input() pure: boolean;
 
-    constructor(public ref: TemplateRef<any>) {
+    constructor(readonly ref: TemplateRef<any>) {
     }
 }

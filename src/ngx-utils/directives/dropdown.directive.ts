@@ -2,20 +2,20 @@ import {Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, O
 
 @Directive({
     standalone: false,
-    selector: "[toggle]",
-    exportAs: "toggle"
+    selector: "[dd],[drop-down]",
+    exportAs: "dropdown"
 })
-export class ToggleDirective implements OnDestroy {
+export class DropdownDirective implements OnDestroy {
 
-    protected static active: ToggleDirective = null;
+    protected static active: DropdownDirective = null;
 
     protected opened: boolean;
     protected disabled: boolean;
 
     @Input() closeInside: boolean;
     @Input() keyboardHandler: boolean;
-    @Output() onShown: EventEmitter<ToggleDirective>;
-    @Output() onHidden: EventEmitter<ToggleDirective>;
+    @Output() onShown: EventEmitter<DropdownDirective>;
+    @Output() onHidden: EventEmitter<DropdownDirective>;
     @Output() onKeyboard: EventEmitter<KeyboardEvent>;
 
     private readonly onTap: (event: Event) => void;
@@ -74,8 +74,8 @@ export class ToggleDirective implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (ToggleDirective.active === this) {
-            ToggleDirective.active = null;
+        if (DropdownDirective.active === this) {
+            DropdownDirective.active = null;
             this.onHidden.emit(this);
         }
     }
@@ -100,7 +100,7 @@ export class ToggleDirective implements OnDestroy {
         if (this.disabled) return;
         this.opened = true;
         this.showEvent();
-        ToggleDirective.active = this;
+        DropdownDirective.active = this;
         // Prevent toggle from selecting an item right after it is shown
         setTimeout(() => {
             if (!this.opened) return;
@@ -119,8 +119,8 @@ export class ToggleDirective implements OnDestroy {
         document.removeEventListener("keydown", this.onKeyDown);
         // Prevent toggle from refocus itself after it is hidden because of another toggle
         setTimeout(() => {
-            if (ToggleDirective.active === this) {
-                ToggleDirective.active = null;
+            if (DropdownDirective.active === this) {
+                DropdownDirective.active = null;
                 this.nativeElement?.focus();
             }
         }, 10);

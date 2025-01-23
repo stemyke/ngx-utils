@@ -182,6 +182,10 @@ export interface IDialogService {
 
 export const DIALOG_SERVICE = new InjectionToken<IDialogService>("dialog-service");
 
+// --- Socket service ---
+
+export const SOCKET_IO_PATH = new InjectionToken<string>("socket-io-path");
+
 // --- Promise Service ---
 
 export interface IPromiseService {
@@ -477,9 +481,14 @@ export const EXPRESS_REQUEST = new InjectionToken<Request>("express-request");
 
 // --- Api service ---
 
+export interface IBaseHttpClient extends HttpClient {
+    readonly requestHeaders: IHttpHeaders;
+    readonly requestParams: IHttpParams;
+}
+
 export interface IApiService extends IHttpService {
     cache: any;
-    client: HttpClient;
+    client: IBaseHttpClient;
     get(url: string, options?: IRequestOptions): Promise<any>;
     delete(url: string, options?: IRequestOptions): Promise<any>;
     post(url: string, body?: any, options?: IRequestOptions): Promise<any>;
@@ -637,6 +646,7 @@ export interface IModuleConfig {
     baseUrl?: (injector: Injector) => string;
     resizeDelay?: number;
     resizeStrategy?: ResizeEventStrategy;
+    socketPath?: string;
 }
 
 // --- Valued promise ---

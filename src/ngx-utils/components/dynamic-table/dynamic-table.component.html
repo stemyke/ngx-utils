@@ -65,10 +65,10 @@
         </div>
     </ng-template>
     <ng-container [ngxTemplateOutlet]="filterTemplate || defaultFilterTemplate" [context]="this"></ng-container>
-    <div class="sort-toggle" toggle #sortToggle="toggle" *ngIf="orderBy">
+    <div class="sort-toggle" dd #sortDd="dropdown" *ngIf="orderBy">
         <div class="sort-toggle-content">
             <ng-container [ngTemplateOutlet]="headerTemplate"
-                          [ngTemplateOutletContext]="{column: orderBy, toggle: sortToggle}"></ng-container>
+                          [ngTemplateOutletContext]="{column: orderBy, toggle: sortDd}"></ng-container>
         </div>
         <ul>
             <li *ngFor="let column of cols" [ngClass]="'header-column column-' + column">

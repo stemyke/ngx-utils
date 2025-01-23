@@ -21,6 +21,7 @@ import {IconService} from "./services/icon.service";
 import {LanguageService} from "./services/language.service";
 import {LocalHttpService} from "./services/local-http.service";
 import {PromiseService} from "./services/promise.service";
+import {SocketService} from "./services/socket.service";
 import {OpenApiService} from "./services/open-api.service";
 import {StateService} from "./services/state.service";
 import {StaticLanguageService} from "./services/static-language.service";
@@ -44,7 +45,8 @@ import {PaginationItemDirective} from "./directives/pagination-item.directive";
 import {ResourceIfDirective} from "./directives/resource-if.directive";
 import {StickyDirective} from "./directives/sticky.directive";
 import {StickyClassDirective} from "./directives/sticky-class.directive";
-import {ToggleDirective} from "./directives/toggle.directive";
+import {DropdownDirective} from "./directives/dropdown.directive";
+import {DropdownToggleDirective} from "./directives/dropdown-toggle.directive";
 import {UnorderedListItemDirective} from "./directives/unordered-list-item.directive";
 import {UnorderedListTemplateDirective} from "./directives/unordered-list-template.directive";
 
@@ -129,7 +131,8 @@ export const directives = [
     ResourceIfDirective,
     StickyDirective,
     StickyClassDirective,
-    ToggleDirective,
+    DropdownDirective,
+    DropdownToggleDirective,
     UnorderedListItemDirective,
     UnorderedListTemplateDirective
 ];
@@ -162,6 +165,7 @@ export const providers = [
     LocalHttpService,
     OpenApiService,
     PromiseService,
+    SocketService,
     StateService,
     StaticLanguageService,
     StorageService,
