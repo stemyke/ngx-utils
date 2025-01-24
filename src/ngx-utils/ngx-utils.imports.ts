@@ -37,6 +37,7 @@ import {ScrollEventPlugin} from "./plugins/scroll-event.plugin";
 import {AsyncMethodBase} from "./directives/async-method.base";
 import {AsyncMethodDirective} from "./directives/async-method.directive";
 import {BackgroundDirective} from "./directives/background.directive";
+import {ComponentLoaderDirective} from "./directives/component-loader.directive";
 import {DynamicTableTemplateDirective} from "./directives/dynamic-table-template.directive";
 import {GlobalTemplateDirective} from "./directives/global-template.directive";
 import {IconDirective} from "./directives/icon.directive";
@@ -124,6 +125,7 @@ export const directives = [
     AsyncMethodBase,
     AsyncMethodDirective,
     BackgroundDirective,
+    ComponentLoaderDirective,
     DynamicTableTemplateDirective,
     GlobalTemplateDirective,
     IconDirective,

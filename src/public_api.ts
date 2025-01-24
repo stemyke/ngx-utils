@@ -204,6 +204,7 @@ export {ValuesPipe} from "./ngx-utils/pipes/values.pipe";
 export {AsyncMethodBase} from "./ngx-utils/directives/async-method.base";
 export {AsyncMethodDirective} from "./ngx-utils/directives/async-method.directive";
 export {BackgroundDirective} from "./ngx-utils/directives/background.directive";
+export {ComponentLoaderDirective} from "./ngx-utils/directives/component-loader.directive";
 export {DynamicTableTemplateDirective} from "./ngx-utils/directives/dynamic-table-template.directive";
 export {GlobalTemplateDirective} from "./ngx-utils/directives/global-template.directive";
 export {IconDirective} from "./ngx-utils/directives/icon.directive";

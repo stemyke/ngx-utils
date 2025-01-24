@@ -140,7 +140,6 @@ export class ComponentLoaderService {
         entries.forEach(entryComponents => {
             entryComponents.components.forEach(type => {
                 const def = getComponentDef(type);
-                console.log(def.selectors, type.name);
                 this.typeMap.push([entryComponents.moduleId || moduleId, def.selectors as any, type]);
             });
         });
