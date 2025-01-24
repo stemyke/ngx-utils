@@ -89,6 +89,11 @@ export {
     ITableDragEvent,
     DynamicTableDragHandler,
     ResourceIfContext,
+    CssSelector,
+    CssSelectorList,
+    DynamicComponentLocation,
+    DynamicModuleInfo,
+    DynamicEntryComponents,
     APP_BASE_URL,
     IConfiguration,
     IConfigService,
@@ -122,7 +127,9 @@ export {JSONfn} from "./ngx-utils/utils/jsonfn";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
-export {checkTransitions} from "./ngx-utils/utils/misc";
+export {
+    checkTransitions, getComponentDef, parseSelector, selectorMatchesList, provideEntryComponents
+} from "./ngx-utils/utils/misc";
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
 export {CancelablePromise, cancelablePromise, impatientPromise} from "./ngx-utils/utils/promise.utils";
@@ -155,6 +162,7 @@ export {IStateInfo, StateService} from "./ngx-utils/services/state.service";
 export {StaticLanguageService} from "./ngx-utils/services/static-language.service";
 export {StorageService} from "./ngx-utils/services/storage.service";
 export {BaseToasterService} from "./ngx-utils/services/base-toaster.service";
+export {ComponentLoaderService} from "./ngx-utils/services/component-loader.service";
 export {IUrlDictionary, TranslatedUrlSerializer} from "./ngx-utils/services/translated-url.serializer";
 export {PromiseService} from "./ngx-utils/services/promise.service";
 export {SocketService} from "./ngx-utils/services/socket.service";
@@ -212,6 +220,7 @@ export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-l
 
 export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";
+export {FakeModuleComponent} from "./ngx-utils/components/fake-module/fake-module.component";
 export {PaginationMenuComponent} from "./ngx-utils/components/pagination-menu/pagination-menu.component";
 export {UnorderedListComponent} from "./ngx-utils/components/unordered-list/unordered-list.component";
 export {UploadComponent} from "./ngx-utils/components/upload/upload.component";

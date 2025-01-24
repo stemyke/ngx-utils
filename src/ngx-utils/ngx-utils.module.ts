@@ -14,7 +14,7 @@ import {
     APP_BASE_URL,
     AUTH_SERVICE,
     CONFIG_SERVICE,
-    DIALOG_SERVICE,
+    DIALOG_SERVICE, DYNAMIC_MODULE_INFO, DynamicModuleInfo,
     ICON_SERVICE,
     IModuleConfig,
     LANGUAGE_SERVICE,
@@ -36,6 +36,9 @@ import {PromiseService} from "./services/promise.service";
 import {ConfigService} from "./services/config.service";
 import {Wasi} from "./utils/wasi";
 import {BaseDialogService} from "./services/base-dialog.service";
+import {ROUTES} from "@angular/router";
+import {AuthGuard} from "./utils/auth.guard";
+import {FakeModuleComponent} from "./components/fake-module/fake-module.component";
 
 export function loadBaseUrl(): string {
     if (typeof (document) === "undefined" || typeof (location) === "undefined") return "/";
@@ -180,6 +183,33 @@ export class NgxUtilsModule {
 
     static provideUtils(config?: IModuleConfig): EnvironmentProviders {
         return makeEnvironmentProviders(NgxUtilsModule.getProviders(config));
+    }
+
+    static useDynamic(moduleInfo: DynamicModuleInfo): ModuleWithProviders<NgxUtilsModule> {
+        return {
+            ngModule: NgxUtilsModule,
+            providers: [
+                {
+                    provide: ROUTES,
+                    multi: true,
+                    useValue: [
+                        {
+                            loadChildren: moduleInfo.loadChildren,
+                            matcher: AuthGuard.noRouteMatch
+                        },
+                        {
+                            component: FakeModuleComponent,
+                            matcher: AuthGuard.wildRouteMatch
+                        }
+                    ]
+                },
+                {
+                    provide: DYNAMIC_MODULE_INFO,
+                    useValue: moduleInfo,
+                    multi: true
+                }
+            ]
+        };
     }
 
     constructor() {

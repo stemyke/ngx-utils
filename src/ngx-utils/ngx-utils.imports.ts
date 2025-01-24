@@ -27,6 +27,7 @@ import {StateService} from "./services/state.service";
 import {StaticLanguageService} from "./services/static-language.service";
 import {StorageService} from "./services/storage.service";
 import {BaseToasterService} from "./services/base-toaster.service";
+import {ComponentLoaderService} from "./services/component-loader.service";
 import {TranslatedUrlSerializer} from "./services/translated-url.serializer";
 import {UniversalService} from "./services/universal.service";
 import {WasmService} from "./services/wasm.service";
@@ -81,6 +82,7 @@ import {ValuesPipe} from "./pipes/values.pipe";
 
 import {DropListComponent} from "./components/drop-list/drop-list.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
+import {FakeModuleComponent} from "./components/fake-module/fake-module.component";
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {UploadComponent} from "./components/upload/upload.component";
@@ -141,6 +143,7 @@ export const directives = [
 export const components = [
     DropListComponent,
     DynamicTableComponent,
+    FakeModuleComponent,
     PaginationMenuComponent,
     UnorderedListComponent,
     UploadComponent
@@ -170,6 +173,7 @@ export const providers = [
     StaticLanguageService,
     StorageService,
     BaseToasterService,
+    ComponentLoaderService,
     TranslatedUrlSerializer,
     UniversalService,
     WasmService,

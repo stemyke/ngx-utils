@@ -1,6 +1,6 @@
 import {EventEmitter, InjectionToken, Injector, NgZone, Provider, TemplateRef, Type} from "@angular/core";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
-import {ActivatedRouteSnapshot, Data, Route, UrlTree} from "@angular/router";
+import {ActivatedRouteSnapshot, Data, LoadChildrenCallback, Route, Routes, UrlTree} from "@angular/router";
 import {Request} from "express";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
@@ -582,6 +582,33 @@ export class ResourceIfContext {
     resource: string;
     url: string;
 }
+
+// --- ComponentLoaderService ---
+
+export type CssSelector = [tagName: string, attrName?: string, attrValue?: string];
+
+export type CssSelectorList = CssSelector[];
+
+export interface DynamicModuleInfo {
+    moduleId: string;
+    loadChildren: LoadChildrenCallback;
+    routes?: Routes;
+    initialNavigation?: boolean;
+}
+
+export interface DynamicComponentLocation {
+    moduleId: string;
+    selector: string;
+}
+
+export interface DynamicEntryComponents {
+    components: Type<any>[];
+    moduleId: string;
+}
+
+export const DYNAMIC_ENTRY_COMPONENTS = new InjectionToken<DynamicEntryComponents[]>("dynamic-entry-components");
+
+export const DYNAMIC_MODULE_INFO = new InjectionToken<DynamicModuleInfo[]>("dynamic-module-info");
 
 // --- ConfigService ---
 export const APP_BASE_URL = new InjectionToken<string>("app-base-url");
