@@ -202,11 +202,11 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         if (!ObjectUtils.isString(url)) return null;
         if (url.startsWith("data:")) return url;
         const baseUrl = this.baseUrl;
-        const images = this.isImage ? `image/` : ``;
+        const query = this.isImage ? `?type=preview` : ``;
         if (!baseUrl) {
-            return `${images}${url}`;
+            return `${url}${query}`;
         }
-        return `${baseUrl}/${images}${url}`;
+        return `${baseUrl}/${url}${query}`;
     }
 
     async processFiles(files: File[]): Promise<IFileUploadResult[]> {

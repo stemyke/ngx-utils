@@ -175,9 +175,9 @@ export interface IConfirmDialogConfig {
     cancelClasses?: string;
 }
 
-export interface IDialogService {
-    dialog(config: IDialogConfig): void;
-    confirm(config: IConfirmDialogConfig): void
+export interface IDialogService<DR = any> {
+    dialog(config: IDialogConfig): DR;
+    confirm(config: IConfirmDialogConfig): DR
 }
 
 export const DIALOG_SERVICE = new InjectionToken<IDialogService>("dialog-service");

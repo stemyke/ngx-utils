@@ -2,21 +2,21 @@ import {Inject, Injectable} from "@angular/core";
 import {IConfirmDialogConfig, IDialogConfig, IDialogService, IToasterService, TOASTER_SERVICE} from "../common-types";
 
 @Injectable()
-export class BaseDialogService implements IDialogService {
+export class BaseDialogService<DR = any> implements IDialogService<DR> {
 
     constructor(@Inject(TOASTER_SERVICE) readonly toaster: IToasterService) {
     }
 
-    dialog(config: IDialogConfig): void {
-        if (!config) return;
+    dialog(config: IDialogConfig): DR {
+        if (!config) return null;
         const button = !config.buttons ? null : config.buttons[0];
-        if (!button) return;
+        if (!button) return null;
         this.toaster.handleAsyncMethod(button.method);
+        return null;
     }
 
-    confirm(config: IConfirmDialogConfig): void {
-        if (!config) return;
-        this.dialog({
+    confirm(config: IConfirmDialogConfig): DR {
+        return this.dialog({
             id: config.id,
             title: config.title,
             message: config.message,
