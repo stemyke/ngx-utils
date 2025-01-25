@@ -7,12 +7,14 @@
     --bg-color: #FFFFFF;
     --text-color: #151515;
     --highlight-color: var(--primary-color, #888888);
+    --display-toggle: none;
+    --toggle-margin: 10px;
 
     .sort-toggle {
 
-        display: none;
+        display: var(--display-toggle);
         position: relative;
-        margin: 10px;
+        margin: var(--toggle-margin);
 
         .svg-icon {
             pointer-events: none;
