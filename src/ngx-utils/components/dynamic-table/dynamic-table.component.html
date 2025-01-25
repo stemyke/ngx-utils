@@ -41,8 +41,6 @@
        [ngClass]="orderBy !== column ? 'sort' : (orderDescending ? 'sort-desc' : 'sort-asc')"
        (click)="setSorting(column, toggle)">
         <span>{{ realColumns[column].title | translate }}</span>
-        <i *ngIf="orderBy == column"
-           [icon]="orderBy !== column ? 'sort' : (orderDescending ? 'sort-desc' : 'sort-asc')"></i>
     </a>
 </ng-template>
 
@@ -82,7 +80,7 @@
         <ng-template #defaultWrapperTemplate>
             <table class="table table-striped">
                 <thead>
-                    <tr class="header">
+                    <tr>
                         <th *ngFor="let column of cols" [ngClass]="'header-column column-' + column">
                             <ng-container [ngTemplateOutlet]="headerTemplate"
                                           [ngTemplateOutletContext]="{column: column}"></ng-container>
