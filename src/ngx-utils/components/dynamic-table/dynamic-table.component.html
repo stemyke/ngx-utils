@@ -38,7 +38,7 @@
         <span>{{ realColumns[column].title | translate }}</span>
     </ng-template>
     <a *ngIf="realColumns[column].sort; else defaultCol"
-       [ngClass]="orderBy !== column ? 'sort' : (orderDescending ? 'sort-desc' : 'sort-asc')"
+       [ngClass]="['sort', orderBy !== column ? '' : (orderDescending ? 'sort-desc' : 'sort-asc')]"
        (click)="setSorting(column, toggle)">
         <span>{{ realColumns[column].title | translate }}</span>
     </a>
@@ -46,10 +46,10 @@
 
 <div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [page]="page" [itemsPerPage]="itemsPerPage" [updateTime]="updateTime">
     <ng-template #defaultFilterTemplate let-table>
-        <div class="table-filter">
-            <ng-container *ngIf="table.showFilter">
-                <label *ngIf="label" [attr.for]="tableId">
-                    {{ label | translate }}
+        <div class="table-features-row">
+            <div class="table-input-wrap" *ngIf="showFilter">
+                <label *ngIf="filterLabel" [attr.for]="tableId">
+                    {{ filterLabel | translate }}
                 </label>
                 <input type="text"
                        class="form-control"
@@ -57,24 +57,46 @@
                        [attr.data-testid]="testId + '-filter-input'"
                        [placeholder]="placeholder | translate"
                        [ngModel]="table.filter"
-                       (ngModelChange)="table.setFilter($event)"/>
-            </ng-container>
-            <ng-content select="[table-filter]"></ng-content>
+                       (ngModelChange)="setFilter($event)"/>
+            </div>
+            <div class="table-dropdown sort-dropdown" dd #sortDd="dropdown" *ngIf="orderBy">
+                <div class="table-toggle" dropdownToggle>
+                    <ng-container [ngTemplateOutlet]="headerTemplate"
+                                  [ngTemplateOutletContext]="{column: orderBy, toggle: sortDd}"></ng-container>
+                </div>
+                <ul>
+                    <ng-container *ngFor="let column of cols">
+                        <li [ngClass]="'header-column column-' + column" *ngIf="realColumns[column].sort">
+                            <ng-container [ngTemplateOutlet]="headerTemplate"
+                                          [ngTemplateOutletContext]="{column: column}"></ng-container>
+                        </li>
+                    </ng-container>
+                </ul>
+            </div>
+            <div class="table-input-wrap" *ngIf="showFilter">
+                <label>
+                    {{ 'label.items.before' | translate }}
+                </label>
+                <div class="table-dropdown normal-dropdown" dd *ngIf="showItems">
+                    <div class="table-toggle" dropdownToggle>
+                        <a class="dropdown-link">{{ itemsPerPage }}</a>
+                    </div>
+                    <ul>
+                        <ng-container *ngFor="let count of showItems">
+                            <li [ngClass]="'item-count count-' + count" (click)="setItemsPerPage(count)">
+                                {{ count }}
+                            </li>
+                        </ng-container>
+                    </ul>
+                </div>
+                <label>
+                    {{ 'label.items.after' | translate }}
+                </label>
+            </div>
+            <ng-content select="[table-features]"></ng-content>
         </div>
     </ng-template>
     <ng-container [ngxTemplateOutlet]="filterTemplate || defaultFilterTemplate" [context]="this"></ng-container>
-    <div class="sort-toggle" dd #sortDd="dropdown" *ngIf="orderBy">
-        <div class="sort-toggle-content">
-            <ng-container [ngTemplateOutlet]="headerTemplate"
-                          [ngTemplateOutletContext]="{column: orderBy, toggle: sortDd}"></ng-container>
-        </div>
-        <ul>
-            <li *ngFor="let column of cols" [ngClass]="'header-column column-' + column">
-                <ng-container [ngTemplateOutlet]="headerTemplate"
-                              [ngTemplateOutletContext]="{column: column}"></ng-container>
-            </li>
-        </ul>
-    </div>
     <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
     <div class="table-responsive">
         <ng-template #defaultWrapperTemplate>
@@ -88,13 +110,53 @@
                     </tr>
                     <tr *ngIf="hasQuery">
                         <th *ngFor="let column of cols" [ngClass]="['column-' + column, 'filter-column']">
-                            <ng-container *ngIf="realColumns[column].filter">
-                                <input class="form-control"
-                                       [attr.data-testid]="testId + '-filter-' + column"
-                                       [type]="realColumns[column].filterType || 'text'"
-                                       [placeholder]="realColumns[column].title | translate"
-                                       [ngModel]="query[column]"
-                                       (ngModelChange)="updateQuery(column, $event)"/>
+                            <ng-container *ngIf="realColumns[column].filter" [ngSwitch]="realColumns[column].filterType">
+                                <ng-container *ngSwitchCase="'enum'">
+                                    <ng-template #optionItem let-option="option">
+                                        {{ (realColumns[column].enumPrefix ? realColumns[column].enumPrefix + '.' + option : option) | translate }}
+                                    </ng-template>
+                                    <div class="table-dropdown normal-dropdown" dd [closeInside]="false">
+                                        <div class="table-toggle" dropdownToggle>
+                                            <a [ngClass]="'dropdown-link filter-link-' + column">
+                                                <span class="toggle-placeholder" *ngIf="!query[column]">
+                                                    {{ realColumns[column].title | translate }}
+                                                </span>
+                                                <span [ngClass]="['option-' + option, column + '-option-' + option, option]"
+                                                      *ngFor="let option of query[column] | values; let ix = index">
+                                                    <ng-container *ngIf="ix > 0">, </ng-container>
+                                                    <ng-container [ngTemplateOutlet]="optionItem"
+                                                                  [ngTemplateOutletContext]="{option: option}"></ng-container>
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <ul>
+                                            <li [ngClass]="[column + '-option', 'option-' + option, option]"
+                                                (click)="setQueryValue(column, option)"
+                                                *ngFor="let option of realColumns[column].enum">
+                                                <a [ngClass]="'toggle-link-' + column">
+                                                    <input type="checkbox" [checked]="query[column] | includes: option">
+                                                    <ng-container [ngTemplateOutlet]="optionItem"
+                                                                  [ngTemplateOutletContext]="{option: option}"></ng-container>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'checkbox'">
+                                    <input type="checkbox"
+                                           [attr.data-testid]="testId + '-filter-' + column"
+                                           [placeholder]="realColumns[column].title | translate"
+                                           [ngModel]="query[column]"
+                                           (ngModelChange)="setQueryValue(column, $event)"/>
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                    <input class="form-control"
+                                           type="text"
+                                           [attr.data-testid]="testId + '-filter-' + column"
+                                           [placeholder]="realColumns[column].title | translate"
+                                           [ngModel]="query[column]"
+                                           (ngModelChange)="setQueryValue(column, $event)"/>
+                                </ng-container>
                             </ng-container>
                         </th>
                     </tr>

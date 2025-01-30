@@ -39,8 +39,6 @@ import {DropdownDirective} from "../../directives/dropdown.directive";
 })
 export class DynamicTableComponent implements AfterContentInit, AfterViewInit, OnChanges {
 
-    @Input() label: string;
-    @Input() placeholder: string;
     @Input() dataLoader: TableDataLoader;
     @Input() data: any[];
     @Input() selected: any;
@@ -48,7 +46,30 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() urlParam: string;
     @Input() parallelData: any[];
     @Input() columns: TableColumns;
+
+    /**
+     * Parameter for displaying a simple filter search box
+     */
     @Input() showFilter: boolean;
+
+    /**
+     * Parameter for specifying a label for filter
+     */
+    @Input() filterLabel: string;
+
+    /**
+     * Parameter for specifying a placeholder for filter
+     */
+    @Input() placeholder: string;
+
+    /**
+     * Parameter for displaying an item per page selector dropdown with the specified numbers
+     */
+    @Input() showItems: number[];
+
+    /**
+     * Parameter for setting how many items should be displayed by default
+     */
     @Input() itemsPerPage: number;
     @Input() updateTime: number;
     @Input() filterTime: number;
@@ -59,6 +80,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() orderDescending: boolean;
     @Input() testId: string;
     @Input() titlePrefix: string;
+
     @Input() dragStartFn: DragEventHandler;
     @Input() dragEnterFn: DragEventHandler;
     @Input() dropFn: DragEventHandler<void>;
@@ -156,17 +178,14 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
                 return result;
             }, {} as ITableColumns);
             this.cols = Object.keys(this.realColumns);
-            this.orderBy = this.orderBy in this.realColumns ? this.orderBy : this.cols[0];
-            this.query = this.cols.reduce((res, c) => {
-                const col = this.realColumns[c];
-                if (!col.filter) return res;
-                res[c] = col.filterType == "checkbox" ? false : "";
-                return res;
-            }, {});
+            const sortable = this.cols.filter(c => this.realColumns[c].sort);
+            this.orderBy = this.orderBy in sortable ? this.orderBy : sortable[0] || null;
+            this.query = {};
         }
         this.hasQuery = this.cols.some(col => this.realColumns[col].filter);
-        if (changes.orderBy && this.realColumns) {
-            this.orderBy = this.orderBy in this.realColumns ? this.orderBy : this.cols[0];
+        if (changes.orderBy && this.realColumns && this.cols) {
+            const sortable = this.cols.filter(c => this.realColumns[c].sort);
+            this.orderBy = this.orderBy in sortable ? this.orderBy : sortable[0] || null;
         }
         if (!changes.data && !changes.parallelData && !changes.itemsPerPage && !changes.orderBy && !changes.orderDescending) return;
         this.refresh();
@@ -223,32 +242,59 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.pagination.refresh(time);
     }
 
-    setFilter(filter: string): void {
+    setFilter(filter: string) {
         this.filter = filter;
         this.refresh(this.filterTime ?? 300);
     }
 
-    setSorting(column: string, toggle: DropdownDirective): boolean {
+    setSorting(column: string, toggle: DropdownDirective) {
         if (toggle) {
-            toggle.show();
-            return false;
+            return;
         }
         this.orderDescending = column == this.orderBy && !this.orderDescending;
         this.orderBy = column;
         this.refresh();
     }
 
-    updateQuery(c: string, value: string | boolean): void {
+    setQueryValue(c: string, value: string | boolean) {
         const col = this.realColumns[c];
         if (!col?.filter) return;
-        if (col.filterType === "checkbox") {
-            this.query[c] = !this.query[c]
-        } else if (!value) {
-            delete this.query[c];
-        } else {
-            this.query[c] = value;
+        switch (col.filterType) {
+            case "enum":
+                const set = new Set((this.query[c] || []) as string[]);
+                const val = `${value}`;
+                if (set.has(val)) {
+                    set.delete(val);
+                    if (set.size === 0) {
+                        delete this.query[c];
+                        break;
+                    }
+                } else {
+                    set.add(val);
+                }
+                this.query[c] = Array.from(set);
+                break;
+            case "checkbox":
+                if (this.query[c]) {
+                    delete this.query[c];
+                    break;
+                }
+                this.query[c] = true;
+                break;
+            default:
+                if (!value) {
+                    delete this.query[c];
+                    break;
+                }
+                this.query[c] = value;
+                break;
         }
         this.refresh(this.filterTime ?? 300);
+    }
+
+    setItemsPerPage(count: number) {
+        this.itemsPerPage = count;
+        this.refresh();
     }
 
     loadData = (page: number, itemsPerPage: number): Promise<IPaginationData> => {

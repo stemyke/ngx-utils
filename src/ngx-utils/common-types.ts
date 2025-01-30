@@ -534,7 +534,9 @@ export interface ITableColumn {
     title?: string;
     sort?: string;
     filter?: boolean;
-    filterType?: "text" | "checkbox";
+    filterType?: "text" | "enum" | "checkbox";
+    enum?: string[];
+    enumPrefix?: string;
     [key: string]: any;
 }
 
@@ -555,7 +557,7 @@ export interface ITableTemplates {
 }
 
 export interface ITableDataQuery {
-    [column: string]: string | boolean;
+    [column: string]: string | string[] | boolean;
 }
 
 export type TableDataLoader = (

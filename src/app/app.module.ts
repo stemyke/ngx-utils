@@ -1,10 +1,10 @@
 import {BrowserModule} from "@angular/platform-browser";
+import {provideHttpClient} from "@angular/common/http";
 import {NgModule} from "@angular/core";
 import {FormsModule} from "@angular/forms";
 
 import {AppComponent} from "./app.component";
 import {NgxUtilsModule} from "../public_api";
-import {HttpClientModule} from "@angular/common/http";
 
 
 @NgModule({
@@ -13,11 +13,12 @@ import {HttpClientModule} from "@angular/common/http";
     ],
     imports: [
         BrowserModule,
-        HttpClientModule,
         FormsModule,
         NgxUtilsModule.forRoot()
     ],
-    providers: [],
+    providers: [
+        provideHttpClient()
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {

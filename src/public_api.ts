@@ -183,6 +183,7 @@ export {GetTypePipe} from "./ngx-utils/pipes/get-type.pipe";
 export {GetValuePipe} from "./ngx-utils/pipes/get-value.pipe";
 export {GlobalTemplatePipe} from "./ngx-utils/pipes/global-template.pipe";
 export {GroupByPipe} from "./ngx-utils/pipes/group-by.pipe";
+export {IncludesPipe} from "./ngx-utils/pipes/includes.pipe";
 export {IsTypePipe} from "./ngx-utils/pipes/is-type.pipe";
 export {JoinPipe} from "./ngx-utils/pipes/join.pipe";
 export {KeysPipe} from "./ngx-utils/pipes/keys.pipe";

@@ -63,6 +63,7 @@ import {GetTypePipe} from "./pipes/get-type.pipe";
 import {GetValuePipe} from "./pipes/get-value.pipe";
 import {GlobalTemplatePipe} from "./pipes/global-template.pipe";
 import {GroupByPipe} from "./pipes/group-by.pipe";
+import {IncludesPipe} from "./pipes/includes.pipe";
 import {IsTypePipe} from "./pipes/is-type.pipe";
 import {JoinPipe} from "./pipes/join.pipe";
 import {KeysPipe} from "./pipes/keys.pipe";
@@ -101,6 +102,7 @@ export const pipes = [
     GetValuePipe,
     GlobalTemplatePipe,
     GroupByPipe,
+    IncludesPipe,
     IsTypePipe,
     JoinPipe,
     KeysPipe,
