@@ -42,7 +42,7 @@ export class DropdownDirective implements OnDestroy {
         this.hide();
     }
 
-    constructor(readonly element: ElementRef) {
+    constructor(protected element: ElementRef<HTMLElement>) {
         this.opened = false;
         this.disabled = false;
         this.closeInside = true;
@@ -86,6 +86,12 @@ export class DropdownDirective implements OnDestroy {
 
     hideEvent(): void {
         this.onHidden.emit(this);
+    }
+
+    setProperty(name: string, value: any): void {
+        const elem = this.element.nativeElement;
+        if (!elem) return;
+        elem.style.setProperty(`--${name}`, value);
     }
 
     @HostListener("keydown.enter", ["$event"])

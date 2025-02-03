@@ -30,7 +30,7 @@ export class ObservableUtils {
         // @dynamic
         const lambda = () => {
             subscriptions.forEach(s => {
-                s.unsubscribe();
+                s?.unsubscribe();
             });
         };
         return new Subscription(lambda);

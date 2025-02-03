@@ -48,6 +48,7 @@ import {ResourceIfDirective} from "./directives/resource-if.directive";
 import {StickyDirective} from "./directives/sticky.directive";
 import {StickyClassDirective} from "./directives/sticky-class.directive";
 import {DropdownDirective} from "./directives/dropdown.directive";
+import {DropdownContentDirective} from "./directives/dropdown-content.directive";
 import {DropdownToggleDirective} from "./directives/dropdown-toggle.directive";
 import {UnorderedListItemDirective} from "./directives/unordered-list-item.directive";
 import {UnorderedListTemplateDirective} from "./directives/unordered-list-template.directive";
@@ -138,6 +139,7 @@ export const directives = [
     StickyDirective,
     StickyClassDirective,
     DropdownDirective,
+    DropdownContentDirective,
     DropdownToggleDirective,
     UnorderedListItemDirective,
     UnorderedListTemplateDirective

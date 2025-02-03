@@ -3,7 +3,7 @@ import {
     AfterViewInit,
     Component,
     ContentChild,
-    ContentChildren,
+    ContentChildren, ElementRef,
     Input,
     OnChanges,
     QueryList,
@@ -29,6 +29,7 @@ import {checkTransitions} from "../../utils/misc";
 import {DynamicTableTemplateDirective} from "../../directives/dynamic-table-template.directive";
 import {PaginationDirective} from "../../directives/pagination.directive";
 import {DropdownDirective} from "../../directives/dropdown.directive";
+import {MathUtils} from "../../utils/math.utils";
 
 @Component({
     standalone: false,
@@ -103,9 +104,6 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @ContentChild("wrapperTemplate", {static: true})
     wrapperTemplate: TemplateRef<any>;
 
-    @ContentChild("filterTemplate", {static: true})
-    filterTemplate: TemplateRef<any>;
-
     @ViewChild("columnsTemplate", {static: true})
     columnsTemplate: TemplateRef<any>;
 
@@ -115,22 +113,19 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @ViewChild("defaultWrapperTemplate", {static: true})
     defaultWrapperTemplate: TemplateRef<any>;
 
-    @ViewChild("defaultFilterTemplate", {static: true})
-    defaultFilterTemplate: TemplateRef<any>;
-
     @ViewChild("pagination")
     protected pagination: PaginationDirective;
 
     @ContentChildren(DynamicTableTemplateDirective)
     protected templateDirectives: QueryList<DynamicTableTemplateDirective>;
 
-    private static compare(orderBy: string, a: PaginationItemContext, b: PaginationItemContext): number {
+    protected static compare(orderBy: string, a: PaginationItemContext, b: PaginationItemContext): number {
         a = a.item ? a.item[orderBy] : null;
         b = b.item ? b.item[orderBy] : null;
         return ObjectUtils.compare(a, b);
     }
 
-    constructor() {
+    constructor(protected element: ElementRef<HTMLElement>) {
         this.dataLoader = this.loadLocalData;
         this.placeholder = "";
         this.tableId = UniqueUtils.uuid();
@@ -141,6 +136,12 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.testId = "table";
         this.titlePrefix = "label";
         this.realColumns = {};
+    }
+
+    setProperty(name: string, value: any): void {
+        const elem = this.element.nativeElement;
+        if (!elem) return;
+        elem.style.setProperty(`--${name}`, value);
     }
 
     ngAfterContentInit(): void {
@@ -159,7 +160,6 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
 
     ngAfterViewInit(): void {
         this.rowTemplate = this.rowTemplate || this.defaultRowTemplate;
-        this.filterTemplate = this.filterTemplate || this.defaultFilterTemplate;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -181,6 +181,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
             this.orderBy = this.orderBy in sortable ? this.orderBy : sortable[0] || null;
             this.query = {};
+            this.setProperty("cell-width", MathUtils.round(100 / this.cols.length, 4) + "%");
         }
         this.hasQuery = this.cols.some(col => this.realColumns[col].filter);
         if (changes.orderBy && this.realColumns && this.cols) {

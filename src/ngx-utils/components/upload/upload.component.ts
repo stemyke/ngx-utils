@@ -209,6 +209,10 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         return `${baseUrl}/${url}${query}`;
     }
 
+    getBgUrl(image: any): string {
+        return `url('${this.getUrl(image)}')`;
+    }
+
     async processFiles(files: File[]): Promise<IFileUploadResult[]> {
         if (this.processing) return null;
         const headers = this.http.makeHeaders();

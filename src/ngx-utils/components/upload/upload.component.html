@@ -3,10 +3,24 @@
         {{ buttonText | translate }}
     </a>
 </ng-template>
+<ng-template #defaultDownloadBtn let-loading="loading">
+    <a class="btn btn-primary" [ngClass]="{loading: loading}">
+        {{ 'button.download' | translate }}
+    </a>
+</ng-template>
 <ng-template #defaultRemoveBtn let-remove="remove" let-index="index">
     <a class="btn btn-danger btn-delete" (click)="remove(index)">
         x
     </a>
+</ng-template>
+<ng-template #itemTemplate let-item="item" let-index="index">
+    <div class="upload-item" [ngStyle]="!isImage ? {} : {backgroundImage: getBgUrl(item)}">
+        <div class="remove-btn">
+            <ng-container [ngTemplateOutlet]="removeButton || defaultRemoveBtn"
+                          [ngTemplateOutletContext]="{remove: remove, index: index}">
+            </ng-container>
+        </div>
+    </div>
 </ng-template>
 
 <div class="upload">
@@ -21,8 +35,20 @@
                (click)="onInputClick($event)"
                (blur)="onTouched($event)"
                (change)="onInputChange($event)"/>
-        <div class="process-container">
-            <div class="upload-process"
+        <div class="upload-container">
+
+            <ng-container [ngTemplateOutlet]="itemTemplate"
+                          [ngTemplateOutletContext]="{item: value, index: 0}"
+                          *ngIf="!multiple && value">
+            </ng-container>
+            <ng-container *ngIf="multiple">
+                <ng-container [ngTemplateOutlet]="itemTemplate"
+                              [ngTemplateOutletContext]="{item: image, index: ix}"
+                              *ngFor="let image of value; let ix = index">
+                </ng-container>
+            </ng-container>
+
+            <div class="upload-item"
                  [ngStyle]="!proc.preview ? {} : {backgroundImage: proc.preview}"
                  *ngFor="let proc of processing">
                 <div class="upload-progress">
@@ -33,50 +59,10 @@
                 </div>
             </div>
         </div>
-        <div class="btn-container" (click)="input.click()">
+        <div class="upload-btn" (click)="input.click()">
             <ng-container [ngTemplateOutlet]="uploadButton || defaultUploadBtn"
                           [ngTemplateOutletContext]="{loading: !!processing, buttonText: buttonText}">
             </ng-container>
         </div>
     </div>
-    <ng-template #defaultTemplate>
-        <ul class="files" *ngIf="!multiple">
-            <li class="file" *ngIf="value">
-                <a [href]="getUrl(value) | safe: 'url'" target="target">
-                    <i class="fas fa-download">download</i>
-                </a>
-                <ng-container [ngTemplateOutlet]="removeButton || defaultRemoveBtn"
-                              [ngTemplateOutletContext]="{remove: remove}">
-                </ng-container>
-            </li>
-        </ul>
-        <ul class="files" *ngIf="multiple">
-            <li class="file" *ngFor="let file of value; let ix = index">
-                <a [href]="getUrl(file) | safe: 'url'" [target]="'target_' + ix">
-                    <i class="fas fa-download"></i>
-                </a>
-                <ng-container [ngTemplateOutlet]="removeButton || defaultRemoveBtn"
-                              [ngTemplateOutletContext]="{remove: remove, index: ix}">
-                </ng-container>
-            </li>
-        </ul>
-    </ng-template>
-    <ng-container *ngIf="isImage; else defaultTemplate">
-        <ul class="images" *ngIf="!multiple">
-            <li class="image" *ngIf="value">
-                <img alt="file image" [src]="getUrl(value) | safe: 'url'"/>
-                <ng-container [ngTemplateOutlet]="removeButton || defaultRemoveBtn"
-                              [ngTemplateOutletContext]="{remove: remove}">
-                </ng-container>
-            </li>
-        </ul>
-        <ul class="images" *ngIf="multiple">
-            <li class="image" *ngFor="let image of value; let ix = index">
-                <img alt="file image" [src]="getUrl(image) | safe: 'url'"/>
-                <ng-container [ngTemplateOutlet]="removeButton || defaultRemoveBtn"
-                              [ngTemplateOutletContext]="{remove: remove, index: ix}">
-                </ng-container>
-            </li>
-        </ul>
-    </ng-container>
 </div>

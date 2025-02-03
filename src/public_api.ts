@@ -216,6 +216,7 @@ export {ResourceIfDirective} from "./ngx-utils/directives/resource-if.directive"
 export {StickyDirective} from "./ngx-utils/directives/sticky.directive";
 export {StickyClassDirective} from "./ngx-utils/directives/sticky-class.directive";
 export {DropdownDirective} from "./ngx-utils/directives/dropdown.directive";
+export {DropdownContentDirective} from "./ngx-utils/directives/dropdown-content.directive";
 export {DropdownToggleDirective} from "./ngx-utils/directives/dropdown-toggle.directive";
 export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-item.directive";
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
