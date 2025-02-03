@@ -179,7 +179,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             }, {} as ITableColumns);
             this.cols = Object.keys(this.realColumns);
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
-            this.orderBy = this.orderBy in sortable ? this.orderBy : sortable[0] || null;
+            this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
             this.query = {};
             this.setProperty("cell-width", MathUtils.round(100 / this.cols.length, 4) + "%");
         }
