@@ -22,7 +22,6 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
             let width = 0;
             let height = 0;
             entries.forEach(entry => {
-                console.log(entry);
                 if (!entry.contentRect) return;
                 width = Math.max(width, entry.contentRect.width);
                 height = Math.max(height, entry.contentRect.height);
