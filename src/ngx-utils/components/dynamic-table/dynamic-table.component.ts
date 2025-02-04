@@ -248,7 +248,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.refresh(this.filterTime ?? 300);
     }
 
-    setSorting(column: string, toggle: DropdownDirective) {
+    setSorting(column: string, toggle?: DropdownDirective) {
         if (toggle) {
             return;
         }
