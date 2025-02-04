@@ -526,6 +526,8 @@ export interface IOpenApiSchemas {
 }
 
 // --- Dynamic table ---
+export type TableFilterType = "text" | "enum" | "checkbox";
+
 export interface ITableOrders {
     [column: string]: string;
 }
@@ -534,7 +536,7 @@ export interface ITableColumn {
     title?: string;
     sort?: string;
     filter?: boolean;
-    filterType?: "text" | "enum" | "checkbox";
+    filterType?: TableFilterType;
     enum?: string[];
     enumPrefix?: string;
     [key: string]: any;

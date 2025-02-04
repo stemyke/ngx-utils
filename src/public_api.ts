@@ -76,6 +76,7 @@ export {
     IOpenApiSchemaProperty,
     IOpenApiSchema,
     IOpenApiSchemas,
+    TableFilterType,
     ITableOrders,
     ITableColumn,
     ITableColumns,
