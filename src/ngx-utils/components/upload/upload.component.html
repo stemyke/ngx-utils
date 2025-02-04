@@ -8,18 +8,9 @@
         {{ 'button.download' | translate }}
     </a>
 </ng-template>
-<ng-template #defaultRemoveBtn let-remove="remove" let-index="index">
-    <a class="btn btn-danger btn-delete" (click)="remove(index)">
-        x
-    </a>
-</ng-template>
 <ng-template #itemTemplate let-item="item" let-index="index">
     <div class="upload-item" [ngStyle]="!isImage ? {} : {backgroundImage: getBgUrl(item)}">
-        <div class="remove-btn">
-            <ng-container [ngTemplateOutlet]="removeButton || defaultRemoveBtn"
-                          [ngTemplateOutletContext]="{remove: remove, index: index}">
-            </ng-container>
-        </div>
+        <a class="remove-item-btn" (click)="remove(index)"></a>
     </div>
 </ng-template>
 
@@ -35,6 +26,11 @@
                (click)="onInputClick($event)"
                (blur)="onTouched($event)"
                (change)="onInputChange($event)"/>
+        <div class="upload-message"
+             [ngClass]="{'has-value': value?.length}"
+             [innerHTML]="message | translate | safe:'html'"
+             *ngIf="message">
+        </div>
         <div class="upload-container">
 
             <ng-container [ngTemplateOutlet]="itemTemplate"

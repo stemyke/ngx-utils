@@ -36,6 +36,7 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
 
     @Input() disabled: boolean;
     @Input() unique: boolean;
+    @Input() message: string;
     @Input() idField: string;
     @Input() labelField: string;
     @Input() value: DropListId[];

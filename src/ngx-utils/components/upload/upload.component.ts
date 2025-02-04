@@ -44,6 +44,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
     @Input() disabled: boolean;
     @Input() accept: string | string[];
     @Input() baseUrl: string;
+    @Input() message: string;
     @Input() multiple: boolean;
     @Input() buttonText: string;
     @Input() makeUpload: (f: File) => any;
@@ -62,9 +63,6 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
 
     @ContentChild("uploadButton")
     uploadButton: TemplateRef<any>;
-
-    @ContentChild("removeButton")
-    removeButton: TemplateRef<any>;
 
     protected fileImageCache: any[];
     protected acceptTypes: string[];

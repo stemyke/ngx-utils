@@ -7,6 +7,7 @@
     --bg-color: #ffffff;
     --text-color: #151515;
     --highlight-color: var(--primary-color, #888888);
+    --highlight-text-color: #ffffff;
     --border-color: #ced4da;
     --display-toggle: none;
 
@@ -85,7 +86,7 @@
 
         &.table-sort-dropdown .table-toggle:hover, li:hover, li.active {
             background-color: var(--highlight-color);
-            color: white;
+            color: var(--highlight-text-color);
         }
     }
 
@@ -228,6 +229,7 @@
 
         tbody tr.active td {
             background-color: var(--highlight-color);
+            color: var(--highlight-text-color);
         }
     }
 
@@ -237,6 +239,7 @@
 
     .table-striped > tbody > tr:nth-of-type(odd).active td {
         background-color: var(--highlight-color);
+        color: var(--highlight-text-color);
     }
 
     a.sort, a.dropdown-link {

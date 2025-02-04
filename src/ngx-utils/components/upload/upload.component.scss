@@ -4,6 +4,17 @@
     --text: var(--text-color, var(--mat-sys-on-primary, white));
     --item-size: 120px;
     --item-radius: 5px;
+    --message-size: 20px;
+    --message-color: #7e7e7e;
+    --message-drop-color: #efefef;
+
+    --remove-bg: var(--primary-color, rgba(0, 0, 0, 0.2));
+    --remove-color: #ffffff;
+    --remove-size: 18px;
+    --remove-distance: 4px;
+    --remove-spacing: 8px;
+    --remove-top-distance: var(--remove-distance);
+    --remove-right-distance: var(--remove-distance);
 
     .upload-input {
         width: 100%;
@@ -15,11 +26,6 @@
         position: relative;
         padding: 5px;
 
-        &.drop-allowed {
-            background-color: rgba(0, 0, 0, 0.5);
-            border-color: darkgrey;
-        }
-
         input {
             display: block;
             position: absolute;
@@ -30,7 +36,28 @@
             opacity: 0;
         }
 
+        .upload-message {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            font-size: var(--message-size);
+            color: var(--message-color);
+            transition: 0.2s;
+        }
+
+        .upload-message.has-value {
+            display: none;
+        }
+
         .upload-container {
+            position: relative;
+            pointer-events: none;
             min-height: var(--item-size);
             display: flex;
             gap: 10px;
@@ -39,6 +66,8 @@
         }
 
         .upload-item {
+            position: relative;
+            pointer-events: auto;
             width: var(--item-size);
             height: var(--item-size);
             border-radius: var(--item-radius);
@@ -72,6 +101,47 @@
             line-height: 15px;
             text-align: center;
             color: var(--text);
+        }
+
+        &.drop-allowed {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-color: #808080;
+
+            .upload-message {
+                color: var(--message-drop-color);
+            }
+        }
+    }
+
+    a.remove-item-btn {
+
+        --rotation: 45deg;
+
+        position: absolute;
+        top: var(--remove-top-distance);
+        right: var(--remove-right-distance);
+        width: var(--remove-size);
+        height: var(--remove-size);
+
+        cursor: pointer;
+        transition: 0.2s ease;
+        background-color: var(--remove-bg);
+        border-radius: 50%;
+
+        &:before, &:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: calc(100% - var(--remove-spacing));
+            transform: translate(-50%, -50%) rotate(var(--rotation));
+            height: 1px;
+            background: var(--remove-color);
+            transition: 0.2s ease;
+        }
+
+        &:after {
+            --rotation: -45deg;
         }
     }
 }
