@@ -4,7 +4,7 @@
     --table-stripe-bg: rgba(210, 210, 210, 0.35);
 
     --border-size: 1px;
-    --bg-color: #FFFFFF;
+    --bg-color: #ffffff;
     --text-color: #151515;
     --highlight-color: var(--primary-color, #888888);
     --border-color: #ced4da;
@@ -18,7 +18,8 @@
     .table-toggle, .search-input {
         background: var(--bg-color);
         color: var(--text-color);
-        border: var(--border-size) solid var(--border-color);
+        box-shadow: 0 0 0 var(--border-size) var(--border-color);
+        border: none;
         border-radius: 5px;
         padding: 6px 12px;
         user-select: none;
@@ -42,7 +43,7 @@
         position: relative;
         z-index: 2;
         display: inline-block;
-        width: calc(var(--list-width, 0) + 2px);
+        width: calc(var(--list-width, 0));
         min-width: fit-content;
 
         a, span {
@@ -70,7 +71,6 @@
             min-height: 0;
             min-width: fit-content;
             transition: height 0.25s;
-            border: var(--border-size) solid transparent;
         }
 
         li {
@@ -98,7 +98,7 @@
 
         ul {
             height: auto;
-            border-color: var(--border-color);
+            box-shadow: 0 0 0 var(--border-size) var(--border-color);
         }
     }
 
