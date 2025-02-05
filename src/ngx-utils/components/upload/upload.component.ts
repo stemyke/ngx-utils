@@ -147,7 +147,8 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
     }
 
     onInputClick(ev: MouseEvent): void {
-        if (!this.processing) return;
+        const top = document.elementFromPoint(ev.clientX, ev.clientY);
+        if (ev.target !== top && !this.processing) return;
         ev.preventDefault();
     }
 
