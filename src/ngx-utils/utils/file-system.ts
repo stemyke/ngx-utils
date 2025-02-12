@@ -1,21 +1,25 @@
-export type FileSystemEntryOpenResult<T = any> = ReadonlyArray<FileSystemEntry<T>> | null;
+export type FileSystemEntryOpenResult<D = any, R = any> = Promise<readonly FileSystemEntry<D, R>[]>;
 
-export type FileSystemEntryOpenCb = (data: any, parent: FileSystemEntry) => Promise<FileSystemEntryOpenResult>;
+export type FileSystemEntryOpenCb<PD, D = any, R = any> = (parent: FileSystemEntry<PD>) => FileSystemEntryOpenResult<D, R>;
 
-export class FileSystemEntry<T = any, R = any> {
+export class FileSystemEntry<D = any, R = any> {
 
-    protected result: Promise<FileSystemEntryOpenResult>;
+    protected result: FileSystemEntryOpenResult;
 
     readonly path: ReadonlyArray<FileSystemEntry>;
     readonly level: number;
     readonly classes: ReadonlyArray<string>;
 
+    get parent(): FileSystemEntry {
+        return this.level === 0 ? null : this.path[this.level - 1] || null;
+    }
+
     constructor(readonly label: string,
                 readonly meta: string,
                 readonly image: string,
-                readonly data: T,
-                readonly parent: FileSystemEntry,
-                protected openCb: FileSystemEntryOpenCb) {
+                readonly data: D,
+                protected openCb: FileSystemEntryOpenCb<D, R>,
+                parent: FileSystemEntry = null) {
         this.path = !parent ? [this] : parent.path.concat([this]);
         this.level = this.path.length - 1;
         this.classes = this.path
@@ -23,8 +27,8 @@ export class FileSystemEntry<T = any, R = any> {
             .concat([`level-${this.level}`]);
     }
 
-    open<O = R>(): Promise<FileSystemEntryOpenResult<O>> {
-        this.result = this.result || this.openCb(this.data, this);
+    open<O = any>(): FileSystemEntryOpenResult<R, O> {
+        this.result = this.result || this.openCb(this);
         this.result.then(res => {
             if (Array.isArray(res)) return;
             this.result = null;
