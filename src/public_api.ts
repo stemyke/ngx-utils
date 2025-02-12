@@ -223,6 +223,7 @@ export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
 
 export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.component";
+export {DropdownBoxComponent} from "./ngx-utils/components/dropdown-box/dropdown-box.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";
 export {FakeModuleComponent} from "./ngx-utils/components/fake-module/fake-module.component";
 export {PaginationMenuComponent} from "./ngx-utils/components/pagination-menu/pagination-menu.component";

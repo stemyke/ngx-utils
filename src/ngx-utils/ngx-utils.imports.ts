@@ -84,6 +84,7 @@ import {TranslatePipe} from "./pipes/translate.pipe";
 import {ValuesPipe} from "./pipes/values.pipe";
 
 import {DropListComponent} from "./components/drop-list/drop-list.component";
+import {DropdownBoxComponent} from "./components/dropdown-box/dropdown-box.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
 import {FakeModuleComponent} from "./components/fake-module/fake-module.component";
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
@@ -148,6 +149,7 @@ export const directives = [
 // --- Components ---
 export const components = [
     DropListComponent,
+    DropdownBoxComponent,
     DynamicTableComponent,
     FakeModuleComponent,
     PaginationMenuComponent,

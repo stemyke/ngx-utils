@@ -179,8 +179,14 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             }, {} as ITableColumns);
             this.cols = Object.keys(this.realColumns);
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
+            const query = this.query || {};
             this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
-            this.query = {};
+            this.query = this.cols.reduce((res, col) => {
+                const value = query[col];
+                if (!value) return res;
+                res[col] = value;
+                return res;
+            }, {});
             this.setProperty("cell-width", MathUtils.round(100 / this.cols.length, 4) + "%");
         }
         this.hasQuery = this.cols.some(col => this.realColumns[col].filter);
@@ -188,7 +194,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
             this.orderBy = this.orderBy in sortable ? this.orderBy : sortable[0] || null;
         }
-        if (!changes.data && !changes.parallelData && !changes.itemsPerPage && !changes.orderBy && !changes.orderDescending) return;
+        if (!changes.data && !changes.parallelData && !changes.dataLoader && !changes.itemsPerPage && !changes.orderBy && !changes.orderDescending) return;
         this.refresh();
     }
 

@@ -18,6 +18,8 @@ export class DropdownDirective implements OnDestroy {
     @Output() onHidden: EventEmitter<DropdownDirective>;
     @Output() onKeyboard: EventEmitter<KeyboardEvent>;
 
+    floatingElement: HTMLElement;
+
     private readonly onTap: (event: Event) => void;
     private readonly onKeyDown: (event: KeyboardEvent) => void;
 
@@ -53,7 +55,7 @@ export class DropdownDirective implements OnDestroy {
         this.onTap = (event: Event): void => {
             const target = event.target as Node;
             if (event["button"]) return;
-            if (this.nativeElement && this.nativeElement.contains(target) && !this.closeInside) {
+            if (!this.closeInside && (this.nativeElement?.contains(target) || this.floatingElement?.contains(target))) {
                 return;
             }
             setTimeout(() => this.hide(), event.type == "touchend" ? 250 : 100);
