@@ -1,8 +1,8 @@
-export type FileSystemEntryOpenResult = ReadonlyArray<FileSystemEntry> | null;
+export type FileSystemEntryOpenResult<T = any> = ReadonlyArray<FileSystemEntry<T>> | null;
 
 export type FileSystemEntryOpenCb = (data: any, parent: FileSystemEntry) => Promise<FileSystemEntryOpenResult>;
 
-export class FileSystemEntry {
+export class FileSystemEntry<T = any, R = any> {
 
     protected result: Promise<FileSystemEntryOpenResult>;
 
@@ -13,7 +13,7 @@ export class FileSystemEntry {
     constructor(readonly label: string,
                 readonly meta: string,
                 readonly image: string,
-                readonly data: any,
+                readonly data: T,
                 readonly parent: FileSystemEntry,
                 protected openCb: FileSystemEntryOpenCb) {
         this.path = !parent ? [this] : parent.path.concat([this]);
@@ -23,7 +23,7 @@ export class FileSystemEntry {
             .concat([`level-${this.level}`]);
     }
 
-    open(): Promise<FileSystemEntryOpenResult> {
+    open<O = R>(): Promise<FileSystemEntryOpenResult<O>> {
         this.result = this.result || this.openCb(this.data, this);
         this.result.then(res => {
             if (Array.isArray(res)) return;
