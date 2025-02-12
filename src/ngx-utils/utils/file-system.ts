@@ -1,3 +1,5 @@
+import {ObjectUtils} from "./object.utils";
+
 export type FileSystemEntryOpenResult<D = any, R = any> = Promise<readonly FileSystemEntry<D, R>[]>;
 
 export type FileSystemEntryOpenCb<PD, D = any, R = any> = (parent: FileSystemEntry<PD>) => FileSystemEntryOpenResult<D, R>;
@@ -19,12 +21,26 @@ export class FileSystemEntry<D = any, R = any> {
                 readonly image: string,
                 readonly data: D,
                 protected openCb: FileSystemEntryOpenCb<D, R>,
-                parent: FileSystemEntry = null) {
+                parent: FileSystemEntry = null,
+                classes?: string[]) {
         this.path = !parent ? [this] : parent.path.concat([this]);
         this.level = this.path.length - 1;
-        this.classes = this.path
-            .filter(t => typeof t.data === "string" && t.data.length > 0).map(t => t.data)
-            .concat([`level-${this.level}`]);
+        this.classes = [`level-${this.level}`].concat(classes ?? this.path
+            .map(t => {
+                if (ObjectUtils.isString(t.data)) {
+                    return t.data;
+                }
+                if (ObjectUtils.isObject(t.data)) {
+                    const list = Object.keys(t.data).map(k => {
+                        const value = t.data[k];
+                        return ObjectUtils.isString(value) && value.length > 0 && value.length < 50
+                            ? `${k}-${value}`
+                            : null;
+                    });
+                    return list.filter(i => !!i).join(" ");
+                }
+                return null;
+            }).filter(t => !!t));
     }
 
     open<O = any>(): FileSystemEntryOpenResult<R, O> {
