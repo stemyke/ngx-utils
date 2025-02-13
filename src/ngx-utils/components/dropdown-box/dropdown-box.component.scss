@@ -5,9 +5,11 @@
     --dd-highlight-color: var(--highlight-color, var(--primary-color, #888888));
     --dd-highlight-text-color: var(--highlight-text-color, #ffffff);
     --dd-text-color: var(--text-color, #151515);
-}
 
-.dropdown-box {
+    --dd-arrow-size: var(--arrow-size, 6px);
+    --dd-arrow-space: calc(var(--dd-arrow-size) * 0.5 + 1px);
+    --dd-arrow-color: currentColor;
+    --dd-arrow-rotation: 90;
 
     position: relative;
     z-index: 2;
@@ -29,9 +31,14 @@
     }
 }
 
-.dropdown-box.open .dropdown-box-toggle {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+.dropdown-box.open {
+
+    --dd-arrow-rotation: -90;
+
+    .dropdown-box-toggle {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
 }
 
 .dropdown-box-toggle {
@@ -39,8 +46,7 @@
     background: var(--dd-bg-color);
     color: var(--dd-text-color);
     cursor: pointer;
-    box-shadow: 0 0 0 var(--dd-border-size) var(--dd-border-color);
-    border: none;
+    border: var(--dd-border-size) solid var(--dd-border-color);
     border-radius: 5px;
     padding: 6px 12px;
     user-select: none;
@@ -49,8 +55,28 @@
     line-height: var(--table-input-line-height, 18px);
     outline: none;
 
-    .toggle-placeholder, ::placeholder {
+    .toggle-placeholder {
         color: #495057;
+    }
+
+    a.dropdown-box-toggle-link {
+        margin-right: calc(2 * var(--dd-arrow-size));
+        padding-right: 5px;
+        min-width: fit-content;
+        position: relative;
+        display: block;
+    }
+
+    a.dropdown-box-toggle-link:after {
+        content: '';
+        position: absolute;
+        left: calc(100% + var(--dd-arrow-size));
+        top: calc(50% - var(--dd-arrow-size));
+        border-top: var(--dd-arrow-size) solid transparent;
+        border-bottom: var(--dd-arrow-size) solid transparent;
+        border-left: var(--dd-arrow-size) solid var(--dd-arrow-color);
+        transform: rotate(calc(var(--dd-arrow-rotation) * 1deg));
+        transition: 0.2s ease;
     }
 }
 
@@ -64,12 +90,12 @@
         padding: 0;
         list-style: none;
         border: var(--dd-border-size) solid var(--dd-border-color);
+        border-top-width: 0;
         z-index: 1;
         background: var(--dd-bg-color);
         border-radius: 0 0 5px 5px;
         overflow: hidden;
         min-width: fit-content;
-        transition: height 0.25s;
     }
 
     li {

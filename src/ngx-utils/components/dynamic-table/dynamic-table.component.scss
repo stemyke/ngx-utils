@@ -169,6 +169,20 @@
         background-color: var(--highlight-color);
         color: var(--highlight-text-color);
     }
+}
+
+.sort-dropdown .dropdown-box-toggle {
+    a.dropdown-box-toggle-link {
+        margin-right: 0;
+        padding-right: 0;
+
+        &:after {
+            display: none;
+        }
+    }
+}
+
+.sort-dropdown-content-wrapper, .dynamic-table {
 
     a.sort {
         position: relative;
@@ -186,14 +200,11 @@
             border-top: var(--arrow-size) solid transparent;
             border-bottom: var(--arrow-size) solid transparent;
             border-left: var(--arrow-size) solid var(--arrow-color);
+            transform: rotate(calc(var(--arrow-rotation) * 1deg)) translateX(var(--arrow-space));
         }
 
         &:before {
-            transform: rotate(calc(var(--arrow-rotation) * -1deg)) translateX(var(--arrow-space));
-        }
-
-        &:after {
-            transform: rotate(calc(var(--arrow-rotation) * 1deg)) translateX(var(--arrow-space));
+            --arrow-rotation: -90;
         }
 
         &.sort-desc:before {
