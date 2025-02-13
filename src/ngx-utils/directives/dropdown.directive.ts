@@ -1,4 +1,5 @@
 import {Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnDestroy, Output} from "@angular/core";
+import {AutoPlacementOptions, Placement} from "@floating-ui/dom";
 
 @Directive({
     standalone: false,
@@ -12,9 +13,34 @@ export class DropdownDirective implements OnDestroy {
     protected opened: boolean;
     protected disabled: boolean;
 
+    /**
+     * Determines if the dropdown should be closed even if we click inside it
+     */
     @Input() closeInside: boolean;
+
+    /**
+     * Determines if the floating element needs to be placed in the root node or keep where it was before
+     */
     @Input() attachToRoot: boolean;
+
+    /**
+     * Where to place the floating element relative to the reference element.
+     */
+    @Input() placement: Placement;
+
+    /**
+     * Optimizes the visibility of the floating element by choosing the placement
+     * that has the most space available automatically, without needing to specify a
+     * preferred placement. Alternative to `flip`.
+     * @see https://floating-ui.com/docs/autoPlacement
+     */
+    @Input() autoPlacement: AutoPlacementOptions;
+
+    /**
+     * Determines if the dropdown should react to keys to close like 'Esc'
+     */
     @Input() keyboardHandler: boolean;
+
     @Output() onShown: EventEmitter<DropdownDirective>;
     @Output() onHidden: EventEmitter<DropdownDirective>;
     @Output() onKeyboard: EventEmitter<KeyboardEvent>;
@@ -92,22 +118,15 @@ export class DropdownDirective implements OnDestroy {
         this.onHidden.emit(this);
     }
 
-    setProperty(name: string, value: any): void {
-        const elem = this.element.nativeElement;
-        if (!elem) return;
-        elem.style.setProperty(`--${name}`, value);
-    }
-
     @HostListener("keydown.enter", ["$event"])
     @HostListener("keydown.space", ["$event"])
-    show($event?: Event): void {
+    show($event?: Event) {
         if (this.opened) return;
         if ($event) {
-            if (!this.keyboardHandler) return;
-            $event.stopPropagation();
+            if (!this.keyboardHandler) return true;
             $event.preventDefault();
         }
-        if (this.disabled) return;
+        if (this.disabled) return true;
         this.opened = true;
         this.showEvent();
         DropdownDirective.active = this;
@@ -117,10 +136,11 @@ export class DropdownDirective implements OnDestroy {
             document.addEventListener("click", this.onTap);
             document.addEventListener("keydown", this.onKeyDown);
         }, 10);
+        return true;
     }
 
-    hide(): void {
-        if (!this.opened) return;
+    hide() {
+        if (!this.opened) return true;
         this.opened = false;
         this.hideEvent();
         document.removeEventListener("click", this.onTap);
@@ -132,5 +152,6 @@ export class DropdownDirective implements OnDestroy {
                 this.nativeElement?.focus();
             }
         }, 10);
+        return true;
     }
 }

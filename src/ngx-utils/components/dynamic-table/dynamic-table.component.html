@@ -116,19 +116,18 @@
                                 <ng-template #optionItem let-option="option">
                                     {{ (realColumns[column].enumPrefix ? realColumns[column].enumPrefix + '.' + option : option) | translate }}
                                 </ng-template>
-                                <dropdown-box [closeInside]="false">
+                                <dropdown-box componentClass="filter-box"
+                                              [ngClass]="'filter-box-' + column" [closeInside]="false">
                                     <ng-container toggle-content>
-                                        <a [ngClass]="'dropdown-link filter-link-' + column">
-                                            <span class="toggle-placeholder" *ngIf="!query[column]">
-                                                {{ realColumns[column].title | translate }}
-                                            </span>
-                                            <span [ngClass]="['option-' + option, column + '-option-' + option, option]"
-                                                  *ngFor="let option of query[column] | values; let ix = index">
-                                                <ng-container *ngIf="ix > 0">, </ng-container>
-                                                <ng-container [ngTemplateOutlet]="optionItem"
-                                                              [ngTemplateOutletContext]="{option: option}"></ng-container>
-                                            </span>
-                                        </a>
+                                        <span class="toggle-placeholder" *ngIf="!query[column]">
+                                            {{ realColumns[column].title | translate }}
+                                        </span>
+                                        <span [ngClass]="['option-' + option, column + '-option-' + option, option]"
+                                              *ngFor="let option of query[column] | values; let ix = index">
+                                            <ng-container *ngIf="ix > 0">, </ng-container>
+                                            <ng-container [ngTemplateOutlet]="optionItem"
+                                                          [ngTemplateOutletContext]="{option: option}"></ng-container>
+                                        </span>
                                     </ng-container>
                                     <ul>
                                         <li [ngClass]="[column + '-option', 'option-' + option, option]"

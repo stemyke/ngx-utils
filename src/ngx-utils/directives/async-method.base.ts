@@ -48,13 +48,11 @@ export class AsyncMethodBase implements OnChanges {
     }
 
     @HostListener("click", ["$event"])
-    click(ev: Event): void {
-        if (ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-        }
-        if (this.disabled) return;
+    click(ev: Event) {
+        ev?.preventDefault();
+        if (this.disabled) return true;
         this.callMethod();
+        return true;
     }
 
     callMethod(): boolean {

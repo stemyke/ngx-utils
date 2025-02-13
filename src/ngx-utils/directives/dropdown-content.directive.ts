@@ -1,13 +1,11 @@
 import {Directive, Input, OnDestroy, OnInit, Optional, TemplateRef, ViewContainerRef} from "@angular/core";
 import {Subscription} from "rxjs";
+import {autoPlacement, autoUpdate, computePosition, Middleware} from "@floating-ui/dom";
 import {DropdownDirective} from "./dropdown.directive";
 import {ObservableUtils} from "../utils/observable.utils";
-import {autoUpdate, computePosition} from "@floating-ui/dom";
 import {getCssVariables} from "../utils/misc";
 
-interface DropdownContentConfig {
-    attachToRoot?: boolean;
-}
+const rectProps = ["x", "y", "width", "height"];
 
 @Directive({
     standalone: false,
@@ -16,15 +14,13 @@ interface DropdownContentConfig {
 })
 export class DropdownContentDirective implements OnInit, OnDestroy {
 
-    @Input() dropdownContentAttachToRoot: boolean;
-
     protected root: HTMLElement;
     protected subscription: Subscription;
-    protected observer: ResizeObserver;
+    protected lastPlacement: string;
     protected cleanUp: () => void;
 
-    constructor(readonly vcr: ViewContainerRef,
-                @Optional() readonly dropdown: DropdownDirective,
+    constructor(protected vcr: ViewContainerRef,
+                @Optional() protected dropdown: DropdownDirective,
                 @Optional() readonly templateRef: TemplateRef<any>) {
         if (!this.dropdown) {
             throw new Error("DropdownDirective is required! Please use it inside a dd, drop-down directive attribute");
@@ -32,6 +28,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
         if (!this.templateRef) {
             throw new Error("TemplateRef is required! Please use with *dropdownContent");
         }
+        this.lastPlacement = null;
     }
 
     ngOnInit() {
@@ -39,21 +36,6 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
             this.dropdown.onShown.subscribe(() => this.createView()),
             this.dropdown.onHidden.subscribe(() => this.destroyView())
         );
-        if (typeof ResizeObserver === "undefined") {
-            return;
-        }
-        // this.observer = new ResizeObserver(entries => {
-        //     let width = 0;
-        //     let height = 0;
-        //     entries.forEach(entry => {
-        //         if (!entry.contentRect) return;
-        //         width = Math.max(width, entry.contentRect.width);
-        //         height = Math.max(height, entry.contentRect.height);
-        //     });
-        //     this.dropdown.setProperty("list-width", `${width}px`);
-        //     this.dropdown.setProperty("list-height", `${height}px`);
-        // });
-        // this.observer.observe(this.element.nativeElement);
     }
 
     ngOnDestroy() {
@@ -62,7 +44,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
         this.destroyView();
     }
 
-    protected createView() {
+    protected createView(init: boolean = false) {
         if (!this.root) {
             const rootNode = this.vcr.element.nativeElement.getRootNode();
             if (rootNode === document) {
@@ -71,26 +53,53 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                 this.root = rootNode;
             }
         }
-        const reference = this.dropdown.nativeElement;
+        const ref = this.dropdown.nativeElement;
         const content = this.createWrapper();
         this.dropdown.contentElement = content;
-        const updatePosition = () => {
-            computePosition(
-                reference,
-                content,
-                {strategy: "fixed"}
-            ).then(({x, y}) => {
-                Object.assign(content.style, {
-                    position: "fixed",
-                    left: `${x}px`,
-                    top: `${y}px`,
-                });
-            });
-        };
+        // Set up floating UI positioning settings
+        const placement = this.dropdown.placement || "bottom";
+        const middleware: Middleware[] = [];
+        if (this.dropdown.autoPlacement) {
+            middleware.push(autoPlacement(this.dropdown.autoPlacement));
+        }
+        // Set up floating UI auto update
         this.cleanUp = autoUpdate(
-            reference,
+            ref,
             content,
-            updatePosition,
+            () => {
+                computePosition(
+                    ref,
+                    content,
+                    {
+                        strategy: "fixed",
+                        placement,
+                        middleware
+                    }
+                ).then(({x, y, placement}) => {
+                    Object.assign(content.style, {
+                        opacity: init ? "0" : "1",
+                        position: "fixed",
+                        left: `${x}px`,
+                        top: `${y}px`,
+                    });
+                    const refRect = ref.getBoundingClientRect();
+                    const contentRect = content.getBoundingClientRect();
+                    const lastPlacement = this.lastPlacement;
+                    const newPlacement = `dropdown-placement-${placement}`;
+                    if (lastPlacement) {
+                        ref.classList.replace(lastPlacement, newPlacement);
+                        content.classList.replace(lastPlacement, newPlacement);
+                    } else {
+                        ref.classList.add(newPlacement);
+                        content.classList.add(newPlacement);
+                    }
+                    rectProps.forEach(prop => {
+                        content.style.setProperty(`--toggle-${prop}`, `${refRect[prop]}px`);
+                        ref.style.setProperty(`--content-${prop}`, `${contentRect[prop]}px`);
+                    });
+                    this.lastPlacement = newPlacement;
+                });
+            },
         );
     }
 
@@ -113,11 +122,18 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                 if (!wrapperStyles[key]) {
                     wrapper.style.setProperty(key, referenceStyles[key]);
                 }
-            })
-            return wrapper;
+            });
+        } else {
+            this.vcr.element.nativeElement?.appendChild(wrapper);
         }
-
-        this.vcr.element.nativeElement?.appendChild(wrapper);
+        if (this.lastPlacement) {
+            wrapper.classList.add(this.lastPlacement);
+        }
         return wrapper;
+    }
+
+    initialize(): void {
+        this.createView(true);
+        setTimeout(() => this.destroyView());
     }
 }
