@@ -13,12 +13,13 @@ export class DropdownDirective implements OnDestroy {
     protected disabled: boolean;
 
     @Input() closeInside: boolean;
+    @Input() attachToRoot: boolean;
     @Input() keyboardHandler: boolean;
     @Output() onShown: EventEmitter<DropdownDirective>;
     @Output() onHidden: EventEmitter<DropdownDirective>;
     @Output() onKeyboard: EventEmitter<KeyboardEvent>;
 
-    floatingElement: HTMLElement;
+    contentElement: HTMLElement;
 
     private readonly onTap: (event: Event) => void;
     private readonly onKeyDown: (event: KeyboardEvent) => void;
@@ -48,6 +49,7 @@ export class DropdownDirective implements OnDestroy {
         this.opened = false;
         this.disabled = false;
         this.closeInside = true;
+        this.attachToRoot = true;
         this.keyboardHandler = true;
         this.onShown = new EventEmitter<any>();
         this.onHidden = new EventEmitter<any>();
@@ -55,7 +57,7 @@ export class DropdownDirective implements OnDestroy {
         this.onTap = (event: Event): void => {
             const target = event.target as Node;
             if (event["button"]) return;
-            if (!this.closeInside && (this.nativeElement?.contains(target) || this.floatingElement?.contains(target))) {
+            if (!this.closeInside && (this.nativeElement?.contains(target) || this.contentElement?.contains(target))) {
                 return;
             }
             setTimeout(() => this.hide(), event.type == "touchend" ? 250 : 100);
@@ -112,8 +114,7 @@ export class DropdownDirective implements OnDestroy {
         // Prevent toggle from selecting an item right after it is shown
         setTimeout(() => {
             if (!this.opened) return;
-            document.addEventListener("touchend", this.onTap);
-            document.addEventListener("mouseup", this.onTap);
+            document.addEventListener("click", this.onTap);
             document.addEventListener("keydown", this.onKeyDown);
         }, 10);
     }
@@ -122,8 +123,7 @@ export class DropdownDirective implements OnDestroy {
         if (!this.opened) return;
         this.opened = false;
         this.hideEvent();
-        document.removeEventListener("touchend", this.onTap);
-        document.removeEventListener("mouseup", this.onTap);
+        document.removeEventListener("click", this.onTap);
         document.removeEventListener("keydown", this.onKeyDown);
         // Prevent toggle from refocus itself after it is hidden because of another toggle
         setTimeout(() => {

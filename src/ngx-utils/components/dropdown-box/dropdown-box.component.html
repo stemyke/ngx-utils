@@ -1,8 +1,11 @@
-<div class="dropdown-box" dd>
+<div dd class="dropdown-box"
+     [ngClass]="componentClass"
+     [closeInside]="closeInside"
+     [attachToRoot]="attachToRoot">
     <div class="dropdown-box-toggle" dropdownToggle>
-        <ng-content select="toggle"></ng-content>
+        <ng-content select="[toggle-content]"></ng-content>
     </div>
-    <div class="dropdown-box-list" *dropdownContent>
-
+    <div class="dropdown-box-content" [ngClass]="componentClass + '-content-wrapper'" *dropdownContent="let dummy; attachToRoot: true">
+        <ng-content></ng-content>
     </div>
 </div>

@@ -8,5 +8,14 @@ import {Component, Input, ViewEncapsulation} from "@angular/core";
     templateUrl: "./dropdown-box.component.html",
 })
 export class DropdownBoxComponent {
-    @Input() classes: string;
+
+    @Input() closeInside: boolean;
+    @Input() attachToRoot: boolean;
+    @Input() componentClass: string;
+
+    constructor() {
+        this.closeInside = true;
+        this.attachToRoot = true;
+        this.componentClass = "drop";
+    }
 }

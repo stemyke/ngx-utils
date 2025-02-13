@@ -1,8 +1,13 @@
-import {Directive, ElementRef, OnDestroy, OnInit, Optional, TemplateRef, ViewContainerRef} from "@angular/core";
+import {Directive, Input, OnDestroy, OnInit, Optional, TemplateRef, ViewContainerRef} from "@angular/core";
 import {Subscription} from "rxjs";
 import {DropdownDirective} from "./dropdown.directive";
 import {ObservableUtils} from "../utils/observable.utils";
 import {autoUpdate, computePosition} from "@floating-ui/dom";
+import {getCssVariables} from "../utils/misc";
+
+interface DropdownContentConfig {
+    attachToRoot?: boolean;
+}
 
 @Directive({
     standalone: false,
@@ -11,14 +16,19 @@ import {autoUpdate, computePosition} from "@floating-ui/dom";
 })
 export class DropdownContentDirective implements OnInit, OnDestroy {
 
+    @Input() dropdownContentAttachToRoot: boolean;
+
     protected root: HTMLElement;
     protected subscription: Subscription;
     protected observer: ResizeObserver;
     protected cleanUp: () => void;
 
-    constructor(readonly dropdown: DropdownDirective,
-                readonly vcr: ViewContainerRef,
+    constructor(readonly vcr: ViewContainerRef,
+                @Optional() readonly dropdown: DropdownDirective,
                 @Optional() readonly templateRef: TemplateRef<any>) {
+        if (!this.dropdown) {
+            throw new Error("DropdownDirective is required! Please use it inside a dd, drop-down directive attribute");
+        }
         if (!this.templateRef) {
             throw new Error("TemplateRef is required! Please use with *dropdownContent");
         }
@@ -61,36 +71,53 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                 this.root = rootNode;
             }
         }
-        const referenceEl = this.dropdown.nativeElement;
-        const floatingEl = document.createElement("div");
-        const ref = this.vcr.createEmbeddedView(this.templateRef);
-        ref.rootNodes.forEach(node => floatingEl.appendChild(node));
-        this.root.appendChild(floatingEl);
-        this.dropdown.floatingElement = floatingEl;
+        const reference = this.dropdown.nativeElement;
+        const content = this.createWrapper();
+        this.dropdown.contentElement = content;
         const updatePosition = () => {
             computePosition(
-                referenceEl,
-                floatingEl,
+                reference,
+                content,
                 {strategy: "fixed"}
             ).then(({x, y}) => {
-                Object.assign(floatingEl.style, {
+                Object.assign(content.style, {
                     position: "fixed",
-                    background: "red",
                     left: `${x}px`,
                     top: `${y}px`,
                 });
             });
         };
         this.cleanUp = autoUpdate(
-            referenceEl,
-            floatingEl,
+            reference,
+            content,
             updatePosition,
         );
     }
 
     protected destroyView() {
         this.vcr.clear();
-        this.dropdown.floatingElement?.remove();
+        this.dropdown.contentElement?.remove();
         this.cleanUp?.();
+    }
+
+    protected createWrapper() {
+        const wrapper = document.createElement("div");
+        const ref = this.vcr.createEmbeddedView(this.templateRef);
+        ref.rootNodes.forEach(node => wrapper.appendChild(node));
+
+        if (this.dropdown.attachToRoot) {
+            this.root.appendChild(wrapper);
+            const referenceStyles = getCssVariables(this.dropdown.nativeElement);
+            const wrapperStyles = getCssVariables(wrapper);
+            Object.keys(referenceStyles).forEach(key => {
+                if (!wrapperStyles[key]) {
+                    wrapper.style.setProperty(key, referenceStyles[key]);
+                }
+            })
+            return wrapper;
+        }
+
+        this.vcr.element.nativeElement?.appendChild(wrapper);
+        return wrapper;
     }
 }

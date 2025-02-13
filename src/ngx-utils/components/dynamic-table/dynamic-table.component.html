@@ -6,8 +6,10 @@
         <ng-container [ngxTemplateOutlet]="template.ref" [context]="context"></ng-container>
     </ng-template>
     <td [ngClass]="'column-' + column"
-        [attr.data-testid]="testId + '-' + column + '-' + context.rowIndex" *ngIf="!template || !template.pure; else pureTemplate">
-        <ng-container [ngxTemplateOutlet]="!template ? defaultTemplate : template.ref" [context]="context"></ng-container>
+        [attr.data-testid]="testId + '-' + column + '-' + context.rowIndex"
+        *ngIf="!template || !template.pure; else pureTemplate">
+        <ng-container [ngxTemplateOutlet]="!template ? defaultTemplate : template.ref"
+                      [context]="context"></ng-container>
     </td>
 </ng-template>
 
@@ -44,7 +46,8 @@
     </a>
 </ng-template>
 
-<div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [page]="page" [itemsPerPage]="itemsPerPage" [updateTime]="updateTime">
+<div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [page]="page" [itemsPerPage]="itemsPerPage"
+     [updateTime]="updateTime">
     <div class="table-features-row">
         <ng-content select="[table-features-before]"></ng-content>
         <div class="table-input-wrap table-search-filter" *ngIf="showFilter">
@@ -59,12 +62,11 @@
                    [ngModel]="filter"
                    (ngModelChange)="setFilter($event)"/>
         </div>
-        <div class="table-dropdown table-sort-dropdown" dd #sortDd="dropdown" *ngIf="orderBy">
-            <div class="table-toggle" dropdownToggle>
-                <ng-container [ngTemplateOutlet]="headerTemplate"
-                              [ngTemplateOutletContext]="{column: orderBy, toggle: sortDd}"></ng-container>
-            </div>
-            <ul class="table-dropdown-list" *dropdownContent>
+        <dropdown-box componentClass="sort-dropdown" #sortDd>
+            <ng-container toggle-content
+                          [ngTemplateOutlet]="headerTemplate"
+                          [ngTemplateOutletContext]="{column: orderBy, toggle: sortDd}"></ng-container>
+            <ul>
                 <ng-container *ngFor="let column of cols">
                     <li [ngClass]="'sort-column sort-' + column" *ngIf="realColumns[column].sort">
                         <ng-container [ngTemplateOutlet]="headerTemplate"
@@ -72,30 +74,31 @@
                     </li>
                 </ng-container>
             </ul>
-        </div>
+        </dropdown-box>
         <div class="table-input-wrap table-items-count" *ngIf="showItems">
             <label>
                 {{ 'label.items.before' | translate }}
             </label>
-            <div class="table-dropdown normal-dropdown" dd>
-                <div class="table-toggle" dropdownToggle>
-                    <a class="dropdown-link">{{ itemsPerPage }}</a>
-                </div>
-                <ul class="table-dropdown-list" *dropdownContent>
+            <dropdown-box>
+                <ng-container toggle-content>
+                    {{ itemsPerPage }}
+                </ng-container>
+                <ul>
                     <ng-container *ngFor="let count of showItems">
                         <li [ngClass]="'item-count count-' + count" (click)="setItemsPerPage(count)">
                             {{ count }}
                         </li>
                     </ng-container>
                 </ul>
-            </div>
+            </dropdown-box>
             <label>
                 {{ 'label.items.after' | translate }}
             </label>
         </div>
         <ng-content select="[table-features-after]"></ng-content>
     </div>
-    <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
+    <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks"
+                     [boundaryLinks]="boundaryLinks"></pagination-menu>
     <div class="table-responsive">
         <ng-template #defaultWrapperTemplate>
             <table class="table table-striped">
@@ -113,21 +116,21 @@
                                 <ng-template #optionItem let-option="option">
                                     {{ (realColumns[column].enumPrefix ? realColumns[column].enumPrefix + '.' + option : option) | translate }}
                                 </ng-template>
-                                <div class="table-dropdown normal-dropdown" dd [closeInside]="false">
-                                    <div class="table-toggle" dropdownToggle>
+                                <dropdown-box [closeInside]="false">
+                                    <ng-container toggle-content>
                                         <a [ngClass]="'dropdown-link filter-link-' + column">
-                                                <span class="toggle-placeholder" *ngIf="!query[column]">
-                                                    {{ realColumns[column].title | translate }}
-                                                </span>
+                                            <span class="toggle-placeholder" *ngIf="!query[column]">
+                                                {{ realColumns[column].title | translate }}
+                                            </span>
                                             <span [ngClass]="['option-' + option, column + '-option-' + option, option]"
                                                   *ngFor="let option of query[column] | values; let ix = index">
-                                                    <ng-container *ngIf="ix > 0">, </ng-container>
-                                                    <ng-container [ngTemplateOutlet]="optionItem"
-                                                                  [ngTemplateOutletContext]="{option: option}"></ng-container>
-                                                </span>
+                                                <ng-container *ngIf="ix > 0">, </ng-container>
+                                                <ng-container [ngTemplateOutlet]="optionItem"
+                                                              [ngTemplateOutletContext]="{option: option}"></ng-container>
+                                            </span>
                                         </a>
-                                    </div>
-                                    <ul class="table-dropdown-list" *dropdownContent>
+                                    </ng-container>
+                                    <ul>
                                         <li [ngClass]="[column + '-option', 'option-' + option, option]"
                                             (click)="setQueryValue(column, option)"
                                             *ngFor="let option of realColumns[column].enum">
@@ -138,7 +141,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </div>
+                                </dropdown-box>
                             </ng-container>
                             <ng-container *ngSwitchCase="'checkbox'">
                                 <input type="checkbox"
@@ -175,5 +178,6 @@
             <ng-content select="[table-bottom]"></ng-content>
         </div>
     </div>
-    <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks" [boundaryLinks]="boundaryLinks"></pagination-menu>
+    <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks"
+                     [boundaryLinks]="boundaryLinks"></pagination-menu>
 </div>
