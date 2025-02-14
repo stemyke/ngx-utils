@@ -47,10 +47,11 @@
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
+        margin-bottom: 20px;
     }
 
-    .table-features-row:not(:empty) {
-        margin-bottom: 20px;
+    .sort-dropdown {
+        display: none;
     }
 
     .table-input-wrap {
