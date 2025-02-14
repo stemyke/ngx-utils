@@ -37,7 +37,14 @@ export class DropdownDirective implements OnDestroy {
     @Input() autoPlacement: AutoPlacementOptions;
 
     /**
+     * Determines if the dropdown content should be displayed in a fixed full screen view under this window width
+     * @default 0
+     */
+    @Input() mobileViewUnder: number;
+
+    /**
      * Determines if the dropdown should react to keys to close like 'Esc'
+     * @default true
      */
     @Input() keyboardHandler: boolean;
 
@@ -47,7 +54,7 @@ export class DropdownDirective implements OnDestroy {
 
     contentElement: HTMLElement;
 
-    private readonly onTap: (event: Event) => void;
+    private readonly onClick: (event: Event) => void;
     private readonly onKeyDown: (event: KeyboardEvent) => void;
 
     get nativeElement(): HTMLElement {
@@ -76,15 +83,25 @@ export class DropdownDirective implements OnDestroy {
         this.disabled = false;
         this.closeInside = true;
         this.attachToRoot = true;
+        this.mobileViewUnder = 0;
         this.keyboardHandler = true;
         this.onShown = new EventEmitter<any>();
         this.onHidden = new EventEmitter<any>();
         this.onKeyboard = new EventEmitter<KeyboardEvent>();
-        this.onTap = (event: Event): void => {
-            const target = event.target as Node;
-            if (event["button"]) return;
-            if (!this.closeInside && (this.nativeElement?.contains(target) || this.contentElement?.contains(target))) {
-                return;
+        this.onClick = (event: MouseEvent): void => {
+            // We don't care about clicks with right/center mouse buttons
+            if (event.button) return;
+            const target = (event.composedPath()?.shift() || event.target) as Node;
+            // If blocked closing inside we only consider inside if the target is not directly the contentElement
+            // We only have a contentElement in case when we are using *dropdownContent directive
+            if (!this.closeInside && (!this.contentElement || target !== this.contentElement)) {
+                // Try to determine if we are inside by collecting the possible parent elements to check
+                const parents = !this.contentElement ? [] : Array.from(this.contentElement.childNodes);
+                if (this.nativeElement) {
+                    parents.push(this.nativeElement);
+                }
+                // If one of the parents contains the target then we clicked inside
+                if (parents.some(child => child.contains(target))) return;
             }
             setTimeout(() => this.hide(), event.type == "touchend" ? 250 : 100);
         };
@@ -133,7 +150,7 @@ export class DropdownDirective implements OnDestroy {
         // Prevent toggle from selecting an item right after it is shown
         setTimeout(() => {
             if (!this.opened) return;
-            document.addEventListener("click", this.onTap);
+            document.addEventListener("click", this.onClick);
             document.addEventListener("keydown", this.onKeyDown);
         }, 10);
         return true;
@@ -143,7 +160,7 @@ export class DropdownDirective implements OnDestroy {
         if (!this.opened) return true;
         this.opened = false;
         this.hideEvent();
-        document.removeEventListener("click", this.onTap);
+        document.removeEventListener("click", this.onClick);
         document.removeEventListener("keydown", this.onKeyDown);
         // Prevent toggle from refocus itself after it is hidden because of another toggle
         setTimeout(() => {

@@ -47,6 +47,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
     }
 
     protected createView(init: boolean = false) {
+        const mobileWidth = this.dropdown.mobileViewUnder || 0;
         const ref = this.dropdown.nativeElement;
         const content = this.createWrapper();
         this.dropdown.contentElement = content;
@@ -71,12 +72,15 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                         middleware
                     }
                 ).then(({x, y, placement}) => {
+                    const isMobileView = window.innerWidth <= mobileWidth;
                     Object.assign(content.style, {
                         opacity: init ? "0" : "1",
-                        position: strategy,
-                        left: `${x}px`,
-                        top: `${y}px`,
-                        zIndex: 1,
+                        position: isMobileView ? "fixed" : strategy,
+                        left: isMobileView ? `0px`: `${x}px`,
+                        right: isMobileView ? `0px`: undefined,
+                        top: isMobileView ? `0px`: `${y}px`,
+                        bottom: isMobileView ? `0px`: undefined,
+                        zIndex: `var(--dd-z-index, 100)`
                     });
                     const refRect = ref.getBoundingClientRect();
                     const contentRect = content.getBoundingClientRect();
@@ -88,6 +92,11 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                     } else {
                         ref.classList.add(newPlacement);
                         content.classList.add(newPlacement);
+                    }
+                    if (isMobileView) {
+                        content.classList.add(`dropdown-content-mobile`);
+                    } else {
+                        content.classList.remove(`dropdown-content-mobile`);
                     }
                     rectProps.forEach(prop => {
                         content.style.setProperty(`--toggle-${prop}`, `${refRect[prop]}px`);
