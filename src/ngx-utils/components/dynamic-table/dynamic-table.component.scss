@@ -4,11 +4,11 @@
     --table-stripe-bg: rgba(210, 210, 210, 0.35);
 
     --border-size: 1px;
+    --border-color: #ced4da;
     --bg-color: #ffffff;
     --text-color: #151515;
     --highlight-color: var(--primary-color, #888888);
     --highlight-text-color: #ffffff;
-    --border-color: #ced4da;
     --display-toggle: none;
 
     --arrow-size: 6px;
@@ -16,11 +16,14 @@
     --arrow-space: calc(var(--arrow-size) * 0.5 + 1px);
     --arrow-color: #c6c6c6;
 
+    * {
+        box-sizing: border-box;
+    }
+
     .search-input {
         background: var(--bg-color);
         color: var(--text-color);
-        box-shadow: 0 0 0 var(--border-size) var(--border-color);
-        border: none;
+        border: var(--border-size) solid var(--border-color);
         border-radius: 5px;
         padding: 6px 12px;
         user-select: none;
@@ -118,7 +121,7 @@
             }
 
             .search-input {
-                width: calc(100% - 24px);
+                width: 100%;
             }
 
             span {

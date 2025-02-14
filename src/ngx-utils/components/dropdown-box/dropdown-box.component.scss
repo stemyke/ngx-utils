@@ -20,6 +20,10 @@
     width: var(--content-width, 0);
     min-width: fit-content;
 
+    * {
+        box-sizing: border-box;
+    }
+
     a, span {
         white-space: nowrap;
     }
@@ -87,6 +91,10 @@
     position: relative;
     z-index: 1;
     min-width: var(--toggle-width, 0);
+
+    * {
+        box-sizing: border-box;
+    }
 
     ul {
         margin: 0;

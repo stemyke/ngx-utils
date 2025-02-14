@@ -16,6 +16,10 @@
     min-width: fit-content;
     margin: 10px;
 
+    * {
+        box-sizing: border-box;
+    }
+
     ul {
         margin: 0;
         padding: 0;
@@ -35,6 +39,8 @@
         min-width: fit-content;
         cursor: pointer;
         border-right: var(--pg-border-size) solid var(--pg-border-color);
+        display: flex;
+        align-items: center;
     }
 
     li:last-child {
@@ -47,13 +53,14 @@
     }
 
     a {
-        display: inline-block;
-        min-width: 15px;
-        height: 20px;
+        display: block;
+        min-width: 36px;
+        height: auto;
         line-height: 20px;
         text-align: center;
         vertical-align: top;
         padding: 6px 12px;
+        color: inherit;
     }
 
     a.boundary-link, a.direction-link {
