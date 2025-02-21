@@ -1,0 +1,100 @@
+.pagination-menu {
+    --pg-border-size: var(--border-size, 1px);
+    --pg-bg-color: var(--bg-color, #ffffff);
+    --pg-border-color: var(--border-color, #ced4da);
+    --pg-highlight-color: var(--highlight-color, var(--primary-color, #888888));
+    --pg-highlight-text-color: var(--highlight-text-color, #ffffff);
+    --pg-text-color: var(--text-color, #151515);
+
+    --pg-arrow-size: var(--arrow-size, 6px);
+    --pg-arrow-space: calc(var(--pg-arrow-size) * 0.5 + 1px);
+    --pg-arrow-color: currentColor;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: fit-content;
+    margin: 10px;
+
+    * {
+        box-sizing: border-box;
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border: var(--pg-border-size) solid var(--pg-border-color);
+        background: var(--pg-bg-color);
+        border-radius: 5px;
+        overflow: hidden;
+        min-width: fit-content;
+        display: flex;
+    }
+
+    li {
+        color: var(--pg-text-color);
+        font-weight: normal;
+        text-align: left;
+        min-width: fit-content;
+        cursor: pointer;
+        border-right: var(--pg-border-size) solid var(--pg-border-color);
+        display: flex;
+        align-items: center;
+    }
+
+    li:last-child {
+        border-right: none;
+    }
+
+    li:hover, li.active {
+        background-color: var(--pg-highlight-color);
+        color: var(--pg-highlight-text-color);
+    }
+
+    a {
+        display: block;
+        min-width: 36px;
+        height: auto;
+        line-height: 20px;
+        text-align: center;
+        vertical-align: top;
+        padding: 6px 12px;
+        color: inherit;
+    }
+
+    a.boundary-link, a.direction-link {
+        position: relative;
+
+        &:before, &:after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: calc(50% - var(--pg-arrow-size));
+            border-top: var(--pg-arrow-size) solid transparent;
+            border-bottom: var(--pg-arrow-size) solid transparent;
+            border-left: var(--pg-arrow-size) solid var(--pg-arrow-color);
+        }
+    }
+
+    a.direction-link {
+        &:before {
+            display: none;
+        }
+        &:after {
+            translate: -50% 0;
+        }
+    }
+
+    a.boundary-link {
+        &:before {
+            translate: -100% 0;
+        }
+    }
+
+    a.boundary-link.previous, a.direction-link.previous {
+        &:before, &:after {
+            rotate: 180deg;
+        }
+    }
+}

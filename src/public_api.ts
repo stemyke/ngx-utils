@@ -110,6 +110,7 @@ export {JSONfn} from "./ngx-utils/utils/jsonfn";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
+export {getCssVariables} from "./ngx-utils/utils/misc";
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
 export {CancelablePromise, cancelablePromise, impatientPromise} from "./ngx-utils/utils/promise.utils";
@@ -157,6 +158,7 @@ export {GetTypePipe} from "./ngx-utils/pipes/get-type.pipe";
 export {GetValuePipe} from "./ngx-utils/pipes/get-value.pipe";
 export {GlobalTemplatePipe} from "./ngx-utils/pipes/global-template.pipe";
 export {GroupByPipe} from "./ngx-utils/pipes/group-by.pipe";
+export {IncludesPipe} from "./ngx-utils/pipes/includes.pipe";
 export {IsTypePipe} from "./ngx-utils/pipes/is-type.pipe";
 export {JoinPipe} from "./ngx-utils/pipes/join.pipe";
 export {KeysPipe} from "./ngx-utils/pipes/keys.pipe";
@@ -178,6 +180,9 @@ export {ValuesPipe} from "./ngx-utils/pipes/values.pipe";
 export {AsyncMethodBase} from "./ngx-utils/directives/async-method.base";
 export {AsyncMethodDirective} from "./ngx-utils/directives/async-method.directive";
 export {BackgroundDirective} from "./ngx-utils/directives/background.directive";
+export {DropdownDirective} from "./ngx-utils/directives/dropdown.directive";
+export {DropdownContentDirective} from "./ngx-utils/directives/dropdown-content.directive";
+export {DropdownToggleDirective} from "./ngx-utils/directives/dropdown-toggle.directive";
 export {DynamicTableTemplateDirective} from "./ngx-utils/directives/dynamic-table-template.directive";
 export {GlobalTemplateDirective} from "./ngx-utils/directives/global-template.directive";
 export {IconDirective} from "./ngx-utils/directives/icon.directive";
@@ -191,6 +196,7 @@ export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
 
 export {UnorderedListComponent} from "./ngx-utils/components/unordered-list/unordered-list.component";
+export {DropdownBoxComponent} from "./ngx-utils/components/dropdown-box/dropdown-box.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";
 export {PaginationMenuComponent} from "./ngx-utils/components/pagination-menu/pagination-menu.component";
 

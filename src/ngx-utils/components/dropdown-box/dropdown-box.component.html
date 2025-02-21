@@ -1,0 +1,15 @@
+<div dd class="dropdown-box"
+     [ngClass]="componentClass"
+     [closeInside]="closeInside"
+     [attachToRoot]="attachToRoot"
+     [placement]="placement"
+     [autoPlacement]="autoPlacement">
+    <div class="dropdown-box-toggle" dropdownToggle>
+        <a class="dropdown-box-toggle-link">
+            <ng-content select="[toggle-content]"></ng-content>
+        </a>
+    </div>
+    <div class="dropdown-box-content" [ngClass]="componentClass + '-content-wrapper'" *dropdownContent>
+        <ng-content></ng-content>
+    </div>
+</div>

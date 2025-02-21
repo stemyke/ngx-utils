@@ -1,44 +1,6 @@
-<dynamic-table label="blab" [itemsPerPage]="5" [showFilter]="true" [data]="tableData" [columns]="{title: null, content: null}">
-
+<dynamic-table filterLabel="blab"
+               [itemsPerPage]="5"
+               [showFilter]="true"
+               [showItems]="[5, 10, 25, 50, 100]"
+               [data]="tableData" [columns]="tableColumns">
 </dynamic-table>
-
-<unordered-list [data]="manufacturing">
-    <ng-template type="value" selector="path.match(/diamondSetting/gi)">
-        HELO
-    </ng-template>
-</unordered-list>
-
-<!--<p>Blaaa</p>-->
-
-<!--<div style="width: 100%" (resize)="onResizeEvent()">-->
-    <!--Balfék-->
-<!--</div>-->
-
-<!--<textarea [ngModel]="text" (ngModelChange)="changeText($event)"></textarea>-->
-
-<!--<input type="number" [ngModel]="multiplier" (ngModelChange)="changeMultiplier($event)"/>-->
-
-<!--<button *ngFor="let fontName of fonts | entries" (click)="changeFont(fontName.key)">{{ fontName.key }}</button>-->
-
-Text:
-
-<canvas class="text-canvas" #textCanvas>
-
-</canvas>
-
-Measure:
-
-<canvas class="text-canvas" #measureCanvas>
-
-</canvas>
-<!--<p>{{ getValue("right.diamondPlacements.0") | json }}</p>-->
-<!--<p>{{ getValue("right.diamondPlacements.1") | json }}</p>-->
-<!--<p>{{ getValue("right.test.1") | json }}</p>-->
-<!--<div class="manufacturing-table" *ngFor="let id of ids">-->
-    <!--<h1 [ngClass]="{'page-heading': y > 0}">{{ manufacturing[id].sex }}</h1>-->
-    <!--<unordered-list [data]="map | remap:manufacturing[id]" keyPrefix="review." *ngFor="let map of reviewMap | chunk:24">-->
-        <!--<ng-template type="value" selector="path.match(/engravingText$/g)" let-item="item">-->
-            <!--<span [ngClass]="['engraving-text', 'font-' + manufacturing[id].engravingFont]">{{ item.value }}</span>-->
-        <!--</ng-template>-->
-    <!--</unordered-list>-->
-<!--</div>-->

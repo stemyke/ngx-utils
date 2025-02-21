@@ -483,7 +483,7 @@ export interface ITableTemplates {
 }
 
 export interface ITableDataQuery {
-    [column: string]: string;
+    [column: string]: string | string[] | boolean;
 }
 
 export type TableDataLoader = (

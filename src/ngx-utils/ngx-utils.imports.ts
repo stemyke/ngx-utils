@@ -33,6 +33,9 @@ import {ScrollEventPlugin} from "./plugins/scroll-event.plugin";
 import {AsyncMethodBase} from "./directives/async-method.base";
 import {AsyncMethodDirective} from "./directives/async-method.directive";
 import {BackgroundDirective} from "./directives/background.directive";
+import {DropdownDirective} from "./directives/dropdown.directive";
+import {DropdownContentDirective} from "./directives/dropdown-content.directive";
+import {DropdownToggleDirective} from "./directives/dropdown-toggle.directive";
 import {DynamicTableTemplateDirective} from "./directives/dynamic-table-template.directive";
 import {GlobalTemplateDirective} from "./directives/global-template.directive";
 import {IconDirective} from "./directives/icon.directive";
@@ -56,6 +59,7 @@ import {GetTypePipe} from "./pipes/get-type.pipe";
 import {GetValuePipe} from "./pipes/get-value.pipe";
 import {GlobalTemplatePipe} from "./pipes/global-template.pipe";
 import {GroupByPipe} from "./pipes/group-by.pipe";
+import {IncludesPipe} from "./pipes/includes.pipe";
 import {IsTypePipe} from "./pipes/is-type.pipe";
 import {JoinPipe} from "./pipes/join.pipe";
 import {KeysPipe} from "./pipes/keys.pipe";
@@ -74,6 +78,7 @@ import {SplitPipe} from "./pipes/split.pipe";
 import {TranslatePipe} from "./pipes/translate.pipe";
 import {ValuesPipe} from "./pipes/values.pipe";
 
+import {DropdownBoxComponent} from "./components/dropdown-box/dropdown-box.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
@@ -91,6 +96,7 @@ export const pipes = [
     GetValuePipe,
     GlobalTemplatePipe,
     GroupByPipe,
+    IncludesPipe,
     IsTypePipe,
     JoinPipe,
     KeysPipe,
@@ -115,6 +121,9 @@ export const directives = [
     AsyncMethodBase,
     AsyncMethodDirective,
     BackgroundDirective,
+    DropdownDirective,
+    DropdownContentDirective,
+    DropdownToggleDirective,
     DynamicTableTemplateDirective,
     GlobalTemplateDirective,
     IconDirective,
@@ -130,6 +139,7 @@ export const directives = [
 
 // --- Components ---
 export const components = [
+    DropdownBoxComponent,
     DynamicTableComponent,
     PaginationMenuComponent,
     UnorderedListComponent
