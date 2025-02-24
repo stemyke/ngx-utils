@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, OnChanges, ViewChild, ViewEncapsulation
 import {Placement} from "@floating-ui/utils";
 import {Alignment, AutoPlacementOptions} from "@floating-ui/dom";
 import {DropdownContentDirective} from "../../directives/dropdown-content.directive";
+import {DropdownAttachTo} from "../../common-types";
 
 @Component({
     standalone: false,
@@ -18,9 +19,9 @@ export class DropdownBoxComponent implements AfterViewInit, OnChanges {
     @Input() closeInside: boolean;
 
     /**
-     * Determines if the floating element needs to be placed in the root node or keep where it was before
+     * Determines where the floating element needs to be placed
      */
-    @Input() attachToRoot: boolean;
+    @Input() attachTo: DropdownAttachTo;
 
     /**
      * Where to place the floating element relative to the reference element.
@@ -67,7 +68,7 @@ export class DropdownBoxComponent implements AfterViewInit, OnChanges {
 
     constructor() {
         this.closeInside = true;
-        this.attachToRoot = true;
+        this.attachTo = "root";
         this.placement = "bottom";
         this.crossAxis = false;
         this.autoAlignment = true;

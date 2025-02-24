@@ -1,5 +1,6 @@
 import {Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnDestroy, Output} from "@angular/core";
 import {AutoPlacementOptions, Placement} from "@floating-ui/dom";
+import {DropdownAttachTo} from "../common-types";
 
 @Directive({
     standalone: false,
@@ -19,9 +20,9 @@ export class DropdownDirective implements OnDestroy {
     @Input() closeInside: boolean;
 
     /**
-     * Determines if the floating element needs to be placed in the root node or keep where it was before
+     * Determines where the floating element needs to be placed
      */
-    @Input() attachToRoot: boolean;
+    @Input() attachTo: DropdownAttachTo;
 
     /**
      * Where to place the floating element relative to the reference element.
@@ -82,7 +83,7 @@ export class DropdownDirective implements OnDestroy {
         this.opened = false;
         this.disabled = false;
         this.closeInside = true;
-        this.attachToRoot = true;
+        this.attachTo = null;
         this.mobileViewUnder = 0;
         this.keyboardHandler = true;
         this.onShown = new EventEmitter<any>();
