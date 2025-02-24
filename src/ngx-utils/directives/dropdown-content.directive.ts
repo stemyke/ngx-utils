@@ -160,7 +160,6 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
 
     protected whereToAttach(): HTMLElement {
         const target = this.dropdown.attachTo;
-        console.log(target, this.rootElem);
         if (target === "root" && this.rootElem) {
             return this.rootElem;
         }
