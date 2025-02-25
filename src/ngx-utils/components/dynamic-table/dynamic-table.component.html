@@ -35,11 +35,16 @@
     <ng-template #defaultCol>
         <span>{{ realColumns[column].title | translate }}</span>
     </ng-template>
-    <a *ngIf="realColumns[column].sort; else defaultCol"
-       [ngClass]="['sort', orderBy !== column ? '' : (orderDescending ? 'sort-desc' : 'sort-asc')]"
-       (click)="setSorting(column, toggle)">
-        <span>{{ realColumns[column].title | translate }}</span>
-    </a>
+    <ng-template #emptyCol>
+        <span>-</span>
+    </ng-template>
+    <ng-container *ngIf="realColumns[column]; else emptyCol">
+        <a *ngIf="realColumns[column].sort; else defaultCol"
+           [ngClass]="['sort', orderBy !== column ? '' : (orderDescending ? 'sort-desc' : 'sort-asc')]"
+           (click)="setSorting(column, toggle)">
+            <span>{{ realColumns[column].title | translate }}</span>
+        </a>
+    </ng-container>
 </ng-template>
 
 <div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [page]="page" [itemsPerPage]="itemsPerPage"
