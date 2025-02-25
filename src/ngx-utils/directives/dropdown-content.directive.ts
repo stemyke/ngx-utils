@@ -1,6 +1,15 @@
 import {Directive, ElementRef, Inject, OnDestroy, OnInit, Optional, TemplateRef, ViewContainerRef} from "@angular/core";
 import {Subscription} from "rxjs";
-import {arrow, autoPlacement, autoUpdate, computePosition, MiddlewareData, Placement} from "@floating-ui/dom";
+import {
+    arrow,
+    autoPlacement,
+    autoUpdate,
+    computePosition,
+    shift,
+    MiddlewareData,
+    Placement,
+    Middleware, limitShift
+} from "@floating-ui/dom";
 
 import {ROOT_ELEMENT} from "../common-types";
 import {DropdownDirective} from "./dropdown.directive";
@@ -67,12 +76,16 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
         const [content, arrowEl] = this.createWrapper();
         this.dropdown.contentElement = content;
         // Set up floating UI positioning settings
-        const middleware = [
-            arrow({element: arrowEl})
-        ];
+        const middleware: Middleware[] = [];
         if (this.dropdown.autoPlacement) {
-            middleware.push(autoPlacement(this.dropdown.autoPlacement));
+            middleware.push(
+                autoPlacement(this.dropdown.autoPlacement),
+                shift({boundary: this.attachTo, limiter: limitShift()})
+            );
         }
+        middleware.push(
+            arrow({element: arrowEl})
+        );
         const compute = async (): Promise<ComputeResult> => {
             const isMobileView = window.innerWidth <= mobileWidth;
             if (isMobileView) {
