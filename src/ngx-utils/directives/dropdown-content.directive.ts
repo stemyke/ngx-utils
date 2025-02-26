@@ -1,6 +1,15 @@
-import {Directive, Inject, OnDestroy, OnInit, Optional, TemplateRef, ViewContainerRef} from "@angular/core";
+import {Directive, ElementRef, Inject, OnDestroy, OnInit, Optional, TemplateRef, ViewContainerRef} from "@angular/core";
 import {Subscription} from "rxjs";
-import {autoPlacement, autoUpdate, computePosition, Middleware, Strategy} from "@floating-ui/dom";
+import {
+    arrow,
+    autoPlacement,
+    autoUpdate,
+    computePosition,
+    shift,
+    MiddlewareData,
+    Placement,
+    Middleware, limitShift
+} from "@floating-ui/dom";
 
 import {ROOT_ELEMENT} from "../common-types";
 import {DropdownDirective} from "./dropdown.directive";
@@ -8,6 +17,19 @@ import {ObservableUtils} from "../utils/observable.utils";
 import {getCssVariables} from "../utils/misc";
 
 const rectProps = ["x", "y", "width", "height"];
+
+interface ComputeResult {
+    styles: {
+        position: "fixed" | "absolute";
+        left: string;
+        top: string;
+        right: string;
+        bottom: string;
+    },
+    placement: Placement;
+    isMobileView: boolean;
+    middlewareData?: MiddlewareData;
+}
 
 @Directive({
     standalone: false,
@@ -17,6 +39,8 @@ const rectProps = ["x", "y", "width", "height"];
 export class DropdownContentDirective implements OnInit, OnDestroy {
 
     protected subscription: Subscription;
+    protected attachTo: HTMLElement;
+    protected attachOutside: boolean;
     protected lastPlacement: string;
     protected cleanUp: () => void;
 
@@ -49,39 +73,72 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
     protected createView(init: boolean = false) {
         const mobileWidth = this.dropdown.mobileViewUnder || 0;
         const ref = this.dropdown.nativeElement;
-        const content = this.createWrapper();
+        const [content, arrowEl] = this.createWrapper();
         this.dropdown.contentElement = content;
         // Set up floating UI positioning settings
-        const placement = this.dropdown.placement || "bottom";
-        const strategy: Strategy = this.dropdown.attachToRoot && this.rootElem ? "fixed" : "absolute";
         const middleware: Middleware[] = [];
         if (this.dropdown.autoPlacement) {
-            middleware.push(autoPlacement(this.dropdown.autoPlacement));
+            middleware.push(
+                autoPlacement(this.dropdown.autoPlacement),
+                shift({boundary: this.attachTo, limiter: limitShift()})
+            );
+        }
+        middleware.push(
+            arrow({element: arrowEl})
+        );
+        const compute = async (): Promise<ComputeResult> => {
+            const isMobileView = window.innerWidth <= mobileWidth;
+            if (isMobileView) {
+                return {
+                    styles: {
+                        left: "0px", top: "0px", right: "0px", bottom: "0px",
+                        position: "fixed",
+                    },
+                    placement: "top",
+                    isMobileView
+                };
+            }
+            const {x, y, placement, middlewareData} = await computePosition(
+                ref,
+                content,
+                {
+                    strategy: "absolute",
+                    placement: this.dropdown.placement || "bottom",
+                    middleware
+                }
+            );
+
+            return {
+                styles: {
+                    left: `${x}px`, top: `${y}px`, right: undefined, bottom: undefined,
+                    position: "absolute",
+                },
+                placement,
+                isMobileView,
+                middlewareData
+            };
         }
         // Set up floating UI auto update
         this.cleanUp = autoUpdate(
             ref,
             content,
             () => {
-                computePosition(
-                    ref,
-                    content,
-                    {
-                        strategy,
-                        placement,
-                        middleware
+                compute().then(({styles, placement, isMobileView, middlewareData}) => {
+
+                    if (middlewareData?.arrow) {
+                        const {x, y} = middlewareData.arrow;
+                        Object.assign(arrowEl.style, {
+                            left: x != null ? `${x}px` : ``,
+                            top: y != null ? `${y}px` : ``,
+                        });
                     }
-                ).then(({x, y, placement}) => {
-                    const isMobileView = window.innerWidth <= mobileWidth;
+
                     Object.assign(content.style, {
                         opacity: init ? "0" : "1",
-                        position: isMobileView ? "fixed" : strategy,
-                        left: isMobileView ? `0px`: `${x}px`,
-                        right: isMobileView ? `0px`: undefined,
-                        top: isMobileView ? `0px`: `${y}px`,
-                        bottom: isMobileView ? `0px`: undefined,
-                        zIndex: `var(--dd-z-index, 100)`
+                        zIndex: `var(--dd-z-index, 100)`,
+                        ...styles
                     });
+
                     const refRect = ref.getBoundingClientRect();
                     const contentRect = content.getBoundingClientRect();
                     const lastPlacement = this.lastPlacement;
@@ -114,13 +171,35 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
         this.cleanUp?.();
     }
 
+    protected whereToAttach(): HTMLElement {
+        const target = this.dropdown.attachTo;
+        if (target === "root" && this.rootElem) {
+            return this.rootElem;
+        }
+        if (target instanceof ElementRef) {
+            return target.nativeElement;
+        }
+        if (target instanceof HTMLElement) {
+            return target;
+        }
+        const anchor = this.vcr.element.nativeElement as HTMLElement;
+        return anchor?.parentElement || this.rootElem;
+    }
+
     protected createWrapper() {
         const wrapper = document.createElement("div");
+        const arrow = document.createElement("div");
+        arrow.classList.add(`dropdown-content-arrow`);
+        arrow.style.position = `absolute`;
+        wrapper.appendChild(arrow);
         const ref = this.vcr.createEmbeddedView(this.templateRef);
         ref.rootNodes.forEach(node => wrapper.appendChild(node));
+        ref.detectChanges();
+        this.attachTo = this.whereToAttach();
+        this.attachTo.appendChild(wrapper);
+        this.attachOutside = !this.dropdown.nativeElement?.contains(this.attachTo);
 
-        if (this.dropdown.attachToRoot && this.rootElem) {
-            this.rootElem.appendChild(wrapper);
+        if (this.attachOutside) {
             const referenceStyles = getCssVariables(this.dropdown.nativeElement);
             const wrapperStyles = getCssVariables(wrapper);
             Object.keys(referenceStyles).forEach(key => {
@@ -128,10 +207,8 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                     wrapper.style.setProperty(key, referenceStyles[key]);
                 }
             });
-        } else {
-            const anchor = this.vcr.element.nativeElement as HTMLElement;
-            anchor?.parentElement?.appendChild(wrapper);
         }
+
         const autoPlacement = this.dropdown.autoPlacement;
         if (this.lastPlacement) {
             wrapper.classList.add(this.lastPlacement);
@@ -147,7 +224,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
             }
         }
         wrapper.classList.add("dropdown-content-wrap");
-        return wrapper;
+        return [wrapper, arrow];
     }
 
     initialize(): void {

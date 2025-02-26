@@ -80,6 +80,10 @@ export function loadBaseHref(baseUrl: string): string {
     }
 }
 
+export function getRootElement(): HTMLElement {
+    return typeof document !== "undefined" ? document.body : null;
+}
+
 @NgModule({
     declarations: [
         ...pipes,
@@ -146,7 +150,7 @@ export class NgxUtilsModule {
             },
             {
                 provide: ROOT_ELEMENT,
-                useValue: null
+                useFactory: getRootElement
             },
             {
                 provide: RESIZE_DELAY,

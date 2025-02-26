@@ -40,6 +40,7 @@ export {
     TOASTER_SERVICE,
     IAsyncMessage,
     AsyncMethod,
+    DropdownAttachTo,
     UnorderedListTemplate,
     UnorderedListTemplates,
     UnorderedListStyle,

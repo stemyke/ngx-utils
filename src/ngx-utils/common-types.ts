@@ -1,4 +1,4 @@
-import {EventEmitter, InjectionToken, Injector, NgZone, Provider, TemplateRef, Type} from "@angular/core";
+import {ElementRef, EventEmitter, InjectionToken, Injector, NgZone, Provider, TemplateRef, Type} from "@angular/core";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {ActivatedRouteSnapshot, Data, LoadChildrenCallback, Route, Routes, UrlTree} from "@angular/router";
 import {Request} from "express";
@@ -250,6 +250,9 @@ export interface IAsyncMessage {
 }
 
 export type AsyncMethod = (context?: any) => Promise<IAsyncMessage>;
+
+// --- Dropdown ---
+export type DropdownAttachTo = "root" | HTMLElement | ElementRef<HTMLElement> | null;
 
 // --- Unordered list ---
 export interface UnorderedListTemplate {
