@@ -194,7 +194,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
         wrapper.appendChild(arrow);
         const ref = this.vcr.createEmbeddedView(this.templateRef);
         ref.rootNodes.forEach(node => wrapper.appendChild(node));
-
+        ref.detectChanges();
         this.attachTo = this.whereToAttach();
         this.attachTo.appendChild(wrapper);
         this.attachOutside = !this.dropdown.nativeElement?.contains(this.attachTo);
