@@ -113,7 +113,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
 
             return {
                 styles: {
-                    left: `${x}px`, top: `${y}px`, right: undefined, bottom: undefined,
+                    left: `${x}px`, top: `${y}px`, right: null, bottom: null,
                     position: "absolute",
                 },
                 placement,
@@ -136,10 +136,9 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                         });
                     }
 
-                    Object.assign(content.style, {
+                    Object.assign(content.style, styles, {
                         opacity: init ? "0" : "1",
-                        zIndex: `var(--dd-z-index, 100)`,
-                        ...styles
+                        zIndex: `var(--dd-z-index, 100)`
                     });
 
                     const refRect = ref.getBoundingClientRect();
