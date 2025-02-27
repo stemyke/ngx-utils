@@ -1,5 +1,5 @@
 import {Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnDestroy, Output} from "@angular/core";
-import {AutoPlacementOptions, Placement} from "@floating-ui/dom";
+import {AutoPlacementOptions, Boundary, Placement} from "@floating-ui/dom";
 import {DropdownAttachTo} from "../common-types";
 
 @Directive({
@@ -23,6 +23,11 @@ export class DropdownDirective implements OnDestroy {
      * Determines where the floating element needs to be placed
      */
     @Input() attachTo: DropdownAttachTo;
+
+    /**
+     * Determines the boundary element of the floating element when shifting
+     */
+    @Input() boundary: Boundary;
 
     /**
      * Where to place the floating element relative to the reference element.
@@ -84,6 +89,7 @@ export class DropdownDirective implements OnDestroy {
         this.disabled = false;
         this.closeInside = true;
         this.attachTo = null;
+        this.boundary = "clippingAncestors";
         this.mobileViewUnder = 0;
         this.keyboardHandler = true;
         this.onShown = new EventEmitter<any>();
