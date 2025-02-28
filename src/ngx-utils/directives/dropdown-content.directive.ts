@@ -65,12 +65,12 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        // this.observer?.unobserve(this.element.nativeElement);
         this.subscription?.unsubscribe();
         this.destroyView();
     }
 
     protected createView(init: boolean = false) {
+        if (this.dropdown.contentElement) return;
         const mobileWidth = this.dropdown.mobileViewUnder || 0;
         const ref = this.dropdown.nativeElement;
         const [content, arrowEl] = this.createWrapper();
@@ -79,8 +79,11 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
         const middleware: Middleware[] = [];
         if (this.dropdown.autoPlacement) {
             middleware.push(
+                shift({
+                    boundary: this.dropdown.boundary,
+                    limiter: limitShift()
+                }),
                 autoPlacement(this.dropdown.autoPlacement),
-                shift({boundary: this.attachTo, limiter: limitShift()})
             );
         }
         middleware.push(
@@ -110,7 +113,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
 
             return {
                 styles: {
-                    left: `${x}px`, top: `${y}px`, right: undefined, bottom: undefined,
+                    left: `${x}px`, top: `${y}px`, right: null, bottom: null,
                     position: "absolute",
                 },
                 placement,
@@ -133,10 +136,9 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                         });
                     }
 
-                    Object.assign(content.style, {
+                    Object.assign(content.style, styles, {
                         opacity: init ? "0" : "1",
-                        zIndex: `var(--dd-z-index, 100)`,
-                        ...styles
+                        zIndex: `var(--dd-z-index, 100)`
                     });
 
                     const refRect = ref.getBoundingClientRect();
@@ -151,8 +153,10 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                         content.classList.add(newPlacement);
                     }
                     if (isMobileView) {
+                        content.classList.remove(`dropdown-content-desktop`);
                         content.classList.add(`dropdown-content-mobile`);
                     } else {
+                        content.classList.add(`dropdown-content-desktop`);
                         content.classList.remove(`dropdown-content-mobile`);
                     }
                     rectProps.forEach(prop => {
@@ -166,8 +170,10 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
     }
 
     protected destroyView() {
+        if (!this.dropdown.contentElement) return;
+        this.dropdown.contentElement.remove();
+        this.dropdown.contentElement = null;
         this.vcr.clear();
-        this.dropdown.contentElement?.remove();
         this.cleanUp?.();
     }
 
