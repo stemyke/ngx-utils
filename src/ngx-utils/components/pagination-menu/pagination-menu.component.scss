@@ -49,7 +49,7 @@
         border-right: none;
     }
 
-    li.not(.disabled):hover, li.active {
+    li:not(.disabled):hover, li.active {
         background-color: var(--pg-highlight-color);
         color: var(--pg-highlight-text-color);
     }
