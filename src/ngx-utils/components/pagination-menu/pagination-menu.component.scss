@@ -2,9 +2,11 @@
     --pg-border-size: var(--border-size, 1px);
     --pg-bg-color: var(--bg-color, #ffffff);
     --pg-border-color: var(--border-color, #ced4da);
+    --pg-border-radius: var(--border-radius, 5px);
     --pg-highlight-color: var(--highlight-color, var(--primary-color, #888888));
     --pg-highlight-text-color: var(--highlight-text-color, #ffffff);
     --pg-text-color: var(--text-color, #151515);
+    --pg-arrow-content: "";
 
     --pg-arrow-size: var(--arrow-size, 6px);
     --pg-arrow-space: calc(var(--pg-arrow-size) * 0.5 + 1px);
@@ -26,7 +28,7 @@
         list-style: none;
         border: var(--pg-border-size) solid var(--pg-border-color);
         background: var(--pg-bg-color);
-        border-radius: 5px;
+        border-radius: var(--pg-border-radius);
         overflow: hidden;
         min-width: fit-content;
         display: flex;
@@ -47,9 +49,13 @@
         border-right: none;
     }
 
-    li:hover, li.active {
+    li.not(.disabled):hover, li.active {
         background-color: var(--pg-highlight-color);
         color: var(--pg-highlight-text-color);
+    }
+
+    li.disabled a {
+        cursor: default;
     }
 
     a {
@@ -68,7 +74,7 @@
         position: relative;
 
         &:before, &:after {
-            content: '';
+            content: var(--pg-arrow-content);
             position: absolute;
             left: 50%;
             top: calc(50% - var(--pg-arrow-size));
