@@ -48,18 +48,18 @@ export class AsyncMethodBase implements OnChanges {
     }
 
     @HostListener("click", ["$event"])
-    click(ev: Event) {
+    click(ev: MouseEvent) {
         ev?.preventDefault();
         if (this.disabled) return true;
-        this.callMethod();
+        this.callMethod(ev);
         return true;
     }
 
-    callMethod(): boolean {
+    callMethod(ev: MouseEvent): boolean {
         if (this.loading) return true;
         this.loading = true;
         const method = this.getMethod();
-        const result = !method ? null : method(this.context);
+        const result = !method ? null : method(this.context, ev);
         if (!(result instanceof Promise)) {
             this.loading = false;
             return false;

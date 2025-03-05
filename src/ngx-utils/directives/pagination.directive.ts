@@ -1,4 +1,14 @@
-import {Directive, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChanges} from "@angular/core";
+import {
+    Directive,
+    ElementRef,
+    EventEmitter,
+    Input,
+    NgZone,
+    OnChanges,
+    Output,
+    Renderer2,
+    SimpleChanges
+} from "@angular/core";
 import {IPaginationData, ITimer, PaginationDataLoader, PaginationItemContext} from "../common-types";
 import {TimerUtils} from "../utils/timer.utils";
 
@@ -31,7 +41,7 @@ export class PaginationDirective implements OnChanges {
     private data: IPaginationData;
     private updateTimer: ITimer;
 
-    constructor(private zone: NgZone) {
+    constructor(readonly zone: NgZone, readonly renderer: Renderer2, readonly element: ElementRef) {
         this.pageChange = new EventEmitter<number>();
         this.onRefresh = new EventEmitter<PaginationDirective>();
         this.updateTimer = TimerUtils.createTimeout(() => this.loadData(), this.updateTime);
@@ -61,6 +71,7 @@ export class PaginationDirective implements OnChanges {
 
     private loadData(): void {
         if (!this.loader) return;
+        this.renderer.addClass(this.element.nativeElement, "loading");
         this.loader(this.page, this.itemsPerPage).then(data => {
             this.maxPage = !data || data.total <= 0 ? 1 : Math.floor((data.total - 1) / this.itemsPerPage) + 1;
             this.data = data;
@@ -76,7 +87,10 @@ export class PaginationDirective implements OnChanges {
                 this.paginate(this.maxPage);
                 return;
             }
-            this.zone.run(() => this.onRefresh.emit(this));
+            this.zone.run(() => {
+                this.renderer.removeClass(this.element.nativeElement, "loading");
+                this.onRefresh.emit(this)
+            });
         });
     }
 }

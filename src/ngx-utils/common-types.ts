@@ -249,7 +249,7 @@ export interface IAsyncMessage {
     context?: any;
 }
 
-export type AsyncMethod = (context?: any) => Promise<IAsyncMessage>;
+export type AsyncMethod = (context?: any, ev?: MouseEvent) => Promise<IAsyncMessage>;
 
 // --- Dropdown ---
 export type DropdownAttachTo = "root" | HTMLElement | ElementRef<HTMLElement> | null;
@@ -268,12 +268,16 @@ export interface UnorderedListTemplates {
 export type UnorderedListStyle = "table" | "list";
 
 // --- Upload ---
+
+export type UploadType = string | Blob;
+
 export interface IFileUploadResult {
     _id?: string;
     id?: string;
     contentType?: string;
     createdAt?: Date;
     filename?: string;
+    file?: Blob;
 }
 
 export interface IFileUploadProcess {

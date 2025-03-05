@@ -51,8 +51,7 @@
     </ng-container>
 </ng-template>
 
-<div class="dynamic-table" #pagination="pagination" [pagination]="loadData" [page]="page" [itemsPerPage]="itemsPerPage"
-     [updateTime]="updateTime">
+<div class="dynamic-table">
     <div class="table-features-row">
         <ng-content select="[table-features-before]"></ng-content>
         <div class="table-input-wrap table-search-filter" *ngIf="showFilter">
@@ -102,86 +101,93 @@
         </div>
         <ng-content select="[table-features-after]"></ng-content>
     </div>
-    <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks"
-                     [boundaryLinks]="boundaryLinks"></pagination-menu>
-    <div class="table-responsive">
-        <ng-template #defaultWrapperTemplate>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th *ngFor="let column of cols" [ngClass]="'header-column column-' + column">
-                        <ng-container [ngTemplateOutlet]="headerTemplate"
-                                      [ngTemplateOutletContext]="{column: column}"></ng-container>
-                    </th>
-                </tr>
-                <tr *ngIf="hasQuery">
-                    <th *ngFor="let column of cols" [ngClass]="['column-' + column, 'filter-column']">
-                        <ng-container *ngIf="realColumns[column].filter" [ngSwitch]="realColumns[column].filterType">
-                            <ng-container *ngSwitchCase="'enum'">
-                                <ng-template #optionItem let-option="option">
-                                    {{ (realColumns[column].enumPrefix ? realColumns[column].enumPrefix + '.' + option : option) | translate }}
-                                </ng-template>
-                                <dropdown-box componentClass="filter-box"
-                                              [ngClass]="'filter-box-' + column" [closeInside]="false">
-                                    <ng-container toggle-content>
+    <div class="table-content-row"
+         #pagination="pagination"
+         [pagination]="loadData"
+         [page]="page"
+         [itemsPerPage]="itemsPerPage"
+         [updateTime]="updateTime">
+        <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks"
+                         [boundaryLinks]="boundaryLinks"></pagination-menu>
+        <div class="table-responsive">
+            <ng-template #defaultWrapperTemplate>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th *ngFor="let column of cols" [ngClass]="'header-column column-' + column">
+                            <ng-container [ngTemplateOutlet]="headerTemplate"
+                                          [ngTemplateOutletContext]="{column: column}"></ng-container>
+                        </th>
+                    </tr>
+                    <tr *ngIf="hasQuery">
+                        <th *ngFor="let column of cols" [ngClass]="['column-' + column, 'filter-column']">
+                            <ng-container *ngIf="realColumns[column].filter" [ngSwitch]="realColumns[column].filterType">
+                                <ng-container *ngSwitchCase="'enum'">
+                                    <ng-template #optionItem let-option="option">
+                                        {{ (realColumns[column].enumPrefix ? realColumns[column].enumPrefix + '.' + option : option) | translate }}
+                                    </ng-template>
+                                    <dropdown-box componentClass="filter-box"
+                                                  [ngClass]="'filter-box-' + column" [closeInside]="false">
+                                        <ng-container toggle-content>
                                         <span class="toggle-placeholder" *ngIf="!query[column]">
                                             {{ realColumns[column].title | translate }}
                                         </span>
-                                        <span [ngClass]="['option-' + option, column + '-option-' + option, option]"
-                                              *ngFor="let option of query[column] | values; let ix = index">
+                                            <span [ngClass]="['option-' + option, column + '-option-' + option, option]"
+                                                  *ngFor="let option of query[column] | values; let ix = index">
                                             <ng-container *ngIf="ix > 0">, </ng-container>
                                             <ng-container [ngTemplateOutlet]="optionItem"
                                                           [ngTemplateOutletContext]="{option: option}"></ng-container>
                                         </span>
-                                    </ng-container>
-                                    <ul>
-                                        <li [ngClass]="[column + '-option', 'option-' + option, option]"
-                                            (click)="setQueryValue(column, option)"
-                                            *ngFor="let option of realColumns[column].enum">
-                                            <a [ngClass]="'toggle-link-' + column">
-                                                <input type="checkbox" [checked]="query[column] | includes: option">
-                                                <ng-container [ngTemplateOutlet]="optionItem"
-                                                              [ngTemplateOutletContext]="{option: option}"></ng-container>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </dropdown-box>
+                                        </ng-container>
+                                        <ul>
+                                            <li [ngClass]="[column + '-option', 'option-' + option, option]"
+                                                (click)="setQueryValue(column, option)"
+                                                *ngFor="let option of realColumns[column].enum">
+                                                <a [ngClass]="'toggle-link-' + column">
+                                                    <input type="checkbox" [checked]="query[column] | includes: option">
+                                                    <ng-container [ngTemplateOutlet]="optionItem"
+                                                                  [ngTemplateOutletContext]="{option: option}"></ng-container>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </dropdown-box>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'checkbox'">
+                                    <input type="checkbox"
+                                           [attr.data-testid]="testId + '-filter-' + column"
+                                           [placeholder]="realColumns[column].title | translate"
+                                           [ngModel]="query[column]"
+                                           (ngModelChange)="setQueryValue(column, $event)"/>
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                    <input class="search-input"
+                                           type="text"
+                                           [attr.data-testid]="testId + '-filter-' + column"
+                                           [placeholder]="realColumns[column].title | translate"
+                                           [ngModel]="query[column]"
+                                           (ngModelChange)="setQueryValue(column, $event)"/>
+                                </ng-container>
                             </ng-container>
-                            <ng-container *ngSwitchCase="'checkbox'">
-                                <input type="checkbox"
-                                       [attr.data-testid]="testId + '-filter-' + column"
-                                       [placeholder]="realColumns[column].title | translate"
-                                       [ngModel]="query[column]"
-                                       (ngModelChange)="setQueryValue(column, $event)"/>
-                            </ng-container>
-                            <ng-container *ngSwitchDefault>
-                                <input class="search-input"
-                                       type="text"
-                                       [attr.data-testid]="testId + '-filter-' + column"
-                                       [placeholder]="realColumns[column].title | translate"
-                                       [ngModel]="query[column]"
-                                       (ngModelChange)="setQueryValue(column, $event)"/>
-                            </ng-container>
-                        </ng-container>
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <ng-container *paginationItem="let context"
-                              [ngxTemplateOutlet]="rowTemplate"
-                              [context]="context"
-                              [additionalContext]="this"></ng-container>
-                </tbody>
-            </table>
-        </ng-template>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <ng-container *paginationItem="let context"
+                                  [ngxTemplateOutlet]="rowTemplate"
+                                  [context]="context"
+                                  [additionalContext]="this"></ng-container>
+                    </tbody>
+                </table>
+            </ng-template>
 
-        <div class="table-wrapper">
-            <ng-content select="[table-top]"></ng-content>
-            <ng-container [ngxTemplateOutlet]="wrapperTemplate || defaultWrapperTemplate"
-                          [context]="this"></ng-container>
-            <ng-content select="[table-bottom]"></ng-content>
+            <div class="table-wrapper">
+                <ng-content select="[table-top]"></ng-content>
+                <ng-container [ngxTemplateOutlet]="wrapperTemplate || defaultWrapperTemplate"
+                              [context]="this"></ng-container>
+                <ng-content select="[table-bottom]"></ng-content>
+            </div>
         </div>
+        <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks"
+                         [boundaryLinks]="boundaryLinks"></pagination-menu>
     </div>
-    <pagination-menu [urlParam]="urlParam" [maxSize]="maxPages" [directionLinks]="directionLinks"
-                     [boundaryLinks]="boundaryLinks"></pagination-menu>
 </div>

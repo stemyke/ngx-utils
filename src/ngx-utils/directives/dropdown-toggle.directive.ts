@@ -25,11 +25,11 @@ export class DropdownToggleDirective extends AsyncMethodBase {
         return this.beforeOpen;
     }
 
-    callMethod(): boolean {
+    callMethod(ev: MouseEvent): boolean {
         if (this.dropdown.isOpened) {
             if (!this.switch) return true;
             this.dropdown.hide();
-        } else if (!super.callMethod()) {
+        } else if (!super.callMethod(ev)) {
             this.dropdown.show();
         }
         return true;

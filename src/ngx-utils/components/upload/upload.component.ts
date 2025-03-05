@@ -1,11 +1,13 @@
 import {
     ChangeDetectorRef,
     Component,
-    ContentChild, EventEmitter,
+    ContentChild,
+    EventEmitter,
     forwardRef,
     Inject,
     Input,
-    OnChanges, Output,
+    OnChanges,
+    Output,
     TemplateRef,
     ViewEncapsulation
 } from "@angular/core";
@@ -19,7 +21,8 @@ import {
     IFileUploadProcess,
     IFileUploadResult,
     IToasterService,
-    TOASTER_SERVICE
+    TOASTER_SERVICE,
+    UploadType
 } from "../../common-types";
 import {ArrayUtils} from "../../utils/array.utils";
 import {ObjectUtils} from "../../utils/object.utils";
@@ -40,8 +43,9 @@ import {BaseHttpClient} from "../../services/base-http.client";
 })
 export class UploadComponent implements ControlValueAccessor, OnChanges {
 
-    @Input() value: string | string[];
+    @Input() value: UploadType | UploadType[];
     @Input() disabled: boolean;
+    @Input() inline: boolean;
     @Input() accept: string | string[];
     @Input() baseUrl: string;
     @Input() message: string;
@@ -50,7 +54,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
     @Input() makeUpload: (f: File) => any;
     @Input() preProcess: (f: File) => boolean;
     @Output() onUploaded: EventEmitter<IFileUploadResult[]>;
-    @Output() onRemove: EventEmitter<string[]>;
+    @Output() onRemove: EventEmitter<UploadType[]>;
 
     acceptAttr: string;
     isImage: boolean;
@@ -64,7 +68,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
     @ContentChild("uploadButton")
     uploadButton: TemplateRef<any>;
 
-    protected fileImageCache: any[];
+    protected fileImageCache: Map<Blob, string>;
     protected acceptTypes: string[];
 
     get http(): BaseHttpClient {
@@ -78,7 +82,8 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
     ) {
         this.value = null;
         this.disabled = false;
-        this.fileImageCache = [];
+        this.inline = false;
+        this.fileImageCache = new Map();
         this.buttonText = "button.select-files";
         this.onUploaded = new EventEmitter();
         this.onRemove = new EventEmitter();
@@ -88,7 +93,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         };
         this.remove = index => {
             if (this.multiple) {
-                const current = Array.from(this.value || []);
+                const current = Array.from((this.value as UploadType[]) || []);
                 current.splice(index, 1);
                 this.writeValue(current);
                 this.onRemove.emit(current);
@@ -134,7 +139,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         this.onTouched = fn;
     }
 
-    writeValue(value: string | string[]) {
+    writeValue(value: UploadType | UploadType[]) {
         this.value = value;
         this.cdr.markForCheck();
         this.onChange(this.value);
@@ -180,7 +185,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
             return;
         }
         this.processFiles(this.multiple ? files : files.slice(0, 1)).then(results => {
-            const ids = results.map(t => t._id || t.id);
+            const ids = results.map(t => t.file || t._id || t.id);
             this.writeValue(this.multiple ? ids : (ids[0] || null));
             this.onUploaded.emit(results);
         });
@@ -189,12 +194,10 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
 
     getUrl(image: any): string {
         if (ObjectUtils.isBlob(image)) {
-            let cache = this.fileImageCache.find(t => t.file == image);
-            if (!cache) {
-                cache = {file: image, url: URL.createObjectURL(image)};
-                this.fileImageCache.push(cache);
+            if (!this.fileImageCache.has(image)) {
+                this.fileImageCache.set(image, URL.createObjectURL(image));
             }
-            return cache.url;
+            return this.fileImageCache.get(image);
         }
         const url = !image ? null : image.imageUrl || image;
         if (!ObjectUtils.isString(url)) return null;
@@ -229,13 +232,20 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
             };
             process.promise = FileUtils.getFilePreview(file).then(preview => {
                 process.preview = `url('${preview}')`;
+                this.fileImageCache.set(file, preview);
                 this.cdr.detectChanges();
             });
             return process;
         });
         const baseUrl = this.baseUrl || this.api.url("assets");
-        const requests = this.processing.map(async p => {
+        const requests = this.processing.map(async (p): Promise<IFileUploadResult> => {
             await p.promise;
+            if (this.inline) {
+                return {
+                    filename: p.file?.name,
+                    file: p.file,
+                };
+            }
             const request = this.http.post(baseUrl, makeUpload(p.file), {
                 headers, observe: "events", reportProgress: true
             });

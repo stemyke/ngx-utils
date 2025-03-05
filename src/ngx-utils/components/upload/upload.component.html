@@ -9,7 +9,7 @@
     </a>
 </ng-template>
 <ng-template #itemTemplate let-item="item" let-index="index">
-    <div class="upload-item" [ngStyle]="!isImage ? {} : {backgroundImage: getBgUrl(item)}">
+    <div class="upload-item" [ngStyle]="isImage || (item | isType: 'file') ? {backgroundImage: getBgUrl(item)} : {}">
         <a class="remove-item-btn" (click)="remove(index)"></a>
     </div>
 </ng-template>

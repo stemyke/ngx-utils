@@ -1,4 +1,5 @@
 import {Pipe, PipeTransform} from "@angular/core";
+import {ObjectUtils} from "../utils/object.utils";
 
 @Pipe({
     standalone: false,
@@ -6,6 +7,6 @@ import {Pipe, PipeTransform} from "@angular/core";
 })
 export class IsTypePipe implements PipeTransform {
     transform(value: any, type: string): any {
-        return (typeof value) === type;
+        return ObjectUtils.getType(value) === type;
     }
 }
