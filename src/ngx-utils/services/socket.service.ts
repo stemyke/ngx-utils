@@ -21,6 +21,7 @@ export class SocketService implements OnDestroy {
     constructor(@Inject(AUTH_SERVICE) readonly auth: IAuthService,
                 @Inject(API_SERVICE) readonly api: IApiService,
                 @Inject(SOCKET_IO_PATH) protected ioPath: string) {
+
         const url = this.api.url(this.ioPath);
         this.client = new SocketClient(url, async () => {
             let script: HTMLScriptElement = null;

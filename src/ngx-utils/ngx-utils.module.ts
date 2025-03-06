@@ -162,7 +162,7 @@ export class NgxUtilsModule {
             },
             {
                 provide: SOCKET_IO_PATH,
-                useValue: (!config ? null : config.socketPath) ?? "/socket",
+                useValue: (!config ? null : config.socketPath) ?? "socket.io",
             },
             {
                 provide: APP_INITIALIZER,

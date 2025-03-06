@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 
-import {IApiService, IHttpParams, IRequestOptions, ProgressListener} from "../common-types";
+import {IApiService, IHttpParams, IRequestOptions, ProgressListener, SOCKET_IO_PATH} from "../common-types";
 import {BaseHttpService} from "./base-http.service";
 import {IPaginationData} from "../common-types";
 
@@ -12,8 +12,10 @@ export class ApiService extends BaseHttpService implements IApiService {
     }
 
     url(url: string): string {
-        const baseUrl = this.expressRequestUrl(`/api/${url}`);
-        if (url == "api-docs" || url == "socket") {
+        const config = this.configs.config;
+        const baseUrl = this.expressRequestUrl(`${config.apiUrl}${url}`);
+        const socket = this.injector.get(SOCKET_IO_PATH);
+        if (url == "api-docs" || url == socket) {
             return baseUrl.replace("/api/", "/");
         }
         return baseUrl;
