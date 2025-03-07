@@ -50,7 +50,7 @@ export class DropdownDirective implements OnDestroy {
 
     /**
      * Determines if the dropdown content should always be displayed in a fixed full screen view
-     * @default 0
+     * @default false
      */
     @Input() fixed: boolean;
 
