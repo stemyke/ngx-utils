@@ -72,6 +72,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
     protected createView(init: boolean = false) {
         if (this.dropdown.contentElement) return;
         const mobileWidth = this.dropdown.mobileViewUnder || 0;
+        const fixed = this.dropdown.fixed || false;
         const ref = this.dropdown.nativeElement;
         const [content, arrowEl] = this.createWrapper();
         this.dropdown.contentElement = content;
@@ -91,7 +92,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
         );
         const compute = async (): Promise<ComputeResult> => {
             const isMobileView = window.innerWidth <= mobileWidth;
-            if (isMobileView) {
+            if (isMobileView || fixed) {
                 return {
                     styles: {
                         left: "0px", top: "0px", right: "0px", bottom: "0px",
@@ -152,12 +153,16 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                         ref.classList.add(newPlacement);
                         content.classList.add(newPlacement);
                     }
-                    if (isMobileView) {
+                    if (isMobileView || fixed) {
                         content.classList.remove(`dropdown-content-desktop`);
                         content.classList.add(`dropdown-content-mobile`);
+                        if (!isMobileView) {
+                            content.classList.add(`dropdown-content-fixed`);
+                        }
                     } else {
                         content.classList.add(`dropdown-content-desktop`);
                         content.classList.remove(`dropdown-content-mobile`);
+                        content.classList.remove(`dropdown-content-fixed`);
                     }
                     rectProps.forEach(prop => {
                         content.style.setProperty(`--toggle-${prop}`, `${refRect[prop]}px`);
