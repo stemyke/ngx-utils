@@ -95,12 +95,13 @@ export class SocketClient {
                     this.open = false;
                     this.status.next(false);
                 });
-                Object.keys(this.channels).map(event => {
+                for (const [event, subject] of this.channels.entries()) {
+                    ws.off(event);
                     ws.on(event, (data: SocketData) => {
                         this.handleResponse(event, data);
-                        this.channels[event].next(data);
+                        subject.next(data);
                     });
-                });
+                }
                 resolve(ws);
             }, reject);
         });
@@ -113,16 +114,17 @@ export class SocketClient {
     }
 
     subscribe<T = SocketData>(event: string, cb: (value: T) => void): Subscription {
-        if (!this.channels[event]) {
-            this.channels[event] = new Subject();
+        if (!this.channels.has(event)) {
+            this.channels.set(event, new Subject());
             this.ws?.then(ws => {
+                ws.off(event);
                 ws.on(event, (data: SocketData) => {
                     this.handleResponse(event, data);
-                    this.channels[event].next(data);
+                    this.channels.get(event).next(data);
                 });
             });
         }
-        return this.channels[event].subscribe(cb);
+        return this.channels.get(event).subscribe(cb as any);
     }
 
     emit(event: string, content: SocketData): void {
