@@ -154,13 +154,14 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                         content.classList.add(newPlacement);
                     }
                     if (isMobileView || fixed) {
-                        content.classList.remove(`dropdown-content-desktop`);
-                        content.classList.add(`dropdown-content-mobile`);
                         if (!isMobileView) {
                             content.classList.add(`dropdown-content-fixed`);
+                            content.classList.remove(`dropdown-content-mobile`);
                         } else {
+                            content.classList.add(`dropdown-content-mobile`);
                             content.classList.remove(`dropdown-content-fixed`);
                         }
+                        content.classList.remove(`dropdown-content-desktop`);
                     } else {
                         content.classList.add(`dropdown-content-desktop`);
                         content.classList.remove(`dropdown-content-mobile`);
