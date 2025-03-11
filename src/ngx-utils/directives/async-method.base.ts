@@ -55,7 +55,7 @@ export class AsyncMethodBase implements OnChanges {
         return true;
     }
 
-    callMethod(ev: MouseEvent): boolean {
+    callMethod(ev?: MouseEvent): boolean {
         if (this.loading) return true;
         this.loading = true;
         const method = this.getMethod();
