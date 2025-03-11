@@ -49,6 +49,12 @@ export class DropdownDirective implements OnDestroy {
     @Input() mobileViewUnder: number;
 
     /**
+     * Determines if the dropdown content should always be displayed in a fixed full screen view
+     * @default false
+     */
+    @Input() fixed: boolean;
+
+    /**
      * Determines if the dropdown should react to keys to close like 'Esc'
      * @default true
      */
@@ -91,6 +97,7 @@ export class DropdownDirective implements OnDestroy {
         this.attachTo = null;
         this.boundary = "clippingAncestors";
         this.mobileViewUnder = 0;
+        this.fixed = false;
         this.keyboardHandler = true;
         this.onShown = new EventEmitter<any>();
         this.onHidden = new EventEmitter<any>();
