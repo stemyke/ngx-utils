@@ -18,12 +18,10 @@ import {ObservableUtils} from "../../utils/observable.utils";
 })
 export class InteractiveItemComponent implements OnDestroy, OnChanges, InteractiveCanvasItem {
 
-    protected basePan: number;
+    protected cycles: number[];
     protected pos: Point;
     protected mShapes: IShape[];
     protected subscription: Subscription;
-    protected deltaX: number;
-    protected deltaY: number;
 
     @Input()
     set x(value: number) {
@@ -39,7 +37,7 @@ export class InteractiveItemComponent implements OnDestroy, OnChanges, Interacti
 
     @Input()
     set position(value: IPoint) {
-        if (typeof value !== "object" || isNaN(value.x) || isNaN(value.y)) return;
+        if (typeof value !== "object" || isNaN(value.x) || isNaN(value.y) || value === this.pos) return;
         this.pos = new Point(value.x, value.y);
     }
 
@@ -86,38 +84,30 @@ export class InteractiveItemComponent implements OnDestroy, OnChanges, Interacti
         this.onPanEnd = new EventEmitter();
         this.active = false;
         this.index = -1;
-        this.basePan = 0;
+        this.cycles = [0];
         this.pos = Point.Zero;
         this.rotation = 0;
         this.direction = "none";
         this.mShapes = [];
         this.subscription = ObservableUtils.multiSubscription(
-            this.onPanStart.subscribe(() => {
-                this.deltaX = 0;
-                this.deltaY = 0;
-            }),
             this.onPan.subscribe(ev => {
-                const dx = ev.deltaX - this.deltaX;
-                const dy = ev.deltaY - this.deltaY;
                 switch (this.direction) {
                     case "free":
-                        this.x += dx;
-                        this.y += dy;
+                        this.x += ev.deltaX;
+                        this.y += ev.deltaY;
                         break;
                     case "horizontal":
-                        this.x += dx;
+                        this.x += ev.deltaX;
                         break;
                     case "vertical":
-                        this.y += dy;
+                        this.y += ev.deltaY;
                         break;
                 }
                 if (this.direction !== "none") {
                     this.calcShapes();
                 }
-                this.deltaX = ev.deltaX;
-                this.deltaY = ev.deltaY;
             })
-        )
+        );
     }
 
     ngOnDestroy() {
@@ -128,13 +118,13 @@ export class InteractiveItemComponent implements OnDestroy, OnChanges, Interacti
         this.calcShapes();
     }
 
-    calcShapes(basePan?: number): void {
+    calcShapes(cycles?: number[]): void {
         const canvas = this.canvas;
         const ratio = canvas.ratio;
         const x = this.pos.x * ratio;
-        this.basePan = basePan ?? this.basePan;
-        this.mShapes = [0, 1, 2].map(cycle => {
-            const y = this.pos.y * ratio + this.basePan + cycle * canvas.fullHeight;
+        this.cycles = cycles ?? this.cycles;
+        this.mShapes = this.cycles.map(pan => {
+            const y = this.pos.y * ratio + pan;
             return this.calcShape(x, y);
         });
     }

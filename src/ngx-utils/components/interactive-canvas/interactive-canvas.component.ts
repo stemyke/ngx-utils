@@ -16,7 +16,7 @@ import {
 } from "@angular/core";
 import {Subscription} from "rxjs";
 
-import {InteractiveCanvas, InteractivePanEvent, InteractiveDrawFn, InteractiveCanvasPointer} from "../../common-types";
+import {InteractiveCanvas, InteractiveCanvasPointer, InteractiveDrawFn, InteractivePanEvent} from "../../common-types";
 import {Point} from "../../utils/geometry";
 import {InteractiveItemComponent} from "./interactive-item.component";
 
@@ -47,10 +47,21 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     pan: number;
     rotation: number;
 
+    get selectedItem(): InteractiveItemComponent {
+        return this.items[this.selectedIndex];
+    }
+
+    get hoveredItem(): InteractiveItemComponent {
+        return this.items[this.hoveredIndex];
+    }
+
+    get lockedItem(): InteractiveItemComponent {
+        return this.items[this.lockedIndex];
+    }
+
     protected shouldDraw: boolean;
     protected panOffset: number;
-    protected hoveredItem: InteractiveItemComponent;
-    protected selectedItem: InteractiveItemComponent;
+    protected hoveredIndex: number;
     protected items: ReadonlyArray<InteractiveItemComponent>;
     protected subscription: Subscription;
 
@@ -64,8 +75,9 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     protected itemList: QueryList<InteractiveItemComponent>;
 
     protected touched: boolean;
-    protected panFrom: number;
-    protected lockedItem: InteractiveItemComponent;
+    protected deltaX: number;
+    protected deltaY: number;
+    protected lockedIndex: number;
 
     constructor(protected renderer: Renderer2) {
         this.horizontal = false;
@@ -79,11 +91,11 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         this.rotation = 0;
         this.canvasWidth = 0;
         this.canvasHeight = 0;
-        this.hoveredItem = null;
-        this.selectedItem = null;
+        this.hoveredIndex = null;
         this.items = [];
         this.touched = false;
-        this.panFrom = 0;
+        this.deltaX = 0;
+        this.deltaY = 0;
     }
 
     ngOnInit() {
@@ -127,7 +139,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     }
 
     onTouchStart($event: TouchEvent): void {
-        this.hoveredItem = this.getItemUnderPointer($event.touches.item(0));
+        this.hoveredIndex = this.getIndexUnderPointer($event.touches.item(0));
         this.touched = true;
     }
 
@@ -147,49 +159,54 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
 
     onMouseMove($event: MouseEvent): void {
         if (this.touched) return;
-        this.hoveredItem = this.getItemUnderPointer($event);
+        this.hoveredIndex = this.getIndexUnderPointer($event);
         this.updateCursor();
     }
 
     onMouseLeave(): void {
-        this.hoveredItem = null;
+        this.hoveredIndex = null;
         this.updateCursor();
     }
 
     onPanStart($event: InteractivePanEvent): void {
-        this.lockedItem = this.getItemUnderPointer($event?.pointers[0]);
+        this.lockedIndex = this.getIndexUnderPointer($event?.pointers[0]);
         this.lockedItem?.onPanStart.emit({
             pointers: [],
             deltaX: 0,
             deltaY: 0,
             item: this.lockedItem
         });
-        this.panFrom = this.pan;
+        this.deltaX = 0;
+        this.deltaY = 0;
     }
 
     onPan($event: InteractivePanEvent): void {
-        if (this.lockedItem) {
+        const item = this.lockedItem;
+        const deltaX = ($event.deltaX - this.deltaX) / this.ratio;
+        const deltaY = ($event.deltaY - this.deltaY) / this.ratio;
+        if (item) {
             const data: InteractivePanEvent = this.horizontal
-                ? {pointers: $event.pointers, deltaX: -$event.deltaY / this.ratio, deltaY: $event.deltaX / this.ratio}
-                : {pointers: $event.pointers, deltaX: $event.deltaX / this.ratio, deltaY: $event.deltaY / this.ratio};
-            data.item = this.lockedItem;
-            this.lockedItem.onPan.emit(data);
-            return;
+                ? {pointers: $event.pointers, deltaX: -deltaY, deltaY: +deltaX}
+                : {pointers: $event.pointers, deltaX, deltaY};
+            data.item = item
+            item.onPan.emit(data);
+        } else if (this.resizeMode == "fill") {
+            this.pan += this.horizontal ? deltaX : deltaY;
+            this.fixPan();
         }
-        // if (this.useCanvasRatio) return;
-        // this.pan = this.panFrom + (this.horizontal ? $event.deltaX : $event.deltaY);
-        // this.fixPan();
+        this.deltaX = $event.deltaX;
+        this.deltaY = $event.deltaY;
     }
 
     onPanEnd(): void {
-        this.lockedItem?.onPanEnd.emit({
+        const item = this.lockedItem;
+        item?.onPanEnd.emit({
             pointers: [],
             deltaX: 0,
             deltaY: 0,
-            item: this.lockedItem
+            item
         });
-        this.lockedItem = null;
-        this.panFrom = this.pan;
+        this.lockedIndex = -1;
     }
 
     protected fixPan(): void {
@@ -202,8 +219,9 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         }
         this.rotation = Math.round(this.pan / this.fullHeight * 360);
         const basePan = (this.rotation / 360 - 1) * this.fullHeight;
+        const cycles = this.resizeMode == "fit" ? [0] : [basePan - this.fullHeight, basePan, basePan + this.fullHeight];
         this.items.forEach(item => {
-            item.calcShapes(basePan);
+            item.calcShapes(cycles);
         });
     }
 
@@ -216,29 +234,31 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     }
 
     protected selectItem(pointer: InteractiveCanvasPointer): void {
-        const selected = this.getItemUnderPointer(pointer);
+        const selected = this.getIndexUnderPointer(pointer);
         this.touched = false;
-        this.selectedItem = selected;
-        if (selected) {
-            selected.active = !selected.active;
-            const items = Array.from(this.items);
-            this.selectedIndex = items.indexOf(selected);
+        if (selected !== this.selectedIndex) {
+            this.selectedIndex = selected;
             this.selectedIndexChange.emit(this.selectedIndex);
+            const item = this.selectedItem;
+            if (!item) return;
+            item.active = !item.active;
         }
     }
 
-    protected getItemUnderPointer(pointer: InteractiveCanvasPointer): InteractiveItemComponent {
+    protected getIndexUnderPointer(pointer: InteractiveCanvasPointer): number {
         if (!pointer || !this.canvasElem || !this.items) return null;
         const canvasRect = this.canvasElem.nativeElement.getBoundingClientRect();
         const point = this.horizontal
             ? new Point(canvasRect.bottom - pointer.clientY, pointer.clientX - canvasRect.left)
             : new Point(pointer.clientX - canvasRect.left, pointer.clientY - canvasRect.top);
-        for (const item of this.items) {
+        const length = this.items.length;
+        for (let ix = 0; ix < length; ix++) {
+            const item = this.items[ix];
             if (item?.hit(point)) {
-                return item.disabled ? null : item;
+                return item.disabled ? null : ix;
             }
         }
-        return null;
+        return -1;
     }
 
     protected updateCursor(): void {
@@ -248,8 +268,9 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     }
 
     protected getCursor(): string {
-        if (!this.hoveredItem) return "default";
-        switch (this.hoveredItem.direction) {
+        const hovered = this.hoveredItem;
+        if (!hovered) return "default";
+        switch (hovered.direction) {
             case "free":
                 return "all-scroll";
             case "horizontal":
