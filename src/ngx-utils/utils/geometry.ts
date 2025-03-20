@@ -1,4 +1,4 @@
-import {IShape} from "../common-types";
+import {IPoint, IShape} from "../common-types";
 
 export class Rect implements IShape {
 
@@ -26,11 +26,11 @@ export class Rect implements IShape {
 
     }
 
-    distance(p: Point): number {
-        p = p.rotateAround(this.center, -this.rotation);
+    distance(p: IPoint): number {
+        p = new Point(p.x, p.y).rotateAround(this.center, -this.rotation);
         const x = Math.max(this.left - p.x, 0, p.x - this.right);
         const y = Math.max(this.bottom - p.y, 0, p.y - this.top);
-        return Math.sqrt(x*x + y*y);
+        return Math.sqrt(x * x + y * y);
     }
 }
 
@@ -64,7 +64,7 @@ export class Circle implements IShape {
 
     }
 
-    distance(p: Point): number {
+    distance(p: IPoint): number {
         return this.center.distance(p) - this.radius;
     }
 }
@@ -99,7 +99,7 @@ export class Point implements IShape {
         return new Point(this.x * p, this.y * p);
     }
 
-    distance(b: Point): number {
+    distance(b: IPoint): number {
         const x = b.x - this.x;
         const y = b.y - this.y;
         return Math.sqrt(x * x + y * y);

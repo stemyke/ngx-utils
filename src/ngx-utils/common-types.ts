@@ -415,7 +415,7 @@ export interface IPoint {
 }
 
 export interface IShape extends IPoint {
-    distance(shape: IShape): number;
+    distance(shape: IPoint): number;
 }
 
 // --- Interactive canvas ---
