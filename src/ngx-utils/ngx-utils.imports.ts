@@ -87,6 +87,10 @@ import {DropListComponent} from "./components/drop-list/drop-list.component";
 import {DropdownBoxComponent} from "./components/dropdown-box/dropdown-box.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
 import {FakeModuleComponent} from "./components/fake-module/fake-module.component";
+import {InteractiveCanvasComponent} from "./components/interactive-canvas/interactive-canvas.component";
+import {InteractiveItemComponent} from "./components/interactive-canvas/interactive-item.component";
+import {InteractiveCircleComponent} from "./components/interactive-canvas/interactive-circle.component";
+import {InteractiveRectComponent} from "./components/interactive-canvas/interactive-rect.component";
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {UploadComponent} from "./components/upload/upload.component";
@@ -153,6 +157,10 @@ export const components = [
     DynamicTableComponent,
     FakeModuleComponent,
     PaginationMenuComponent,
+    InteractiveCanvasComponent,
+    InteractiveItemComponent,
+    InteractiveCircleComponent,
+    InteractiveRectComponent,
     UnorderedListComponent,
     UploadComponent
 ];

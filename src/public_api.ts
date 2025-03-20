@@ -63,6 +63,15 @@ export {
     IPaginationData,
     PaginationDataLoader,
     PaginationItemContext,
+    IPoint,
+    IShape,
+    CanvasItemShape,
+    CanvasItemDirection,
+    InteractiveCanvas,
+    InteractiveCanvasItem,
+    InteractiveDrawFn,
+    InteractivePanEvent,
+    InteractiveCanvasPointer,
     IHttpHeaders,
     IHttpParams,
     IRequestOptions,
@@ -124,7 +133,7 @@ export {DateUtils} from "./ngx-utils/utils/date.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {GenericValue} from "./ngx-utils/utils/generic-value";
 export {FileSystemEntryOpenResult, FileSystemEntryOpenCb, FileSystemEntry} from "./ngx-utils/utils/file-system";
-export {IShape, Rect, Circle, Point} from "./ngx-utils/utils/geometry";
+export {Rect, Circle, Point} from "./ngx-utils/utils/geometry";
 export {Initializer} from "./ngx-utils/utils/initializer";
 export {JSONfn} from "./ngx-utils/utils/jsonfn";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
@@ -228,6 +237,10 @@ export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.comp
 export {DropdownBoxComponent} from "./ngx-utils/components/dropdown-box/dropdown-box.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";
 export {FakeModuleComponent} from "./ngx-utils/components/fake-module/fake-module.component";
+export {InteractiveCanvasComponent} from "./ngx-utils/components/interactive-canvas/interactive-canvas.component";
+export {InteractiveItemComponent} from "./ngx-utils/components/interactive-canvas/interactive-item.component";
+export {InteractiveCircleComponent} from "./ngx-utils/components/interactive-canvas/interactive-circle.component";
+export {InteractiveRectComponent} from "./ngx-utils/components/interactive-canvas/interactive-rect.component";
 export {PaginationMenuComponent} from "./ngx-utils/components/pagination-menu/pagination-menu.component";
 export {UnorderedListComponent} from "./ngx-utils/components/unordered-list/unordered-list.component";
 export {UploadComponent} from "./ngx-utils/components/upload/upload.component";

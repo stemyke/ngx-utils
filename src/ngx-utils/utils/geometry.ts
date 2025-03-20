@@ -1,9 +1,4 @@
-export interface IShape {
-    x: number;
-    y: number;
-
-    distance(shape: IShape): number;
-}
+import {IShape} from "../common-types";
 
 export class Rect implements IShape {
 

@@ -408,6 +408,56 @@ export class PaginationItemContext {
     }
 }
 
+// --- Geometry ---
+export interface IPoint {
+    readonly x: number;
+    readonly y: number;
+}
+
+export interface IShape extends IPoint {
+    distance(shape: IShape): number;
+}
+
+// --- Interactive canvas ---
+
+export type CanvasItemShape = "rect" | "circle";
+
+export type CanvasItemDirection = "horizontal" | "vertical" | "free" | "none";
+
+export interface InteractiveCanvas {
+    readonly canvasWidth: number;
+    readonly canvasHeight: number;
+    readonly ratio: number;
+    readonly fullHeight: number;
+    readonly ctx: CanvasRenderingContext2D;
+}
+
+export interface InteractiveCanvasItem {
+    readonly position: IPoint;
+    readonly shape: CanvasItemShape;
+    readonly shapes: ReadonlyArray<IShape>;
+    readonly active: boolean;
+    readonly index: number;
+    draw(ctx: CanvasRenderingContext2D, scale?: number): void;
+}
+
+export type InteractiveDrawFn = (ctx: InteractiveCanvas, items: ReadonlyArray<InteractiveCanvasItem>)
+    => void | Promise<void>;
+
+export interface InteractivePanEvent {
+    pointers?: any[];
+    deltaX?: number;
+    deltaY?: number;
+    item?: InteractiveCanvasItem;
+    [key: string]: any;
+}
+
+export interface InteractiveCanvasPointer {
+    clientX: number;
+    clientY: number;
+}
+
+
 // --- Http service ---
 export interface IHttpHeaders {
     [header: string]: string | string[];
