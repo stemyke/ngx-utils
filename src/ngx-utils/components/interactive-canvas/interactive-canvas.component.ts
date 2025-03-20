@@ -158,7 +158,12 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
 
     onPanStart($event: InteractivePanEvent): void {
         this.lockedItem = this.getItemUnderPointer($event?.pointers[0]);
-        this.lockedItem?.onPanStart.emit(this.lockedItem);
+        this.lockedItem?.onPanStart.emit({
+            pointers: [],
+            deltaX: 0,
+            deltaY: 0,
+            item: this.lockedItem
+        });
         this.panFrom = this.pan;
     }
 
@@ -177,7 +182,12 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     }
 
     onPanEnd(): void {
-        this.lockedItem?.onPanEnd.emit(this.lockedItem);
+        this.lockedItem?.onPanEnd.emit({
+            pointers: [],
+            deltaX: 0,
+            deltaY: 0,
+            item: this.lockedItem
+        });
         this.lockedItem = null;
         this.panFrom = this.pan;
     }

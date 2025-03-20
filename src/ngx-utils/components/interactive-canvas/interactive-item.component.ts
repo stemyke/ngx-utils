@@ -49,8 +49,8 @@ export class InteractiveItemComponent implements OnDestroy, OnChanges, Interacti
 
     @Output() onClick: EventEmitter<InteractiveCanvasItem>;
     @Output() onPan: EventEmitter<InteractivePanEvent>;
-    @Output() onPanStart: EventEmitter<InteractiveCanvasItem>;
-    @Output() onPanEnd: EventEmitter<InteractiveCanvasItem>;
+    @Output() onPanStart: EventEmitter<InteractivePanEvent>;
+    @Output() onPanEnd: EventEmitter<InteractivePanEvent>;
 
     active: boolean;
     index: number;
