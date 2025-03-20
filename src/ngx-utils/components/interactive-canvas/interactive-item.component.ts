@@ -5,7 +5,7 @@ import {
     CanvasItemShape,
     InteractiveCanvas,
     InteractiveCanvasItem,
-    InteractivePanEvent,
+    InteractivePanEvent, IPoint,
     IShape
 } from "../../common-types";
 import {Point} from "../../utils/geometry";
@@ -38,9 +38,9 @@ export class InteractiveItemComponent implements OnDestroy, OnChanges, Interacti
     }
 
     @Input()
-    set position(value: Point) {
-        if (!(value instanceof Point)) return;
-        this.pos = value;
+    set position(value: IPoint) {
+        if (typeof value !== "object" || isNaN(value.x) || isNaN(value.y)) return;
+        this.pos = new Point(value.x, value.y);
     }
 
     @Input() rotation: number;
