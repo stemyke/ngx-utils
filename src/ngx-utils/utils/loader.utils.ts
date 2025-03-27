@@ -1,58 +1,59 @@
-import {ScriptType, IScriptPromises, IStylePromises} from "../common-types";
+import {ScriptType, ILoaderPromises, ILoadableElement} from "../common-types";
 
 export class LoaderUtils {
 
-    static scriptPromises: IScriptPromises = {};
-    static stylePromises: IStylePromises = {};
+    private static promises: ILoaderPromises<ILoadableElement> = {};
 
-    static loadScript(src: string, async: boolean = false, type: ScriptType = "text/javascript", parent?: Node): Promise<HTMLScriptElement> {
-        this.scriptPromises[src] = this.scriptPromises[src] || new Promise<any>((resolve, reject) => {
-            // Load script
-            const script: any = document.createElement("script");
+    static loadScript(src: string, async: boolean = false, type: ScriptType = "text/javascript", parent?: Node) {
+        return LoaderUtils.loadElement(src, parent, () => {
+            const time = new Date().getTime();
+            const script = document.createElement("script");
             script.type = type;
-            script.src = src;
+            script.src = `${src}?time=${time}`;
             script.async = async;
-            if (script.readyState) {
-                // Internet explorer
-                script.onreadystatechange = () => {
-                    if (script.readyState === "loaded" || script.readyState === "complete") {
-                        script.onreadystatechange = null;
-                        resolve(script);
-                    }
-                };
-            } else {
-                // Other browsers
-                script.onload = () => resolve(script);
-            }
-            script.onerror = (error: any) => reject(error);
-            (parent || document.body).appendChild(script);
+            return script;
         });
-        return this.scriptPromises[src];
     }
 
-    static loadStyle(src: string, parent?: Node): Promise<HTMLLinkElement> {
-        this.stylePromises[src] = this.stylePromises[src] || new Promise<any>((resolve, reject) => {
-            // Load script
-            const link: any = document.createElement("link");
+    static loadStyle(src: string, parent?: Node) {
+        return LoaderUtils.loadElement(src, parent, () => {
+            const time = new Date().getTime();
+            const link = document.createElement("link");
             link.rel = "stylesheet";
             link.type = "text/css";
-            link.href = src;
+            link.href = `${src}?time=${time}`;
+            return link;
+        });
+    }
 
-            if (link.readyState) {
+    private static loadElement<T extends ILoadableElement>(src: string, parent: Node, setup: () => T): Promise<T> {
+        const promises = LoaderUtils.promises as ILoaderPromises<T>;
+        parent = parent || document.body;
+        let {elem, promise} = promises[src] || {};
+        if (elem) {
+            if (parent === elem.parentElement) return promise;
+            if (elem.parentElement) {
+                elem.remove();
+            }
+        }
+        elem = setup();
+        promise = new Promise<T>((resolve, reject) => {
+            if (elem.readyState) {
                 // Internet explorer
-                link.onreadystatechange = () => {
-                    if (link.readyState === "loaded" || link.readyState === "complete") {
-                        link.onreadystatechange = null;
-                        resolve(link);
+                elem.onreadystatechange = () => {
+                    if (elem.readyState === "loaded" || elem.readyState === "complete") {
+                        elem.onreadystatechange = null;
+                        resolve(elem);
                     }
                 };
             } else {
                 // Other browsers
-                link.onload = () => resolve(link);
+                elem.onload = () => resolve(elem);
             }
-            link.onerror = (error: any) => reject(error);
-            (parent || document.body).appendChild(link);
+            elem.onerror = (error: any) => reject(error);
         });
-        return this.stylePromises[src];
+        parent.appendChild(elem);
+        promises[src] = {elem, promise};
+        return promise;
     }
 }
