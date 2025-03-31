@@ -9,7 +9,7 @@ export class LoaderUtils {
             const time = new Date().getTime();
             const script = document.createElement("script");
             script.type = type;
-            script.src = `${src}?time=${time}`;
+            script.src = src?.startsWith("data:") ? src : `${src}?time=${time}`;
             script.async = async;
             return script;
         });
@@ -21,7 +21,7 @@ export class LoaderUtils {
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.type = "text/css";
-            link.href = `${src}?time=${time}`;
+            link.href = src?.startsWith("data:") ? src : `${src}?time=${time}`;
             return link;
         });
     }
