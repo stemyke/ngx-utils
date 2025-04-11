@@ -3,13 +3,15 @@ import {
     AfterViewInit,
     Component,
     ContentChild,
-    ContentChildren, ElementRef,
+    ContentChildren,
+    ElementRef,
     Input,
     OnChanges,
     QueryList,
     SimpleChanges,
     TemplateRef,
-    ViewChild, ViewEncapsulation
+    ViewChild,
+    ViewEncapsulation
 } from "@angular/core";
 
 import {
@@ -192,7 +194,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.hasQuery = this.cols.some(col => this.realColumns[col].filter);
         if (changes.orderBy && this.realColumns && this.cols) {
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
-            this.orderBy = this.orderBy in sortable ? this.orderBy : sortable[0] || null;
+            this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
         }
         if (!changes.data && !changes.parallelData && !changes.dataLoader && !changes.itemsPerPage && !changes.orderBy && !changes.orderDescending) return;
         this.refresh();

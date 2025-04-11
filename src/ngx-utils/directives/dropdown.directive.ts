@@ -67,7 +67,7 @@ export class DropdownDirective implements OnDestroy {
     contentElement: HTMLElement;
 
     private readonly onClick: (event: Event) => void;
-    private readonly onKeyDown: (event: KeyboardEvent) => void;
+    private readonly onKeyDown: (event: KeyboardEvent) => boolean;
 
     get nativeElement(): HTMLElement {
         return this.element.nativeElement;
@@ -119,18 +119,19 @@ export class DropdownDirective implements OnDestroy {
             }
             setTimeout(() => this.hide(), event.type == "touchend" ? 250 : 100);
         };
-        this.onKeyDown = (event: KeyboardEvent): void => {
-            const input = event.target as HTMLInputElement;
-            const notInput = input && input.tagName !== "INPUT" && input.tagName !== "TEXTAREA";
-            if ("Tab" === event.key || !input || notInput) {
+        this.onKeyDown = (event: KeyboardEvent): boolean => {
+            const input = (event.composedPath()?.shift() || event.target) as HTMLInputElement;
+            const notInput = !input || (input.tagName !== "INPUT" && input.tagName !== "TEXTAREA");
+            if ("Tab" === event.key || notInput) {
                 event.stopPropagation();
                 event.preventDefault();
             }
             if ("Esc" === event.key || "Escape" === event.key) {
                 this.hide();
-                return;
+                return false;
             }
             this.onKeyboard.emit(event);
+            return true;
         };
     }
 
