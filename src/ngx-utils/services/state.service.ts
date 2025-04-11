@@ -123,12 +123,11 @@ export class StateService {
                 filter(e => e instanceof NavigationEnd),
             )
             .subscribe(() => {
-                const routerStateSnapshot = this.router.routerState.snapshot;
                 let context: OutletContext = this.contexts?.getContext("primary");
                 let segments = [];
                 const components: any[] = [];
                 const snapshots: ActivatedRouteSnapshot[] = [];
-                while (context) {
+                while (context && context.route) {
                     const snapshot = context.route.snapshot;
                     snapshots.push(snapshot);
                     segments = segments.concat(snapshot.url);
