@@ -14,6 +14,7 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {HttpErrorResponse, HttpEventType, HttpResponse} from "@angular/common/http";
 import {lastValueFrom} from "rxjs";
+import {map} from "rxjs/operators";
 
 import {
     API_SERVICE,
@@ -169,7 +170,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
             return;
         }
         const files: File[] = [];
-        for (let i = 0; i <length; i++) {
+        for (let i = 0; i < length; i++) {
             const file = input.files.item(i);
             if (this.acceptTypes.length == 0) {
                 files.push(file);
@@ -248,13 +249,13 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
             }
             const request = this.http.post(baseUrl, makeUpload(p.file), {
                 headers, observe: "events", reportProgress: true
-            });
-            request.subscribe(value => {
+            }).pipe(map(value => {
                 if (value.type === HttpEventType.UploadProgress) {
                     p.progress = Math.round(value.loaded / value.total * 100);
                     this.cdr.detectChanges();
                 }
-            });
+                return value;
+            }));
             return lastValueFrom(request)
                 .then((res: HttpResponse<any>) => {
                     const body = res.body;
