@@ -709,7 +709,7 @@ export const ROOT_ELEMENT = new InjectionToken<HTMLElement>("app-root-element");
 
 export const RESIZE_DELAY = new InjectionToken<number>("resize-event-delay");
 
-export type ResizeEventStrategy = "scroll" | "object";
+export type ResizeEventStrategy = "scroll" | "object" | "observer";
 
 export const RESIZE_STRATEGY = new InjectionToken<ResizeEventStrategy>("resize-event-strategy");
 

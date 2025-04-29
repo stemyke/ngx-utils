@@ -158,7 +158,7 @@ export class NgxUtilsModule {
             },
             {
                 provide: RESIZE_STRATEGY,
-                useValue: (!config ? null : config.resizeStrategy) ?? "object",
+                useValue: (!config ? null : config.resizeStrategy) ?? "observer",
             },
             {
                 provide: SOCKET_IO_PATH,

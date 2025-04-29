@@ -1,12 +1,11 @@
 import {ɵDomEventsPlugin as EventManagerPlugin} from "@angular/platform-browser";
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
-import elementResizeDetectorMaker from "element-resize-detector";
-import type {Erd} from "element-resize-detector";
 
 import {RESIZE_DELAY, RESIZE_STRATEGY, ResizeEventStrategy} from "../common-types";
-import {UniversalService} from "../services/universal.service";
 import {TimerUtils} from "../utils/timer.utils";
+import {UniversalService} from "../services/universal.service";
+import {ResizeDetector} from "./resize-detector";
 
 function emptyRemove(): void {
 
@@ -21,16 +20,14 @@ export class ResizeEventPlugin extends EventManagerPlugin {
 
     static readonly EVENT_NAME: string = "resize";
 
-    readonly detector: Erd;
+    readonly detector: ResizeDetector;
 
     constructor(@Inject(DOCUMENT) doc: any,
                 @Inject(RESIZE_DELAY) protected resizeDelay: number,
                 @Inject(RESIZE_STRATEGY) protected resizeStrategy: ResizeEventStrategy,
                 readonly universal: UniversalService) {
         super(doc);
-        this.detector = elementResizeDetectorMaker({
-            strategy: resizeStrategy
-        });
+        this.detector = new ResizeDetector(resizeStrategy);
     }
 
     supports(eventName: string) {
@@ -43,7 +40,7 @@ export class ResizeEventPlugin extends EventManagerPlugin {
             if (this.universal.isServer)
                 return emptyRemove;
             const timer = TimerUtils.createTimeout();
-            const cb = el => {
+            const cb = (el: any) => {
                 timer.set(() => {
                     zone.run(() => handler(el));
                 }, this.resizeDelay);
