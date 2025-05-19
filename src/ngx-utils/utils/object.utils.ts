@@ -1,7 +1,7 @@
-import {ReflectUtils} from "./reflect.utils";
 
 export type FilterPredicate = (value: any, key?: any, target?: any, source?: any) => boolean;
-export type IterateCallback = (value: any, key?: any) => void;
+export type IterateCallback = (value: any, key: any) => void;
+export type IterateRecursiveCallback = (value: any, key: any, path: string, obj: any) => void;
 
 export function defaultPredicate(value: any, key?: any, target?: any, source?: any): boolean {
     return true;
@@ -109,14 +109,23 @@ export class ObjectUtils {
     }
 
     static iterate(obj: any, cb: IterateCallback): void {
-        if (!obj) return;
-        const keys: any[] = Array.isArray(obj) ? Array.from(obj.keys()) : Object.keys(obj);
+        const keys: any[] = Array.isArray(obj)
+            ? Array.from(obj.keys())
+            : (ObjectUtils.isObject(obj) ? Object.keys(obj) : []);
         keys.forEach(
             // @dynamic
             key => {
                 cb(obj[key], key);
             }
         );
+    }
+
+    static iterateRecursive(obj: any, cb: IterateRecursiveCallback, path: string = ""): void {
+        return ObjectUtils.iterate(obj, (value, key) => {
+            const subPath = !path ? key : `${path}.${key}`;
+            cb(value, key, subPath, obj);
+            ObjectUtils.iterateRecursive(value, cb, subPath);
+        });
     }
 
     static getValue(obj: Object, key: string, defaultValue?: any, treeFallback: boolean = false): any {
