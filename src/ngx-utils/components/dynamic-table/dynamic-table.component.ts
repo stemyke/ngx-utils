@@ -199,9 +199,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
             this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
         }
-        console.log(Object.keys(changes), orderBy, this.orderBy);
         if (!changes.data && !changes.parallelData && !changes.dataLoader && !changes.itemsPerPage && !changes.orderDescending && orderBy === this.orderBy) return;
-        console.log("Refreshing");
         this.refresh();
     }
 
@@ -313,7 +311,6 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
 
     loadData = (page: number, itemsPerPage: number): Promise<IPaginationData> => {
         const orderBy = this.realColumns[this.orderBy]?.sort;
-        console.log("load data", page, itemsPerPage, orderBy, this.orderBy, this.orderDescending, this.filter, this.query)
         return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query);
     };
 
