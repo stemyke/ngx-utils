@@ -90,7 +90,7 @@ export class BaseHttpService implements IHttpService {
             page: (page - 1),
             limit: itemsPerPage
         };
-        if (!ObjectUtils.isNullOrUndefined(orderBy) && !ObjectUtils.isNullOrUndefined(orderDescending)) {
+        if (!ObjectUtils.isNullOrUndefined(orderBy)) {
             params.sort = `${orderDescending ? "-" : ""}${orderBy}`;
         }
         if (!ObjectUtils.isNullOrUndefined(filter)) {

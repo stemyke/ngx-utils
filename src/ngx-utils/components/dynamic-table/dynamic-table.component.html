@@ -24,8 +24,8 @@
 </ng-template>
 
 <ng-template #defaultRowTemplate let-context>
-    <tr draggable="true"
-        #elem
+    <tr #elem
+        [draggable]="!!dragStartFn"
         [ngClass]="{active: selected === context.item}"
         (dragstart)="onDragStart($event, elem, context.item)"
         (dragenter)="onDragEnter($event, elem, context.item)"

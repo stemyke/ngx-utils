@@ -9,6 +9,11 @@ export class TimerUtils {
         // @dynamic
         const run = (timer: ITimer) => {
             timer.clear();
+            // If the time is zero or less, we run the function immediately because setTimeout puts it into the next "frame"
+            if (timer.time <= 0) {
+                timer.func();
+                return;
+            }
             timer.id = setTimeout(() => {
                 timer.id = null;
                 timer.func();
@@ -27,7 +32,7 @@ export class TimerUtils {
         // @dynamic
         const run = (timer: ITimer) => {
             timer.clear();
-            timer.id = setInterval(timer.func, timer.time);
+            timer.id = setInterval(timer.func, Math.max(timer.time, 5));
         };
         // @dynamic
         const clear = (timer: ITimer) => {
