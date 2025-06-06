@@ -65,10 +65,13 @@
                     },
                     "configurations": {
                         "production": {
-                            "buildTarget": "ngx-utils:build:production"
+                            "buildTarget": "ngx-dynamic-form:build:production"
+                        },
+                        "development": {
+                            "buildTarget": "ngx-dynamic-form:build:development"
                         }
                     },
-                    "defaultConfiguration": "production"
+                    "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
