@@ -1,4 +1,11 @@
 export {
+    MaybePromise,
+    MaybeArray,
+    StringKeys
+} from "./ngx-utils/helper-types";
+
+export {
+    DurationUnit,
     TypedFactoryProvider,
     TypedValueProvider,
     CachedProvider,
@@ -233,6 +240,7 @@ export {DropdownToggleDirective} from "./ngx-utils/directives/dropdown-toggle.di
 export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-item.directive";
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
 
+export {ChipsComponent} from "./ngx-utils/components/chips/chips.component";
 export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.component";
 export {DropdownBoxComponent} from "./ngx-utils/components/dropdown-box/dropdown-box.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";

@@ -83,6 +83,7 @@ import {SplitPipe} from "./pipes/split.pipe";
 import {TranslatePipe} from "./pipes/translate.pipe";
 import {ValuesPipe} from "./pipes/values.pipe";
 
+import {ChipsComponent} from "./components/chips/chips.component";
 import {DropListComponent} from "./components/drop-list/drop-list.component";
 import {DropdownBoxComponent} from "./components/dropdown-box/dropdown-box.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
@@ -152,6 +153,7 @@ export const directives = [
 
 // --- Components ---
 export const components = [
+    ChipsComponent,
     DropListComponent,
     DropdownBoxComponent,
     DynamicTableComponent,

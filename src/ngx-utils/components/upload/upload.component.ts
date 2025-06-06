@@ -124,10 +124,10 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
 
     ngOnChanges(): void {
         this.accept = this.accept || "";
-        this.acceptAttr = ObjectUtils.isString(this.accept) ? this.accept : this.accept.join(",");
         this.acceptTypes = ObjectUtils.isString(this.accept) && this.accept.length > 0
             ? this.accept.toLowerCase().split(",")
             : (ObjectUtils.isArray(this.accept) ? this.accept : []);
+        this.acceptAttr = this.acceptTypes.join(",");
         this.isImage = /(png|jpg|jpeg|webp|gif)/gi.test(this.acceptAttr);
         this.cdr.markForCheck();
     }

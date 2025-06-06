@@ -1,35 +1,35 @@
-import {DurationInputArg1, DurationInputArg2} from "moment";
-import moment from "moment";
+import {DateTime} from "luxon";
+import {DurationUnit} from "../common-types";
 
 export class DateUtils {
 
     static isHoliday(date: Date): boolean {
-        return moment(date).isoWeekday() > 5;
+        return DateTime.fromJSDate(date).isWeekend;
     }
 
     static isBusinessDay(date: Date): boolean {
-        return moment(date).isoWeekday() < 6;
+        return !DateUtils.isHoliday(date);
     }
 
-    static add(date: Date, amount?: DurationInputArg1, unit?: DurationInputArg2): Date {
-        return moment(date).add(amount, unit).toDate();
+    static add(date: Date, amount: number = 1, unit: DurationUnit = "days"): Date {
+        return DateTime.fromJSDate(date).plus({[unit]: amount}).toJSDate();
     }
 
-    static businessAdd(date: Date, amount: number, unit?: DurationInputArg2, freeDays: Date[] = []): Date {
+    static businessAdd(date: Date, amount: number = 1, unit: DurationUnit = "days", freeDays: Date[] = []): Date {
         const signal = amount < 0 ? -1 : 1;
-        const freeMoments = freeDays.map(d => moment(d));
+        const freeTimes = freeDays.map(d => DateTime.fromJSDate(d));
         let remaining = Math.abs(amount);
-        let day = date;
+        let day = DateTime.fromJSDate(date);
         while (remaining) {
-            day = DateUtils.add(day, signal, unit);
-            if (DateUtils.isBusinessDay(day) && !freeMoments.some(m => m.isSame(day, "day"))) {
+            day = day.plus({[unit]: signal});
+            if (day.isWeekend && !freeTimes.some(m => m.hasSame(day, "day"))) {
                 remaining--;
             }
         }
-        return day;
+        return day.toJSDate();
     }
 
-    static businessSubtract(date: Date, amount: number, unit?: DurationInputArg2): Date {
+    static businessSubtract(date: Date, amount: number = 1, unit: DurationUnit = "days"): Date {
         return DateUtils.businessAdd(date, -amount, unit);
     }
 }

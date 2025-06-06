@@ -2,10 +2,14 @@ import {ElementRef, EventEmitter, InjectionToken, Injector, NgZone, Provider, Te
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {ActivatedRouteSnapshot, Data, LoadChildrenCallback, Route, Routes, UrlTree} from "@angular/router";
 import {Request} from "express";
+import {DurationLikeObject} from "luxon";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
+import {StringKeys} from "./helper-types";
 
 // --- Util
+export type DurationUnit = StringKeys<DurationLikeObject>;
+
 export interface TypedFactoryProvider<T> {
     useFactory: (...args: any[]) => T;
     deps: any[];

@@ -1,0 +1,45 @@
+<div class="chips" #chipContainer>
+    <div class="chip-buttons" #chipButtons [ngClass]="{disabled: disabled}"  (resize)="onResize()">
+        <ng-container *ngFor="let item of valueOptions; let ix = index; trackBy:trackBy">
+            <a class="chip-button btn btn-sm" [ngClass]="'btn' + statuses[ix]" (dblclick)="removeItem($event, ix)">
+                <span *ngIf="item.props?.picture" class="chip-picture">
+                    <img [src]="item.props.picture | safe:'url'"
+                         referrerpolicy="no-referrer" [attr.alt]="item.label">
+                </span>
+                <span class="chip-label">{{ item.label }} </span>
+                <span class="chip-remove" (click)="removeItem($event, ix)">x</span>
+            </a>
+        </ng-container>
+    </div>
+    <ng-container [ngSwitch]="type">
+        <ng-container *ngSwitchCase="'number'">
+            <input type="number"
+                   class="form-control"
+                   [min]="min"
+                   [max]="max"
+                   [step]="step"
+                   [disabled]="disabled"
+                   [placeholder]="valueOptions.length == 0 && placeholder | translate"
+                   [ngStyle]="inputStyles"
+                   (blur)="onBlur($event)"
+                   (keyup)="onInput($event)"
+                   [typeahead]="filteredOptions"
+                   typeaheadOptionField="label"
+                   #chipInput/>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+            <input type="text"
+                   class="form-control"
+                   [minLength]="minLength"
+                   [maxLength]="maxLength"
+                   [disabled]="disabled"
+                   [placeholder]="valueOptions.length == 0 && placeholder | translate"
+                   [ngStyle]="inputStyles"
+                   (blur)="onBlur($event)"
+                   (keyup)="onInput($event)"
+                   [typeahead]="filteredOptions"
+                   typeaheadOptionField="label"
+                   #chipInput/>
+        </ng-container>
+    </ng-container>
+</div>

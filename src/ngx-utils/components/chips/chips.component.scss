@@ -1,0 +1,68 @@
+.chips {
+    position: relative;
+
+    .chip-buttons {
+        position: absolute;
+        top: 4px;
+        left: 5px;
+        max-width: calc(100% - 10px);
+        display: flex;
+        overflow: auto;
+        border-radius: 5px;
+
+        .chip-button {
+            margin-right: 5px;
+            margin-bottom: 5px;
+            text-transform: none;
+
+            .chip-picture {
+                width: 28px;
+                height: 28px;
+                overflow: hidden;
+                margin-right: 5px;
+
+                img {
+                    max-height: 100%;
+                }
+            }
+
+            .chip-label {
+                display: inline-block;
+                max-width: 180px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .chip-remove {
+                display: inline-block;
+                background: rgba(0, 0, 0, 0.5);
+                font-size: 11px;
+                padding: 0 9px;
+                margin-left: 4px;
+                border-radius: 5px;
+                margin-right: -4px;
+            }
+        }
+    }
+}
+
+.select-option {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+
+    .select-option-picture {
+        width: 32px;
+        height: 32px;
+        overflow: hidden;
+
+        img {
+            max-height: 100%;
+        }
+    }
+
+    .select-option-label {
+        flex: 1;
+    }
+}
