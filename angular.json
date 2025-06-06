@@ -6,7 +6,7 @@
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "ngx-utils": {
+        "application": {
             "root": "",
             "sourceRoot": "src",
             "projectType": "application",
@@ -58,7 +58,7 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "buildTarget": "ngx-utils:build",
+                        "buildTarget": "application:build",
                         "port": 4100
                     },
                     "configurations": {
@@ -74,7 +74,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "buildTarget": "ngx-utils:build"
+                        "buildTarget": "application:build"
                     }
                 },
                 "test": {
@@ -103,7 +103,7 @@
                 }
             }
         },
-        "ngx-utils-e2e": {
+        "application-e2e": {
             "root": "",
             "sourceRoot": "",
             "projectType": "application",
@@ -112,7 +112,7 @@
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
                         "protractorConfig": "./protractor.conf.js",
-                        "devServerTarget": "ngx-utils:serve"
+                        "devServerTarget": "application:serve"
                     }
                 },
                 "lint": {
