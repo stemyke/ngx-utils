@@ -234,10 +234,10 @@ export class BaseHttpService implements IHttpService {
                     const authKey = "Authorization";
                     // If we use token auth
                     if (this.client.renewTokenFunc && headers.has(authKey)) {
-                        const currentTime = new Date().getTime();
+                        const currentTime = Date.now() + 60_000;
                         const userTokenTime = this.getUserTokenTime() || currentTime;
-                        // And the last request was a long-long time ago
-                        if (currentTime - 600000 > userTokenTime) {
+                        // And the stored token expiration time is almost ended
+                        if (currentTime >= userTokenTime) {
                             this.client.renewTokenFunc();
                         }
                     }
