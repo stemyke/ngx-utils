@@ -29,8 +29,6 @@ export class OpenApiService {
 
     async getSchema(name: string): Promise<IOpenApiSchema> {
         const schemas = await this.getSchemas();
-        const schema = schemas[name];
-        if (!schema) return null;
-        return schemas[name];
+        return schemas[name] || null;
     }
 }
