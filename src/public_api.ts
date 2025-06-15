@@ -138,6 +138,7 @@ export {cachedFactory} from "./ngx-utils/utils/cached-factory";
 export {CanvasUtils} from "./ngx-utils/utils/canvas.utils";
 export {DateUtils} from "./ngx-utils/utils/date.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
+export {ForbiddenZone} from "./ngx-utils/utils/forbidden-zone";
 export {GenericValue} from "./ngx-utils/utils/generic-value";
 export {FileSystemEntryOpenResult, FileSystemEntryOpenCb, FileSystemEntry} from "./ngx-utils/utils/file-system";
 export {Rect, Circle, Point} from "./ngx-utils/utils/geometry";
