@@ -28,7 +28,10 @@ export class LoaderUtils {
 
     private static loadElement<T extends ILoadableElement>(src: string, parent: Node, setup: () => T): Promise<T> {
         const promises = LoaderUtils.promises as ILoaderPromises<T>;
-        parent = parent || document.body;
+        parent = parent || document;
+        if (parent == document) {
+            parent = document.body;
+        }
         let {elem, promise} = promises[src] || {};
         if (elem) {
             if (parent === elem.parentElement) return promise;
