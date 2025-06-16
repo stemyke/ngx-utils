@@ -11,7 +11,7 @@ import {ObjectUtils} from "../utils/object.utils";
 export class TranslatePipe implements PipeTransform {
 
     private lang: string;
-    private disabled: boolean;
+    private enabled: boolean;
     private query: TranslationQuery;
     private args: any[];
     private params: any;
@@ -33,9 +33,9 @@ export class TranslatePipe implements PipeTransform {
             this.lang = lang;
             dirty = true;
         }
-        const disabled = this.language.disableTranslations;
-        if (this.disabled !== disabled) {
-            this.disabled = disabled;
+        const enabled = this.language.enableTranslations;
+        if (this.enabled !== enabled) {
+            this.enabled = enabled;
             dirty = true;
         }
         if (!ObjectUtils.equals(this.query, query)) {
@@ -64,10 +64,6 @@ export class TranslatePipe implements PipeTransform {
         if (dirty) {
             if (typeof query === "object") {
                 this.lastValue = Array.isArray(query) ? this.language.getTranslationFromArray(query, this.params, lang) : this.language.getTranslationFromObject(query, this.params, lang);
-                return this.lastValue;
-            }
-            if (this.disabled) {
-                this.lastValue = query;
                 return this.lastValue;
             }
             this.lastValue = this.language.getTranslationSync(query, this.params);

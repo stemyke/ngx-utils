@@ -28,7 +28,7 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     set dictionary(value: ITranslations) {
-        this.translations[this.currentLanguage] = value;
+        this.setDictionary(this.currentLang, value);
     }
 
     get languages(): ReadonlyArray<string> {
@@ -52,13 +52,21 @@ export class StaticLanguageService implements ILanguageService {
         this.editLang = lang || this.currentLanguage;
     }
 
+    get enableTranslations(): boolean {
+        return this.enableTrans;
+    }
+
+    set enableTranslations(value: boolean) {
+        this.enableTrans = value;
+        this.events.translationsEnabled.emit(value);
+    }
+
     get disableTranslations(): boolean {
-        return this.disableTrans;
+        return !this.enableTranslations;
     }
 
     set disableTranslations(value: boolean) {
-        this.disableTrans = value;
-        this.events.languageChanged.emit(this.currentLang);
+        this.enableTranslations = !value;
     }
 
     get httpClient(): HttpClient {
@@ -75,7 +83,7 @@ export class StaticLanguageService implements ILanguageService {
 
     protected editLang: string;
     protected currentLang: string;
-    protected disableTrans: boolean;
+    protected enableTrans: boolean;
     protected languageList: string[];
     protected readonly translations: ITranslations;
 
@@ -86,7 +94,7 @@ export class StaticLanguageService implements ILanguageService {
                 @Inject(BaseHttpClient) protected client: BaseHttpClient) {
         this.editLang = null;
         this.currentLang = null;
-        this.disableTrans = false;
+        this.enableTrans = true;
         this.languageList = [];
         this.translations = {
             none: {}
@@ -112,17 +120,23 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     getTranslationSync(key: string, params: Object = null): string {
-        const lowerKey = (key || "").toLocaleLowerCase();
-        const translation = this.dictionary[lowerKey] || lowerKey;
-        return this.interpolate(translation == lowerKey ? key : translation, params);
+        if (!key) return "";
+        try {
+            const lowerKey = key.toLocaleLowerCase();
+            const dict = this.dictionary;
+            if (lowerKey in dict && this.enableTranslations) {
+                return this.interpolate(dict[lowerKey], params);
+            }
+            return this.interpolate(key, params);
+        } catch (reason) {
+            console.warn("ERROR IN TRANSLATIONS", reason);
+            return key;
+        }
     }
 
-    getTranslation(key: string, params?: Object): Promise<string> {
-        if (!ObjectUtils.isString(key) || !key.length) {
-            throw new Error(`Parameter "key" required`);
-        }
-        const translation = ObjectUtils.getValue(this.dictionary, key, key) || key;
-        return this.promises.resolve(this.interpolate(translation, params));
+    async getTranslation(key: string, params: any = null): Promise<string> {
+        await this.loadDictionary();
+        return this.getTranslationSync(key, params);
     }
 
     getTranslations(...keys: string[]): Promise<ITranslations> {
@@ -145,6 +159,18 @@ export class StaticLanguageService implements ILanguageService {
         lang = lang || this.currentLanguage;
         const translation = translations ? translations.find(t => t.lang == lang) : null;
         return this.interpolate(translation ? translation.translation : "", params);
+    }
+
+    protected async loadDictionary(): Promise<ITranslations> {
+        return this.dictionary;
+    }
+
+    protected setDictionary(lang: string, dictionary: ITranslations): ITranslations {
+        this.translations[lang] = Object.keys(dictionary || {}).reduce((res, key) => {
+            res[key.toLocaleLowerCase()] = dictionary[key];
+            return res;
+        }, {} as ITranslations);
+        return this.translations[lang];
     }
 
     protected interpolate(expr: string | Function, params?: Object): string {

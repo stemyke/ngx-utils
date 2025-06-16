@@ -6,6 +6,7 @@ export class EventsService {
     readonly eventForwarded: EventEmitter<Event>;
     readonly stickyUpdated: EventEmitter<boolean>;
     readonly languageChanged: EventEmitter<string>;
+    readonly translationsEnabled: EventEmitter<boolean>;
 
     private sticky: boolean;
 
@@ -14,9 +15,10 @@ export class EventsService {
     }
 
     constructor() {
-        this.eventForwarded = new EventEmitter<Event>();
-        this.stickyUpdated = new EventEmitter<boolean>();
-        this.languageChanged = new EventEmitter<string>();
+        this.eventForwarded = new EventEmitter();
+        this.stickyUpdated = new EventEmitter();
+        this.languageChanged = new EventEmitter();
+        this.translationsEnabled = new EventEmitter();
         this.sticky = false;
     }
 

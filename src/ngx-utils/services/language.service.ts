@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {BehaviorSubject, combineLatest, Observable} from "rxjs";
+import {BehaviorSubject, combineLatest, firstValueFrom, Observable} from "rxjs";
 import {map} from "rxjs/operators";
 import {ILanguageSetting, ILanguageSettings, ITranslations} from "../common-types";
 import {StaticLanguageService} from "./static-language.service";
@@ -34,6 +34,7 @@ export class LanguageService extends StaticLanguageService {
     }
 
     protected initService(): void {
+        super.initService();
         this.client.setExtraRequestParam("language", "de");
         this.translationRequests = {};
         this.languageSettings = new BehaviorSubject<ILanguageSettings>(null);
@@ -66,44 +67,25 @@ export class LanguageService extends StaticLanguageService {
         this.events.languageChanged.emit(lang);
     }
 
-    async getTranslation(key: string, params: any = null): Promise<string> {
-        if (!key) return "";
-        try {
-            const lowerKey = key.toLocaleLowerCase();
-            const dict = await this.loadDictionary();
-            if (lowerKey in dict) {
-                return this.interpolate(dict[lowerKey], params);
-            }
-            return this.interpolate(key, params);
-        } catch (reason) {
-            console.log("ERROR IN TRANSLATIONS", reason);
-            return key;
-        }
-    }
-
     protected async useLanguage(lang: string): Promise<ITranslations> {
         lang = this.languages.indexOf(lang) < 0 ? this.languages[0] : lang;
         this.client.setExtraRequestParam("language", lang);
         if (lang == this.currentLang) return this.dictionary;
         this.storage.set("language", lang);
         this.currentLang = lang;
-        const dict = await this.loadDictionary();
-        this.translations[lang] = dict;
-        return dict;
+        return this.loadDictionary();
     }
 
-    protected loadDictionary(): Promise<any> {
+    protected loadDictionary(): Promise<ITranslations> {
         const lang = this.currentLanguage;
         this.translationRequests[lang] = this.translationRequests[lang] || new Promise(resolve => {
             const ext = this.config.translationExt || ``;
-            this.httpClient.get(`${this.config.translationUrl}${lang}${ext}`).toPromise().then(response => {
-                response = response || {};
-                resolve(Object.keys(response).reduce((result, key) => {
-                    result[key.toLocaleLowerCase()] = response[key];
-                    return result;
-                }, {}));
-            }, () => {
-                resolve({});
+            const request = this.httpClient.get(`${this.config.translationUrl}${lang}${ext}`);
+            firstValueFrom(request).then(response => {
+                resolve(this.setDictionary(lang, response));
+            }, reason => {
+                console.warn("ERROR IN TRANSLATIONS", reason);
+                resolve(this.setDictionary(lang, {}));
             });
         });
         return this.translationRequests[lang];

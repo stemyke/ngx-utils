@@ -71,6 +71,7 @@ export interface ILanguageSettings {
 export interface ILanguageService {
     currentLanguage: string;
     editLanguage: string;
+    enableTranslations: boolean;
     disableTranslations: boolean;
     defaultLanguage: string;
     dictionary: ITranslations;
