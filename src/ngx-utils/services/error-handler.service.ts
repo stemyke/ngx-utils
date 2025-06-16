@@ -16,23 +16,19 @@ export class ErrorHandlerService extends ErrorHandler {
     }
 
     handleError(error: Error): void {
-        try {
-            this.universal = this.universal || this.injector.get(UniversalService);
-        } catch (e) {
-            return;
-        }
+        this.universal = this.universal || this.injector.get(UniversalService);
         const date = new Date();
         try {
             this.errorCb = this.errorCb || this.injector.get(ERROR_HANDLER);
             this.errorCb(`[${date}]: ${error.message}\n${error.stack}`);
         } catch (e) {
-            if (this.universal.isServer) {
+            if (!this.universal || this.universal.isServer) {
                 console.error(`[${date}]: ${error.message}\n${error.stack}`);
                 return;
             }
         }
-        if (this.universal.isServer) return;
-        const key = typeof btoa !== "undefined" ? btoa(unescape(encodeURIComponent(`${error.message} ${error.stack}`))) : error.message;
+        if (!this.universal || this.universal.isServer) return;
+        const key = typeof btoa !== "undefined" ? btoa(decodeURI(encodeURIComponent(`${error.message} ${error.stack}`))) : error.message;
         if (this.errorMap[key] && this.errorMap[key].getTime() > date.getTime() - 5000) return;
         this.errorMap[key] = date;
         try {
