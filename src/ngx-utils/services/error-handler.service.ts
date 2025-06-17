@@ -1,6 +1,7 @@
 import {ErrorHandler, Injectable, Injector} from "@angular/core";
 import {UniversalService} from "./universal.service";
 import {ERROR_HANDLER, ErrorHandlerCallback, IToasterService, TOASTER_SERVICE} from "../common-types";
+import {hashCode} from "../utils/string.utils";
 
 @Injectable()
 export class ErrorHandlerService extends ErrorHandler {
@@ -28,7 +29,7 @@ export class ErrorHandlerService extends ErrorHandler {
             }
         }
         if (!this.universal || this.universal.isServer) return;
-        const key = typeof btoa !== "undefined" ? btoa(decodeURI(encodeURIComponent(`${error.message} ${error.stack}`))) : error.message;
+        const key = hashCode(`${error.message} ${error.stack}`);
         if (this.errorMap[key] && this.errorMap[key].getTime() > date.getTime() - 5000) return;
         this.errorMap[key] = date;
         try {

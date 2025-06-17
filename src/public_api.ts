@@ -155,7 +155,7 @@ export {
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
 export {CancelablePromise, cancelablePromise, impatientPromise} from "./ngx-utils/utils/promise.utils";
-export {StringUtils} from "./ngx-utils/utils/string.utils";
+export {StringUtils, hashCode} from "./ngx-utils/utils/string.utils";
 export {SetUtils} from "./ngx-utils/utils/set.utils";
 export {SocketFactory, SocketData, SocketDataValue, SocketDataObj, SocketClient} from "./ngx-utils/utils/socket-client";
 export {TimerUtils} from "./ngx-utils/utils/timer.utils";
