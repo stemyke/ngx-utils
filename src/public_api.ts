@@ -3,7 +3,10 @@ import "zone.js";
 export {
     MaybePromise,
     MaybeArray,
-    StringKeys
+    StringKeys,
+    CapitalizeFirst,
+    CamelJoin,
+    PrefixedPick
 } from "./ngx-utils/helper-types";
 
 export {
