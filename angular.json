@@ -59,14 +59,16 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
                         "buildTarget": "application:build",
-                        "port": 4100
+                        "port": 4100,
+                        "host": "0.0.0.0",
+                        "proxyConfig": "proxy.conf.json"
                     },
                     "configurations": {
                         "production": {
-                            "buildTarget": "ngx-dynamic-form:build:production"
+                            "buildTarget": "application:build:production"
                         },
                         "development": {
-                            "buildTarget": "ngx-dynamic-form:build:development"
+                            "buildTarget": "application:build:development"
                         }
                     },
                     "defaultConfiguration": "development"

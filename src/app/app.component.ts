@@ -12,6 +12,8 @@ export class AppComponent implements OnInit {
     tableColumns: ITableColumns;
     tableData: any[];
 
+    numberChips: number[];
+    stringChips: string[];
 
     constructor(private universal: UniversalService) {
         this.tableColumns = {
@@ -33,6 +35,8 @@ export class AppComponent implements OnInit {
                 filterType: "checkbox"
             }
         };
+        this.numberChips = [3, 10, 15, 44];
+        this.stringChips = ["banana", "kiwi", "strawberry"];
     }
 
     ngOnInit(): void {

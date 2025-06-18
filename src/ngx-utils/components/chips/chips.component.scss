@@ -1,48 +1,100 @@
 .chips {
+
+    --chips-border-size: var(--border-size, 1px);
+    --chips-border-radius: var(--border-radius, 5px);
+    --chips-bg-color: var(--bg-color, #ffffff);
+    --chips-border-color: var(--border-color, #ced4da);
+    --chips-text-color: var(--text-color, #151515);
+    --chips-padding-vertical: 6px;
+    --chips-padding-horizontal: 12px;
+    --chips-padding: var(--chips-padding-vertical) var(--chips-padding-horizontal);
+
     position: relative;
+    margin: 5px 0;
+    padding: var(--chips-padding);
 
-    .chip-buttons {
+    background: var(--chips-bg-color);
+    color: var(--chips-text-color);
+    border: var(--chips-border-size) solid var(--chips-border-color);
+    border-radius: var(--chips-border-radius);
+
+    * {
+        box-sizing: border-box;
+    }
+
+    &.disabled {
+        opacity: .6;
+    }
+
+    .chips-input {
+        background: var(--chips-bg-color);
+        padding: var(--chips-padding);
+        outline: none;
+        border: none;
+        width: 100%;
+        user-select: none;
+        font-weight: normal;
+    }
+
+    .chips-buttons {
         position: absolute;
-        top: 4px;
-        left: 5px;
-        max-width: calc(100% - 10px);
+        top: var(--chips-padding-vertical);
+        left: var(--chips-padding-horizontal);
+        max-width: calc(100% - var(--chips-padding-horizontal) * 2);
         display: flex;
+        gap: 5px;
         overflow: auto;
-        border-radius: 5px;
+        border-radius: var(--chips-border-radius);
+    }
 
-        .chip-button {
-            margin-right: 5px;
-            margin-bottom: 5px;
-            text-transform: none;
+    .chips-button {
+        background: var(--chips-bg-color);
+        color: var(--chips-text-color);
+        border: var(--chips-border-size) solid var(--chips-border-color);
+        border-radius: var(--chips-border-radius);
+        padding: var(--chips-padding);
+        user-select: none;
+        font-weight: normal;
+        outline: none;
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+        align-items: center;
+    }
 
-            .chip-picture {
-                width: 28px;
-                height: 28px;
-                overflow: hidden;
-                margin-right: 5px;
+    .chips-picture {
+        width: 28px;
+        height: 28px;
+        overflow: hidden;
+        margin-right: 5px;
 
-                img {
-                    max-height: 100%;
-                }
-            }
-
-            .chip-label {
-                display: inline-block;
-                max-width: 180px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .chip-remove {
-                display: inline-block;
-                background: rgba(0, 0, 0, 0.5);
-                font-size: 11px;
-                padding: 0 9px;
-                margin-left: 4px;
-                border-radius: 5px;
-                margin-right: -4px;
-            }
+        img {
+            max-height: 100%;
         }
+    }
+
+    .chips-label {
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .chips-remove {
+        position: relative;
+        background: rgba(0, 0, 0, 0.2);
+        width: 1rem;
+        height: 1rem;
+        font-size: 11px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .chips-remove:after {
+        content: "✖";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        translate: -50% -50%;
     }
 }
 

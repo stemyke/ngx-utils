@@ -1,45 +1,25 @@
-<div class="chips" #chipContainer>
-    <div class="chip-buttons" #chipButtons [ngClass]="{disabled: disabled}"  (resize)="onResize()">
+<div class="chips" [ngClass]="{disabled: disabled}" #chipContainer>
+    <input class="chips-input"
+           [type]="type == 'number' ? 'number': 'text'"
+           [min]="min"
+           [max]="max"
+           [step]="step"
+           [disabled]="disabled"
+           [placeholder]="valueOptions.length == 0 && placeholder | translate"
+           [ngStyle]="inputStyles"
+           (blur)="onBlur($event)"
+           (keyup)="onInput($event)"
+           #chipInput/>
+    <div class="chips-buttons" #chipButtons [ngClass]="{disabled: disabled}"  (resize)="onResize()">
         <ng-container *ngFor="let item of valueOptions; let ix = index; trackBy:trackBy">
-            <a class="chip-button btn btn-sm" [ngClass]="'btn' + statuses[ix]" (dblclick)="removeItem($event, ix)">
-                <span *ngIf="item.props?.picture" class="chip-picture">
-                    <img [src]="item.props.picture | safe:'url'"
+            <a class="chips-button" [ngClass]="'chips-' + statuses[ix]" (dblclick)="removeItem($event, ix)">
+                <span *ngIf="item.picture" class="chip-picture">
+                    <img [src]="item.picture | safe:'url'"
                          referrerpolicy="no-referrer" [attr.alt]="item.label">
                 </span>
-                <span class="chip-label">{{ item.label }} </span>
-                <span class="chip-remove" (click)="removeItem($event, ix)">x</span>
+                <span class="chips-label">{{ item.label }} </span>
+                <span class="chips-remove" (click)="removeItem($event, ix)" *ngIf="!disabled"></span>
             </a>
         </ng-container>
     </div>
-    <ng-container [ngSwitch]="type">
-        <ng-container *ngSwitchCase="'number'">
-            <input type="number"
-                   class="form-control"
-                   [min]="min"
-                   [max]="max"
-                   [step]="step"
-                   [disabled]="disabled"
-                   [placeholder]="valueOptions.length == 0 && placeholder | translate"
-                   [ngStyle]="inputStyles"
-                   (blur)="onBlur($event)"
-                   (keyup)="onInput($event)"
-                   [typeahead]="filteredOptions"
-                   typeaheadOptionField="label"
-                   #chipInput/>
-        </ng-container>
-        <ng-container *ngSwitchDefault>
-            <input type="text"
-                   class="form-control"
-                   [minLength]="minLength"
-                   [maxLength]="maxLength"
-                   [disabled]="disabled"
-                   [placeholder]="valueOptions.length == 0 && placeholder | translate"
-                   [ngStyle]="inputStyles"
-                   (blur)="onBlur($event)"
-                   (keyup)="onInput($event)"
-                   [typeahead]="filteredOptions"
-                   typeaheadOptionField="label"
-                   #chipInput/>
-        </ng-container>
-    </ng-container>
 </div>

@@ -1,6 +1,12 @@
-<dynamic-table filterLabel="blab"
-               [itemsPerPage]="5"
-               [showFilter]="true"
-               [showItems]="[5, 10, 25, 50, 100]"
-               [data]="tableData" [columns]="tableColumns">
-</dynamic-table>
+<div class="app-wrap">
+    <dynamic-table filterLabel="blab"
+                   [itemsPerPage]="5"
+                   [showFilter]="true"
+                   [showItems]="[5, 10, 25, 50, 100]"
+                   [data]="tableData" [columns]="tableColumns">
+    </dynamic-table>
+    <chips type="number" [(value)]="numberChips" [min]="5"></chips>
+    <chips [(value)]="stringChips" [minLength]="5"></chips>
+    <chips [(value)]="stringChips" [disabled]="true" [minLength]="5"></chips>
+
+</div>

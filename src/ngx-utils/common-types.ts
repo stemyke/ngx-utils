@@ -256,6 +256,19 @@ export interface IAsyncMessage {
 
 export type AsyncMethod = (context?: any, ev?: MouseEvent) => Promise<IAsyncMessage>;
 
+// --- Chips ---
+export type ChipValue = string | number;
+
+export type ChipStatus = "valid" | "invalid";
+
+export interface ChipOption {
+    value: ChipValue;
+    label: string;
+    classes?: string;
+    disabled?: boolean;
+    picture?: string;
+}
+
 // --- Dropdown ---
 export type DropdownAttachTo = "root" | HTMLElement | ElementRef<HTMLElement> | null;
 
