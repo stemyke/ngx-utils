@@ -1,5 +1,6 @@
 import {Inject, Injectable} from "@angular/core";
-import {AsyncMethod, ILanguageService, IToasterService, LANGUAGE_SERVICE, ToastType} from "../common-types";
+import {AsyncMethod, ILanguageService, IToasterService, ToastType} from "../common-types";
+import {LANGUAGE_SERVICE} from "../tokens";
 
 @Injectable()
 export class BaseToasterService<T = any, P extends Record<string, any> = {}> implements IToasterService {

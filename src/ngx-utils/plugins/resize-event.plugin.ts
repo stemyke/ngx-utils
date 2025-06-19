@@ -2,10 +2,11 @@ import {ɵDomEventsPlugin as EventManagerPlugin} from "@angular/platform-browser
 import {Inject, Injectable} from "@angular/core";
 import {DOCUMENT} from "@angular/common";
 
-import {RESIZE_DELAY, RESIZE_STRATEGY, ResizeEventStrategy} from "../common-types";
+import {ResizeEventStrategy} from "../common-types";
 import {TimerUtils} from "../utils/timer.utils";
 import {UniversalService} from "../services/universal.service";
 import {ResizeDetector} from "./resize-detector";
+import {RESIZE_DELAY, RESIZE_STRATEGY} from "../tokens";
 
 function emptyRemove(): void {
 

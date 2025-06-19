@@ -1,7 +1,8 @@
 import {Inject, Injectable} from "@angular/core";
-import {ILanguageService, LANGUAGE_SERVICE} from "../common-types";
+import {ILanguageService} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 import {MathUtils} from "../utils/math.utils";
+import {LANGUAGE_SERVICE} from "../tokens";
 
 @Injectable()
 export class FormatterService {

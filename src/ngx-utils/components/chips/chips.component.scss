@@ -5,12 +5,19 @@
     --chips-bg-color: var(--bg-color, #ffffff);
     --chips-border-color: var(--border-color, #ced4da);
     --chips-text-color: var(--text-color, #151515);
+    --chips-text-size: var(--text-size, 16px);
     --chips-padding-vertical: 6px;
     --chips-padding-horizontal: 12px;
     --chips-padding: var(--chips-padding-vertical) var(--chips-padding-horizontal);
+    --chips-btn-padding: 12px;
+    --chips-btn-gap: calc(var(--chips-btn-padding) / 2);
+    --chips-btn-color: white;
+    --chips-btn-valid-color: rgba(200, 255, 200, 0.7);
+    --chips-btn-invalid-color: rgba(255, 200, 200, 0.7);
 
     position: relative;
     margin: 5px 0;
+    font-size: var(--chips-text-size);
     padding: var(--chips-padding);
 
     background: var(--chips-bg-color);
@@ -23,12 +30,13 @@
     }
 
     &.disabled {
-        opacity: .6;
+        opacity: .75;
     }
 
     .chips-input {
         background: var(--chips-bg-color);
         padding: var(--chips-padding);
+        font-size: var(--chips-text-size);
         outline: none;
         border: none;
         width: 100%;
@@ -48,18 +56,27 @@
     }
 
     .chips-button {
-        background: var(--chips-bg-color);
+        background: var(--chipd-btn-color);
         color: var(--chips-text-color);
-        border: var(--chips-border-size) solid var(--chips-border-color);
+        border: var(--chips-border-size) solid rgba(0, 0, 0, .2);
         border-radius: var(--chips-border-radius);
-        padding: var(--chips-padding);
+        padding: var(--chips-padding-vertical) var(--chips-btn-padding);
         user-select: none;
         font-weight: normal;
         outline: none;
         display: flex;
-        gap: 5px;
+        gap: var(--chips-btn-gap);
         justify-content: center;
         align-items: center;
+        line-height: 1.2rem;
+    }
+
+    .chips-button.chips-valid {
+        --chipd-btn-color: var(--chips-btn-valid-color)
+    }
+
+    .chips-button.chips-invalid {
+        --chipd-btn-color: var(--chips-btn-invalid-color)
     }
 
     .chips-picture {
@@ -77,14 +94,16 @@
         max-width: 180px;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .chips-remove {
         position: relative;
         background: rgba(0, 0, 0, 0.2);
-        width: 1rem;
-        height: 1rem;
-        font-size: 11px;
+        margin-right: calc(var(--chips-btn-gap) * -1);
+        width: 1.2rem;
+        height: 1.2rem;
+        font-size: 12px;
         cursor: pointer;
         border-radius: 5px;
     }

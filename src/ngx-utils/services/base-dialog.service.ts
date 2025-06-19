@@ -1,5 +1,6 @@
 import {Inject, Injectable} from "@angular/core";
-import {IConfirmDialogConfig, IDialogConfig, IDialogService, IToasterService, TOASTER_SERVICE} from "../common-types";
+import {IConfirmDialogConfig, IDialogConfig, IDialogService, IToasterService} from "../common-types";
+import {TOASTER_SERVICE} from "../tokens";
 
 @Injectable()
 export class BaseDialogService<DR = any> implements IDialogService<DR> {

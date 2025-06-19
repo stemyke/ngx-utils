@@ -1,5 +1,6 @@
 import {Injector, Type} from "@angular/core";
-import {OPTIONS_TOKEN, TypedFactoryProvider} from "../common-types";
+import {TypedFactoryProvider} from "../common-types";
+import {OPTIONS_TOKEN} from "../tokens";
 
 export function provideWithOptions<O extends Object, T = any>(type: Type<T>, options: O): TypedFactoryProvider<T> {
     return {

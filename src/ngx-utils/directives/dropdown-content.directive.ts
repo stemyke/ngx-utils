@@ -11,10 +11,10 @@ import {
     Middleware, limitShift
 } from "@floating-ui/dom";
 
-import {ROOT_ELEMENT} from "../common-types";
 import {DropdownDirective} from "./dropdown.directive";
 import {ObservableUtils} from "../utils/observable.utils";
 import {getCssVariables} from "../utils/misc";
+import {ROOT_ELEMENT} from "../tokens";
 
 const rectProps = ["x", "y", "width", "height"];
 

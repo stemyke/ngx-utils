@@ -1,7 +1,6 @@
 import {ElementRef, EventEmitter, InjectionToken, Injector, NgZone, Provider, TemplateRef, Type} from "@angular/core";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {ActivatedRouteSnapshot, Data, LoadChildrenCallback, Route, Routes, UrlTree} from "@angular/router";
-import {Request} from "express";
 import {DurationLikeObject} from "luxon";
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
@@ -23,8 +22,6 @@ export type CachedProvider<T> = Type<T> | TypedFactoryProvider<T> | TypedValuePr
 
 export type CachedFactory<T> = (injector: Injector) => ReadonlyArray<T>;
 
-export const OPTIONS_TOKEN = new InjectionToken("custom-options-token");
-
 export interface IResolveFactory {
     func: Function;
     type?: any;
@@ -43,8 +40,6 @@ export interface IIconService {
     iconsLoaded: EventEmitter<any>;
     getIcon(icon: string, activeIcon: string, active: boolean): Promise<string>;
 }
-
-export const ICON_SERVICE: InjectionToken<IIconService> = new InjectionToken<IIconService>("icon-service");
 
 // --- Language service ---
 export interface ITranslation {
@@ -86,8 +81,6 @@ export interface ILanguageService {
     getTranslationFromArray(translations: ITranslation[], params?: any, lang?: string): string;
 }
 
-export const LANGUAGE_SERVICE: InjectionToken<ILanguageService> = new InjectionToken<ILanguageService>("language-service");
-
 // --- Auth Service ---
 export interface IAuthService {
     isAuthenticated: boolean;
@@ -105,8 +98,6 @@ export interface IRouteData extends Data {
 export interface IRoute extends Route {
     data?: IRouteData;
 }
-
-export const AUTH_SERVICE: InjectionToken<IAuthService> = new InjectionToken<IAuthService>("auth-service");
 
 // --- Acl Service ---
 export interface IAclComponent {
@@ -141,8 +132,6 @@ export interface IToasterService {
     warning(message: string, params?: any): void;
     handleAsyncMethod(method: AsyncMethod, context?: any): void
 }
-
-export const TOASTER_SERVICE: InjectionToken<IToasterService> = new InjectionToken<IToasterService>("toaster-service");
 
 // --- Dialog service ---
 export interface IDialogButtonConfig {
@@ -185,11 +174,7 @@ export interface IDialogService<DR = any> {
     confirm(config: IConfirmDialogConfig): DR
 }
 
-export const DIALOG_SERVICE = new InjectionToken<IDialogService>("dialog-service");
-
 // --- Socket service ---
-
-export const SOCKET_IO_PATH = new InjectionToken<string>("socket-io-path");
 
 // --- Promise Service ---
 
@@ -202,8 +187,6 @@ export interface IPromiseService {
     resolve<T>(value: T | PromiseLike<T>): Promise<T>;
     reject<T>(value: T | PromiseLike<T>): Promise<T>;
 }
-
-export const PROMISE_SERVICE = new InjectionToken<IPromiseService>("promise-service");
 
 // --- Wasm service ---
 export type TypedArray =
@@ -246,8 +229,6 @@ export interface IWasmAsync {
     [key: string]: (...args: any[]) => Promise<any>;
 }
 
-export const WASI_IMPLEMENTATION = new InjectionToken<Type<IWasi>>("wasi-implementation");
-
 // --- Async method ---
 export interface IAsyncMessage {
     message: string;
@@ -255,6 +236,30 @@ export interface IAsyncMessage {
 }
 
 export type AsyncMethod = (context?: any, ev?: MouseEvent) => Promise<IAsyncMessage>;
+
+// --- Button ---
+
+export type ButtonStyle = "primary" | "secondary";
+
+export type ButtonSize = "normal" | "small";
+
+export type ButtonState = "active" | "inactive";
+
+export interface ButtonProps {
+    label: string;
+    tooltip: string;
+    icon: string;
+    disabled: boolean;
+    style: ButtonStyle;
+    size: ButtonSize;
+    state: ButtonState;
+}
+
+// --- Tabs ---
+
+export interface TabOption extends Omit<Partial<ButtonProps>, "size" | "state" | "style">{
+    value: string;
+}
 
 // --- Chips ---
 export type ChipValue = string | number;
@@ -557,8 +562,6 @@ export interface IHttpService {
     makeListParams(page: number, itemsPerPage: number, orderBy?: string, orderDescending?: boolean, filter?: string): IHttpParams;
 }
 
-export const EXPRESS_REQUEST = new InjectionToken<Request>("express-request");
-
 // --- Api service ---
 
 export interface IBaseHttpClient extends HttpClient {
@@ -577,8 +580,6 @@ export interface IApiService extends IHttpService {
     upload(url: string, body: any, listener?: ProgressListener, options?: IRequestOptions): Promise<any>;
     list(url: string, params: IHttpParams): Promise<IPaginationData>;
 }
-
-export const API_SERVICE: InjectionToken<IApiService> = new InjectionToken<IApiService>("api-service");
 
 // --- OpenApi service ---
 export interface IOpenApiSchemaProperty {
@@ -690,13 +691,6 @@ export interface DynamicEntryComponents {
     moduleId: string;
 }
 
-export const DYNAMIC_ENTRY_COMPONENTS = new InjectionToken<DynamicEntryComponents[]>("dynamic-entry-components");
-
-export const DYNAMIC_MODULE_INFO = new InjectionToken<DynamicModuleInfo[]>("dynamic-module-info");
-
-// --- ConfigService ---
-export const APP_BASE_URL = new InjectionToken<string>("app-base-url");
-
 export class IConfiguration {
     cdnUrl?: string;
     baseUrl?: string;
@@ -717,24 +711,10 @@ export interface IConfigService {
     getQueryParameter(name: string, url?: string): string;
 }
 
-export const CONFIG_SERVICE = new InjectionToken<IConfigService>("config-service");
-
-export const BASE_CONFIG = new InjectionToken<IConfiguration>("base-config");
-
-export const SCRIPT_PARAMS = new InjectionToken<any>("script-params");
-
-export const ROOT_ELEMENT = new InjectionToken<HTMLElement>("app-root-element");
-
-export const RESIZE_DELAY = new InjectionToken<number>("resize-event-delay");
-
 export type ResizeEventStrategy = "scroll" | "object" | "observer";
-
-export const RESIZE_STRATEGY = new InjectionToken<ResizeEventStrategy>("resize-event-strategy");
 
 // --- Error handler service ---
 export type ErrorHandlerCallback = (error: string) => any;
-
-export const ERROR_HANDLER = new InjectionToken<ErrorHandlerCallback>("error-handler-callback");
 
 // --- Global templates service
 
@@ -753,6 +733,7 @@ export interface IModuleConfig {
     configService?: Type<IConfigService>;
     dialogService?: Type<IDialogService>;
     wasiImplementation?: Type<IWasi>;
+    buttonType?: Type<ButtonProps>;
     initializeApp?: (injector: Injector) => AppInitializerFunc;
     baseUrl?: (injector: Injector) => string;
     resizeDelay?: number;

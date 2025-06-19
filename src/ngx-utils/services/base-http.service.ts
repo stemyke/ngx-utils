@@ -3,8 +3,6 @@ import {HttpErrorResponse, HttpEventType, HttpHeaders, HttpParams, HttpResponse}
 import {Request} from "express";
 
 import {
-    CONFIG_SERVICE,
-    EXPRESS_REQUEST,
     HttpPromise,
     IConfigService,
     IHttpHeaders,
@@ -15,9 +13,7 @@ import {
     IPaginationData,
     IRequestOptions,
     IToasterService,
-    LANGUAGE_SERVICE,
-    ProgressListener,
-    TOASTER_SERVICE
+    ProgressListener
 } from "../common-types";
 
 import {ObjectUtils} from "../utils/object.utils";
@@ -28,6 +24,7 @@ import {UniversalService} from "./universal.service";
 import {StorageService} from "./storage.service";
 import {timeout} from "rxjs/operators";
 import {TimeoutError} from "rxjs";
+import {CONFIG_SERVICE, EXPRESS_REQUEST, LANGUAGE_SERVICE, TOASTER_SERVICE} from "../tokens";
 
 @Injectable()
 export class BaseHttpService implements IHttpService {

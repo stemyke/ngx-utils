@@ -16,13 +16,11 @@ import {firstValueFrom, Observable} from "rxjs";
 
 import {
     CssSelectorList,
-    DYNAMIC_ENTRY_COMPONENTS,
-    DYNAMIC_MODULE_INFO,
     DynamicComponentLocation,
-    DynamicModuleInfo,
-    ROOT_ELEMENT
+    DynamicModuleInfo
 } from "../common-types";
 import {getComponentDef, parseSelector, selectorMatchesList} from "../utils/misc";
+import {DYNAMIC_ENTRY_COMPONENTS, DYNAMIC_MODULE_INFO, ROOT_ELEMENT} from "../tokens";
 
 interface LoadedRouterConfig {
     routes: Route[];

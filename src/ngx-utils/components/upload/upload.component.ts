@@ -17,18 +17,17 @@ import {lastValueFrom} from "rxjs";
 import {map} from "rxjs/operators";
 
 import {
-    API_SERVICE,
     IApiService,
     IFileUploadProcess,
     IFileUploadResult,
     IToasterService,
-    TOASTER_SERVICE,
     UploadType
 } from "../../common-types";
 import {ArrayUtils} from "../../utils/array.utils";
 import {ObjectUtils} from "../../utils/object.utils";
 import {FileUtils} from "../../utils/file.utils";
 import {BaseHttpClient} from "../../services/base-http.client";
+import {API_SERVICE, TOASTER_SERVICE} from "../../tokens";
 
 @Component({
     standalone: false,

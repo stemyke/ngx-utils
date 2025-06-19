@@ -1,5 +1,6 @@
 import {Inject, Injectable} from "@angular/core";
-import {API_SERVICE, IApiService, IOpenApiSchema, IOpenApiSchemas} from "../common-types";
+import {IApiService, IOpenApiSchema, IOpenApiSchemas} from "../common-types";
+import {API_SERVICE} from "../tokens";
 
 @Injectable()
 export class OpenApiService {

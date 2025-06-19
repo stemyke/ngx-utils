@@ -1,0 +1,12 @@
+<div class="ui-tabs">
+    @for (option of options(); track option.value) {
+        <btn [label]="option.label"
+             [tooltip]="option.tooltip"
+             [icon]="option.icon"
+             [disabled]="option.disabled"
+             [style]="style()"
+             [size]="size()"
+             [state]="option.value === value() ? 'active' : 'inactive'"
+             (click)="select(option)"></btn>
+    }
+</div>

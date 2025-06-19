@@ -1,5 +1,6 @@
 import {Type, ValueProvider, ɵComponentDef as ComponentDef} from "@angular/core";
-import {CssSelector, CssSelectorList, DYNAMIC_ENTRY_COMPONENTS} from "../common-types";
+import {CssSelector, CssSelectorList} from "../common-types";
+import {DYNAMIC_ENTRY_COMPONENTS} from "../tokens";
 
 export function getCssVariables(elem: HTMLElement): Record<string, string> {
     if ("computedStyleMap" in elem) {

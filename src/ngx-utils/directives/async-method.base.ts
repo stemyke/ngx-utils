@@ -8,7 +8,8 @@ import {
     Input, OnChanges,
     Output
 } from "@angular/core";
-import {AsyncMethod, IAsyncMessage, IToasterService, TOASTER_SERVICE} from "../common-types";
+import {AsyncMethod, IAsyncMessage, IToasterService} from "../common-types";
+import {TOASTER_SERVICE} from "../tokens";
 
 @Directive({
     standalone: false,

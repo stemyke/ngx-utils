@@ -1,8 +1,9 @@
 import {Injectable} from "@angular/core";
 
-import {IApiService, IHttpParams, IRequestOptions, ProgressListener, SOCKET_IO_PATH} from "../common-types";
+import {IApiService, IHttpParams, IRequestOptions, ProgressListener} from "../common-types";
 import {BaseHttpService} from "./base-http.service";
 import {IPaginationData} from "../common-types";
+import {SOCKET_IO_PATH} from "../tokens";
 
 @Injectable()
 export class ApiService extends BaseHttpService implements IApiService {

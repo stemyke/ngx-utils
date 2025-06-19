@@ -1,6 +1,7 @@
 import {Inject, Injectable} from "@angular/core";
 import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree} from "@angular/router";
-import {ILanguageService, LANGUAGE_SERVICE} from "../common-types";
+import {ILanguageService} from "../common-types";
+import {LANGUAGE_SERVICE} from "../tokens";
 
 export interface IUrlDictionary {
     [key: string]: string

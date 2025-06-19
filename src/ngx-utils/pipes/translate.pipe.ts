@@ -1,6 +1,7 @@
 import {ChangeDetectorRef, Inject, Injectable, Pipe, PipeTransform} from "@angular/core";
-import {ILanguageService, LANGUAGE_SERVICE, TranslationQuery} from "../common-types";
+import {ILanguageService, TranslationQuery} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
+import {LANGUAGE_SERVICE} from "../tokens";
 
 @Injectable()
 @Pipe({

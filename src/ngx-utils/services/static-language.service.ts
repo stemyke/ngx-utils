@@ -1,13 +1,11 @@
 import {Inject, Injectable} from "@angular/core";
 import {
-    CONFIG_SERVICE,
     IConfigService,
     IConfiguration,
     ILanguageService,
     IPromiseService,
     ITranslation,
-    ITranslations,
-    PROMISE_SERVICE
+    ITranslations
 } from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 import {EventsService} from "./events.service";
@@ -15,6 +13,7 @@ import {StorageService} from "./storage.service";
 import {UniversalService} from "./universal.service";
 import {BaseHttpClient} from "./base-http.client";
 import {HttpClient} from "@angular/common/http";
+import {CONFIG_SERVICE, PROMISE_SERVICE} from "../tokens";
 
 @Injectable()
 export class StaticLanguageService implements ILanguageService {

@@ -9,14 +9,16 @@ import {
 } from "@angular/core";
 import {APP_BASE_HREF, CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {DynamicModuleInfo, IModuleConfig} from "./common-types";
 import {
     API_SERVICE,
     APP_BASE_URL,
     AUTH_SERVICE,
+    BUTTON_TYPE,
     CONFIG_SERVICE,
-    DIALOG_SERVICE, DYNAMIC_MODULE_INFO, DynamicModuleInfo,
+    DIALOG_SERVICE,
+    DYNAMIC_MODULE_INFO,
     ICON_SERVICE,
-    IModuleConfig,
     LANGUAGE_SERVICE,
     PROMISE_SERVICE,
     RESIZE_DELAY,
@@ -25,7 +27,8 @@ import {
     SOCKET_IO_PATH,
     TOASTER_SERVICE,
     WASI_IMPLEMENTATION
-} from "./common-types";
+} from "./tokens";
+
 import {components, directives, loadConfig, pipes, providers} from "./ngx-utils.imports";
 import {ApiService} from "./services/api.service";
 import {StaticAuthService} from "./services/auth.service";
@@ -39,6 +42,7 @@ import {BaseDialogService} from "./services/base-dialog.service";
 import {ROUTES} from "@angular/router";
 import {AuthGuard} from "./utils/auth.guard";
 import {FakeModuleComponent} from "./components/fake-module/fake-module.component";
+import {BtnDefaultComponent} from "./components/btn-default/btn-default.component";
 
 export function loadBaseUrl(): string {
     if (typeof (document) === "undefined" || typeof (location) === "undefined") return "/";
@@ -142,6 +146,10 @@ export class NgxUtilsModule {
             {
                 provide: WASI_IMPLEMENTATION,
                 useExisting: (!config ? null : config.wasiImplementation) || Wasi
+            },
+            {
+                provide: BUTTON_TYPE,
+                useValue: (!config ? null : config.buttonType) || BtnDefaultComponent
             },
             {
                 provide: APP_BASE_URL,

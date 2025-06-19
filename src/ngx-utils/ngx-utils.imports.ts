@@ -83,6 +83,8 @@ import {SplitPipe} from "./pipes/split.pipe";
 import {TranslatePipe} from "./pipes/translate.pipe";
 import {ValuesPipe} from "./pipes/values.pipe";
 
+import {BtnComponent} from "./components/btn/btn.component";
+import {BtnDefaultComponent} from "./components/btn-default/btn-default.component";
 import {ChipsComponent} from "./components/chips/chips.component";
 import {DropListComponent} from "./components/drop-list/drop-list.component";
 import {DropdownBoxComponent} from "./components/dropdown-box/dropdown-box.component";
@@ -92,6 +94,7 @@ import {InteractiveCanvasComponent} from "./components/interactive-canvas/intera
 import {InteractiveItemComponent} from "./components/interactive-canvas/interactive-item.component";
 import {InteractiveCircleComponent} from "./components/interactive-canvas/interactive-circle.component";
 import {InteractiveRectComponent} from "./components/interactive-canvas/interactive-rect.component";
+import {TabsComponent} from "./components/tabs/tabs.component";
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {UploadComponent} from "./components/upload/upload.component";
@@ -153,12 +156,15 @@ export const directives = [
 
 // --- Components ---
 export const components = [
+    BtnComponent,
+    BtnDefaultComponent,
     ChipsComponent,
     DropListComponent,
     DropdownBoxComponent,
     DynamicTableComponent,
     FakeModuleComponent,
     PaginationMenuComponent,
+    TabsComponent,
     InteractiveCanvasComponent,
     InteractiveItemComponent,
     InteractiveCircleComponent,

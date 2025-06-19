@@ -1,9 +1,10 @@
 import {Inject, Injectable, Type} from "@angular/core";
-import {IWasi, IWasm, IWasmAsync, WASI_IMPLEMENTATION} from "../common-types";
+import {IWasi, IWasm, IWasmAsync} from "../common-types";
 import {WasmWorkerProxy} from "../utils/wasm-worker-proxy";
 import {UniversalService} from "./universal.service";
 import {LocalHttpService} from "./local-http.service";
 import {Wasi} from "../utils/wasi";
+import {WASI_IMPLEMENTATION} from "../tokens";
 
 /**
  * Use this service to load WebAssembly modules

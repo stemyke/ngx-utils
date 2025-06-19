@@ -10,7 +10,7 @@
            (blur)="onBlur($event)"
            (keyup)="onInput($event)"
            #chipInput/>
-    <div class="chips-buttons" #chipButtons [ngClass]="{disabled: disabled}"  (resize)="onResize()">
+    <div class="chips-buttons" #chipButtons [ngClass]="{disabled: disabled}" (resize)="onResize()">
         <ng-container *ngFor="let item of valueOptions; let ix = index; trackBy:trackBy">
             <a class="chips-button" [ngClass]="'chips-' + statuses[ix]" (dblclick)="removeItem($event, ix)">
                 <span *ngIf="item.picture" class="chip-picture">

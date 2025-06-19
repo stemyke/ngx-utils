@@ -1,7 +1,8 @@
 import {ChangeDetectorRef, Directive, ElementRef, Inject, Input} from "@angular/core";
 import {DropdownDirective} from "./dropdown.directive";
 import {AsyncMethodBase} from "./async-method.base";
-import {AsyncMethod, IToasterService, TOASTER_SERVICE} from "../common-types";
+import {AsyncMethod, IToasterService} from "../common-types";
+import {TOASTER_SERVICE} from "../tokens";
 
 @Directive({
     standalone: false,

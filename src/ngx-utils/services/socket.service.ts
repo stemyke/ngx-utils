@@ -1,8 +1,9 @@
 import {Inject, Injectable, OnDestroy} from "@angular/core";
 import {BehaviorSubject, Subscription} from "rxjs";
-import {API_SERVICE, AUTH_SERVICE, IApiService, IAuthService, SOCKET_IO_PATH} from "../common-types";
+import {IApiService, IAuthService} from "../common-types";
 import {ExtraHeaders, SocketClient, SocketData, SocketDataObj} from "../utils/socket-client";
 import {LoaderUtils} from "../utils/loader.utils";
+import {API_SERVICE, AUTH_SERVICE, SOCKET_IO_PATH} from "../tokens";
 
 @Injectable()
 export class SocketService implements OnDestroy {

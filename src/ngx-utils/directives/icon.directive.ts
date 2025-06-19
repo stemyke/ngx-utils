@@ -14,7 +14,8 @@ import {
     SimpleChanges
 } from "@angular/core";
 import {Subscription} from "rxjs";
-import {ICON_SERVICE, IIconService} from "../common-types";
+import {IIconService} from "../common-types";
+import {ICON_SERVICE} from "../tokens";
 
 @Directive({
     standalone: false,
