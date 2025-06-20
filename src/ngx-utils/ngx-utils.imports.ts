@@ -50,6 +50,7 @@ import {StickyClassDirective} from "./directives/sticky-class.directive";
 import {DropdownDirective} from "./directives/dropdown.directive";
 import {DropdownContentDirective} from "./directives/dropdown-content.directive";
 import {DropdownToggleDirective} from "./directives/dropdown-toggle.directive";
+import {TabsItemDirective} from "./directives/tabs-item.directive";
 import {UnorderedListItemDirective} from "./directives/unordered-list-item.directive";
 import {UnorderedListTemplateDirective} from "./directives/unordered-list-template.directive";
 
@@ -90,12 +91,14 @@ import {DropListComponent} from "./components/drop-list/drop-list.component";
 import {DropdownBoxComponent} from "./components/dropdown-box/dropdown-box.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
 import {FakeModuleComponent} from "./components/fake-module/fake-module.component";
+import {IconComponent} from "./components/icon/icon.component";
+import {IconDefaultComponent} from "./components/icon-default/icon-default.component";
 import {InteractiveCanvasComponent} from "./components/interactive-canvas/interactive-canvas.component";
 import {InteractiveItemComponent} from "./components/interactive-canvas/interactive-item.component";
 import {InteractiveCircleComponent} from "./components/interactive-canvas/interactive-circle.component";
 import {InteractiveRectComponent} from "./components/interactive-canvas/interactive-rect.component";
-import {TabsComponent} from "./components/tabs/tabs.component";
 import {PaginationMenuComponent} from "./components/pagination-menu/pagination-menu.component";
+import {TabsComponent} from "./components/tabs/tabs.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {UploadComponent} from "./components/upload/upload.component";
 
@@ -150,6 +153,7 @@ export const directives = [
     DropdownDirective,
     DropdownContentDirective,
     DropdownToggleDirective,
+    TabsItemDirective,
     UnorderedListItemDirective,
     UnorderedListTemplateDirective
 ];
@@ -164,11 +168,13 @@ export const components = [
     DynamicTableComponent,
     FakeModuleComponent,
     PaginationMenuComponent,
-    TabsComponent,
+    IconComponent,
+    IconDefaultComponent,
     InteractiveCanvasComponent,
     InteractiveItemComponent,
     InteractiveCircleComponent,
     InteractiveRectComponent,
+    TabsComponent,
     UnorderedListComponent,
     UploadComponent
 ];

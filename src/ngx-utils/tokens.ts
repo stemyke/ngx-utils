@@ -9,6 +9,8 @@ import {
     IAuthService,
     IConfigService,
     IConfiguration,
+    IconMap,
+    IconProps,
     IDialogService,
     IIconService,
     ILanguageService,
@@ -18,6 +20,8 @@ import {
     ResizeEventStrategy
 } from "./common-types";
 
+export const ICON_TYPE = new InjectionToken<Type<IconProps>>("icon-component-type");
+export const ICON_MAP = new InjectionToken<IconMap>("icon-map");
 export const BUTTON_TYPE = new InjectionToken<Type<ButtonProps>>("button-component-type");
 export const OPTIONS_TOKEN = new InjectionToken("custom-options-token");
 export const ICON_SERVICE: InjectionToken<IIconService> = new InjectionToken<IIconService>("icon-service");

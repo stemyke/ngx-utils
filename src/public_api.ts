@@ -44,9 +44,10 @@ export {
     IToasterService,
     IAsyncMessage,
     AsyncMethod,
+    IconMap,
+    IconProps,
     ButtonStyle,
     ButtonSize,
-    ButtonState,
     ButtonProps,
     TabOption,
     ChipValue,
@@ -127,6 +128,8 @@ export {
 } from "./ngx-utils/common-types";
 
 export {
+    ICON_TYPE,
+    ICON_MAP,
     BUTTON_TYPE,
     ERROR_HANDLER,
     RESIZE_STRATEGY,
@@ -255,6 +258,7 @@ export {StickyClassDirective} from "./ngx-utils/directives/sticky-class.directiv
 export {DropdownDirective} from "./ngx-utils/directives/dropdown.directive";
 export {DropdownContentDirective} from "./ngx-utils/directives/dropdown-content.directive";
 export {DropdownToggleDirective} from "./ngx-utils/directives/dropdown-toggle.directive";
+export {TabsItemDirective} from "./ngx-utils/directives/tabs-item.directive";
 export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-item.directive";
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
 
@@ -265,6 +269,8 @@ export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.comp
 export {DropdownBoxComponent} from "./ngx-utils/components/dropdown-box/dropdown-box.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";
 export {FakeModuleComponent} from "./ngx-utils/components/fake-module/fake-module.component";
+export {IconComponent} from "./ngx-utils/components/icon/icon.component";
+export {IconDefaultComponent} from "./ngx-utils/components/icon-default/icon-default.component";
 export {InteractiveCanvasComponent} from "./ngx-utils/components/interactive-canvas/interactive-canvas.component";
 export {InteractiveItemComponent} from "./ngx-utils/components/interactive-canvas/interactive-item.component";
 export {InteractiveCircleComponent} from "./ngx-utils/components/interactive-canvas/interactive-circle.component";

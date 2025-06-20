@@ -19,7 +19,7 @@ import {ICON_SERVICE} from "../tokens";
 
 @Directive({
     standalone: false,
-    selector: "[icon]"
+    selector: "i[icon],b[icon],p[icon],span[icon],a[icon],h1[icon],h2[icon],h3[icon],h4[icon]"
 })
 export class IconDirective implements OnChanges, OnInit, OnDestroy {
 

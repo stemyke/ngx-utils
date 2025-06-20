@@ -237,13 +237,20 @@ export interface IAsyncMessage {
 
 export type AsyncMethod = (context?: any, ev?: MouseEvent) => Promise<IAsyncMessage>;
 
+// --- Icon ---
+export interface IconMap {
+    [key: string]: string;
+}
+
+export interface IconProps {
+    name: string;
+}
+
 // --- Button ---
 
-export type ButtonStyle = "primary" | "secondary";
+export type ButtonStyle = "primary" | "secondary" | "transparent";
 
 export type ButtonSize = "normal" | "small";
-
-export type ButtonState = "active" | "inactive";
 
 export interface ButtonProps {
     label: string;
@@ -252,13 +259,13 @@ export interface ButtonProps {
     disabled: boolean;
     style: ButtonStyle;
     size: ButtonSize;
-    state: ButtonState;
 }
 
 // --- Tabs ---
 
-export interface TabOption extends Omit<Partial<ButtonProps>, "size" | "state" | "style">{
+export interface TabOption extends Omit<Partial<ButtonProps>, "size" | "state" | "style"> {
     value: string;
+    active?: boolean;
 }
 
 // --- Chips ---
@@ -733,6 +740,8 @@ export interface IModuleConfig {
     configService?: Type<IConfigService>;
     dialogService?: Type<IDialogService>;
     wasiImplementation?: Type<IWasi>;
+    iconType?: Type<IconProps>;
+    iconMap?: IconMap;
     buttonType?: Type<ButtonProps>;
     initializeApp?: (injector: Injector) => AppInitializerFunc;
     baseUrl?: (injector: Injector) => string;

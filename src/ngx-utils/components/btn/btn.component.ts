@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input, ViewEncapsulation} from "@angular/core";
-import {ButtonProps, ButtonSize, ButtonState, ButtonStyle} from "../../common-types";
+import {ButtonProps, ButtonSize, ButtonStyle} from "../../common-types";
 import {BUTTON_TYPE} from "../../tokens";
 
 @Component({
@@ -7,8 +7,7 @@ import {BUTTON_TYPE} from "../../tokens";
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     selector: "btn",
-    templateUrl: "./btn.component.html",
-    styleUrls: ["./btn.component.scss"]
+    templateUrl: "./btn.component.html"
 })
 export class BtnComponent {
 
@@ -18,7 +17,6 @@ export class BtnComponent {
     readonly disabled = input(false);
     readonly style = input("primary" as ButtonStyle);
     readonly size = input("normal" as ButtonSize);
-    readonly state = input("inactive" as ButtonState);
 
     readonly buttonType = inject(BUTTON_TYPE);
 
@@ -29,8 +27,7 @@ export class BtnComponent {
             icon: this.icon(),
             disabled: this.disabled(),
             style: this.style(),
-            size: this.size(),
-            state: this.state()
+            size: this.size()
         };
     });
 

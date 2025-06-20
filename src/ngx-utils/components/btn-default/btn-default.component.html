@@ -1,6 +1,6 @@
 <div class="default-btn btn"
      [title]="!tooltip ? '' : tooltip | translate"
-     [ngClass]="['btn-' + style, 'btn-' + size, 'btn-' + state]">
-    <i [icon]="icon" *ngIf="icon"></i>
+     [ngClass]="['btn-' + style, 'btn-' + size]">
+    <icon [name]="icon" *ngIf="icon"></icon>
     <span *ngIf="label">{{ label | translate }}</span>
 </div>

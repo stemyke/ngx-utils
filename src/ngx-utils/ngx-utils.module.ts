@@ -17,8 +17,8 @@ import {
     BUTTON_TYPE,
     CONFIG_SERVICE,
     DIALOG_SERVICE,
-    DYNAMIC_MODULE_INFO,
-    ICON_SERVICE,
+    DYNAMIC_MODULE_INFO, ICON_MAP,
+    ICON_SERVICE, ICON_TYPE,
     LANGUAGE_SERVICE,
     PROMISE_SERVICE,
     RESIZE_DELAY,
@@ -43,6 +43,7 @@ import {ROUTES} from "@angular/router";
 import {AuthGuard} from "./utils/auth.guard";
 import {FakeModuleComponent} from "./components/fake-module/fake-module.component";
 import {BtnDefaultComponent} from "./components/btn-default/btn-default.component";
+import {IconDefaultComponent} from "./components/icon-default/icon-default.component";
 
 export function loadBaseUrl(): string {
     if (typeof (document) === "undefined" || typeof (location) === "undefined") return "/";
@@ -146,6 +147,14 @@ export class NgxUtilsModule {
             {
                 provide: WASI_IMPLEMENTATION,
                 useExisting: (!config ? null : config.wasiImplementation) || Wasi
+            },
+            {
+                provide: ICON_TYPE,
+                useValue: (!config ? null : config.iconType) || IconDefaultComponent,
+            },
+            {
+                provide: ICON_MAP,
+                useValue: (!config ? null : config.iconMap) || {},
             },
             {
                 provide: BUTTON_TYPE,

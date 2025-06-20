@@ -1,5 +1,5 @@
 import {Component, Input, ViewEncapsulation} from "@angular/core";
-import {ButtonProps, ButtonSize, ButtonState, ButtonStyle} from "../../common-types";
+import {ButtonProps, ButtonSize, ButtonStyle} from "../../common-types";
 
 @Component({
     standalone: false,
@@ -16,6 +16,5 @@ export class BtnDefaultComponent implements ButtonProps {
     @Input() disabled: boolean;
     @Input() style: ButtonStyle;
     @Input() size: ButtonSize;
-    @Input() state: ButtonState;
 
 }
