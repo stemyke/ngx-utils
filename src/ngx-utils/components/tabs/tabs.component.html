@@ -1,11 +1,11 @@
-<ul class="ui-tabs" [ngClass]="'style-' + style()">
+<ul class="ui-tabs" [ngClass]="'type-' + type()">
     @for (option of tabs(); track option.value) {
         <li [ngClass]="option.active ? 'active' : 'inactive'">
             <btn [label]="option.label"
                  [tooltip]="option.tooltip"
                  [icon]="option.icon"
                  [disabled]="option.disabled"
-                 [style]="option.active ? style() : 'transparent'"
+                 [type]="option.active ? type() : 'transparent'"
                  [size]="size()"
                  (click)="select(option.value)"></btn>
         </li>

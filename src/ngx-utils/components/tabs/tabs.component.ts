@@ -9,7 +9,7 @@ import {
     Renderer2,
     ViewEncapsulation
 } from "@angular/core";
-import {ButtonSize, ButtonStyle, TabOption} from "../../common-types";
+import {ButtonSize, ButtonType, TabOption} from "../../common-types";
 import {TabsItemDirective} from "../../directives/tabs-item.directive";
 
 @Component({
@@ -24,7 +24,7 @@ export class TabsComponent {
 
     readonly value = model()
     readonly options = input<TabOption[]>([]);
-    readonly style = input("primary" as ButtonStyle);
+    readonly type = input("primary" as ButtonType);
     readonly size = input("normal" as ButtonSize);
     readonly tabItems = contentChildren(TabsItemDirective);
     readonly renderer = inject(Renderer2);

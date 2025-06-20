@@ -46,7 +46,7 @@ export {
     AsyncMethod,
     IconMap,
     IconProps,
-    ButtonStyle,
+    ButtonType,
     ButtonSize,
     ButtonProps,
     TabOption,

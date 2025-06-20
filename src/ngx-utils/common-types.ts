@@ -248,7 +248,7 @@ export interface IconProps {
 
 // --- Button ---
 
-export type ButtonStyle = "primary" | "secondary" | "transparent";
+export type ButtonType = "primary" | "secondary" | "transparent";
 
 export type ButtonSize = "normal" | "small";
 
@@ -257,7 +257,7 @@ export interface ButtonProps {
     tooltip: string;
     icon: string;
     disabled: boolean;
-    style: ButtonStyle;
+    type: ButtonType;
     size: ButtonSize;
 }
 

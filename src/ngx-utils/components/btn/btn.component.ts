@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input, ViewEncapsulation} from "@angular/core";
-import {ButtonProps, ButtonSize, ButtonStyle} from "../../common-types";
+import {ButtonProps, ButtonSize, ButtonType} from "../../common-types";
 import {BUTTON_TYPE} from "../../tokens";
 
 @Component({
@@ -15,7 +15,7 @@ export class BtnComponent {
     readonly tooltip = input("");
     readonly icon = input("");
     readonly disabled = input(false);
-    readonly style = input("primary" as ButtonStyle);
+    readonly type = input("primary" as ButtonType);
     readonly size = input("normal" as ButtonSize);
 
     readonly buttonType = inject(BUTTON_TYPE);
@@ -26,7 +26,7 @@ export class BtnComponent {
             tooltip: this.tooltip(),
             icon: this.icon(),
             disabled: this.disabled(),
-            style: this.style(),
+            type: this.type(),
             size: this.size()
         };
     });
