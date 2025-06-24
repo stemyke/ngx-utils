@@ -1,14 +1,17 @@
 import {
     ChangeDetectorRef,
     Directive,
-    EventEmitter,
-    HostBinding,
+    effect,
+    ElementRef,
     HostListener,
-    Inject,
-    Input, OnChanges,
-    Output
+    inject,
+    input,
+    OnChanges,
+    output,
+    Renderer2,
+    signal
 } from "@angular/core";
-import {AsyncMethod, IAsyncMessage, IToasterService} from "../common-types";
+import {AsyncMethod, IAsyncMessage} from "../common-types";
 import {TOASTER_SERVICE} from "../tokens";
 
 @Directive({
@@ -17,27 +20,36 @@ import {TOASTER_SERVICE} from "../tokens";
 })
 export class AsyncMethodBase implements OnChanges {
 
-    @Input() disabled: boolean;
-    @Input() context: any;
+    readonly disabled = signal(false);
+    readonly context = input<any>({});
 
-    @Output() onSuccess: EventEmitter<IAsyncMessage>;
-    @Output() onError: EventEmitter<IAsyncMessage>;
+    readonly onSuccess = output<IAsyncMessage>();
+    readonly onError = output<IAsyncMessage>();
+    readonly toaster = inject(TOASTER_SERVICE);
+    readonly cdr = inject(ChangeDetectorRef);
+    readonly renderer = inject(Renderer2);
+    readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
 
-    protected loading: boolean;
+    readonly loading = signal(false);
+    readonly target = signal(this.element.nativeElement);
 
-    @HostBinding("class.disabled")
-    get isDisabled(): boolean {
-        return this.disabled;
-    }
-
-    @HostBinding("class.loading")
-    get isLoading(): boolean {
-        return this.loading;
-    }
-
-    constructor(@Inject(TOASTER_SERVICE) protected toaster: IToasterService, protected cdr: ChangeDetectorRef) {
-        this.onSuccess = new EventEmitter<IAsyncMessage>();
-        this.onError = new EventEmitter<IAsyncMessage>();
+    constructor() {
+        effect(() => {
+            const disabled = this.disabled();
+            const loading = this.loading();
+            const target = this.target();
+            if (!target) return;
+            if (disabled) {
+                this.renderer.addClass(target, "disabled");
+            } else {
+                this.renderer.removeClass(target, "disabled");
+            }
+            if (loading) {
+                this.renderer.addClass(target, "loading");
+            } else {
+                this.renderer.removeClass(target, "loading");
+            }
+        });
     }
 
     protected getMethod(): AsyncMethod {
@@ -51,22 +63,22 @@ export class AsyncMethodBase implements OnChanges {
     @HostListener("click", ["$event"])
     click(ev: MouseEvent) {
         ev?.preventDefault();
-        if (this.disabled) return true;
+        if (this.disabled()) return true;
         this.callMethod(ev);
         return true;
     }
 
     callMethod(ev?: MouseEvent): boolean {
-        if (this.loading) return true;
-        this.loading = true;
+        if (this.loading()) return true;
+        this.loading.set(true);
         const method = this.getMethod();
-        const result = !method ? null : method(this.context, ev);
+        const result = !method ? null : method(this.context(), ev);
         if (!(result instanceof Promise)) {
-            this.loading = false;
+            this.loading.set(false);
             return false;
         }
         result.then(result => {
-            this.loading = false;
+            this.loading.set(false);
             if (result) {
                 this.onSuccess.emit(result);
                 this.toaster.success(result.message, result.context);
@@ -74,7 +86,7 @@ export class AsyncMethodBase implements OnChanges {
         }, reason => {
             if (!reason || !reason.message)
                 throw new Error("Reason must implement IAsyncMessage interface");
-            this.loading = false;
+            this.loading.set(false);
             this.onError.emit(reason);
             this.toaster.error(reason.message, reason.context);
         }).finally(() => {
