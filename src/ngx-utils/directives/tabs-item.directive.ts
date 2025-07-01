@@ -1,4 +1,4 @@
-import {Directive, ElementRef, inject, input, OnDestroy, OnInit} from "@angular/core";
+import {Directive, ElementRef, inject, input} from "@angular/core";
 
 @Directive({
     standalone: false,
@@ -11,6 +11,7 @@ export class TabsItemDirective {
     readonly tooltip = input("");
     readonly icon = input("");
     readonly disabled = input(false);
+    readonly classes = input<string | string[]>("");
 
     readonly element = inject(ElementRef);
 }

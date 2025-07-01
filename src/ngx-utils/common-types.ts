@@ -265,7 +265,7 @@ export interface ButtonProps {
 
 export interface TabOption extends Omit<Partial<ButtonProps>, "size" | "state" | "style"> {
     value: string;
-    active?: boolean;
+    classes?: string | string[];
 }
 
 // --- Chips ---

@@ -2,7 +2,7 @@ import {
     ChangeDetectionStrategy,
     Component,
     computed,
-    contentChildren,
+    contentChildren, effect,
     inject,
     input,
     model,
@@ -11,6 +11,11 @@ import {
 } from "@angular/core";
 import {ButtonSize, ButtonType, TabOption} from "../../common-types";
 import {TabsItemDirective} from "../../directives/tabs-item.directive";
+
+export interface ExtendedTabOption extends TabOption {
+    active?: boolean;
+    className?: string;
+}
 
 @Component({
     standalone: false,
@@ -30,7 +35,7 @@ export class TabsComponent {
     readonly renderer = inject(Renderer2);
 
     readonly tabs = computed(() => {
-        const options = Array.from(this.options() || []);
+        const options = Array.from(this.options() || []) as ExtendedTabOption[];
         const current = this.value();
         this.tabItems().forEach(item => {
             const value = item.value();
@@ -42,6 +47,7 @@ export class TabsComponent {
             if (options.some(o => o.value === value)) return;
             options.push({
                 value,
+                classes: item.classes(),
                 label: item.label(),
                 tooltip: item.tooltip(),
                 icon: item.icon(),
@@ -49,12 +55,26 @@ export class TabsComponent {
             });
         });
         options.forEach(o => {
-            o.active = current === o.value;
+            const active = current === o.value;
+            const classes = (Array.isArray(o.classes) ? o.classes : [o.classes || ""]).filter(c => !!c);
+            classes.push(active ? "active" : "inactive");
+            o.active = active;
+            o.className = classes.join(" ");
         });
         return options;
     });
 
-    select(value: any): void {
-        this.value.set(value);
+    constructor() {
+        effect(() => {
+            const tabOptions = this.tabs();
+            const selectedOption = tabOptions.find(o => o.active);
+            if (tabOptions.length && !selectedOption) {
+                this.value.set(tabOptions[0].value);
+            }
+        });
+    }
+
+    select(option: TabOption): void {
+        this.value.set(option.value);
     }
 }

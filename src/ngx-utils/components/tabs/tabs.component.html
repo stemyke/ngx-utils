@@ -1,14 +1,19 @@
-<ul class="ui-tabs" [ngClass]="'type-' + type()">
-    @for (option of tabs(); track option.value) {
-        <li [ngClass]="option.active ? 'active' : 'inactive'">
-            <btn [label]="option.label"
-                 [tooltip]="option.tooltip"
-                 [icon]="option.icon"
-                 [disabled]="option.disabled"
-                 [type]="option.active ? type() : 'transparent'"
-                 [size]="size()"
-                 (click)="select(option.value)"></btn>
-        </li>
-    }
-</ul>
+@let tabList = tabs();
+@let tabType = type();
+@let tabSize = size();
+@if (tabList.length) {
+    <ul class="ui-tabs" [ngClass]="'type-' + tabType">
+        @for (option of tabList; track option.value) {
+            <li [ngClass]="option.className">
+                <btn [label]="option.label"
+                     [tooltip]="option.tooltip"
+                     [icon]="option.icon"
+                     [disabled]="option.disabled"
+                     [type]="option.active ? tabType : 'transparent'"
+                     [size]="tabSize"
+                     (click)="select(option)"></btn>
+            </li>
+        }
+    </ul>
+}
 <ng-content></ng-content>
