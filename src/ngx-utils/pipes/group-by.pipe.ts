@@ -8,7 +8,7 @@ import {ObjectUtils} from "../utils/object.utils";
 })
 export class GroupByPipe implements PipeTransform {
 
-    transform(records: any[], column: string, map: IGroupMap = null): any {
+    transform(records: ReadonlyArray<any>, column: string, map: IGroupMap = null): any {
         const groups = (records || []).reduce((result: any, item: any) => {
             const key = ObjectUtils.getValue(item, column) || "";
             const col = map ? (map[key] || "") : key;
