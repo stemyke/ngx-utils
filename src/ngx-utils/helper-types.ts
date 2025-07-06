@@ -6,9 +6,9 @@ export type KeysOfType<T, U> = {
     [K in keyof T]: T[K] extends U ? K : never
 }[keyof T];
 
-export type StringKeys<T> = KeysOfType<T, string>;
-
 export type ObjOfType<T, U> = Extract<T, KeysOfType<T, U>>;
+
+export type StringKeys<Context extends {[key: string]: any}> = Extract<keyof Context, string>;
 
 export type CapitalizeFirst<S extends string> = S extends `${infer F}${infer R}`
     ? `${Uppercase<F>}${R}`
