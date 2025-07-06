@@ -3,6 +3,8 @@ import "zone.js";
 export {
     MaybePromise,
     MaybeArray,
+    KeysOfType,
+    ObjOfType,
     StringKeys,
     CapitalizeFirst,
     CamelJoin,
