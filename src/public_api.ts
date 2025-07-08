@@ -171,13 +171,20 @@ export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
 export {
-    checkTransitions, getComponentDef, parseSelector, selectorMatchesList, provideEntryComponents
+    switchClass,
+    getCssVariables,
+    checkTransitions,
+    getComponentDef,
+    parseSelector,
+    selectorMatchesList,
+    provideEntryComponents
 } from "./ngx-utils/utils/misc";
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
 export {CancelablePromise, cancelablePromise, impatientPromise} from "./ngx-utils/utils/promise.utils";
 export {StringUtils, hashCode} from "./ngx-utils/utils/string.utils";
 export {SetUtils} from "./ngx-utils/utils/set.utils";
+export {computedPrevious} from "./ngx-utils/utils/signal-utils";
 export {SocketFactory, SocketData, SocketDataValue, SocketDataObj, SocketClient} from "./ngx-utils/utils/socket-client";
 export {TimerUtils} from "./ngx-utils/utils/timer.utils";
 export {UniqueUtils} from "./ngx-utils/utils/unique.utils";

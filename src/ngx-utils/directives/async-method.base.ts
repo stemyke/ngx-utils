@@ -8,11 +8,12 @@ import {
     input,
     OnChanges,
     output,
-    Renderer2,
     signal
 } from "@angular/core";
 import {AsyncMethod, IAsyncMessage} from "../common-types";
 import {TOASTER_SERVICE} from "../tokens";
+import {computedPrevious} from "../utils/signal-utils";
+import {switchClass} from "../utils/misc";
 
 @Directive({
     standalone: false,
@@ -27,28 +28,26 @@ export class AsyncMethodBase implements OnChanges {
     readonly onError = output<IAsyncMessage>();
     readonly toaster = inject(TOASTER_SERVICE);
     readonly cdr = inject(ChangeDetectorRef);
-    readonly renderer = inject(Renderer2);
     readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
 
     readonly loading = signal(false);
     readonly target = signal(this.element.nativeElement);
+    readonly previousTarget = computedPrevious(this.target);
 
     constructor() {
         effect(() => {
-            const disabled = this.disabled();
-            const loading = this.loading();
             const target = this.target();
             if (!target) return;
-            if (disabled) {
-                this.renderer.addClass(target, "disabled");
-            } else {
-                this.renderer.removeClass(target, "disabled");
-            }
-            if (loading) {
-                this.renderer.addClass(target, "loading");
-            } else {
-                this.renderer.removeClass(target, "loading");
-            }
+            switchClass(target, "async-target", true);
+            switchClass(target, "disabled", this.disabled());
+            switchClass(target, "loading", this.loading());
+        });
+        effect(() => {
+            const previous = this.previousTarget();
+            if (!previous) return;
+            switchClass(previous, "async-target", false);
+            switchClass(previous, "disabled", false);
+            switchClass(previous, "loading", false);
         });
     }
 

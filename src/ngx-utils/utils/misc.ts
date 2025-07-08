@@ -2,6 +2,16 @@ import {Type, ValueProvider, ɵComponentDef as ComponentDef} from "@angular/core
 import {CssSelector, CssSelectorList} from "../common-types";
 import {DYNAMIC_ENTRY_COMPONENTS} from "../tokens";
 
+export function switchClass(elem: HTMLElement, className: string, status?: boolean): void {
+    if (!elem?.classList) return;
+    status = status ?? !elem.classList.contains(className);
+    if (status) {
+        elem.classList.add(className);
+        return;
+    }
+    elem.classList.remove(className);
+}
+
 export function getCssVariables(elem: HTMLElement): Record<string, string> {
     if ("computedStyleMap" in elem) {
         const styles = Array.from(elem.computedStyleMap() as any) as [string, string][];
