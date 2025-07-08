@@ -585,7 +585,7 @@ export interface IApiService extends IHttpService {
     put(url: string, body?: any, options?: IRequestOptions): Promise<any>;
     patch(url: string, body?: any, options?: IRequestOptions): Promise<any>;
     upload(url: string, body: any, listener?: ProgressListener, options?: IRequestOptions): Promise<any>;
-    list(url: string, params: IHttpParams): Promise<IPaginationData>;
+    list(url: string, params: IHttpParams, options?: IRequestOptions): Promise<IPaginationData>;
 }
 
 // --- OpenApi service ---
