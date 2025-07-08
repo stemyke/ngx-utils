@@ -133,9 +133,9 @@ export class BaseHttpService implements IHttpService {
         return this.toPromise(url, options, listener);
     }
 
-    protected listPromise(url: string, params: IHttpParams): Promise<IPaginationData> {
+    protected listPromise(url: string, options?: IRequestOptions): Promise<IPaginationData> {
         return new Promise<IPaginationData>(resolve => {
-            this.getPromise(url, {params: params}).then(data => {
+            this.getPromise(url, options).then(data => {
                 if (ObjectUtils.isArray(data)) {
                     resolve({
                         total: data.length,

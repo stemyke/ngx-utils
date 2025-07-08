@@ -46,7 +46,9 @@ export class ApiService extends BaseHttpService implements IApiService {
         return this.uploadPromise(url, body, listener, options);
     }
 
-    list(url: string, params: IHttpParams): Promise<IPaginationData> {
-        return this.listPromise(url, params);
+    list(url: string, params: IHttpParams, options?: IRequestOptions): Promise<IPaginationData> {
+        options = options || {};
+        options.params = Object.assign(options.params || {}, params || {});
+        return this.listPromise(url, options);
     }
 }
