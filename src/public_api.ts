@@ -51,6 +51,7 @@ export {
     ButtonType,
     ButtonSize,
     ButtonProps,
+    TabValue,
     TabOption,
     ChipValue,
     ChipStatus,

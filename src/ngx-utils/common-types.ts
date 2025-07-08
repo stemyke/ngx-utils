@@ -263,8 +263,10 @@ export interface ButtonProps {
 
 // --- Tabs ---
 
+export type TabValue = string | number;
+
 export interface TabOption extends Omit<Partial<ButtonProps>, "size" | "state" | "style"> {
-    value: string;
+    value: TabValue;
     classes?: string | string[];
 }
 

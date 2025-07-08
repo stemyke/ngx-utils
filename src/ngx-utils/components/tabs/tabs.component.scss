@@ -1,6 +1,8 @@
 .ui-tabs {
 
-    --tabs-bg: var(--primary-color, var(--bs-primary, #666666));
+    --tabs-color: var(--primary-color, var(--bs-primary, var(--mat-sys-primary, #666666)));
+    --tabs-border-radius: var(--border-radius, var(--mat-sys-corner-full, 5px));
+    --tabs-bg: var(--tabs-color);
     --tabs-margin: 5px;
     --tabs-padding: 5px;
 
@@ -16,8 +18,8 @@
         position: absolute;
         inset: 0;
         background: var(--tabs-bg);
+        border-radius: var(--tabs-border-radius);
         opacity: 0.25;
-        border-radius: 5px;
         z-index: 0;
     }
 
@@ -32,5 +34,5 @@
 }
 
 .ui-tabs.type-secondary {
-    --tabs-bg: var(--secondary-color, var(--bs-secondary, #666666));
+    --tabs-color: var(--secondary-color, var(--bs-secondary, var(--mat-sys-secondary, #666666)));
 }

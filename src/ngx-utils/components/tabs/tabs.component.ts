@@ -5,11 +5,11 @@ import {
     contentChildren, effect,
     inject,
     input,
-    model,
+    model, output,
     Renderer2,
     ViewEncapsulation
 } from "@angular/core";
-import {ButtonSize, ButtonType, TabOption} from "../../common-types";
+import {ButtonSize, ButtonType, TabOption, TabValue} from "../../common-types";
 import {TabsItemDirective} from "../../directives/tabs-item.directive";
 
 export interface ExtendedTabOption extends TabOption {
@@ -27,11 +27,12 @@ export interface ExtendedTabOption extends TabOption {
 })
 export class TabsComponent {
 
-    readonly value = model()
+    readonly value = model<TabValue>();
     readonly options = input<TabOption[]>([]);
     readonly type = input("primary" as ButtonType);
     readonly size = input("normal" as ButtonSize);
     readonly tabItems = contentChildren(TabsItemDirective);
+    readonly selectedChange = output<TabOption>();
     readonly renderer = inject(Renderer2);
 
     readonly tabs = computed(() => {
@@ -76,5 +77,6 @@ export class TabsComponent {
 
     select(option: TabOption): void {
         this.value.set(option.value);
+        this.selectedChange.emit(option);
     }
 }
