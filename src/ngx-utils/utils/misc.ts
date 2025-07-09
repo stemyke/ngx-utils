@@ -2,6 +2,10 @@ import {Type, ValueProvider, ɵComponentDef as ComponentDef} from "@angular/core
 import {CssSelector, CssSelectorList} from "../common-types";
 import {DYNAMIC_ENTRY_COMPONENTS} from "../tokens";
 
+export function isBrowser(): boolean {
+    return typeof window !== "undefined";
+}
+
 export function switchClass(elem: HTMLElement, className: string, status?: boolean): void {
     if (!elem?.classList) return;
     status = status ?? !elem.classList.contains(className);
