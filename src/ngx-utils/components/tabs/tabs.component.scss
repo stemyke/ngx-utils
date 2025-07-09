@@ -1,7 +1,7 @@
 .ui-tabs {
 
     --tabs-color: var(--primary-color, var(--bs-primary, var(--mat-sys-primary, #666666)));
-    --tabs-border-radius: var(--border-radius, var(--mat-sys-corner-full, 5px));
+    --tabs-border-radius: var(--element-radius, var(--mat-sys-corner-full, 5px));
     --tabs-bg: var(--tabs-color);
     --tabs-margin: 5px;
     --tabs-padding: 5px;
