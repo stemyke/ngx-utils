@@ -6,10 +6,9 @@ export class LoaderUtils {
 
     static loadScript(src: string, async: boolean = false, type: ScriptType = "text/javascript", parent?: Node) {
         return LoaderUtils.loadElement(src, parent, () => {
-            const time = new Date().getTime();
             const script = document.createElement("script");
             script.type = type;
-            script.src = src?.startsWith("data:") ? src : `${src}?time=${time}`;
+            script.src = LoaderUtils.updateSrc(src);
             script.async = async;
             return script;
         });
@@ -17,13 +16,21 @@ export class LoaderUtils {
 
     static loadStyle(src: string, parent?: Node) {
         return LoaderUtils.loadElement(src, parent, () => {
-            const time = new Date().getTime();
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.type = "text/css";
-            link.href = src?.startsWith("data:") ? src : `${src}?time=${time}`;
+            link.href = LoaderUtils.updateSrc(src);
             return link;
         });
+    }
+
+    private static updateSrc(src: string) {
+        if (src?.startsWith("data:")) {
+            return src;
+        }
+        const url = new URL(src);
+        url.searchParams.set("time", String(Date.now()));
+        return url.toString();
     }
 
     private static loadElement<T extends ILoadableElement>(src: string, parent: Node, setup: () => T): Promise<T> {
