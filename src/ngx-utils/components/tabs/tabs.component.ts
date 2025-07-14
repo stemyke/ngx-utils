@@ -45,7 +45,7 @@ export class TabsComponent {
         const current = this.value();
         this.tabItems().forEach(item => {
             const value = item.value();
-            switchClass(item.element?.nativeElement, "hidden-tab", current === value);
+            switchClass(item.element?.nativeElement, "hidden-tab", current !== value);
 
             if (options.some(o => o.value === value)) return;
 
