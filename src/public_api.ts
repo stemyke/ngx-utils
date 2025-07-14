@@ -271,6 +271,7 @@ export {DropdownDirective} from "./ngx-utils/directives/dropdown.directive";
 export {DropdownContentDirective} from "./ngx-utils/directives/dropdown-content.directive";
 export {DropdownToggleDirective} from "./ngx-utils/directives/dropdown-toggle.directive";
 export {TabsItemDirective} from "./ngx-utils/directives/tabs-item.directive";
+export {TabsTemplateDirective} from "./ngx-utils/directives/tabs-template.directive";
 export {UnorderedListItemDirective} from "./ngx-utils/directives/unordered-list-item.directive";
 export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-list-template.directive";
 

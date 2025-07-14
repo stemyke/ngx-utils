@@ -52,6 +52,7 @@ import {DropdownDirective} from "./directives/dropdown.directive";
 import {DropdownContentDirective} from "./directives/dropdown-content.directive";
 import {DropdownToggleDirective} from "./directives/dropdown-toggle.directive";
 import {TabsItemDirective} from "./directives/tabs-item.directive";
+import {TabsTemplateDirective} from "./directives/tabs-template.directive";
 import {UnorderedListItemDirective} from "./directives/unordered-list-item.directive";
 import {UnorderedListTemplateDirective} from "./directives/unordered-list-template.directive";
 
@@ -156,6 +157,7 @@ export const directives = [
     DropdownContentDirective,
     DropdownToggleDirective,
     TabsItemDirective,
+    TabsTemplateDirective,
     UnorderedListItemDirective,
     UnorderedListTemplateDirective
 ];

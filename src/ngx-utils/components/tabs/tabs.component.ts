@@ -2,18 +2,21 @@ import {
     ChangeDetectionStrategy,
     Component,
     computed,
-    contentChildren, effect,
-    inject,
+    contentChildren,
+    effect,
     input,
-    model, output,
-    Renderer2,
+    model,
+    output, signal,
+    TemplateRef,
     ViewEncapsulation
 } from "@angular/core";
 import {ButtonSize, ButtonType, TabOption, TabValue} from "../../common-types";
 import {TabsItemDirective} from "../../directives/tabs-item.directive";
+import {switchClass} from "../../utils/misc";
 
 export interface ExtendedTabOption extends TabOption {
     active?: boolean;
+    template?: TemplateRef<any>;
     className?: string;
 }
 
@@ -31,28 +34,33 @@ export class TabsComponent {
     readonly options = input<TabOption[]>([]);
     readonly type = input("primary" as ButtonType);
     readonly size = input("normal" as ButtonSize);
+    readonly testId = input("tabs");
+    readonly tabsClass = input("basic-tabs");
     readonly tabItems = contentChildren(TabsItemDirective);
     readonly selectedChange = output<TabOption>();
-    readonly renderer = inject(Renderer2);
+    readonly template = signal<TemplateRef<any>>(null);
 
     readonly tabs = computed(() => {
         const options = Array.from(this.options() || []) as ExtendedTabOption[];
         const current = this.value();
         this.tabItems().forEach(item => {
             const value = item.value();
-            if (current === value) {
-                this.renderer.removeClass(item.element.nativeElement, "hidden-tab");
-            } else {
-                this.renderer.addClass(item.element.nativeElement, "hidden-tab");
-            }
+            switchClass(item.element?.nativeElement, "hidden-tab", current === value);
+
             if (options.some(o => o.value === value)) return;
+
+            const label = item.label();
+
+            if (!label) return;
+
             options.push({
                 value,
+                label,
                 classes: item.classes(),
-                label: item.label(),
                 tooltip: item.tooltip(),
                 icon: item.icon(),
                 disabled: item.disabled(),
+                template: item.template
             });
         });
         options.forEach(o => {
@@ -71,6 +79,10 @@ export class TabsComponent {
             const selectedOption = tabOptions.find(o => o.active);
             if (tabOptions.length && !selectedOption) {
                 this.value.set(tabOptions[0].value);
+                return;
+            }
+            if (selectedOption) {
+                this.template.set(selectedOption.template);
             }
         });
     }

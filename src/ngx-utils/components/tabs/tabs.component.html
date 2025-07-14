@@ -1,10 +1,12 @@
 @let tabList = tabs();
 @let tabType = type();
 @let tabSize = size();
+@let tabTemplate = template();
+@let testIdPrefix = testId() || "tabs";
 @if (tabList.length) {
-    <ul class="ui-tabs" [ngClass]="'type-' + tabType">
+    <ul class="ui-tabs" [ngClass]="[tabsClass(), 'type-' + tabType]" [attr.data-testid]="testIdPrefix">
         @for (option of tabList; track option.value) {
-            <li [ngClass]="option.className">
+            <li [ngClass]="option.className" [attr.data-testid]="testIdPrefix + '-' + option.value">
                 <btn [label]="option.label"
                      [tooltip]="option.tooltip"
                      [icon]="option.icon"
@@ -15,5 +17,10 @@
             </li>
         }
     </ul>
+}
+@if (tabTemplate) {
+    <div class="ui-tab">
+        <ng-container [ngTemplateOutlet]="tabTemplate"></ng-container>
+    </div>
 }
 <ng-content></ng-content>
