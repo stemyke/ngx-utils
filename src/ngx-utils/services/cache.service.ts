@@ -30,7 +30,7 @@ export class CacheService {
     expiresAt(when: Date): Observable<any> {
         const now = new Date().getTime();
         // Prevent negative delay
-        const delay = Math.max(when.getTime() - now, 0);
+        const delay = Math.max(when.getTime() - now, 5);
         return timer(delay);
     }
 
