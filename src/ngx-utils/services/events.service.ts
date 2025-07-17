@@ -1,33 +1,46 @@
-import {EventEmitter, Injectable} from "@angular/core";
+import {Injectable} from "@angular/core";
+import {Subject} from "rxjs";
+import {IUserData} from "../common-types";
 
 @Injectable()
 export class EventsService {
 
-    readonly eventForwarded: EventEmitter<Event>;
-    readonly stickyUpdated: EventEmitter<boolean>;
-    readonly languageChanged: EventEmitter<string>;
-    readonly translationsEnabled: EventEmitter<boolean>;
+    readonly eventForwarded: Subject<Event>;
+    readonly stickyUpdated: Subject<boolean>;
+    readonly languageChanged: Subject<string>;
+    readonly translationsEnabled: Subject<boolean>;
+    readonly userChanged: Subject<any>;
 
     private sticky: boolean;
+    private user: IUserData;
 
-    public get isSticky(): boolean {
+    get isSticky(): boolean {
         return this.sticky;
     }
 
+    get isAuthenticated(): boolean {
+        return !!this.user;
+    }
+
     constructor() {
-        this.eventForwarded = new EventEmitter();
-        this.stickyUpdated = new EventEmitter();
-        this.languageChanged = new EventEmitter();
-        this.translationsEnabled = new EventEmitter();
+        this.eventForwarded = new Subject();
+        this.stickyUpdated = new Subject();
+        this.languageChanged = new Subject();
+        this.translationsEnabled = new Subject();
+        this.userChanged = new Subject();
         this.sticky = false;
+        this.user = null;
+        this.userChanged.subscribe(user => {
+            this.user = user;
+        });
     }
 
     event(e: Event): void {
-        this.eventForwarded.emit(e);
+        this.eventForwarded.next(e);
     }
 
     updateSticky(sticky: boolean): void {
         this.sticky = sticky;
-        this.stickyUpdated.emit(sticky);
+        this.stickyUpdated.next(sticky);
     }
 }

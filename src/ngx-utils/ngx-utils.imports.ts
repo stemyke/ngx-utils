@@ -27,6 +27,7 @@ import {StateService} from "./services/state.service";
 import {StaticLanguageService} from "./services/static-language.service";
 import {StorageService} from "./services/storage.service";
 import {BaseToasterService} from "./services/base-toaster.service";
+import {CacheService} from "./services/cache.service";
 import {ComponentLoaderService} from "./services/component-loader.service";
 import {TranslatedUrlSerializer} from "./services/translated-url.serializer";
 import {UniversalService} from "./services/universal.service";
@@ -207,6 +208,7 @@ export const providers = [
     StaticLanguageService,
     StorageService,
     BaseToasterService,
+    CacheService,
     ComponentLoaderService,
     TranslatedUrlSerializer,
     UniversalService,

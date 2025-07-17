@@ -1,3 +1,4 @@
+import {MaybeArray} from "../helper-types";
 
 export type FilterPredicate = (value: any, key?: any, target?: any, source?: any) => boolean;
 export type IterateCallback = (value: any, key: any) => void;
@@ -213,6 +214,10 @@ export class ObjectUtils {
         return typeof value === "string";
     }
 
+    static isStringWithValue(value: any): value is string {
+        return ObjectUtils.isString(value) && value.length > 0;
+    }
+
     static isFunction(value: any): value is Function {
         return typeof value === "function";
     }
@@ -240,7 +245,7 @@ export class ObjectUtils {
         }
     }
 
-    static isArray(value: any): value is Array<any> {
+    static isArray<T, U>(value: MaybeArray<T> | ReadonlyArray<T> | U): value is T[] {
         return Array.isArray(value);
     }
 

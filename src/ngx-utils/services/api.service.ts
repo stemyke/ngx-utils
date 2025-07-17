@@ -1,8 +1,14 @@
 import {Injectable} from "@angular/core";
 
-import {IApiService, IHttpParams, IRequestOptions, ProgressListener} from "../common-types";
+import {
+    HttpRequestOptions,
+    HttpRequestQuery,
+    IApiService,
+    IPaginationData,
+    ProgressListener,
+    UploadData
+} from "../common-types";
 import {BaseHttpService} from "./base-http.service";
-import {IPaginationData} from "../common-types";
 import {SOCKET_IO_PATH} from "../tokens";
 
 @Injectable()
@@ -22,31 +28,31 @@ export class ApiService extends BaseHttpService implements IApiService {
         return baseUrl;
     }
 
-    get(url: string, options?: IRequestOptions, body?: any): Promise<any> {
+    get(url: string, options?: HttpRequestOptions, body?: any): Promise<any> {
         return this.getPromise(url, options, body);
     }
 
-    delete(url: string, options?: IRequestOptions, body?: any): Promise<any> {
+    delete(url: string, options?: HttpRequestOptions, body?: any): Promise<any> {
         return this.deletePromise(url, options, body);
     }
 
-    post(url: string, body?: any, options?: IRequestOptions): Promise<any> {
+    post(url: string, body?: any, options?: HttpRequestOptions): Promise<any> {
         return this.postPromise(url, body, options);
     }
 
-    put(url: string, body?: any, options?: IRequestOptions): Promise<any> {
+    put(url: string, body?: any, options?: HttpRequestOptions): Promise<any> {
         return this.putPromise(url, body, options);
     }
 
-    patch(url: string, body?: any, options?: IRequestOptions): Promise<any> {
+    patch(url: string, body?: any, options?: HttpRequestOptions): Promise<any> {
         return this.patchPromise(url, body, options);
     }
 
-    upload(url: string, body: any, listener?: ProgressListener, options?: IRequestOptions): Promise<any> {
+    upload(url: string, body: UploadData, listener?: ProgressListener, options?: HttpRequestOptions): Promise<any> {
         return this.uploadPromise(url, body, listener, options);
     }
 
-    list(url: string, params: IHttpParams, options?: IRequestOptions): Promise<IPaginationData> {
+    list(url: string, params: HttpRequestQuery, options?: HttpRequestOptions): Promise<IPaginationData> {
         options = options || {};
         options.params = Object.assign(options.params || {}, params || {});
         return this.listPromise(url, options);

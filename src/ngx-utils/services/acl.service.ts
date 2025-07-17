@@ -1,9 +1,9 @@
-import {Inject, Injectable, Injector, Type} from "@angular/core";
+import {Injectable, Injector, Type} from "@angular/core";
 import {StateService} from "./state.service";
-import {IAclComponent, IAuthService, IRouteStateInfo} from "../common-types";
+import {IAclComponent, IRouteStateInfo} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 import {AuthGuard} from "../utils/auth.guard";
-import {AUTH_SERVICE} from "../tokens";
+import {EventsService} from "./events.service";
 
 const emptyGuards: any[] = [];
 
@@ -12,9 +12,11 @@ export class AclService {
 
     protected components: IRouteStateInfo[];
 
-    constructor(readonly injector: Injector, readonly state: StateService, @Inject(AUTH_SERVICE) readonly auth: IAuthService) {
+    constructor(readonly injector: Injector,
+                readonly state: StateService,
+                readonly events: EventsService) {
         this.components = [];
-        this.auth.userChanged.subscribe(() => {
+        this.events.userChanged.subscribe(() => {
             this.components.forEach(t => t.dirty = true);
             const info = this.getStateInfo();
             const check: Promise<boolean> = info && info.guard instanceof AuthGuard ? info.guard.checkRoute(info.route) : Promise.resolve(true);

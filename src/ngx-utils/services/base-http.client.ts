@@ -1,16 +1,16 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpHandler, HttpHeaders, HttpParams, HttpUrlEncodingCodec} from "@angular/common/http";
-import {IHttpHeaders, IHttpParams} from "../common-types";
+import {HttpRequestHeaders, HttpRequestQuery} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 
 @Injectable()
 export class BaseHttpClient extends HttpClient {
 
-    requestHeaders: IHttpHeaders;
-    requestParams: IHttpParams;
+    requestHeaders: HttpRequestHeaders;
+    requestParams: HttpRequestQuery;
     renewTokenFunc: () => void;
 
-    protected extraRequestParams: IHttpParams;
+    protected extraRequestParams: HttpRequestQuery;
 
     constructor(handler: HttpHandler) {
         super(handler);
@@ -21,7 +21,7 @@ export class BaseHttpClient extends HttpClient {
         };
     }
 
-    makeHeaders(headers?: IHttpHeaders, withCredentials: boolean = true): HttpHeaders {
+    makeHeaders(headers?: HttpRequestHeaders, withCredentials: boolean = true): HttpHeaders {
         headers = Object.assign({}, this.requestHeaders, headers);
         const authHeader = headers["Authorization"] as string || "";
         if (!withCredentials && !authHeader.startsWith("Bearer")) {
@@ -30,7 +30,7 @@ export class BaseHttpClient extends HttpClient {
         return new HttpHeaders(headers);
     }
 
-    makeParams(params?: IHttpParams): HttpParams {
+    makeParams(params?: HttpRequestQuery): HttpParams {
         params = Object.assign({}, this.extraRequestParams, this.requestParams, params);
         return new HttpParams({
             encoder: new HttpUrlEncodingCodec(),

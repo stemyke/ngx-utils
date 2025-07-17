@@ -40,7 +40,7 @@ export class StaticLanguageService implements ILanguageService {
 
     set currentLanguage(lang: string) {
         this.currentLang = lang;
-        this.events.languageChanged.emit(lang);
+        this.events.languageChanged.next(lang);
     }
 
     get editLanguage(): string {
@@ -57,7 +57,7 @@ export class StaticLanguageService implements ILanguageService {
 
     set enableTranslations(value: boolean) {
         this.enableTrans = value;
-        this.events.translationsEnabled.emit(value);
+        this.events.translationsEnabled.next(value);
     }
 
     get disableTranslations(): boolean {

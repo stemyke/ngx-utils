@@ -1,7 +1,7 @@
 import {ErrorHandler, Injectable, Injector} from "@angular/core";
 import {UniversalService} from "./universal.service";
 import {ErrorHandlerCallback, IToasterService} from "../common-types";
-import {hashCode} from "../utils/string.utils";
+import {hashCode} from "../utils/misc";
 import {ERROR_HANDLER, TOASTER_SERVICE} from "../tokens";
 
 @Injectable()

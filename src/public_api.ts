@@ -25,6 +25,7 @@ export {
     ILanguageSetting,
     ILanguageSettings,
     ILanguageService,
+    IUserData,
     IAuthService,
     RouteValidator,
     IRouteData,
@@ -88,19 +89,21 @@ export {
     InteractiveDrawFn,
     InteractivePanEvent,
     InteractiveCanvasPointer,
-    IHttpHeaders,
-    IHttpParams,
-    IRequestOptions,
+    HttpRequestHeaders,
+    HttpRequestQuery,
+    HttpClientRequestOptions,
+    HttpRequestOptions,
+    UploadData,
     IIssueContext,
     IProgress,
     ProgressListener,
-    PromiseExecutor,
-    HttpPromise,
+    CacheExpireMode,
     IHttpService,
     IApiService,
-    IOpenApiSchemaProperty,
-    IOpenApiSchema,
-    IOpenApiSchemas,
+    DynamicSchemaRef,
+    OpenApiSchemaProperty,
+    OpenApiSchema,
+    OpenApiSchemas,
     TableFilterType,
     ITableOrders,
     ITableColumn,
@@ -172,6 +175,7 @@ export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
 export {
     isBrowser,
+    hashCode,
     switchClass,
     getCssVariables,
     checkTransitions,
@@ -183,7 +187,7 @@ export {
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
 export {CancelablePromise, cancelablePromise, impatientPromise} from "./ngx-utils/utils/promise.utils";
-export {StringUtils, hashCode} from "./ngx-utils/utils/string.utils";
+export {StringUtils} from "./ngx-utils/utils/string.utils";
 export {SetUtils} from "./ngx-utils/utils/set.utils";
 export {computedPrevious, cssStyles, cssVariables} from "./ngx-utils/utils/signal-utils";
 export {SocketFactory, SocketData, SocketDataValue, SocketDataObj, SocketClient} from "./ngx-utils/utils/socket-client";
@@ -213,6 +217,7 @@ export {IStateInfo, StateService} from "./ngx-utils/services/state.service";
 export {StaticLanguageService} from "./ngx-utils/services/static-language.service";
 export {StorageService} from "./ngx-utils/services/storage.service";
 export {BaseToasterService} from "./ngx-utils/services/base-toaster.service";
+export {CacheService} from "./ngx-utils/services/cache.service";
 export {ComponentLoaderService} from "./ngx-utils/services/component-loader.service";
 export {IUrlDictionary, TranslatedUrlSerializer} from "./ngx-utils/services/translated-url.serializer";
 export {PromiseService} from "./ngx-utils/services/promise.service";

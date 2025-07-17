@@ -1,15 +1,16 @@
 import {Inject, Injectable, OnDestroy} from "@angular/core";
 import {BehaviorSubject, Subscription} from "rxjs";
-import {IApiService, IAuthService} from "../common-types";
+import {IApiService} from "../common-types";
 import {ExtraHeaders, SocketClient, SocketData, SocketDataObj} from "../utils/socket-client";
 import {LoaderUtils} from "../utils/loader.utils";
-import {API_SERVICE, AUTH_SERVICE, SOCKET_IO_PATH} from "../tokens";
+import {API_SERVICE, SOCKET_IO_PATH} from "../tokens";
+import {EventsService} from "./events.service";
 
 @Injectable()
 export class SocketService implements OnDestroy {
 
     protected client: SocketClient;
-    protected authSub: Subscription;
+    protected userSub: Subscription;
 
     get status(): BehaviorSubject<boolean> {
         return this.client.status;
@@ -19,9 +20,9 @@ export class SocketService implements OnDestroy {
         return this.client.id;
     }
 
-    constructor(@Inject(AUTH_SERVICE) readonly auth: IAuthService,
-                @Inject(API_SERVICE) readonly api: IApiService,
-                @Inject(SOCKET_IO_PATH) protected ioPath: string) {
+    constructor(@Inject(API_SERVICE) readonly api: IApiService,
+                @Inject(SOCKET_IO_PATH) protected ioPath: string,
+                protected events: EventsService) {
 
         const url = this.api.url(this.ioPath);
         this.client = new SocketClient(url, async () => {
@@ -37,25 +38,25 @@ export class SocketService implements OnDestroy {
     }
 
     withAuth(extraHeaders: ExtraHeaders = {}): void {
-        this.authSub = this.auth.userChanged.subscribe(user => {
+        this.userSub = this.events.userChanged.subscribe(user => {
             if (user) {
                 this.connect(extraHeaders);
                 return;
             }
             this.disconnect();
         });
-        if (this.auth.isAuthenticated) {
+        if (this.events.isAuthenticated) {
             this.connect(extraHeaders);
         }
     }
 
     ngOnDestroy(): void {
-        this.authSub?.unsubscribe();
+        this.userSub?.unsubscribe();
         this.disconnect();
     }
 
     connect(extraHeaders: ExtraHeaders = {}): void {
-        if (this.authSub && this.auth.isAuthenticated) {
+        if (this.userSub && this.events.isAuthenticated) {
             extraHeaders = {
                 ...(extraHeaders || {}),
                 ...Object.entries(this.api.client.requestHeaders || {}).reduce((res, entry) => {

@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 
-import {IRequestOptions} from "../common-types";
+import {HttpClientRequestOptions, IConfiguration} from "../common-types";
 import {BaseHttpService} from "./base-http.service";
 
 @Injectable()
@@ -12,26 +12,31 @@ export class LocalHttpService extends BaseHttpService {
         return "local-http";
     }
 
+    get config(): IConfiguration {
+        return this.configs.config;
+    }
+
     protected get withCredentials(): boolean {
         return false;
     }
 
     protected initService(): void {
+        super.initService();
         this.images = {};
     }
 
     url(url: string): string {
         if (!url) return url;
-        const config = this.configs.config;
+        const config = this.config;
         const baseUrl = config.cdnUrl || config.baseUrl || "";
         return url.startsWith("data:") || url.startsWith("http") || url.startsWith("//")
             ? url
             : `${baseUrl}${url}`;
     }
 
-    get(url: string, options?: IRequestOptions): Promise<any> {
-        this.cache[url] = this.cache[url] || this.getPromise(url, options);
-        return this.cache[url];
+    get(url: string, options?: HttpClientRequestOptions, body?: any): Promise<any> {
+        options = this.makeOptions(options, "GET", body, this.caches.permanent);
+        return this.toPromise(url, options);
     }
 
     getImage(url: string): Promise<HTMLImageElement> {

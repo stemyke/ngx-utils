@@ -1,7 +1,9 @@
 import {ElementRef, EventEmitter, InjectionToken, Injector, NgZone, Provider, TemplateRef, Type} from "@angular/core";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {ActivatedRouteSnapshot, Data, LoadChildrenCallback, Route, Routes, UrlTree} from "@angular/router";
+import {Observable} from "rxjs";
 import {DurationLikeObject} from "luxon";
+
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
 import {StringKeys} from "./helper-types";
@@ -82,9 +84,15 @@ export interface ILanguageService {
 }
 
 // --- Auth Service ---
+export interface IUserData {
+    _id?: string;
+    id?: string;
+    email?: string;
+    [key: string]: any;
+}
+
 export interface IAuthService {
     isAuthenticated: boolean;
-    userChanged: EventEmitter<any>;
     checkAuthenticated(): Promise<boolean>;
 }
 
@@ -496,26 +504,54 @@ export interface InteractiveCanvasPointer {
 
 
 // --- Http service ---
-export interface IHttpHeaders {
+export interface HttpRequestHeaders {
     [header: string]: string | string[];
 }
 
-export interface IHttpParams {
+export interface HttpRequestQuery {
     [key: string]: any;
 }
 
-export interface IRequestOptions {
+/**
+ * Base http request options that get sent to backend
+ */
+export interface HttpClientRequestOptions {
     method?: string;
     body?: any;
-    headers?: IHttpHeaders | HttpHeaders;
-    originalHeaders?: IHttpHeaders;
-    params?: IHttpParams;
+    headers?: HttpRequestHeaders | HttpHeaders;
+    originalHeaders?: HttpRequestHeaders;
+    params?: HttpRequestQuery;
     observe?: "body" | "response";
+    /**
+     * Used for uploads
+     */
     reportProgress?: boolean;
+    /**
+     * Specifies the type of response
+     */
     responseType?: "arraybuffer" | "blob" | "json" | "text";
     withCredentials?: boolean;
     timeout?: number;
 }
+
+/**
+ * Extended http request options that the consumer can use
+ */
+export interface HttpRequestOptions extends HttpClientRequestOptions {
+    /**
+     * Read a specific property from the body if observe equals to 'body' and responseType equals to 'json'
+     */
+    read?: string;
+    /**
+     * Specifies when the cache for the request expires as an Observable
+     */
+    cache?: Observable<any>;
+}
+
+/**
+ * Defines the type of uploadable content
+ */
+export type UploadData = Record<string, any> | ArrayBuffer | FormData;
 
 export interface IIssueContext {
     url: string;
@@ -529,90 +565,66 @@ export interface IProgress {
 
 export type ProgressListener = (progress: IProgress) => void;
 
-export type PromiseExecutor = (resolve: (value?: any | PromiseLike<any>) => void, reject: (reason?: any) => void) => void;
-
-export class HttpPromise extends Promise<any> {
-
-    protected rejectHandler: (reason?: HttpErrorResponse) => void;
-    protected hasRejectHandler: boolean;
-    protected attachCount: number;
-    protected runCount: number;
-
-    constructor(rejectHandler: (reason?: HttpErrorResponse) => void, executor: PromiseExecutor) {
-        super(executor);
-        this.rejectHandler = rejectHandler;
-        this.attachCount = 0;
-        this.runCount = 0;
-    }
-
-    then<TResult1, TResult2>(onFulfilled?: ((value: any) => (PromiseLike<TResult1> | TResult1)) | null | undefined,
-                             onRejected?: ((reason: HttpErrorResponse) => (PromiseLike<TResult2> | TResult2)) | null | undefined): Promise<TResult1 | TResult2> {
-        this.attachCount++;
-        return super.then(value => {
-            this.runCount++;
-            return onFulfilled ? onFulfilled(value) : null;
-        }, (reason: HttpErrorResponse) => {
-            const result: any = onRejected ? onRejected(reason) : null;
-            this.hasRejectHandler = this.hasRejectHandler || (onRejected && result !== false);
-            this.runCount++;
-            this.rejectHandler(this.runCount == this.attachCount && !this.hasRejectHandler ? reason : null);
-            return result;
-        });
-    }
-
-    catch<TResult = never>(onRejected?: ((reason: HttpErrorResponse) => (PromiseLike<TResult> | TResult)) | null | undefined): Promise<any | TResult> {
-        return this.then(null, onRejected);
-    }
-}
+export type CacheExpireMode = boolean | "auth" | Date;
 
 export interface IHttpService {
     language: ILanguageService;
+    cached(mode: CacheExpireMode): Observable<any>;
     url(url: string): string;
-    makeListParams(page: number, itemsPerPage: number, orderBy?: string, orderDescending?: boolean, filter?: string): IHttpParams;
+    makeListParams(page: number, itemsPerPage: number, orderBy?: string, orderDescending?: boolean, filter?: string): HttpRequestQuery;
 }
 
 // --- Api service ---
 
 export interface IBaseHttpClient extends HttpClient {
-    readonly requestHeaders: IHttpHeaders;
-    readonly requestParams: IHttpParams;
+    readonly requestHeaders: HttpRequestHeaders;
+    readonly requestParams: HttpRequestQuery;
 }
 
 export interface IApiService extends IHttpService {
-    cache: any;
     client: IBaseHttpClient;
-    get(url: string, options?: IRequestOptions): Promise<any>;
-    delete(url: string, options?: IRequestOptions): Promise<any>;
-    post(url: string, body?: any, options?: IRequestOptions): Promise<any>;
-    put(url: string, body?: any, options?: IRequestOptions): Promise<any>;
-    patch(url: string, body?: any, options?: IRequestOptions): Promise<any>;
-    upload(url: string, body: any, listener?: ProgressListener, options?: IRequestOptions): Promise<any>;
-    list(url: string, params: IHttpParams, options?: IRequestOptions): Promise<IPaginationData>;
+    get(url: string, options?: HttpRequestOptions): Promise<any>;
+    delete(url: string, options?: HttpRequestOptions): Promise<any>;
+    post(url: string, body?: any, options?: HttpRequestOptions): Promise<any>;
+    put(url: string, body?: any, options?: HttpRequestOptions): Promise<any>;
+    patch(url: string, body?: any, options?: HttpRequestOptions): Promise<any>;
+    upload(url: string, body: any, listener?: ProgressListener, options?: HttpRequestOptions): Promise<any>;
+    list(url: string, params: HttpRequestQuery, options?: HttpRequestOptions): Promise<IPaginationData>;
 }
 
 // --- OpenApi service ---
-export interface IOpenApiSchemaProperty {
+export interface DynamicSchemaRef {
+    dynamicSchema?: string;
+    dynamicSchemaUrl?: string;
+    dynamicSchemaName?: string;
+}
+
+export interface OpenApiSchemaRef {
+    $ref?: string;
+}
+
+export interface OpenApiSchemaProperty extends DynamicSchemaRef, OpenApiSchemaRef {
     id: string;
     type?: string;
     format?: string;
     column?: boolean;
     additionalProperties?: any;
-    $ref?: string;
-    allOf?: ReadonlyArray<{$ref?: string}>
-    items?: IOpenApiSchemaProperty;
+    allOf?: ReadonlyArray<OpenApiSchemaRef>;
+    oneOf?: ReadonlyArray<OpenApiSchemaRef>;
+    items?: OpenApiSchemaProperty;
     enum?: string[];
     [key: string]: any;
 }
 
-export interface IOpenApiSchema {
+export interface OpenApiSchema {
     properties: {
-        [name: string]: IOpenApiSchemaProperty;
+        [name: string]: OpenApiSchemaProperty;
     };
     required: string[];
 }
 
-export interface IOpenApiSchemas {
-    [name: string]: IOpenApiSchema;
+export interface OpenApiSchemas {
+    [name: string]: OpenApiSchema;
 }
 
 // --- Dynamic table ---

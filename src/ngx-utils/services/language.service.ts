@@ -17,7 +17,7 @@ export class LanguageService extends StaticLanguageService {
 
     set currentLanguage(lang: string) {
         this.useLanguage(lang).then(() => {
-            this.events.languageChanged.emit(lang);
+            this.events.languageChanged.next(lang);
         });
     }
 
@@ -64,7 +64,7 @@ export class LanguageService extends StaticLanguageService {
         }
         const lang = this.languages.indexOf(defaultLanguage) < 0 ? settings.defaultLanguage || this.languageList[0] : defaultLanguage;
         await this.useLanguage(lang);
-        this.events.languageChanged.emit(lang);
+        this.events.languageChanged.next(lang);
     }
 
     protected async useLanguage(lang: string): Promise<ITranslations> {
