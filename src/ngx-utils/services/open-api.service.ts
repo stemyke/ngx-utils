@@ -44,7 +44,7 @@ export class OpenApiService {
         const props = !property.items ? [property] : [property, property.items];
         const references: Array<OpenApiSchemaRef | DynamicSchemaRef> = [];
         for (const prop of props) {
-            if (this.isDynamicSchema(prop)) {
+            if (this.isDynamicSchema(prop) || ObjectUtils.isStringWithValue(prop.$ref)) {
                 references.push(prop);
                 continue;
             }

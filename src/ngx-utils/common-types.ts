@@ -92,7 +92,7 @@ export interface IUserData {
 }
 
 export interface IAuthService {
-    isAuthenticated: boolean;
+    readonly isAuthenticated: boolean;
     checkAuthenticated(): Promise<boolean>;
 }
 
