@@ -147,6 +147,7 @@ export interface IDialogButtonConfig {
     text?: string;
     classes?: string;
     method?: AsyncMethod;
+    testId?: string;
 }
 
 export interface IDialogConfig {
