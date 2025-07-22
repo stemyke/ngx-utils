@@ -8,6 +8,7 @@ export class StringUtils {
     }
 
     static startsWith(str: string, ...starts: string[]): boolean {
+        if (typeof str !== "string") return false;
         for (let i = 0; i < starts.length; i++) {
             if (str.startsWith(starts[i])) return true;
         }
@@ -15,6 +16,7 @@ export class StringUtils {
     }
 
     static has(str: string, ...parts: string[]): boolean {
+        if (typeof str !== "string") return false;
         for (let i = 0; i < parts.length; i++) {
             if (str.indexOf(parts[i]) >= 0) return true;
         }
@@ -22,11 +24,16 @@ export class StringUtils {
     }
 
     static lcFirst(str: string): string {
-        return str ? str.charAt(0).toLowerCase() + str.substring(1) : "";
+        return typeof str === "string" ? str.charAt(0).toLowerCase() + str.substring(1) : "";
     }
 
     static ucFirst(str: string): string {
-        return str ? str.charAt(0).toUpperCase() + str.substring(1) : "";
+        return typeof str === "string" ? str.charAt(0).toUpperCase() + str.substring(1) : "";
+    }
+
+    static camelize(str: string): string {
+        return StringUtils.ucFirst(str)
+            .replace(/[-.]([a-z])/g, g => g[1].toUpperCase());
     }
 
     static isObjectId(id: string): boolean {
@@ -35,7 +42,7 @@ export class StringUtils {
 
     static parseDomain(baseUrl: string): string {
         try {
-            const url = new URL(baseUrl);
+            const url = new URL(String(baseUrl || ""));
             const port = url.port && url.port !== "443" && url.port !== "80" ? `:${url.port}` : ``;
             return `${url.protocol}//${url.hostname}${port}/`;
         } catch {
