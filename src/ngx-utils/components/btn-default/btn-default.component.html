@@ -1,7 +1,8 @@
-<div class="default-btn btn"
-     async-method-target
-     [title]="!tooltip ? '' : tooltip | translate"
-     [ngClass]="['btn-' + type, 'btn-' + size]">
+<button class="default-btn btn"
+        type="button"
+        async-method-target
+        [title]="!tooltip ? '' : tooltip | translate"
+        [ngClass]="['btn-' + type, bsSize]">
     <icon [name]="icon" *ngIf="icon"></icon>
     <span *ngIf="label">{{ label | translate }}</span>
-</div>
+</button>

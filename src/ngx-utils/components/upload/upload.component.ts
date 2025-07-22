@@ -1,14 +1,12 @@
 import {
     ChangeDetectorRef,
-    Component,
-    ContentChild,
+    Component, ElementRef,
     EventEmitter,
     forwardRef,
     Inject,
     Input,
     OnChanges,
-    Output,
-    TemplateRef,
+    Output, ViewChild,
     ViewEncapsulation
 } from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
@@ -16,18 +14,15 @@ import {HttpErrorResponse, HttpEventType, HttpResponse} from "@angular/common/ht
 import {lastValueFrom} from "rxjs";
 import {map} from "rxjs/operators";
 
-import {
-    IApiService,
-    IFileUploadProcess,
-    IFileUploadResult,
-    IToasterService,
-    UploadType
-} from "../../common-types";
+import {IApiService, IFileUploadProcess, IFileUploadResult, IToasterService, UploadType} from "../../common-types";
+import {API_SERVICE, TOASTER_SERVICE} from "../../tokens";
+
 import {ArrayUtils} from "../../utils/array.utils";
 import {ObjectUtils} from "../../utils/object.utils";
 import {FileUtils} from "../../utils/file.utils";
 import {BaseHttpClient} from "../../services/base-http.client";
-import {API_SERVICE, TOASTER_SERVICE} from "../../tokens";
+import {BtnComponent} from "../btn/btn.component";
+import {getRoot} from "../../utils/misc";
 
 @Component({
     standalone: false,
@@ -56,6 +51,9 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
     @Output() onUploaded: EventEmitter<IFileUploadResult[]>;
     @Output() onRemove: EventEmitter<UploadType[]>;
 
+    @ViewChild("uploadBtn")
+    uploadBtn: BtnComponent;
+
     acceptAttr: string;
     isImage: boolean;
     dropAllowed: boolean;
@@ -63,11 +61,8 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
 
     onChange: Function;
     onTouched: Function;
-    remove: (index?: number) => void;
 
-    @ContentChild("uploadButton")
-    uploadButton: TemplateRef<any>;
-
+    protected rootElem: DocumentOrShadowRoot
     protected fileImageCache: Map<Blob, string>;
     protected acceptTypes: string[];
 
@@ -75,8 +70,14 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         return this.api.client as BaseHttpClient;
     }
 
+    get root(): DocumentOrShadowRoot {
+        this.rootElem = this.rootElem || getRoot(this.element.nativeElement);
+        return this.rootElem;
+    }
+
     constructor(
-        private cdr: ChangeDetectorRef,
+        readonly cdr: ChangeDetectorRef,
+        readonly element: ElementRef<HTMLElement>,
         @Inject(API_SERVICE) private api: IApiService,
         @Inject(TOASTER_SERVICE) private toaster: IToasterService
     ) {
@@ -91,30 +92,35 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         };
         this.onTouched = () => {
         };
-        this.remove = index => {
-            if (this.multiple) {
-                const current = Array.from((this.value as UploadType[]) || []);
-                current.splice(index, 1);
-                this.writeValue(current);
-                this.onRemove.emit(current);
-            }
-            this.writeValue(null);
-            this.onRemove.emit([]);
-        };
     }
 
     onDragEnter(ev: DragEvent): void {
-        const types = Array.from(ev.dataTransfer.items || [])
-            .filter(t => t.kind == "file")
-            .map(t => t.type.toLowerCase());
-        types.push(...Array.from(ev.dataTransfer.files || []).map(f => f.type.toLowerCase()));
-        if (!types.some(type => ArrayUtils.has(this.acceptTypes, type))) {
+        if (this.disabled) {
             ev.preventDefault();
             return;
         }
-        ev.dataTransfer.effectAllowed = "copy";
-        ev.dataTransfer.dropEffect = "copy";
-        this.dropAllowed = true;
+        const transfer = ev.dataTransfer;
+        let length = transfer.items?.length ?? 0;
+        for (let i = 0; i < length; i++) {
+            const item = transfer.items[i];
+            if (this.checkType(item.type)) {
+                ev.dataTransfer.effectAllowed = "copy";
+                ev.dataTransfer.dropEffect = "copy";
+                this.dropAllowed = true;
+                return;
+            }
+        }
+        length = transfer.files?.length ?? 0;
+        for (let i = 0; i < length; i++) {
+            const file = transfer.files[i];
+            if (this.checkType(file.type)) {
+                ev.dataTransfer.effectAllowed = "copy";
+                ev.dataTransfer.dropEffect = "copy";
+                this.dropAllowed = true;
+                return;
+            }
+        }
+        ev.preventDefault();
     }
 
     onDrop(): void {
@@ -123,11 +129,12 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
 
     ngOnChanges(): void {
         this.accept = this.accept || "";
-        this.acceptTypes = ObjectUtils.isString(this.accept) && this.accept.length > 0
-            ? this.accept.toLowerCase().split(",")
+        this.acceptTypes = ObjectUtils.isStringWithValue(this.accept)
+            ? this.accept.split(",")
             : (ObjectUtils.isArray(this.accept) ? this.accept : []);
-        this.acceptAttr = this.acceptTypes.join(",");
-        this.isImage = /(png|jpg|jpeg|webp|gif)/gi.test(this.acceptAttr);
+        this.acceptTypes = this.acceptTypes.map(t => t.split("/").pop().replace(/\./, ""));
+        this.acceptAttr = this.acceptTypes.map(t => `.${t}`).join(",");
+        this.isImage = ArrayUtils.has(this.acceptTypes, "png", "jpg", "jpeg", "webp", "gif");
         this.cdr.markForCheck();
     }
 
@@ -151,9 +158,20 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         this.cdr.markForCheck();
     }
 
+    removeItem(index?: number): void {
+        if (this.multiple) {
+            const current = Array.from((this.value as UploadType[]) || []);
+            current.splice(index, 1);
+            this.writeValue(current);
+            this.onRemove.emit(current);
+            return;
+        }
+        this.writeValue(null);
+        this.onRemove.emit([]);
+    }
+
     onInputClick(ev: MouseEvent): void {
-        const top = document.elementFromPoint(ev.clientX, ev.clientY);
-        if (ev.target !== top && !this.processing) return;
+        if (this.uploadBtn.contains(this.root.activeElement) && !this.processing) return;
         ev.preventDefault();
     }
 
@@ -171,14 +189,9 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         const files: File[] = [];
         for (let i = 0; i < length; i++) {
             const file = input.files.item(i);
-            if (this.acceptTypes.length == 0) {
+            if (this.checkType(file.type)) {
                 files.push(file);
-                continue;
             }
-            const type = file.type.toLowerCase();
-            const ext = FileUtils.getExtension(file);
-            if (!ArrayUtils.has(this.acceptTypes, type, ext)) continue;
-            files.push(file);
         }
         if (files.length == 0) {
             this.toaster.error("message.invalid-files.error");
@@ -186,7 +199,10 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         }
         this.processFiles(this.multiple ? files : files.slice(0, 1)).then(results => {
             const ids = results.map(t => t.file || t._id || t.id);
-            this.writeValue(this.multiple ? ids : (ids[0] || null));
+            this.writeValue(this.multiple
+                ? Array.from(this.value as UploadType[]).concat(ids)
+                : (ids[0] || this.value)
+            );
             this.onUploaded.emit(results);
         });
         input.value = "";
@@ -202,16 +218,9 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         const url = !image ? null : image.imageUrl || image;
         if (!ObjectUtils.isString(url)) return null;
         if (url.startsWith("data:")) return url;
-        const baseUrl = this.baseUrl;
+        const baseUrl = this.baseUrl || this.api.url("assets");
         const query = this.isImage ? `?type=preview` : ``;
-        if (!baseUrl) {
-            return `${url}${query}`;
-        }
         return `${baseUrl}/${url}${query}`;
-    }
-
-    getBgUrl(image: any): string {
-        return `url('${this.getUrl(image)}')`;
     }
 
     async processFiles(files: File[]): Promise<IFileUploadResult[]> {
@@ -231,7 +240,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
                 progress: 0
             };
             process.promise = FileUtils.getFilePreview(file).then(preview => {
-                process.preview = `url('${preview}')`;
+                process.preview = preview;
                 this.fileImageCache.set(file, preview);
                 this.cdr.detectChanges();
             });
@@ -271,5 +280,11 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         this.processing = null;
         this.cdr.detectChanges();
         return results.filter(r => r !== null);
+    }
+
+    protected checkType(type: string): boolean {
+        if (this.acceptTypes.length == 0) return true;
+        type = type.split("/").pop().replace(/\./g, "");
+        return this.acceptTypes.includes(type);
     }
 }

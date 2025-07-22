@@ -1,4 +1,4 @@
-.pagination-menu {
+.pg-menu {
     --pg-border-size: var(--border-size, 1px);
     --pg-bg-color: var(--bg-color, #ffffff);
     --pg-border-color: var(--border-color, #ced4da);
@@ -22,7 +22,7 @@
         box-sizing: border-box;
     }
 
-    ul {
+    ul.pg-list {
         margin: 0;
         padding: 0;
         list-style: none;

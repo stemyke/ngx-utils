@@ -29,10 +29,6 @@
         box-sizing: border-box;
     }
 
-    &.disabled {
-        opacity: .75;
-    }
-
     .chips-input {
         background: var(--chips-bg-color);
         padding: var(--chips-padding);
@@ -60,7 +56,7 @@
         color: var(--chips-text-color);
         border: var(--chips-border-size) solid rgba(0, 0, 0, .2);
         border-radius: var(--chips-border-radius);
-        padding: var(--chips-padding-vertical) var(--chips-btn-padding);
+        padding: var(--chips-padding-vertical) var(--chips-btn-gap) var(--chips-padding-vertical) var(--chips-btn-padding);
         user-select: none;
         font-weight: normal;
         outline: none;
@@ -69,6 +65,7 @@
         justify-content: center;
         align-items: center;
         line-height: 1.2rem;
+        text-decoration: none;
     }
 
     .chips-button.chips-valid {
@@ -97,23 +94,12 @@
         white-space: nowrap;
     }
 
-    .chips-remove {
-        position: relative;
-        background: rgba(0, 0, 0, 0.2);
-        margin-right: calc(var(--chips-btn-gap) * -1);
-        width: 1.2rem;
-        height: 1.2rem;
-        font-size: 12px;
-        cursor: pointer;
-        border-radius: 5px;
-    }
+    &.disabled {
+        opacity: .75;
 
-    .chips-remove:after {
-        content: "✖";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        translate: -50% -50%;
+        .chips-button {
+            padding-right: var(--chips-btn-padding);
+        }
     }
 }
 

@@ -18,7 +18,7 @@
                          referrerpolicy="no-referrer" [attr.alt]="item.label">
                 </span>
                 <span class="chips-label">{{ item.label }} </span>
-                <span class="chips-remove" (click)="removeItem($event, ix)" *ngIf="!disabled"></span>
+                <close-btn class="chips-remove" (click)="removeItem($event, ix)" *ngIf="!disabled"></close-btn>
             </a>
         </ng-container>
     </div>

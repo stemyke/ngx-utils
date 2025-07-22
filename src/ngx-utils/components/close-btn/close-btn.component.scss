@@ -1,0 +1,36 @@
+close-btn {
+
+    --close-bg: var(--primary-color, rgba(0, 0, 0, 0.3));
+    --close-color: #ffffff;
+    --close-size: 18px;
+    --close-distance: 4px;
+    --close-spacing: 8px;
+
+    position: relative;
+    display: block;
+    width: var(--close-size);
+    height: var(--close-size);
+
+    cursor: pointer;
+    transition: 0.2s ease;
+    background-color: var(--close-bg);
+    border-radius: 50%;
+
+    &:before, &:after {
+        --rotation: 45deg;
+
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: calc(100% - var(--close-spacing));
+        transform: translate(-50%, -50%) rotate(var(--rotation));
+        height: 1px;
+        background: var(--close-color);
+        transition: 0.2s ease;
+    }
+
+    &:after {
+        --rotation: -45deg;
+    }
+}

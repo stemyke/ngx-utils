@@ -7,6 +7,17 @@ export function isBrowser(): boolean {
 }
 
 /**
+ * Returns an elements root
+ * @param {HTMLElement} elem The element which root we need
+ * @return {DocumentOrShadowRoot} The document or the elements shadow root
+ */
+export function getRoot(elem: HTMLElement): DocumentOrShadowRoot {
+    if (!isBrowser()) return null;
+    const root: ShadowRoot = elem?.getRootNode() as any;
+    return root || document;
+}
+
+/**
  * Returns a hash code from anything
  * @param  {string} obj The object to hash.
  * @return {number} A 32bit integer

@@ -1,4 +1,12 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, ViewEncapsulation} from "@angular/core";
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    ElementRef,
+    inject,
+    input,
+    ViewEncapsulation
+} from "@angular/core";
 import {ButtonProps, ButtonSize, ButtonType} from "../../common-types";
 import {BUTTON_TYPE} from "../../tokens";
 
@@ -19,6 +27,7 @@ export class BtnComponent {
     readonly size = input("normal" as ButtonSize);
 
     readonly buttonType = inject(BUTTON_TYPE);
+    readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
 
     readonly buttonProps = computed<ButtonProps>(() => {
         return {
@@ -30,5 +39,9 @@ export class BtnComponent {
             size: this.size()
         };
     });
+
+    contains(target: EventTarget): boolean {
+        return !(target instanceof HTMLElement) || this.element.nativeElement?.contains(target);
+    }
 
 }

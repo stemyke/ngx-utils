@@ -17,4 +17,8 @@ export class BtnDefaultComponent implements ButtonProps {
     @Input() type: ButtonType;
     @Input() size: ButtonSize;
 
+    get bsSize(): string {
+        return this.size === "small" ? "btn-sm" : "btn-md";
+    }
+
 }

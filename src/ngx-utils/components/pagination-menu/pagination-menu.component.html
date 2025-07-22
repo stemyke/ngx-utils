@@ -1,5 +1,5 @@
-<div class="pagination-menu" *ngIf="pagination.total > pagination.itemsPerPage">
-    <ul class="pagination">
+<div class="pg-menu" *ngIf="pagination.total > pagination.itemsPerPage">
+    <ul class="pg-list">
         <li class="page-item" [ngClass]="{disabled: !hasPrev}" *ngIf="boundaryLinks">
             <a class="page-link boundary-link previous" (click)="paginate(1)"></a>
         </li>

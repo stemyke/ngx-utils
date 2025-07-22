@@ -90,6 +90,7 @@ import {ValuesPipe} from "./pipes/values.pipe";
 import {BtnComponent} from "./components/btn/btn.component";
 import {BtnDefaultComponent} from "./components/btn-default/btn-default.component";
 import {ChipsComponent} from "./components/chips/chips.component";
+import {CloseBtnComponent} from "./components/close-btn/close-btn.component";
 import {DropListComponent} from "./components/drop-list/drop-list.component";
 import {DropdownBoxComponent} from "./components/dropdown-box/dropdown-box.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
@@ -168,6 +169,7 @@ export const components = [
     BtnComponent,
     BtnDefaultComponent,
     ChipsComponent,
+    CloseBtnComponent,
     DropListComponent,
     DropdownBoxComponent,
     DynamicTableComponent,

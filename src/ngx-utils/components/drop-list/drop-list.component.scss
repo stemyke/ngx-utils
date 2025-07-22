@@ -7,10 +7,10 @@
     --remove-bg: var(--primary-color, rgba(0, 0, 0, 0.2));
     --remove-color: #ffffff;
     --remove-size: 18px;
-    --remove-distance: 4px;
+    --btn-distance: 4px;
     --remove-spacing: 8px;
-    --remove-top-distance: var(--remove-distance);
-    --remove-right-distance: var(--remove-distance);
+    --btn-top-distance: var(--btn-distance);
+    --btn-right-distance: var(--btn-distance);
 
     min-height: 100px;
     border: 2px #bfbfbf dashed;
@@ -92,8 +92,8 @@
         --rotation: 45deg;
 
         position: absolute;
-        top: var(--remove-top-distance);
-        right: var(--remove-right-distance);
+        top: var(--btn-top-distance);
+        right: var(--btn-right-distance);
         width: var(--remove-size);
         height: var(--remove-size);
 

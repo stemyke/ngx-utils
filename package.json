@@ -1,6 +1,6 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "19.6.4",
+    "version": "19.6.5",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -69,8 +69,10 @@
         "ts-node": "8.2.0",
         "tslint": "5.11.0",
         "typescript": "5.6.3",
-        "ng-packagr": "19.0.1",
+        "ng-packagr": "19.2.2",
         "fontfaceobserver": "2.1.0",
+        "@fortawesome/fontawesome-free": "^6.7.2",
+        "bootstrap": "^5.3.6",
         "jszip": "3.10.1",
         "file-saver": "2.0.1",
         "tslib": "^2.3.0",

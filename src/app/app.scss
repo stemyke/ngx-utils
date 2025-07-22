@@ -1,3 +1,5 @@
+@use "bootstrap/scss/bootstrap.scss";
+
 $fonts: (
     baskerville: 'baskerville.ttf',
     garden-grown: 'garden-grown.ttf',
@@ -16,6 +18,16 @@ $fonts: (
 
 body {
     font-family: Roboto, sans-serif;
+    padding: 10px 50px;
+}
+
+a.dropdown-box-toggle-link, a.sort {
+    color: inherit;
+    text-decoration: none;
+}
+
+a.page-link.active {
+
 }
 
 .text-canvas {

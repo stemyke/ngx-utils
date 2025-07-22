@@ -175,6 +175,7 @@ export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {MathUtils} from "./ngx-utils/utils/math.utils";
 export {
     isBrowser,
+    getRoot,
     hashCode,
     switchClass,
     getCssVariables,
@@ -283,6 +284,7 @@ export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-l
 export {BtnComponent} from "./ngx-utils/components/btn/btn.component";
 export {BtnDefaultComponent} from "./ngx-utils/components/btn-default/btn-default.component";
 export {ChipsComponent} from "./ngx-utils/components/chips/chips.component";
+export {CloseBtnComponent} from "./ngx-utils/components/close-btn/close-btn.component";
 export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.component";
 export {DropdownBoxComponent} from "./ngx-utils/components/dropdown-box/dropdown-box.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";

@@ -1,23 +1,29 @@
-<ng-template #defaultUploadBtn let-loading="loading">
-    <a class="btn btn-primary" [ngClass]="{loading: loading}">
-        {{ buttonText | translate }}
-    </a>
-</ng-template>
-<ng-template #defaultDownloadBtn let-loading="loading">
-    <a class="btn btn-primary" [ngClass]="{loading: loading}">
-        {{ 'button.download' | translate }}
-    </a>
+<ng-template #itemBgTemplate let-bg="bg">
+    @if (bg) {
+        <div class="upload-item-bg" [ngStyle]="{backgroundImage: `url('${bg}')`}">
+            <div>
+                <img alt="item image" [src]="bg | safe: 'url'" />
+            </div>
+        </div>
+    }
 </ng-template>
 <ng-template #itemTemplate let-item="item" let-index="index">
-    <div class="upload-item" [ngStyle]="isImage || (item | isType: 'file') ? {backgroundImage: getBgUrl(item)} : {}">
-        <a class="remove-item-btn" (click)="remove(index)"></a>
+    <div class="upload-item">
+        <ng-container [ngTemplateOutlet]="itemBgTemplate"
+                      [ngTemplateOutletContext]="{bg: isImage || (item | isType: 'file') ? getUrl(item) : null}">
+        </ng-container>
+        @if (!disabled) {
+            <close-btn class="remove-item-btn" (click)="removeItem(index)"></close-btn>
+        }
+<!--        <btn size="small" class="download-item-btn" icon="download"></btn>-->
     </div>
 </ng-template>
 
-<div class="upload">
+<div class="upload" [ngClass]="{disabled: disabled}">
     <div class="upload-input" [ngClass]="{'drop-allowed': dropAllowed}">
         <input type="file"
                #input
+               [disabled]="disabled"
                [multiple]="multiple"
                [accept]="acceptAttr"
                (dragenter)="onDragEnter($event)"
@@ -26,11 +32,12 @@
                (click)="onInputClick($event)"
                (blur)="onTouched($event)"
                (change)="onInputChange($event)"/>
-        <div class="upload-message"
-             [ngClass]="{'has-value': value?.length}"
-             [innerHTML]="message | translate | safe:'html'"
-             *ngIf="message">
-        </div>
+        @if (message) {
+            <div class="upload-message"
+                 [ngClass]="{'has-value': $any(value)?.length}"
+                 [innerHTML]="message | translate | safe:'html'">
+            </div>
+        }
         <div class="upload-container">
 
             <ng-container [ngTemplateOutlet]="itemTemplate"
@@ -39,14 +46,15 @@
             </ng-container>
             <ng-container *ngIf="multiple">
                 <ng-container [ngTemplateOutlet]="itemTemplate"
-                              [ngTemplateOutletContext]="{item: image, index: ix}"
-                              *ngFor="let image of value; let ix = index">
+                              [ngTemplateOutletContext]="{item: item, index: ix}"
+                              *ngFor="let item of $any(value); let ix = index">
                 </ng-container>
             </ng-container>
 
-            <div class="upload-item"
-                 [ngStyle]="!proc.preview ? {} : {backgroundImage: proc.preview}"
-                 *ngFor="let proc of processing">
+            <div class="upload-item" *ngFor="let proc of processing">
+                <ng-container [ngTemplateOutlet]="itemBgTemplate"
+                              [ngTemplateOutletContext]="{bg: proc.preview}">
+                </ng-container>
                 <div class="upload-progress">
                     <div class="upload-progress-num">{{ proc.progress }}%</div>
                     <div class="upload-progress-bar" [ngStyle]="{width: proc.progress + '%'}">
@@ -54,11 +62,10 @@
                     </div>
                 </div>
             </div>
+
         </div>
-        <div class="upload-btn" (click)="input.click()">
-            <ng-container [ngTemplateOutlet]="uploadButton || defaultUploadBtn"
-                          [ngTemplateOutletContext]="{loading: !!processing, buttonText: buttonText}">
-            </ng-container>
-        </div>
+        @if (!disabled) {
+            <btn class="upload-btn" #uploadBtn [label]="buttonText" (click)="input.click()"></btn>
+        }
     </div>
 </div>
