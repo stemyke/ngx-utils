@@ -184,10 +184,7 @@ export class BaseHttpService implements IHttpService {
 
     protected handleUnauthorizedError(absoluteUrl: string, options: HttpClientRequestOptions, reject: () => void): void {
         reject();
-        if (BaseHttpService.failedRequests.length > 1) {
-            return;
-        }
-        if (this.universal.isServer) return;
+        if (BaseHttpService.failedRequests.length > 1 || this.universal.isServer) return;
         console.log("User auth error", absoluteUrl, options);
     }
 
