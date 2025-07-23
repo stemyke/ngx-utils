@@ -217,8 +217,11 @@ export class BaseHttpService implements IHttpService {
                     return;
                 }
                 const regex = /((E11000 duplicate key error collection: (.)+\.)|(_1 dup key:(.)+))/g;
-                if (reason.message && regex.test(reason.message)) {
-                    this.toastError("message.duplicate-key.error." + reason.message.replace(regex, "").replace(" index: ", "-"), issueContext, reason, options);
+                const message = ObjectUtils.isObject(reason.message)
+                    ? String(reason.message?.message || "Unknown error")
+                    : String(reason.message || "Unknown error");
+                if (message && regex.test(message)) {
+                    this.toastError("message.duplicate-key.error." + message.replace(regex, "").replace(" index: ", "-"), issueContext, reason, options);
                     return;
                 }
                 this.toastWarning(`${url} endpoint error is not handled properly! Click here, to quickly create an issue.`, issueContext, reason, options);
