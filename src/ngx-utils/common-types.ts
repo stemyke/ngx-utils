@@ -20,7 +20,11 @@ export interface TypedValueProvider<T> {
     useValue: T;
 }
 
-export type CachedProvider<T> = Type<T> | TypedFactoryProvider<T> | TypedValueProvider<T>;
+export interface TypedExistingProvider<T> {
+    useExisting: T;
+}
+
+export type TypedProvider<T> = Type<T> | TypedFactoryProvider<T> | TypedValueProvider<T> | TypedExistingProvider<T>;
 
 export type CachedFactory<T> = (injector: Injector) => ReadonlyArray<T>;
 
@@ -763,6 +767,7 @@ export interface IModuleConfig {
     resizeDelay?: number;
     resizeStrategy?: ResizeEventStrategy;
     socketPath?: string;
+    staticSchemas?: OpenApiSchemas;
 }
 
 // --- Valued promise ---

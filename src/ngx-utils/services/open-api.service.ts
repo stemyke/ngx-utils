@@ -6,7 +6,7 @@ import {
     OpenApiSchemaProperty, OpenApiSchemaRef,
     OpenApiSchemas
 } from "../common-types";
-import {API_SERVICE} from "../tokens";
+import {API_SERVICE, STATIC_SCHEMAS} from "../tokens";
 import {ObjectUtils} from "../utils/object.utils";
 
 @Injectable()
@@ -16,7 +16,8 @@ export class OpenApiService {
     private schemas: Promise<OpenApiSchemas>;
     private readonly dynamicSchemas: Record<string, OpenApiSchema>;
 
-    constructor(@Inject(API_SERVICE) readonly api: IApiService) {
+    constructor(@Inject(API_SERVICE) readonly api: IApiService,
+                @Inject(STATIC_SCHEMAS) protected readonly staticSchemas: OpenApiSchemas) {
         this.dynamicSchemas = {};
     }
 
@@ -35,7 +36,12 @@ export class OpenApiService {
         const apiDocs = this.api.get("api-docs", {cache});
         if (apiDocs !== this.apiDocs) {
             this.apiDocs = apiDocs;
-            this.schemas = apiDocs.then(res => this.extractSchemas(res));
+            this.schemas = apiDocs.then(res => {
+                return {
+                    ...this.extractSchemas({definitions: this.staticSchemas}),
+                    ...this.extractSchemas(res)
+                };
+            });
         }
         return this.schemas;
     }

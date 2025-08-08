@@ -24,7 +24,7 @@ import {
     RESIZE_DELAY,
     RESIZE_STRATEGY,
     ROOT_ELEMENT,
-    SOCKET_IO_PATH,
+    SOCKET_IO_PATH, STATIC_SCHEMAS,
     TOASTER_SERVICE,
     WASI_IMPLEMENTATION
 } from "./tokens";
@@ -180,6 +180,10 @@ export class NgxUtilsModule {
             {
                 provide: SOCKET_IO_PATH,
                 useValue: (!config ? null : config.socketPath) ?? "socket.io",
+            },
+            {
+                provide: STATIC_SCHEMAS,
+                useValue: (!config ? null : config.staticSchemas) ?? {},
             },
             {
                 provide: APP_INITIALIZER,

@@ -1,9 +1,9 @@
 import {InjectionToken, Injector, Type} from "@angular/core";
-import {CachedFactory, CachedProvider} from "../common-types";
+import {CachedFactory, TypedProvider} from "../common-types";
 
 const CACHED_TOKEN = new InjectionToken("cached-factory-token");
 
-export function cachedFactory<T>(providers: CachedProvider<T>[]): CachedFactory<T> {
+export function cachedFactory<T>(providers: TypedProvider<T>[]): CachedFactory<T> {
     let cached: ReadonlyArray<T> = null;
     return (injector: Injector) => {
         if (cached !== null) {
