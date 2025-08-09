@@ -21,10 +21,19 @@ export interface TypedValueProvider<T> {
 }
 
 export interface TypedExistingProvider<T> {
-    useExisting: T;
+    useExisting: Type<T>;
 }
 
-export type TypedProvider<T> = Type<T> | TypedFactoryProvider<T> | TypedValueProvider<T> | TypedExistingProvider<T>;
+export interface TypedClassProvider<T> {
+    useClass: Type<T>;
+}
+
+export interface TypedTokenProvider<T> {
+    useToken: InjectionToken<T>;
+}
+
+export type TypedProvider<T> = TypedFactoryProvider<T> | TypedValueProvider<T> |
+    TypedExistingProvider<T> | TypedClassProvider<T> | TypedTokenProvider<T> | Type<T>;
 
 export type CachedFactory<T> = (injector: Injector) => ReadonlyArray<T>;
 

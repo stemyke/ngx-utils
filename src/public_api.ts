@@ -16,6 +16,8 @@ export {
     TypedFactoryProvider,
     TypedValueProvider,
     TypedExistingProvider,
+    TypedClassProvider,
+    TypedTokenProvider,
     TypedProvider,
     CachedFactory,
     IResolveFactory,
@@ -162,7 +164,7 @@ export {
 export {AjaxRequestHandler} from "./ngx-utils/utils/ajax-request-handler";
 export {ArrayUtils} from "./ngx-utils/utils/array.utils";
 export {AuthGuard} from "./ngx-utils/utils/auth.guard";
-export {cachedFactory} from "./ngx-utils/utils/cached-factory";
+export {createTypedProvider, cachedFactory} from "./ngx-utils/utils/cached-factory";
 export {CanvasUtils} from "./ngx-utils/utils/canvas.utils";
 export {DateUtils} from "./ngx-utils/utils/date.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
