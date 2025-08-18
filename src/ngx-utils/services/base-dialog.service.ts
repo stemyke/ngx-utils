@@ -1,5 +1,11 @@
 import {Inject, Injectable} from "@angular/core";
-import {IConfirmDialogConfig, IDialogConfig, IDialogService, IToasterService} from "../common-types";
+import {
+    IConfirmMessageConfig,
+    IConfirmDialogConfig,
+    IDialogConfig,
+    IDialogService,
+    IToasterService
+} from "../common-types";
 import {TOASTER_SERVICE} from "../tokens";
 
 @Injectable()
@@ -23,7 +29,7 @@ export class BaseDialogService<DR = any> implements IDialogService<DR> {
             message: config.message,
             messageContext: config.messageContext,
             size: config.size,
-            buttons: config.buttons || [
+            buttons: [
                 {
                     text: config.okText,
                     classes: config.okClasses,
@@ -37,6 +43,23 @@ export class BaseDialogService<DR = any> implements IDialogService<DR> {
             ],
             onClose: config.cancelMethod,
             templates: config.templates
+        });
+    }
+
+    confirmMsg(message: string, config?: IConfirmMessageConfig): Promise<boolean> {
+        return new Promise<boolean>(resolve => {
+            this.confirm({
+                ...(config || {}),
+                message,
+                method: async () => {
+                    resolve(true);
+                    return null;
+                },
+                cancelMethod: async () => {
+                    resolve(false);
+                    return null;
+                }
+            })
         });
     }
 }

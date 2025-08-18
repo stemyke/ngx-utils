@@ -36,6 +36,7 @@ export {
     IAclComponent,
     IDialogButtonConfig,
     IDialogConfig,
+    IConfirmMessageConfig,
     IConfirmDialogConfig,
     IDialogService,
     IPromiseService,

@@ -175,14 +175,10 @@ export interface IDialogConfig {
     templates?: { [id: string]: TemplateRef<any> };
 }
 
-export interface IConfirmDialogConfig {
+export interface IConfirmMessageConfig {
     id?: string;
     title?: string;
-    message: string;
     messageContext?: any;
-    buttons?: IDialogButtonConfig[];
-    method?: AsyncMethod;
-    cancelMethod?: AsyncMethod;
     size?: string;
     templates?: { [id: string]: TemplateRef<any> };
     okText?: string;
@@ -191,9 +187,16 @@ export interface IConfirmDialogConfig {
     cancelClasses?: string;
 }
 
+export interface IConfirmDialogConfig extends IConfirmMessageConfig {
+    message: string;
+    method?: AsyncMethod;
+    cancelMethod?: AsyncMethod;
+}
+
 export interface IDialogService<DR = any> {
     dialog(config: IDialogConfig): DR;
-    confirm(config: IConfirmDialogConfig): DR
+    confirm(config: IConfirmDialogConfig): DR;
+    confirmMsg(message: string, config?: IConfirmMessageConfig): Promise<boolean>;
 }
 
 // --- Socket service ---
