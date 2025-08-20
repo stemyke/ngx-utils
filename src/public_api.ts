@@ -20,6 +20,7 @@ export {
     TypedTokenProvider,
     TypedProvider,
     CachedFactory,
+    ResolveFactory,
     IResolveFactory,
     CanvasColor,
     IIconService,

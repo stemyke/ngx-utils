@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import {Injector, TypeProvider} from "@angular/core";
-import {IResolveFactory} from "../common-types";
+import {ResolveFactory} from "../common-types";
 import {ObjectUtils} from "./object.utils";
 
 export class ReflectUtils {
@@ -17,10 +17,10 @@ export class ReflectUtils {
         return Reflect.getOwnMetadata(key, target, name);
     }
 
-    static resolve<T>(obj: IResolveFactory | T, injector: Injector): T {
+    static resolve<T>(obj: ResolveFactory<T> | T, injector: Injector): T {
         if (!ObjectUtils.checkInterface(obj, {func: "function"})) return <T>obj;
-        const factory = <IResolveFactory>obj;
-        let depends: TypeProvider[] = [];
+        const factory = <ResolveFactory>obj;
+        let depends: TypeProvider[];
         if (factory.type) {
             const method = ObjectUtils.getProperties(factory.type).find(function (key) {
                 return factory.type[key] === factory.func;

@@ -37,10 +37,14 @@ export type TypedProvider<T> = TypedFactoryProvider<T> | TypedValueProvider<T> |
 
 export type CachedFactory<T> = (injector: Injector) => ReadonlyArray<T>;
 
-export interface IResolveFactory {
-    func: Function;
-    type?: any;
+export interface ResolveFactory<T = any> {
+    type?: Function;
+    func: (...args: any[]) => T;
     params?: any[];
+}
+
+export interface IResolveFactory extends Omit<ResolveFactory, "func"> {
+    func: Function;
 }
 
 export class CanvasColor {
@@ -113,7 +117,7 @@ export type RouteValidator = (auth: IAuthService, route?: IRoute, next?: Activat
 
 export interface IRouteData extends Data {
     returnState?: string[];
-    guards?: Array<IResolveFactory | RouteValidator>;
+    guards?: Array<ResolveFactory | RouteValidator>;
 }
 
 export interface IRoute extends Route {
