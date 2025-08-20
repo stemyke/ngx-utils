@@ -117,7 +117,7 @@ export type RouteValidator = (auth: IAuthService, route?: IRoute, next?: Activat
 
 export interface IRouteData extends Data {
     returnState?: string[];
-    guards?: Array<ResolveFactory | RouteValidator>;
+    guards?: Array<ResolveFactory<RouteValidator> | RouteValidator>;
 }
 
 export interface IRoute extends Route {

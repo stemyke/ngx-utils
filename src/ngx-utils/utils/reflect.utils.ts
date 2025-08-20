@@ -17,8 +17,8 @@ export class ReflectUtils {
         return Reflect.getOwnMetadata(key, target, name);
     }
 
-    static resolve<T>(obj: ResolveFactory<T> | T, injector: Injector): T {
-        if (!ObjectUtils.checkInterface(obj, {func: "function"})) return <T>obj;
+    static resolve<T>(obj: T, injector: Injector): T extends ResolveFactory<infer R> ? R : T {
+        if (!ObjectUtils.checkInterface(obj, {func: "function"})) return obj as any;
         const factory = <ResolveFactory>obj;
         let depends: TypeProvider[];
         if (factory.type) {
