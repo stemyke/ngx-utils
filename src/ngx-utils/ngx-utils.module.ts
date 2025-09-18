@@ -1,10 +1,11 @@
 import {
-    APP_INITIALIZER,
     EnvironmentProviders,
+    inject,
     Injector,
     makeEnvironmentProviders,
     ModuleWithProviders,
     NgModule,
+    provideAppInitializer,
     Provider
 } from "@angular/core";
 import {APP_BASE_HREF, CommonModule} from "@angular/common";
@@ -17,16 +18,18 @@ import {
     BUTTON_TYPE,
     CONFIG_SERVICE,
     DIALOG_SERVICE,
-    DYNAMIC_MODULE_INFO, ICON_MAP,
-    ICON_SERVICE, ICON_TYPE,
+    DYNAMIC_MODULE_INFO,
+    ICON_MAP,
+    ICON_SERVICE,
+    ICON_TYPE,
     LANGUAGE_SERVICE,
     PROMISE_SERVICE,
     RESIZE_DELAY,
     RESIZE_STRATEGY,
     ROOT_ELEMENT,
-    SOCKET_IO_PATH, STATIC_SCHEMAS,
-    TOASTER_SERVICE,
-    WASI_IMPLEMENTATION
+    SOCKET_IO_PATH,
+    STATIC_SCHEMAS,
+    TOASTER_SERVICE
 } from "./tokens";
 
 import {components, directives, loadConfig, pipes, providers} from "./ngx-utils.imports";
@@ -37,7 +40,6 @@ import {StaticLanguageService} from "./services/static-language.service";
 import {BaseToasterService} from "./services/base-toaster.service";
 import {PromiseService} from "./services/promise.service";
 import {ConfigService} from "./services/config.service";
-import {Wasi} from "./utils/wasi";
 import {BaseDialogService} from "./services/base-dialog.service";
 import {ROUTES} from "@angular/router";
 import {AuthGuard} from "./utils/auth.guard";
@@ -109,7 +111,7 @@ export function getRootElement(): HTMLElement {
 })
 export class NgxUtilsModule {
 
-    private static getProviders(config?: IModuleConfig): Provider[] {
+    private static getProviders(config?: IModuleConfig): (EnvironmentProviders | Provider)[] {
         return [
             ...providers,
             {
@@ -143,10 +145,6 @@ export class NgxUtilsModule {
             {
                 provide: DIALOG_SERVICE,
                 useExisting: (!config ? null : config.dialogService) || BaseDialogService
-            },
-            {
-                provide: WASI_IMPLEMENTATION,
-                useExisting: (!config ? null : config.wasiImplementation) || Wasi
             },
             {
                 provide: ICON_TYPE,
@@ -186,16 +184,17 @@ export class NgxUtilsModule {
                 useValue: (!config ? null : config.staticSchemas) ?? {},
             },
             {
-                provide: APP_INITIALIZER,
-                useFactory: (!config ? null : config.initializeApp) || loadConfig,
-                multi: true,
-                deps: [(!config ? null : config.initializeApp) ? Injector : CONFIG_SERVICE]
-            },
-            {
                 provide: APP_BASE_HREF,
                 useFactory: loadBaseHref,
                 deps: [APP_BASE_URL]
-            }
+            },
+            provideAppInitializer(() => {
+                if (config && config.initializeApp) {
+                    const initializer = config.initializeApp(inject(Injector));
+                    return initializer();
+                }
+                return loadConfig(inject(CONFIG_SERVICE));
+            }),
         ];
     }
 

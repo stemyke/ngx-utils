@@ -47,6 +47,18 @@ const shg_table = [
     24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
     24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24];
 
+export function drawRect(ctx: CanvasRenderingContext2D, w: number, h: number): void {
+    ctx.beginPath();
+    ctx.rect(-w / 2, -h / 2, w, h);
+    ctx.closePath();
+}
+
+export function drawOval(ctx: CanvasRenderingContext2D, w: number, h: number): void {
+    ctx.beginPath();
+    ctx.ellipse(0, 0, w / 2, h / 2, 0, 0, Math.PI * 2);
+    ctx.closePath();
+}
+
 export class CanvasUtils {
 
     static manipulatePixels(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, colorTransformer: (color: CanvasColor, greyscale?: number) => CanvasColor): void {

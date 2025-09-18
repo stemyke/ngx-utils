@@ -41,10 +41,6 @@ export {
     IConfirmDialogConfig,
     IDialogService,
     IPromiseService,
-    IWasi,
-    IWasmExports,
-    IWasm,
-    IWasmAsync,
     IRouteStateInfo,
     NavigationUrlParam,
     StorageMode,
@@ -87,8 +83,8 @@ export {
     PaginationItemContext,
     IPoint,
     IShape,
-    CanvasItemShape,
     CanvasItemDirection,
+    CanvasPaintFunc,
     InteractiveCanvas,
     InteractiveCanvasItem,
     InteractiveDrawFn,
@@ -153,7 +149,6 @@ export {
     APP_BASE_URL,
     API_SERVICE,
     EXPRESS_REQUEST,
-    WASI_IMPLEMENTATION,
     PROMISE_SERVICE,
     DIALOG_SERVICE,
     TOASTER_SERVICE,
@@ -167,13 +162,27 @@ export {AjaxRequestHandler} from "./ngx-utils/utils/ajax-request-handler";
 export {ArrayUtils} from "./ngx-utils/utils/array.utils";
 export {AuthGuard} from "./ngx-utils/utils/auth.guard";
 export {createTypedProvider, cachedFactory} from "./ngx-utils/utils/cached-factory";
-export {CanvasUtils} from "./ngx-utils/utils/canvas.utils";
+export {drawRect, drawOval, CanvasUtils} from "./ngx-utils/utils/canvas";
 export {DateUtils} from "./ngx-utils/utils/date.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {ForbiddenZone} from "./ngx-utils/utils/forbidden-zone";
 export {GenericValue} from "./ngx-utils/utils/generic-value";
 export {FileSystemEntryOpenResult, FileSystemEntryOpenCb, FileSystemEntry} from "./ngx-utils/utils/file-system";
-export {Rect, Circle, Point} from "./ngx-utils/utils/geometry";
+export {
+    dotProduct,
+    isPoint,
+    perpendicular,
+    ptAdd,
+    ptDistance,
+    ptLength,
+    ptMultiply,
+    ptSubtract,
+    rotateDeg,
+    rotateRad,
+    toDegrees,
+    toRadians,
+    Point, Rect, Oval, Circle
+} from "./ngx-utils/utils/geometry";
 export {Initializer} from "./ngx-utils/utils/initializer";
 export {JSONfn} from "./ngx-utils/utils/jsonfn";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
@@ -189,7 +198,8 @@ export {
     getComponentDef,
     parseSelector,
     selectorMatchesList,
-    provideEntryComponents
+    provideEntryComponents,
+    provideWithOptions
 } from "./ngx-utils/utils/misc";
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
@@ -200,11 +210,8 @@ export {computedPrevious, cssStyles, cssVariables} from "./ngx-utils/utils/signa
 export {SocketFactory, SocketData, SocketDataValue, SocketDataObj, SocketClient} from "./ngx-utils/utils/socket-client";
 export {TimerUtils} from "./ngx-utils/utils/timer.utils";
 export {UniqueUtils} from "./ngx-utils/utils/unique.utils";
-export {Vector} from "./ngx-utils/utils/vector";
-export {provideWithOptions} from "./ngx-utils/utils/with-options-provider";
 
 export {UniversalService} from "./ngx-utils/services/universal.service";
-export {WasmService} from "./ngx-utils/services/wasm.service";
 export {AclService} from "./ngx-utils/services/acl.service";
 export {ApiService} from "./ngx-utils/services/api.service";
 export {StaticAuthService} from "./ngx-utils/services/auth.service";

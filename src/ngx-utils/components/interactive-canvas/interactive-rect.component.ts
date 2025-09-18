@@ -1,8 +1,8 @@
 import {Component, Input} from "@angular/core";
-import {CanvasItemShape, InteractiveCanvas, IShape} from "../../common-types";
-import {Rect} from "../../utils/geometry";
+import {IShape} from "../../common-types";
+import {Rect, toRadians} from "../../utils/geometry";
+import {drawRect} from "../../utils/canvas";
 import {InteractiveItemComponent} from "./interactive-item.component";
-import {InteractiveCanvasComponent} from "./interactive-canvas.component";
 
 @Component({
     standalone: false,
@@ -16,34 +16,25 @@ export class InteractiveRectComponent extends InteractiveItemComponent {
 
     @Input() width: number;
     @Input() height: number;
+    @Input() rotation: number;
 
-    get canvas(): InteractiveCanvas {
-        return this.iCanvas;
-    }
-
-    get shape(): CanvasItemShape {
-        return "rect";
-    }
-
-    constructor(protected iCanvas: InteractiveCanvasComponent) {
+    constructor() {
         super();
+        this.width = 10;
+        this.height = 10;
+        this.rotation = 0;
     }
 
-    calcShape(x: number, y: number): IShape {
+    draw(ctx: CanvasRenderingContext2D) {
+        const ratio = this.canvas.ratio;
+        ctx.rotate(toRadians(this.rotation));
+        drawRect(ctx, this.width * ratio, this.height * ratio);
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    protected calcShape(x: number, y: number): IShape {
         const ratio = this.canvas.ratio;
         return new Rect(x, y, this.width * ratio, this.height * ratio, this.rotation)
-    }
-
-    draw(ctx: CanvasRenderingContext2D, scale: number = 1) {
-        scale *= this.canvas.ratio;
-        const width = this.width * scale;
-        const height = this.height * scale;
-        this.shapes.forEach(shape => {
-            ctx.beginPath();
-            ctx.rect(shape.x - width / 2, shape.y - height / 2, width, height);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-        });
     }
 }

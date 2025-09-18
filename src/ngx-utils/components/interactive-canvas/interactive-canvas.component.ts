@@ -5,6 +5,7 @@ import {
     ElementRef,
     EventEmitter,
     HostListener,
+    Inject,
     Input,
     OnChanges,
     OnDestroy,
@@ -16,9 +17,19 @@ import {
 } from "@angular/core";
 import {Subscription} from "rxjs";
 
-import {InteractiveCanvas, InteractiveCanvasPointer, InteractiveDrawFn, InteractivePanEvent} from "../../common-types";
-import {Point} from "../../utils/geometry";
+import {
+    CanvasPaintFunc,
+    InteractiveCanvas,
+    InteractiveCanvasItem,
+    InteractiveCanvasPointer,
+    InteractiveDrawFn,
+    InteractivePanEvent
+} from "../../common-types";
+import {Oval, Point, Rect, toRadians} from "../../utils/geometry";
 import {InteractiveItemComponent} from "./interactive-item.component";
+import {ROOT_ELEMENT} from "../../tokens";
+import {UniversalService} from "../../services/universal.service";
+import {drawOval, drawRect} from "../../utils/canvas";
 
 @Component({
     standalone: false,
@@ -28,41 +39,56 @@ import {InteractiveItemComponent} from "./interactive-item.component";
 })
 export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, OnDestroy, AfterViewInit, OnChanges {
 
+    @Input() debug: boolean;
     @Input() horizontal: boolean;
     @Input() selectedIndex: number;
     @Input() resizeMode: "fit" | "fill";
     @Input() realWidth: number;
     @Input() realHeight: number;
-    @Input() onDraw: InteractiveDrawFn;
+    @Input() panOffset: number;
+    @Input() params: Record<string, any>;
+    @Input() beforeItems: InteractiveDrawFn;
+    @Input() afterItems: InteractiveDrawFn;
 
     @Output() selectedIndexChange: EventEmitter<number>;
+    @Output() itemPan: EventEmitter<InteractivePanEvent>;
+    @Output() itemPanEnd: EventEmitter<InteractivePanEvent>;
 
-    canvasWidth: number;
-    canvasHeight: number;
-    ratio: number;
-
-    fullHeight: number;
-    ctx: CanvasRenderingContext2D;
-
-    pan: number;
-    rotation: number;
-
-    get selectedItem(): InteractiveItemComponent {
-        return this.items[this.selectedIndex];
+    get items(): ReadonlyArray<InteractiveCanvasItem> {
+        return this.itemComponents;
     }
 
-    get hoveredItem(): InteractiveItemComponent {
-        return this.items[this.hoveredIndex];
+    get canvas(): HTMLCanvasElement {
+        return this.canvasElem?.nativeElement;
     }
 
     get lockedItem(): InteractiveItemComponent {
-        return this.items[this.lockedIndex];
+        return this.itemComponents[this.lockedIndex];
     }
 
+    get selectedItem(): InteractiveItemComponent {
+        return this.itemComponents[this.selectedIndex];
+    }
+
+    get hoveredItem(): InteractiveItemComponent {
+        return this.itemComponents[this.hoveredIndex];
+    }
+
+    ratio: number;
+    styles: CSSStyleDeclaration;
+    ctx: CanvasRenderingContext2D;
+    canvasWidth: number;
+    canvasHeight: number;
+
+    rotation: number;
+    basePan: number;
+
+    fullHeight: number;
+
+    protected tempCanvas: HTMLCanvasElement;
     protected shouldDraw: boolean;
-    protected panOffset: number;
     protected hoveredIndex: number;
-    protected items: ReadonlyArray<InteractiveItemComponent>;
+    protected itemComponents: InteractiveItemComponent[];
     protected subscription: Subscription;
 
     @ViewChild("containerElem", {static: true})
@@ -79,23 +105,36 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     protected deltaY: number;
     protected lockedIndex: number;
 
-    constructor(protected renderer: Renderer2) {
+    constructor(readonly renderer: Renderer2,
+                readonly universal: UniversalService,
+                readonly element: ElementRef<HTMLElement>,
+                @Inject(ROOT_ELEMENT) readonly rootElement: HTMLElement) {
+        this.debug = false;
         this.horizontal = false;
         this.selectedIndex = 0;
         this.resizeMode = "fit";
-        this.onDraw = () => {};
-        this.selectedIndexChange = new EventEmitter<number>();
-        this.shouldDraw = true;
+        this.realWidth = 100;
+        this.realHeight = 100;
         this.panOffset = 0;
-        this.pan = 0;
+        this.params = {};
+        this.selectedIndexChange = new EventEmitter();
+        this.itemPan = new EventEmitter();
+        this.itemPanEnd = new EventEmitter();
+        this.tempCanvas = this.universal.isServer ? null : document.createElement("canvas");
+        this.shouldDraw = !this.universal.isServer;
         this.rotation = 0;
         this.canvasWidth = 0;
         this.canvasHeight = 0;
         this.hoveredIndex = null;
-        this.items = [];
+        this.itemComponents = [];
         this.touched = false;
         this.deltaX = 0;
         this.deltaY = 0;
+        this.ctrInit();
+    }
+
+    ctrInit(): void {
+
     }
 
     ngOnInit() {
@@ -108,12 +147,31 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     }
 
     ngOnChanges() {
+        this.params = this.params || {};
         this.resize();
     }
 
     ngAfterViewInit() {
         this.subscription = this.itemList.changes.subscribe(() => this.fixItems());
         this.fixItems();
+    }
+
+    async tempPaint(cb: CanvasPaintFunc): Promise<void> {
+        const renderCanvas = this.canvas;
+        const canvas = this.tempCanvas;
+
+        canvas.width = renderCanvas.width;
+        canvas.height = renderCanvas.height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.globalCompositeOperation = "source-over";
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const bgCtx = renderCanvas.getContext("2d");
+
+        bgCtx.globalCompositeOperation = await cb(ctx) || "source-over";
+        bgCtx.drawImage(canvas, 0, 0);
+        bgCtx.globalCompositeOperation = "source-over";
     }
 
     resize(): void {
@@ -131,11 +189,12 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             canvas[axisX] = this.realWidth * this.ratio;
             canvas[axisY] = this.realHeight * this.ratio;
         }
+        this.styles = getComputedStyle(canvas);
+        this.ctx = canvas.getContext("2d");
         this.canvasWidth = canvas[axisX];
         this.canvasHeight = canvas[axisY];
         this.fullHeight = this.realHeight * this.ratio;
-        this.panOffset = -this.fullHeight;
-        this.fixPan();
+        this.fixRotation();
     }
 
     onTouchStart($event: TouchEvent): void {
@@ -170,12 +229,6 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
 
     onPanStart($event: InteractivePanEvent): void {
         this.lockedIndex = this.getIndexUnderPointer($event?.pointers[0]);
-        this.lockedItem?.onPanStart.emit({
-            pointers: [],
-            deltaX: 0,
-            deltaY: 0,
-            item: this.lockedItem
-        });
         this.deltaX = 0;
         this.deltaY = 0;
     }
@@ -188,11 +241,12 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             const data: InteractivePanEvent = this.horizontal
                 ? {pointers: $event.pointers, deltaX: -deltaY, deltaY: +deltaX}
                 : {pointers: $event.pointers, deltaX, deltaY};
-            data.item = item
-            item.onPan.emit(data);
+            data.item = item;
+            item.move(data.deltaX, data.deltaY);
+            this.itemPan.emit(data);
         } else if (this.resizeMode == "fill") {
-            this.pan += this.horizontal ? deltaX : deltaY;
-            this.fixPan();
+            this.rotation += (this.horizontal ? deltaX : deltaY) / this.realHeight * 360;
+            this.fixRotation();
         }
         this.deltaX = $event.deltaX;
         this.deltaY = $event.deltaY;
@@ -200,37 +254,36 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
 
     onPanEnd(): void {
         const item = this.lockedItem;
-        item?.onPanEnd.emit({
-            pointers: [],
-            deltaX: 0,
-            deltaY: 0,
-            item
-        });
+        if (item) {
+            item.moveEnd();
+            this.itemPanEnd.emit({
+                pointers: [],
+                deltaX: 0,
+                deltaY: 0,
+                item
+            });
+        }
         this.lockedIndex = -1;
     }
 
-    protected fixPan(): void {
+    protected fixRotation(): void {
         if (this.fullHeight <= 0) return;
-        while (this.pan > 0) {
-            this.pan -= this.fullHeight;
-        }
-        while (this.pan < -this.fullHeight) {
-            this.pan += this.fullHeight;
-        }
-        this.rotation = Math.round(this.pan / this.fullHeight * 360);
-        const basePan = (this.rotation / 360 - 1) * this.fullHeight;
-        const cycles = this.resizeMode == "fit" ? [0] : [basePan - this.fullHeight, basePan, basePan + this.fullHeight];
-        this.items.forEach(item => {
+        this.rotation = ((this.rotation + 180) % 360 + 360) % 360 - 180;
+        this.basePan = (this.rotation / 360 - 1) * this.fullHeight + this.canvasHeight * this.panOffset;
+        const cycles = this.resizeMode == "fit"
+            ? [0] : [this.basePan - this.fullHeight, this.basePan, this.basePan + this.fullHeight];
+        this.itemComponents.forEach(item => {
             item.calcShapes(cycles);
         });
     }
 
     protected fixItems(): void {
-        this.items = this.itemList.toArray();
-        this.items.forEach((item, ix) => {
+        this.itemComponents = this.itemList.toArray();
+        this.itemComponents.forEach((item, ix) => {
+            item.canvas = this;
             item.index = ix;
         });
-        this.fixPan();
+        this.fixRotation();
     }
 
     protected selectItem(pointer: InteractiveCanvasPointer): void {
@@ -253,7 +306,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             : new Point(pointer.clientX - canvasRect.left, pointer.clientY - canvasRect.top);
         const length = this.items.length;
         for (let ix = 0; ix < length; ix++) {
-            const item = this.items[ix];
+            const item = this.itemComponents[ix];
             if (item?.hit(point)) {
                 return item.disabled ? null : ix;
             }
@@ -283,7 +336,6 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
 
     protected redraw() {
         if (!this.shouldDraw) return;
-        this.ctx = this.canvasElem.nativeElement?.getContext("2d");
         if (!this.ctx) {
             requestAnimationFrame(() => this.redraw());
             return;
@@ -293,20 +345,52 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         });
     }
 
+    protected async drawItems(): Promise<void> {
+        const ctx = this.ctx;
+        for (const item of this.items) {
+            for (const shape of item.shapes) {
+                ctx.save();
+                ctx.translate(shape.x, shape.y);
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = "black";
+                ctx.fillStyle = "white";
+                await item.draw(ctx);
+                ctx.restore();
+            }
+        }
+        if (!this.debug) return;
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "rgba(114,232,45,0.55)";
+        for (const item of this.items) {
+            for (const shape of item.shapes) {
+                ctx.save();
+                ctx.translate(shape.x, shape.y);
+                if (shape instanceof Rect || shape instanceof Oval) {
+                    ctx.rotate(toRadians(shape.rotation));
+                    if (shape instanceof Oval) {
+                        drawOval(ctx, shape.width, shape.height);
+                    } else {
+                        drawRect(ctx, shape.width, shape.height);
+                    }
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+        }
+    }
+
     protected async draw() {
         const ctx = this.ctx;
         const canvas = ctx.canvas;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
-        const width = this.realWidth * this.ratio;
-        const height = this.realHeight * this.ratio;
-        const x = canvas.width / 2 - width / 2;
-        const y = canvas.height / 2 - height / 2;
         if (this.horizontal) {
             ctx.rotate(-Math.PI / 2);
             ctx.translate(-this.canvasWidth, 0);
         }
-        await this.onDraw(this, this.items);
+        await this.beforeItems?.call(this, this);
+        await this.drawItems();
+        await this.afterItems?.call(this, this);
         ctx.restore();
     }
 }

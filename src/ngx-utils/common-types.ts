@@ -6,7 +6,7 @@ import {DurationLikeObject} from "luxon";
 
 import {ReflectUtils} from "./utils/reflect.utils";
 import {ObjectUtils} from "./utils/object.utils";
-import {StringKeys} from "./helper-types";
+import {MaybePromise, StringKeys} from "./helper-types";
 
 // --- Util
 export type DurationUnit = StringKeys<DurationLikeObject>;
@@ -215,47 +215,6 @@ export interface IPromiseService {
     all(promises: Promise<any>[]): Promise<any>;
     resolve<T>(value: T | PromiseLike<T>): Promise<T>;
     reject<T>(value: T | PromiseLike<T>): Promise<T>;
-}
-
-// --- Wasm service ---
-export type TypedArray =
-    | Int8Array
-    | Int16Array
-    | Int32Array
-    | Uint8Array
-    | Uint8ClampedArray
-    | Uint16Array
-    | Uint32Array
-    | Float32Array
-    | Float64Array;
-
-export interface IWasmExports {
-    HEAP8: Int8Array;
-    HEAP16: Int16Array,
-    HEAP32: Int32Array,
-    HEAPU8: Uint8Array;
-    HEAPU16: Uint16Array,
-    HEAPU32: Uint32Array,
-    HEAPF32: Float32Array,
-    HEAPF64: Float64Array,
-    memory: WebAssembly.Memory;
-    [key: string]: any;
-}
-
-export interface IWasi {
-    instantiate(bytes: ArrayBuffer): Promise<IWasmExports>;
-}
-
-export interface IWasm {
-    writeArrayToMemory(array: TypedArray): Promise<number> | number;
-    readArrayFromMemory<T = TypedArray>(pointer: number, array: T): Promise<T> | T;
-    [key: string]: (...args: any[]) => any;
-}
-
-export interface IWasmAsync {
-    writeArrayToMemory(array: TypedArray): Promise<number>;
-    readArrayFromMemory<T = TypedArray>(pointer: number, array: T): T;
-    [key: string]: (...args: any[]) => Promise<any>;
 }
 
 // --- Async method ---
@@ -481,34 +440,51 @@ export interface IPoint {
 }
 
 export interface IShape extends IPoint {
-    distance(shape: IPoint): number;
+    readonly center: IPoint;
+    support(dir: IPoint): IPoint;
+    distance(p: IPoint): number;
+    minDistance(shape: IShape): number;
 }
 
 // --- Interactive canvas ---
 
-export type CanvasItemShape = "rect" | "circle";
-
 export type CanvasItemDirection = "horizontal" | "vertical" | "free" | "none";
 
+export type CanvasPaintFunc = (ctx: CanvasRenderingContext2D) => MaybePromise<GlobalCompositeOperation | null>;
+
 export interface InteractiveCanvas {
+    // --- Optionals, for compatibility ---
+    readonly params?: Record<string, any>;
+    readonly items?: ReadonlyArray<InteractiveCanvasItem>;
+    // --- Getters ---
+    readonly canvas: HTMLCanvasElement;
+    // --- Calculated values ---
+    readonly ratio: number;
+    readonly styles: CSSStyleDeclaration;
+    readonly ctx: CanvasRenderingContext2D;
     readonly canvasWidth: number;
     readonly canvasHeight: number;
-    readonly ratio: number;
     readonly fullHeight: number;
-    readonly ctx: CanvasRenderingContext2D;
+    readonly rotation: number;
+    readonly basePan: number;
+    // --- Optionals, for back compatibility ---
+    rendered?: boolean;
+    // --- Functions ---
+    tempPaint(cb: CanvasPaintFunc): Promise<void>;
 }
 
 export interface InteractiveCanvasItem {
     readonly position: IPoint;
-    readonly shape: CanvasItemShape;
     readonly shapes: ReadonlyArray<IShape>;
-    readonly active: boolean;
+    readonly canvas: InteractiveCanvas;
     readonly index: number;
-    draw(ctx: CanvasRenderingContext2D, scale?: number): void;
+    readonly active: boolean;
+    readonly isValid: boolean;
+    readonly validPosition: IPoint;
+    draw(ctx: CanvasRenderingContext2D): MaybePromise<void>;
 }
 
-export type InteractiveDrawFn = (ctx: InteractiveCanvas, items: ReadonlyArray<InteractiveCanvasItem>)
-    => void | Promise<void>;
+export type InteractiveDrawFn = (ctx: InteractiveCanvas) => void | Promise<void>;
 
 export interface InteractivePanEvent {
     pointers?: any[];
@@ -774,7 +750,6 @@ export interface IModuleConfig {
     promiseService?: Type<IPromiseService>;
     configService?: Type<IConfigService>;
     dialogService?: Type<IDialogService>;
-    wasiImplementation?: Type<IWasi>;
     iconType?: Type<IconProps>;
     iconMap?: IconMap;
     buttonType?: Type<ButtonProps>;

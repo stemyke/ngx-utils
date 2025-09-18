@@ -1,6 +1,6 @@
-import {Type, ValueProvider, ɵComponentDef as ComponentDef} from "@angular/core";
-import {CssSelector, CssSelectorList} from "../common-types";
-import {DYNAMIC_ENTRY_COMPONENTS} from "../tokens";
+import {Injector, Provider, Type, ValueProvider, ɵComponentDef as ComponentDef} from "@angular/core";
+import {CssSelector, CssSelectorList, TypedFactoryProvider} from "../common-types";
+import {DYNAMIC_ENTRY_COMPONENTS, OPTIONS_TOKEN} from "../tokens";
 
 export function isBrowser(): boolean {
     return typeof window !== "undefined";
@@ -140,4 +140,26 @@ export function provideEntryComponents(components: Type<any>[], moduleId?: strin
         },
         multi: true
     };
+}
+
+export function provideWithOptions<O extends Object, T = any>(type: Type<T>, options: O): TypedFactoryProvider<T> {
+    return {
+        useFactory: function (parent: Injector) {
+            const providers: Provider[] = [
+                {
+                    provide: OPTIONS_TOKEN,
+                    useValue: options
+                },
+                {
+                    provide: type,
+                    useClass: type
+                }
+            ];
+            return Injector.create({
+                providers,
+                parent
+            }).get(type, null, {optional: true});
+        },
+        deps: [Injector]
+    }
 }

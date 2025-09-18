@@ -16,7 +16,7 @@ import {
     ILanguageService,
     IPromiseService,
     IToasterService,
-    IWasi, OpenApiSchemas,
+    OpenApiSchemas,
     ResizeEventStrategy
 } from "./common-types";
 
@@ -31,7 +31,6 @@ export const TOASTER_SERVICE: InjectionToken<IToasterService> = new InjectionTok
 export const DIALOG_SERVICE = new InjectionToken<IDialogService>("dialog-service");
 export const SOCKET_IO_PATH = new InjectionToken<string>("socket-io-path");
 export const PROMISE_SERVICE = new InjectionToken<IPromiseService>("promise-service");
-export const WASI_IMPLEMENTATION = new InjectionToken<Type<IWasi>>("wasi-implementation");
 export const EXPRESS_REQUEST = new InjectionToken<Request>("express-request");
 export const API_SERVICE: InjectionToken<IApiService> = new InjectionToken<IApiService>("api-service");
 export const DYNAMIC_ENTRY_COMPONENTS = new InjectionToken<DynamicEntryComponents[]>("dynamic-entry-components");
