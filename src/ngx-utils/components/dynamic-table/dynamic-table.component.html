@@ -54,51 +54,57 @@
 <div class="dynamic-table">
     <div class="table-features-row">
         <ng-content select="[table-features-before]"></ng-content>
-        <div class="table-input-wrap table-search-filter" *ngIf="showFilter">
-            <label *ngIf="filterLabel" [attr.for]="tableId">
-                {{ filterLabel | translate }}
-            </label>
-            <input type="text"
-                   class="search-input"
-                   [attr.id]="tableId"
-                   [attr.data-testid]="testId + '-filter-input'"
-                   [placeholder]="placeholder | translate"
-                   [ngModel]="filter"
-                   (ngModelChange)="setFilter($event)"/>
-        </div>
-        <dropdown-box componentClass="sort-dropdown" #sortDd>
-            <ng-container toggle-content
-                          [ngTemplateOutlet]="headerTemplate"
-                          [ngTemplateOutletContext]="{column: orderBy, toggle: sortDd}"></ng-container>
-            <ul>
-                <ng-container *ngFor="let column of cols">
-                    <li [ngClass]="'sort-column sort-' + column" *ngIf="realColumns[column].sort">
-                        <ng-container [ngTemplateOutlet]="headerTemplate"
-                                      [ngTemplateOutletContext]="{column: column}"></ng-container>
-                    </li>
-                </ng-container>
-            </ul>
-        </dropdown-box>
-        <div class="table-input-wrap table-items-count" *ngIf="showItems">
-            <label>
-                {{ 'label.items.before' | translate }}
-            </label>
-            <dropdown-box>
-                <ng-container toggle-content>
-                    {{ itemsPerPage }}
-                </ng-container>
+        @if (showFilter) {
+            <div class="table-input-wrap table-search-filter">
+                <label *ngIf="filterLabel" [attr.for]="tableId">
+                    {{ filterLabel | translate }}
+                </label>
+                <input type="text"
+                       class="search-input"
+                       [attr.id]="tableId"
+                       [attr.data-testid]="testId + '-filter-input'"
+                       [placeholder]="placeholder | translate"
+                       [ngModel]="filter"
+                       (ngModelChange)="setFilter($event)"/>
+            </div>
+        }
+        @if (sortable) {
+            <dropdown-box componentClass="sort-dropdown" #sortDd>
+                <ng-container toggle-content
+                              [ngTemplateOutlet]="headerTemplate"
+                              [ngTemplateOutletContext]="{column: orderBy, toggle: sortDd}"></ng-container>
                 <ul>
-                    <ng-container *ngFor="let count of showItems">
-                        <li [ngClass]="'item-count count-' + count" (click)="setItemsPerPage(count)">
-                            {{ count }}
+                    <ng-container *ngFor="let column of cols">
+                        <li [ngClass]="'sort-column sort-' + column" *ngIf="realColumns[column].sort">
+                            <ng-container [ngTemplateOutlet]="headerTemplate"
+                                          [ngTemplateOutletContext]="{column: column}"></ng-container>
                         </li>
                     </ng-container>
                 </ul>
             </dropdown-box>
-            <label>
-                {{ 'label.items.after' | translate }}
-            </label>
-        </div>
+        }
+        @if (showItems) {
+            <div class="table-input-wrap table-items-count">
+                <label>
+                    {{ 'label.items.before' | translate }}
+                </label>
+                <dropdown-box>
+                    <ng-container toggle-content>
+                        {{ itemsPerPage }}
+                    </ng-container>
+                    <ul>
+                        <ng-container *ngFor="let count of showItems">
+                            <li [ngClass]="'item-count count-' + count" (click)="setItemsPerPage(count)">
+                                {{ count }}
+                            </li>
+                        </ng-container>
+                    </ul>
+                </dropdown-box>
+                <label>
+                    {{ 'label.items.after' | translate }}
+                </label>
+            </div>
+        }
         <ng-content select="[table-features-after]"></ng-content>
     </div>
     <div class="table-content-row"

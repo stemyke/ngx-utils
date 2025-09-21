@@ -11,12 +11,20 @@ import {drawOval} from "../../utils/canvas";
 })
 export class InteractiveItemComponent implements OnChanges, InteractiveCanvasItem {
 
-    protected cycles: number[];
     protected pos: Point;
     protected mShapes: IShape[];
 
     get shapes(): ReadonlyArray<IShape> {
         return this.mShapes;
+    }
+
+    get hovered(): boolean {
+        return this.canvas?.hoveredItem === this;
+    }
+
+    set hovered(value: boolean) {
+        if (!this.canvas) return;
+        this.canvas.hoveredItem = value ? this : null;
     }
 
     get x(): number {
@@ -80,7 +88,6 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         this.active = false;
         this.index = -1;
         this.valid = true;
-        this.cycles = [0];
         this.pos = Point.Zero;
         this.direction = "none";
         this.mShapes = [];
@@ -97,14 +104,11 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         this.calcShapes();
     }
 
-    calcShapes(cycles?: number[]): void {
+    calcShapes(): void {
         const ratio = this.canvas.ratio ?? 1;
         const x = this.pos.x * ratio;
-        this.cycles = cycles ?? this.cycles;
-        this.mShapes = this.cycles.map(pan => {
-            const y = this.pos.y * ratio + pan;
-            return this.calcShape(x, y);
-        });
+        const y = this.pos.y * ratio;
+        this.mShapes = this.canvas.cycles.map(pan => this.calcShape(x, y + pan));
     }
 
     hit(point: Point): boolean {
@@ -114,7 +118,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         return false;
     }
 
-    move(dx: number, dy: number): void {
+    moveBy(dx: number, dy: number): void {
         if (this.direction === "none") return;
         switch (this.direction) {
             case "horizontal":
@@ -127,7 +131,6 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
                 this.pos = new Point(this.pos.x + dx, this.pos.y + dy);
                 break;
         }
-        const params = this.canvas.params || {};
         this.calcShapes();
         this.valid = this.isValidByParams() && this.canvas.items.every(other => this === other || this.isValidByDistance(other));
         this.validPos = this.valid ? this.pos : this.validPos;
@@ -145,13 +148,16 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     }
 
     protected isValidByDistance(other: InteractiveCanvasItem): boolean {
-        const min = this.getMinDistance(other);
-        const minPixels = isNaN(min) || min <= 0 ? 1 : min * this.canvas.ratio;
+        const minPixels = this.distToPixels(this.getMinDistance(other));
         return !this.shapes.some(shape => {
             return other.shapes.some(os => {
                 return os.minDistance(shape) <= minPixels;
             });
         });
+    }
+
+    protected distToPixels(value: number): number {
+        return !this.canvas ? 1 : Math.max(1, (isNaN(value) || value < 0 ? 0 : value) * (this.canvas.ratio ?? 1));
     }
 
     protected getMinDistance(other: InteractiveCanvasItem): number {

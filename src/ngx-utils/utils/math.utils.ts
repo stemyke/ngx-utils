@@ -1,11 +1,11 @@
 import {ObjectUtils} from "./object.utils";
 
+export const EPSILON = 1e-9;
+
 export class MathUtils {
 
-    static readonly EPSILON: number = 1e-9;
-
     static equal(a: number, b: number, epsilon: number = null): boolean {
-        epsilon = ObjectUtils.isNumber(epsilon) ? epsilon : MathUtils.EPSILON;
+        epsilon = ObjectUtils.isNumber(epsilon) ? epsilon : EPSILON;
         return Math.abs(a - b) < epsilon;
     }
 

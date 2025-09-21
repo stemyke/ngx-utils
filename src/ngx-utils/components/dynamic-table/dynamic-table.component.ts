@@ -6,7 +6,7 @@ import {
     ContentChildren,
     ElementRef,
     Input,
-    OnChanges,
+    OnChanges, OnDestroy,
     QueryList,
     SimpleChanges,
     TemplateRef,
@@ -21,7 +21,7 @@ import {
     ITableDataQuery,
     ITableTemplates,
     PaginationItemContext,
-    TableColumns,
+    TableColumns, TableDataItems,
     TableDataLoader
 } from "../../common-types";
 import {ObjectUtils} from "../../utils/object.utils";
@@ -32,6 +32,7 @@ import {DynamicTableTemplateDirective} from "../../directives/dynamic-table-temp
 import {PaginationDirective} from "../../directives/pagination.directive";
 import {DropdownDirective} from "../../directives/dropdown.directive";
 import {MathUtils} from "../../utils/math.utils";
+import {Observable, of, Subscription} from "rxjs";
 
 @Component({
     standalone: false,
@@ -40,14 +41,14 @@ import {MathUtils} from "../../utils/math.utils";
     styleUrls: ["./dynamic-table.component.scss"],
     templateUrl: "./dynamic-table.component.html",
 })
-export class DynamicTableComponent implements AfterContentInit, AfterViewInit, OnChanges {
+export class DynamicTableComponent implements AfterContentInit, AfterViewInit, OnChanges, OnDestroy {
 
     @Input() dataLoader: TableDataLoader;
-    @Input() data: any[];
+    @Input() data: TableDataItems | Observable<TableDataItems>;
     @Input() selected: any;
     @Input() page: number;
     @Input() urlParam: string;
-    @Input() parallelData: any[];
+    @Input() parallelData: TableDataItems;
     @Input() columns: TableColumns;
 
     /**
@@ -95,10 +96,14 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     hasQuery: boolean;
     realColumns: ITableColumns;
     cols: string[];
+    sortable: boolean;
 
     get items(): any[] {
         return !this.pagination ? [] : this.pagination.items;
     }
+
+    protected localData: TableDataItems;
+    protected subscription: Subscription;
 
     @ContentChild("rowTemplate", {static: true})
     rowTemplate: TemplateRef<any>;
@@ -140,6 +145,9 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.testId = "table";
         this.titlePrefix = "label";
         this.realColumns = {};
+        this.cols = [];
+        this.sortable = false;
+        this.localData = [];
     }
 
     setProperty(name: string, value: any): void {
@@ -166,6 +174,10 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.rowTemplate = this.rowTemplate || this.defaultRowTemplate;
     }
 
+    ngOnDestroy(): void {
+        this.subscription?.unsubscribe();
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
         const orderBy = this.orderBy;
         if (changes.columns) {
@@ -185,6 +197,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             this.cols = Object.keys(this.realColumns);
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
             const query = this.query || {};
+            this.sortable = sortable.length > 0;
             this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
             this.query = this.cols.reduce((res, col) => {
                 const value = query[col];
@@ -197,10 +210,16 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.hasQuery = this.cols.some(col => this.realColumns[col].filter);
         if (changes.orderBy && this.realColumns && this.cols) {
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
+            this.sortable = sortable.length > 0;
             this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
         }
         if (!changes.data && !changes.parallelData && !changes.dataLoader && !changes.itemsPerPage && !changes.orderDescending && orderBy === this.orderBy) return;
-        this.refresh();
+        const source = this.data instanceof Observable ? this.data : of(this.data || []);
+        this.subscription?.unsubscribe();
+        this.subscription = source.subscribe(data => {
+            this.localData = data;
+            this.refresh();
+        });
     }
 
     onDragStart(ev: DragEvent, elem: HTMLElement, item: any) {
@@ -314,21 +333,21 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query);
     };
 
-    protected loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string): Promise<IPaginationData> {
-        if (!this.data) {
-            return Promise.resolve({
+    protected async loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string): Promise<IPaginationData> {
+        if (!this.localData) {
+            return {
                 total: 0,
                 items: []
-            });
+            };
         }
         const compare: (a: any, b: any) => number = orderDescending
             ? (a, b) => DynamicTableComponent.compare(orderBy, b, a)
             : (a, b) => DynamicTableComponent.compare(orderBy, a, b);
         const from = (page - 1) * rowsPerPage;
-        const dataLength = this.data.length;
+        const dataLength = this.localData.length;
         const length = Math.min(rowsPerPage, dataLength - from);
         const parallelData = this.parallelData || [];
-        let data = this.data.map((item, ix) => {
+        let data = this.localData.map((item, ix) => {
             return new PaginationItemContext(item, parallelData[ix] || {}, dataLength, ix, ix);
         });
         if (ObjectUtils.isString(filter) && filter.length > 0) {
@@ -337,11 +356,12 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         }
         const items = orderBy ? data.sort(compare).splice(from, length) : data.splice(from, length);
         items.forEach((context, ix) => {
-            context.index = from + ix;
+            context.index = ix;
+            context.dataIndex = from + ix;
         });
-        return Promise.resolve({
+        return {
             total: dataLength,
             items: items
-        });
+        };
     }
 }

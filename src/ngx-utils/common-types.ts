@@ -390,7 +390,11 @@ export type PaginationDataLoader = (page: number, itemsPerPage: number) => Promi
 
 export class PaginationItemContext {
 
-    constructor(public item: any, public parallelItem: any, public count: number, public index: number, public dataIndex: number) {
+    constructor(readonly item: any,
+                readonly parallelItem: any,
+                readonly count: number,
+                public index: number,
+                public dataIndex: number) {
     }
 
     get first(): boolean {
@@ -452,27 +456,9 @@ export type CanvasItemDirection = "horizontal" | "vertical" | "free" | "none";
 
 export type CanvasPaintFunc = (ctx: CanvasRenderingContext2D) => MaybePromise<GlobalCompositeOperation | null>;
 
-export interface InteractiveCanvas {
-    // --- Optionals, for compatibility ---
-    readonly params?: Record<string, any>;
-    readonly items?: ReadonlyArray<InteractiveCanvasItem>;
-    // --- Getters ---
-    readonly canvas: HTMLCanvasElement;
-    // --- Calculated values ---
-    readonly ratio: number;
-    readonly styles: CSSStyleDeclaration;
-    readonly ctx: CanvasRenderingContext2D;
-    readonly canvasWidth: number;
-    readonly canvasHeight: number;
-    readonly fullHeight: number;
-    readonly rotation: number;
-    readonly basePan: number;
-    // --- Optionals, for back compatibility ---
-    rendered?: boolean;
-    // --- Functions ---
-    tempPaint(cb: CanvasPaintFunc): Promise<void>;
-}
-
+/**
+ * Interface for an interactive canvas item
+ */
 export interface InteractiveCanvasItem {
     readonly position: IPoint;
     readonly shapes: ReadonlyArray<IShape>;
@@ -484,13 +470,48 @@ export interface InteractiveCanvasItem {
     draw(ctx: CanvasRenderingContext2D): MaybePromise<void>;
 }
 
-export type InteractiveDrawFn = (ctx: InteractiveCanvas) => void | Promise<void>;
+export type InteractiveCanvasItems = ReadonlyArray<InteractiveCanvasItem>;
+
+/**
+ * Interface for an interactive canvas component
+ * Some properties are optional for compatibility with other kind of renderer functions
+ */
+export interface InteractiveCanvas {
+    // --- Inputs ---
+    readonly params?: Record<string, any>;
+    // --- Getters ---
+    readonly $items?: Observable<InteractiveCanvasItems>;
+    readonly items?: InteractiveCanvasItems;
+    readonly canvas: HTMLCanvasElement;
+    readonly lockedItem?: InteractiveCanvasItem;
+    readonly selectedItem?: InteractiveCanvasItem;
+    // --- Getters / setters ---
+    hoveredItem?: InteractiveCanvasItem;
+    // --- Calculated values ---
+    readonly ratio: number;
+    readonly styles: CSSStyleDeclaration;
+    readonly ctx: CanvasRenderingContext2D;
+    readonly canvasWidth: number;
+    readonly canvasHeight: number;
+    readonly fullHeight: number;
+    readonly viewRatio: number;
+    readonly rotation: number;
+    readonly basePan: number;
+    readonly cycles?: ReadonlyArray<number>;
+    // --- Optionals, for back compatibility ---
+    rendered?: boolean;
+    // --- Functions ---
+    tempPaint(cb: CanvasPaintFunc): Promise<void>;
+}
+
+export type InteractiveCanvasRenderer = (renderCanvas: InteractiveCanvas, renderCtx: Record<string, any>) => MaybePromise<void>;
 
 export interface InteractivePanEvent {
+    canvas: InteractiveCanvas;
+    item: InteractiveCanvasItem;
     pointers?: any[];
     deltaX?: number;
     deltaY?: number;
-    item?: InteractiveCanvasItem;
     [key: string]: any;
 }
 
@@ -660,6 +681,8 @@ export interface ITableTemplates {
 export interface ITableDataQuery {
     [column: string]: string | string[] | boolean;
 }
+
+export type TableDataItems = ReadonlyArray<any>;
 
 export type TableDataLoader = (
     page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean,

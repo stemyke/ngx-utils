@@ -1,12 +1,12 @@
 <div #containerElem
-     [ngClass]="['interactive-canvas-wrapper', horizontal ? 'horizontal' : 'vertical']"
+     [ngClass]="['interactive-canvas-container', horizontal ? 'horizontal' : 'vertical']"
      (resize)="resize()"
      (touchstart)="onTouchStart($event)"
-     (mousedown)="onMouseDown()"
+     (mousedown)="onMouseDown($event)"
      (mousemove)="onMouseMove($event)"
      (mouseleave)="onMouseLeave()"
      (panend)="onPanEnd()"
-     (panmove)="onPan($event)"
-     (panstart)="onPanStart($event)">
+     (panmove)="onPanMove($event)"
+     (panstart)="onPanStart()">
     <canvas #canvasElem class="interactive-canvas-element"></canvas>
 </div>
