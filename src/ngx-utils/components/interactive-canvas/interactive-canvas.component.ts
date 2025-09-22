@@ -170,11 +170,6 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         this.touched = false;
         this.deltaX = 0;
         this.deltaY = 0;
-        this.ctrInit();
-    }
-
-    ctrInit(): void {
-
     }
 
     ngOnInit() {
