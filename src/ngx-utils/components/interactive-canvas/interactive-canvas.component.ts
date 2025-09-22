@@ -5,7 +5,6 @@ import {
     ElementRef,
     EventEmitter,
     HostListener,
-    Inject,
     Input,
     OnChanges,
     OnDestroy,
@@ -29,7 +28,6 @@ import {
 } from "../../common-types";
 import {Oval, Point, Rect, toRadians} from "../../utils/geometry";
 import {InteractiveItemComponent} from "./interactive-item.component";
-import {ROOT_ELEMENT} from "../../tokens";
 import {UniversalService} from "../../services/universal.service";
 import {drawOval, drawRect} from "../../utils/canvas";
 import {normalizeRange, overflow} from "../../utils/math.utils";
@@ -133,9 +131,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     protected lockedIndex: number;
 
     constructor(readonly renderer: Renderer2,
-                readonly universal: UniversalService,
-                readonly element: ElementRef<HTMLElement>,
-                @Inject(ROOT_ELEMENT) readonly rootElement: HTMLElement) {
+                readonly universal: UniversalService) {
         this.infinite = false;
         this.resizeMode = "fit";
         this.params = {};
