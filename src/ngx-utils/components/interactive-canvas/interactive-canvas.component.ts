@@ -19,16 +19,20 @@ import {BehaviorSubject, Subscription} from "rxjs";
 
 import {
     CanvasPaintFunc,
+    CanvasResizeMode,
     InteractiveCanvas,
+    InteractiveCanvasParams,
     InteractiveCanvasPointer,
     InteractiveCanvasRenderer,
-    InteractivePanEvent
+    InteractivePanEvent,
+    RangeCoords
 } from "../../common-types";
 import {Oval, Point, Rect, toRadians} from "../../utils/geometry";
 import {InteractiveItemComponent} from "./interactive-item.component";
 import {ROOT_ELEMENT} from "../../tokens";
 import {UniversalService} from "../../services/universal.service";
 import {drawOval, drawRect} from "../../utils/canvas";
+import {normalizeRange, overflow} from "../../utils/math.utils";
 
 @Component({
     standalone: false,
@@ -38,14 +42,24 @@ import {drawOval, drawRect} from "../../utils/canvas";
 })
 export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, OnDestroy, AfterViewInit, OnChanges {
 
+    @Input() infinite: boolean;
+    @Input() resizeMode: CanvasResizeMode;
+    @Input() params: InteractiveCanvasParams;
+    /**
+     * Real life-size width of the canvas
+     */
+    @Input() realWidth: number;
+    /**
+     * Real life-size height of the canvas
+     */
+    @Input() realHeight: number;
     @Input() debug: boolean;
     @Input() horizontal: boolean;
     @Input() selectedIndex: number;
-    @Input() resizeMode: "fit" | "fill";
-    @Input() realWidth: number;
-    @Input() realHeight: number;
+    /**
+     * Relative offset of the panning. It is based on the rendered canvas height
+     */
     @Input() panOffset: number;
-    @Input() params: Record<string, any>;
     @Input() renderCtx: Record<string, any>;
     @Input() beforeItems: ReadonlyArray<InteractiveCanvasRenderer>;
     @Input() afterItems: ReadonlyArray<InteractiveCanvasRenderer>;
@@ -83,18 +97,21 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         this.hoveredIndex = !item ? -1 : this.items.indexOf(item);
     }
 
+    xRange: RangeCoords;
+    yRange: RangeCoords;
+
     ratio: number;
     styles: CSSStyleDeclaration;
     ctx: CanvasRenderingContext2D;
     canvasWidth: number;
     canvasHeight: number;
+    fullHeight: number;
+    viewRatio: number;
 
     rotation: number;
     basePan: number;
     cycles: number[];
-
-    fullHeight: number;
-    viewRatio: number;
+    exclusions: Rect[];
 
     protected tempCanvas: HTMLCanvasElement;
     protected shouldDraw: boolean;
@@ -119,14 +136,16 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
                 readonly universal: UniversalService,
                 readonly element: ElementRef<HTMLElement>,
                 @Inject(ROOT_ELEMENT) readonly rootElement: HTMLElement) {
+        this.infinite = false;
+        this.resizeMode = "fit";
+        this.params = {};
         this.debug = false;
         this.horizontal = false;
         this.selectedIndex = 0;
-        this.resizeMode = "fit";
         this.realWidth = 100;
         this.realHeight = 100;
         this.panOffset = 0;
-        this.params = {};
+        this.renderCtx = {};
         this.beforeItems = [];
         this.afterItems = [];
         this.selectedIndexChange = new EventEmitter();
@@ -138,10 +157,20 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         this.$items = new BehaviorSubject([]);
         this.tempCanvas = this.universal.isServer ? null : document.createElement("canvas");
         this.shouldDraw = !this.universal.isServer;
-        this.rotation = 0;
+        this.hoveredIndex = null;
+
+        this.xRange = [0, 1];
+        this.yRange = [0, 1];
+        this.ratio = 1;
+        this.styles = null;
+        this.ctx = null;
         this.canvasWidth = 0;
         this.canvasHeight = 0;
-        this.hoveredIndex = null;
+        this.rotation = 0;
+        this.basePan = 0;
+        this.cycles = [0];
+        this.exclusions = [];
+
         this.touched = false;
         this.deltaX = 0;
         this.deltaY = 0;
@@ -166,6 +195,8 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         this.renderCtx = this.renderCtx || {};
         this.beforeItems = this.beforeItems || [];
         this.afterItems = this.afterItems || [];
+        this.xRange = normalizeRange(this.params.xRange || [0, this.realWidth]);
+        this.yRange = normalizeRange(this.params.yRange || [0, this.realHeight]);
         this.resize();
     }
 
@@ -259,7 +290,6 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         const deltaY = ($event.deltaY - this.deltaY) / this.ratio;
         const data: InteractivePanEvent = {
             canvas: this,
-            pointers: $event.pointers,
             item,
             deltaX,
             deltaY
@@ -269,9 +299,13 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             data.deltaY = +deltaX;
         }
         if (item) {
-            item.moveBy(data.deltaX, data.deltaY);
-            this.onItemPan.emit(data);
-        } else if (this.resizeMode == "fill") {
+            const pt = this.toCanvasPoint($event.pointers[0]);
+            if (pt && item.hit(pt)) {
+                // Only move the item if it is still under the pointer
+                item.moveBy(data.deltaX, data.deltaY);
+                this.onItemPan.emit(data);
+            }
+        } else if (this.infinite) {
             this.rotation += (this.horizontal ? deltaX : deltaY) / this.realHeight * 360;
             this.fixRotation();
             this.onPan.emit(data);
@@ -284,7 +318,6 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         const item = this.lockedItem;
         const data: InteractivePanEvent = {
             canvas: this,
-            pointers: [],
             deltaX: 0,
             deltaY: 0,
             item
@@ -300,11 +333,20 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
 
     protected fixRotation(): void {
         if (this.fullHeight <= 0) return;
-        this.rotation = ((this.rotation + 180) % 360 + 360) % 360 - 180;
-        this.rotation = Math.round(this.rotation * 100) / 100;
-        this.basePan = (this.rotation / 360 - 1) * this.fullHeight + this.canvasHeight * this.panOffset;
-        this.cycles = this.resizeMode == "fit"
-            ? [0] : [this.basePan - this.fullHeight, this.basePan, this.basePan + this.fullHeight];
+        this.rotation = overflow(Math.round(this.rotation * 100) / 100, -180, 180);
+        this.basePan = (this.rotation / 360 - 1) * this.fullHeight
+            + this.canvasHeight * this.panOffset;
+        this.cycles = this.infinite
+            ? [this.basePan - this.fullHeight, this.basePan, this.basePan + this.fullHeight] : [0];
+        this.exclusions = (this.params.exclusions || []).flatMap(coords => {
+            const x = (coords[2] + coords[0]) * .5 * this.ratio;
+            const y = (coords[3] + coords[1]) * .5 * this.ratio;
+            const width = Math.abs(coords[2] - coords[0]) * this.ratio;
+            const height = Math.abs(coords[3] - coords[1]) * this.ratio;
+            return this.cycles.map(cycle => {
+                return new Rect(x, y + cycle, width, height);
+            });
+        });
         this.items.forEach(item => {
             item.calcShapes();
         });
@@ -333,17 +375,22 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         }
     }
 
-    protected getIndexUnderPointer(pointer: InteractiveCanvasPointer): number {
-        if (!pointer || !this.canvasElem || !this.items) return null;
-        const canvasRect = this.canvasElem.nativeElement.getBoundingClientRect();
-        const point = this.horizontal
+    protected toCanvasPoint(pointer: InteractiveCanvasPointer): Point {
+        if (!pointer || !this.canvas) return null;
+        const canvasRect = this.canvas?.getBoundingClientRect();
+        return this.horizontal
             ? new Point(canvasRect.bottom - pointer.clientY, pointer.clientX - canvasRect.left)
             : new Point(pointer.clientX - canvasRect.left, pointer.clientY - canvasRect.top);
+    }
+
+    protected getIndexUnderPointer(pointer: InteractiveCanvasPointer): number {
+        const point = this.toCanvasPoint(pointer);
+        if (!point || !this.items) return -1;
         const length = this.items.length;
         for (let ix = 0; ix < length; ix++) {
             const item = this.items[ix];
             if (item?.hit(point)) {
-                return item.disabled ? null : ix;
+                return item.disabled ? -1 : ix;
             }
         }
         return -1;

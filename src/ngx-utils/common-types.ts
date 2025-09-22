@@ -452,9 +452,24 @@ export interface IShape extends IPoint {
 
 // --- Interactive canvas ---
 
+export type CanvasResizeMode = "fit" | "fill";
+
 export type CanvasItemDirection = "horizontal" | "vertical" | "free" | "none";
 
 export type CanvasPaintFunc = (ctx: CanvasRenderingContext2D) => MaybePromise<GlobalCompositeOperation | null>;
+
+export type RangeCoords = [from: number, to: number];
+export type RectCoords = [left: number, top: number, right: number, bottom: number];
+
+/**
+ * Interface for an interactive canvas params
+ */
+export interface InteractiveCanvasParams {
+    xRange?: RangeCoords;
+    yRange?: RangeCoords;
+    exclusions?: ReadonlyArray<RectCoords>;
+    [key: string]: any;
+}
 
 /**
  * Interface for an interactive canvas item
@@ -478,7 +493,11 @@ export type InteractiveCanvasItems = ReadonlyArray<InteractiveCanvasItem>;
  */
 export interface InteractiveCanvas {
     // --- Inputs ---
-    readonly params?: Record<string, any>;
+    readonly infinite?: boolean;
+    readonly resizeMode?: CanvasResizeMode;
+    readonly params?: InteractiveCanvasParams;
+    readonly realWidth?: number;
+    readonly realHeight?: number;
     // --- Getters ---
     readonly $items?: Observable<InteractiveCanvasItems>;
     readonly items?: InteractiveCanvasItems;
@@ -487,7 +506,10 @@ export interface InteractiveCanvas {
     readonly selectedItem?: InteractiveCanvasItem;
     // --- Getters / setters ---
     hoveredItem?: InteractiveCanvasItem;
-    // --- Calculated values ---
+    // --- Calculated values on changes ---
+    readonly xRange?: RangeCoords;
+    readonly yRange?: RangeCoords;
+    // --- Calculated values on resize ---
     readonly ratio: number;
     readonly styles: CSSStyleDeclaration;
     readonly ctx: CanvasRenderingContext2D;
@@ -495,9 +517,11 @@ export interface InteractiveCanvas {
     readonly canvasHeight: number;
     readonly fullHeight: number;
     readonly viewRatio: number;
+    // --- Calculated values on rotation ---
     readonly rotation: number;
     readonly basePan: number;
     readonly cycles?: ReadonlyArray<number>;
+    readonly exclusions?: ReadonlyArray<IShape>;
     // --- Optionals, for back compatibility ---
     rendered?: boolean;
     // --- Functions ---
@@ -509,7 +533,6 @@ export type InteractiveCanvasRenderer = (renderCanvas: InteractiveCanvas, render
 export interface InteractivePanEvent {
     canvas: InteractiveCanvas;
     item: InteractiveCanvasItem;
-    pointers?: any[];
     deltaX?: number;
     deltaY?: number;
     [key: string]: any;
@@ -519,7 +542,6 @@ export interface InteractiveCanvasPointer {
     clientX: number;
     clientY: number;
 }
-
 
 // --- Http service ---
 export interface HttpRequestHeaders {

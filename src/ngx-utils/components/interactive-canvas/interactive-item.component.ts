@@ -3,6 +3,7 @@ import {CanvasItemDirection, InteractiveCanvas, InteractiveCanvasItem, IPoint, I
 import {Point} from "../../utils/geometry";
 import {MaybePromise} from "../../helper-types";
 import {drawOval} from "../../utils/canvas";
+import {clamp, MathUtils, overflow} from "../../utils/math.utils";
 
 @Component({
     standalone: false,
@@ -118,22 +119,29 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         return false;
     }
 
-    moveBy(dx: number, dy: number): void {
-        if (this.direction === "none") return;
-        switch (this.direction) {
-            case "horizontal":
-                this.pos = new Point(this.pos.x + dx, this.pos.y);
-                break;
-            case "vertical":
-                this.pos = new Point(this.pos.x, this.pos.y + dy);
-                break;
-            default:
-                this.pos = new Point(this.pos.x + dx, this.pos.y + dy);
-                break;
-        }
+    moveTo(x: number, y: number): void {
+        if (!this.canvas || this.direction === "none") return;
+        const target = this.restrictPosition(
+            this.direction === "vertical" ? this.pos.x : x,
+            this.direction === "horizontal" ? this.pos.y : y
+        );
+        this.pos = new Point(target);
         this.calcShapes();
         this.valid = this.isValidByParams() && this.canvas.items.every(other => this === other || this.isValidByDistance(other));
         this.validPos = this.valid ? this.pos : this.validPos;
+    }
+
+    moveBy(dx: number, dy: number): void {
+        const {x, y} = this.pos;
+        this.moveTo(x + dx, y + dy);
+    }
+
+    moveX(x: number): void {
+        this.moveTo(x, this.pos.y);
+    }
+
+    moveY(y: number): void {
+        this.moveTo(this.pos.x, y);
     }
 
     moveEnd(): void {
@@ -143,8 +151,21 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         this.calcShapes();
     }
 
+    protected restrictPosition(x: number, y: number): IPoint {
+        return {
+            x: clamp(x, this.canvas.xRange),
+            y: this.canvas.infinite
+                ? overflow(y, this.canvas.yRange)
+                : clamp(y, this.canvas.yRange)
+        }
+    }
+
     protected isValidByParams(): boolean {
-        return true;
+        return !this.shapes.some(shape => {
+            return this.canvas.exclusions.some(ex => {
+                return ex.minDistance(shape) < 1;
+            });
+        });
     }
 
     protected isValidByDistance(other: InteractiveCanvasItem): boolean {

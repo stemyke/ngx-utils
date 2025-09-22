@@ -59,6 +59,10 @@ export function drawOval(ctx: CanvasRenderingContext2D, w: number, h: number): v
     ctx.closePath();
 }
 
+export function drawPoint(ctx: CanvasRenderingContext2D): void {
+    drawOval(ctx, 4, 4);
+}
+
 export class CanvasUtils {
 
     static manipulatePixels(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, colorTransformer: (color: CanvasColor, greyscale?: number) => CanvasColor): void {

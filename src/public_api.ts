@@ -83,8 +83,12 @@ export {
     PaginationItemContext,
     IPoint,
     IShape,
+    CanvasResizeMode,
     CanvasItemDirection,
     CanvasPaintFunc,
+    RangeCoords,
+    RectCoords,
+    InteractiveCanvasParams,
     InteractiveCanvasItem,
     InteractiveCanvasItems,
     InteractiveCanvas,
@@ -189,7 +193,7 @@ export {Initializer} from "./ngx-utils/utils/initializer";
 export {JSONfn} from "./ngx-utils/utils/jsonfn";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
-export {MathUtils} from "./ngx-utils/utils/math.utils";
+export {normalizeRange, clamp, overflow, MathUtils} from "./ngx-utils/utils/math.utils";
 export {
     isBrowser,
     getRoot,
