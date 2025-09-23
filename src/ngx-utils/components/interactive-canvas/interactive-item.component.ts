@@ -3,7 +3,7 @@ import {CanvasItemDirection, InteractiveCanvas, InteractiveCanvasItem, IPoint, I
 import {Point} from "../../utils/geometry";
 import {MaybePromise} from "../../helper-types";
 import {drawOval} from "../../utils/canvas";
-import {clamp, MathUtils, overflow} from "../../utils/math.utils";
+import {clamp, overflow} from "../../utils/math.utils";
 
 @Component({
     standalone: false,
@@ -114,7 +114,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
 
     hit(point: Point): boolean {
         for (const shape of this.shapes) {
-            if (shape.minDistance(point) <= 0) return true;
+            if (shape.intersects(point)) return true;
         }
         return false;
     }
@@ -127,7 +127,8 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         );
         this.pos = new Point(target);
         this.calcShapes();
-        this.valid = this.isValidByParams() && this.canvas.items.every(other => this === other || this.isValidByDistance(other));
+        this.valid = this.isValidByParams() &&
+            this.canvas.items.every(other => this === other || this.isValidByDistance(other));
         this.validPos = this.valid ? this.pos : this.validPos;
     }
 
@@ -163,7 +164,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     protected isValidByParams(): boolean {
         return !this.shapes.some(shape => {
             return this.canvas.exclusions.some(ex => {
-                return ex.minDistance(shape) < 1;
+                return shape.distance(ex) < 1;
             });
         });
     }
@@ -172,7 +173,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         const minPixels = this.distToPixels(this.getMinDistance(other));
         return !this.shapes.some(shape => {
             return other.shapes.some(os => {
-                return os.minDistance(shape) <= minPixels;
+                return shape.distance(os) <= minPixels;
             });
         });
     }

@@ -37,11 +37,30 @@ export function overflow(value: number, min: number | RangeCoords, max?: number)
     return ((((value - range[0]) % length) + length) % length) + range[0];
 }
 
+/**
+ * Checks if a number is equal to b number with epsilon tolerance
+ * @param a
+ * @param b
+ * @param epsilon
+ */
+export function isEqual(a: number, b: number, epsilon: number = null): boolean {
+    epsilon = ObjectUtils.isNumber(epsilon) ? epsilon : EPSILON;
+    return Math.abs(a - b) <= epsilon;
+}
+
+/**
+ * Checks if a number is equal to zero with epsilon tolerance
+ * @param a
+ * @param epsilon
+ */
+export function isZero(a: number, epsilon: number = null): boolean {
+    return isEqual(a, 0, epsilon);
+}
+
 export class MathUtils {
 
     static equal(a: number, b: number, epsilon: number = null): boolean {
-        epsilon = ObjectUtils.isNumber(epsilon) ? epsilon : EPSILON;
-        return Math.abs(a - b) < epsilon;
+        return isEqual(a, b, epsilon);
     }
 
     static clamp(value: number, min: number, max: number): number {

@@ -1,16 +1,6 @@
-import {IPoint, IShape} from "../../common-types";
-import {gjkDistance} from "./distance";
-import {
-    dotProduct,
-    isPoint,
-    perpendicular,
-    ptAdd,
-    ptDistance,
-    ptLength,
-    ptMultiply,
-    ptSubtract,
-    rotateDeg
-} from "./functions";
+import {IPoint, IShape, ShapeDistance, ShapeIntersection} from "../../common-types";
+import {gjkDistance, gjkIntersection} from "./gjk";
+import {addPts, dotProduct, ensurePoint, isPoint, lengthOfPt, multiplyPts, perpendicular, rotateDeg, subPts} from "./functions";
 
 abstract class Shape implements IShape {
 
@@ -34,12 +24,22 @@ abstract class Shape implements IShape {
 
     abstract support(dir: IPoint): IPoint;
 
-    distance(p: IPoint): number {
-        return ptDistance(this.center, p);
+    abstract move(pos: IPoint): IShape;
+
+    intersection(shape: IShape): ShapeIntersection {
+        return gjkIntersection(this, shape);
     }
 
-    minDistance(shape: IShape): number {
-        return gjkDistance(this, shape).distance;
+    intersects(shape: IShape): boolean {
+        return gjkIntersection(this, shape).hit;
+    }
+
+    minDistance(shape: IShape): ShapeDistance {
+        return gjkDistance(this, shape);
+    }
+
+    distance(shape: IShape): number {
+        return this.minDistance(shape).distance;
     }
 }
 
@@ -48,7 +48,7 @@ export class Point extends Shape {
     static Zero: Point = new Point(0, 0);
 
     get length(): number {
-        return ptLength(this);
+        return lengthOfPt(this);
     }
 
     get perpendicular(): Point {
@@ -62,39 +62,43 @@ export class Point extends Shape {
     }
 
     support(): IPoint {
-        return this.pt;
+        return this.center;
     }
 
-    add(p: Point): Point {
-        return new Point(ptAdd(this, p));
+    move(pos: IPoint): IShape {
+        return new Point(pos);
     }
 
-    sub(p: Point): Point {
-        return new Point(ptSubtract(this, p));
+    add(p: IPoint): Point {
+        return new Point(addPts(this, p));
     }
 
-    mul(p: Point | number): Point {
-        return new Point(ptMultiply(this, p));
+    subtract(p: IPoint): Point {
+        return new Point(subPts(this, p));
     }
 
-    dot(p: Point): Point {
+    multiply(p: IPoint | number): Point {
+        return new Point(multiplyPts(this, p));
+    }
+
+    divide(p: IPoint | number): Point {
+        return new Point(multiplyPts(this, p));
+    }
+
+    dot(p: IPoint): Point {
         return new Point(dotProduct(this, p));
     }
 
-    distance(p: IPoint): number {
-        return ptDistance(this, p);
-    }
-
     lerp(p: Point, ratio: number): Point {
-        const diff = p.sub(this);
-        return this.add(diff.mul(ratio));
+        const diff = p.subtract(this);
+        return this.add(diff.multiply(ratio));
     }
 
     perpendicularTo(p: Point, length: number): Point {
-        const diff = p.perpendicular.sub(this.perpendicular);
+        const diff = p.perpendicular.subtract(this.perpendicular);
         const ratio = length / diff.length;
         const center = this.lerp(p, .5);
-        return center.add(diff.mul(ratio));
+        return center.add(diff.multiply(ratio));
     }
 
     circleWith(a: Point, b: Point): Circle {
@@ -113,8 +117,8 @@ export class Point extends Shape {
     }
 
     tangents(c: Circle): Point[] {
-        const pd = ptSubtract(c.center, this);
-        const a = Math.asin(c.radius / ptLength(pd));
+        const pd = subPts(c.center, this);
+        const a = Math.asin(c.radius / lengthOfPt(pd));
         const b = Math.atan2(pd.y, pd.x);
         // Tangent points
         let t = b - a;
@@ -125,7 +129,7 @@ export class Point extends Shape {
     }
 
     angle(p: Point): number {
-        const diff = p.sub(this);
+        const diff = p.subtract(this);
         return Math.atan2(diff.y, diff.x) * 180 / Math.PI;
     }
 
@@ -148,11 +152,17 @@ export class Rect extends Shape {
 
     support(dir: IPoint) {
         const ang = this.rotation ?? 0;
-        const dLocal = rotateDeg(dir, -ang);
-        const hw = Math.max(0, this.width / 2), hh = Math.max(0, this.height / 2);
+        const dLocal = rotateDeg(ensurePoint(dir, {x: 1, y: 0}), -ang);
+        const hw = Math.max(0, this.width / 2),
+            hh = Math.max(0, this.height / 2);
+        if (hw === 0 && hh === 0) return ensurePoint(this.center);
         const lx = dLocal.x >= 0 ? hw : -hw;
         const ly = dLocal.y >= 0 ? hh : -hh;
-        return ptAdd(rotateDeg({x: lx, y: ly}, ang), {x: this.x, y: this.y});
+        return addPts(rotateDeg({x: lx, y: ly}, ang), this.center);
+    }
+
+    move(pos: IPoint): Rect {
+        return new Rect(pos.x, pos.y, this.width, this.height, this.rotation);
     }
 }
 
@@ -167,20 +177,26 @@ export class Oval extends Shape {
 
     support(dir: IPoint) {
         const ang = this.rotation ?? 0;
-        const d = rotateDeg(dir, -ang);
-        const a = Math.max(0, this.width / 2);
-        const b = Math.max(0, this.height / 2);
-        if (Math.abs(d.x) < 1e-12 && Math.abs(d.y) < 1e-12)
-            return {x: this.x, y: this.y};
-        const q = Math.hypot(a * d.x, b * d.y) || 1; // sqrt((a*dx)^2 + (b*dy)^2)
-        const lx = (a * a * d.x) / q;
-        const ly = (b * b * d.y) / q;
-        return ptAdd(rotateDeg({x: lx, y: ly}, ang), {x: this.x, y: this.y});
+        const d = rotateDeg(ensurePoint(dir, {x: 1, y: 0}), -ang);
+        const a = Math.max(0, this.width / 2),
+            b = Math.max(0, this.height / 2);
+        if (a === 0 && b === 0) return ensurePoint(this.center);
+        const q = Math.hypot(a * d.x, b * d.y) || 1;
+        const lx = (a * a * d.x) / q, ly = (b * b * d.y) / q;
+        return addPts(rotateDeg({x: lx, y: ly}, ang), this.center);
+    }
+
+    move(pos: IPoint): Oval {
+        return new Oval(pos.x, pos.y, this.width, this.height, this.rotation);
     }
 }
 
 export class Circle extends Oval {
     constructor(x: number, y: number, readonly radius: number, rotation: number = 0) {
         super(x, y, radius * 2, radius * 2, rotation);
+    }
+
+    move(pos: IPoint): Circle {
+        return new Circle(pos.x, pos.y, this.radius, this.rotation);
     }
 }

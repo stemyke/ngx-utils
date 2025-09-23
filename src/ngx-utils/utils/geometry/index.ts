@@ -1,12 +1,24 @@
 export {
+    gjkDistance,
+    gjkIntersection
+} from "./gjk"
+
+export {
     dotProduct,
+    tripleProduct,
     isPoint,
+    ensurePoint,
     perpendicular,
-    ptAdd,
-    ptDistance,
-    ptLength,
-    ptMultiply,
-    ptSubtract,
+    negatePt,
+    normalizePt,
+    addPts,
+    distanceSq,
+    distance,
+    lerpPts,
+    lengthOfPt,
+    multiplyPts,
+    dividePts,
+    subPts,
     rotateDeg,
     rotateRad,
     toDegrees,

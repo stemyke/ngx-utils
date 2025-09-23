@@ -443,11 +443,27 @@ export interface IPoint {
     readonly y: number;
 }
 
+export interface ShapeIntersection {
+    hit: boolean;
+    pa?: IPoint;
+    pb?: IPoint;
+    point?: IPoint;
+}
+
+export interface ShapeDistance {
+    distance: number;
+    pa?: IPoint;
+    pb?: IPoint;
+}
+
 export interface IShape extends IPoint {
     readonly center: IPoint;
     support(dir: IPoint): IPoint;
-    distance(p: IPoint): number;
-    minDistance(shape: IShape): number;
+    move(pos: IPoint): IShape;
+    intersection(shape: IShape): ShapeIntersection;
+    intersects(shape: IShape): boolean;
+    minDistance(shape: IShape): ShapeDistance;
+    distance(shape: IShape): number;
 }
 
 // --- Interactive canvas ---

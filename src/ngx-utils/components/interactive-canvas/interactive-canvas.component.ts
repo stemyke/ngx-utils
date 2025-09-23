@@ -19,11 +19,11 @@ import {BehaviorSubject, Subscription} from "rxjs";
 import {
     CanvasPaintFunc,
     CanvasResizeMode,
-    InteractiveCanvas,
+    InteractiveCanvas, InteractiveCanvasItem,
     InteractiveCanvasParams,
     InteractiveCanvasPointer,
     InteractiveCanvasRenderer,
-    InteractivePanEvent,
+    InteractivePanEvent, IPoint,
     RangeCoords
 } from "../../common-types";
 import {Oval, Point, Rect, toRadians} from "../../utils/geometry";
@@ -126,8 +126,8 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     protected itemList: QueryList<InteractiveItemComponent>;
 
     protected touched: boolean;
-    protected deltaX: number;
-    protected deltaY: number;
+    protected panStartRotation: number;
+    protected panStartPos: IPoint;
     protected lockedIndex: number;
 
     constructor(readonly renderer: Renderer2,
@@ -168,8 +168,8 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         this.exclusions = [];
 
         this.touched = false;
-        this.deltaX = 0;
-        this.deltaY = 0;
+        this.panStartRotation = 0;
+        this.panStartPos = Point.Zero;
     }
 
     ngOnInit() {
@@ -266,19 +266,20 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     }
 
     onMouseLeave(): void {
+        if (this.touched) return;
         this.hoveredIndex = null;
         this.updateCursor();
     }
 
     onPanStart(): void {
-        this.deltaX = 0;
-        this.deltaY = 0;
+        this.panStartRotation = this.rotation;
+        this.panStartPos = this.lockedItem?.position || Point.Zero;
     }
 
     onPanMove($event: any): void {
         const item = this.lockedItem;
-        const deltaX = ($event.deltaX - this.deltaX) / this.ratio;
-        const deltaY = ($event.deltaY - this.deltaY) / this.ratio;
+        const deltaX = $event.deltaX / this.ratio;
+        const deltaY = $event.deltaY / this.ratio;
         const data: InteractivePanEvent = {
             canvas: this,
             item,
@@ -290,19 +291,13 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             data.deltaY = +deltaX;
         }
         if (item) {
-            const pt = this.toCanvasPoint($event.pointers[0]);
-            if (pt && item.hit(pt)) {
-                // Only move the item if it is still under the pointer
-                item.moveBy(data.deltaX, data.deltaY);
-                this.onItemPan.emit(data);
-            }
+            item.moveTo(this.panStartPos.x + data.deltaX, this.panStartPos.y + data.deltaY);
+            this.onItemPan.emit(data);
         } else if (this.infinite) {
-            this.rotation += (this.horizontal ? deltaX : deltaY) / this.realHeight * 360;
+            this.rotation = this.panStartRotation + (this.horizontal ? deltaX : deltaY) / this.realHeight * 360;
             this.fixRotation();
             this.onPan.emit(data);
         }
-        this.deltaX = $event.deltaX;
-        this.deltaY = $event.deltaY;
     }
 
     onPanEnd(): void {
@@ -364,6 +359,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             if (!item) return;
             item.active = !item.active;
         }
+        this.hoveredIndex = selected;
     }
 
     protected toCanvasPoint(pointer: InteractiveCanvasPointer): Point {
@@ -419,16 +415,14 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
 
     protected async drawItems(): Promise<void> {
         const ctx = this.ctx;
+        const lockedItem = this.lockedItem;
         for (const item of this.items) {
-            for (const shape of item.shapes) {
-                ctx.save();
-                ctx.translate(shape.x, shape.y);
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = "black";
-                ctx.fillStyle = "white";
-                await item.draw(ctx);
-                ctx.restore();
+            if (item !== lockedItem) {
+                await this.drawItem(ctx, item);
             }
+        }
+        if (lockedItem) {
+            await this.drawItem(ctx, lockedItem);
         }
         if (!this.debug) return;
         ctx.lineWidth = 2;
@@ -448,6 +442,18 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
                 }
                 ctx.restore();
             }
+        }
+    }
+
+    protected async drawItem(ctx: CanvasRenderingContext2D, item: InteractiveCanvasItem): Promise<void> {
+        for (const shape of item.shapes) {
+            ctx.save();
+            ctx.translate(shape.x, shape.y);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "black";
+            ctx.fillStyle = "white";
+            await item.draw(ctx);
+            ctx.restore();
         }
     }
 

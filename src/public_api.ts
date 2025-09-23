@@ -82,6 +82,8 @@ export {
     PaginationDataLoader,
     PaginationItemContext,
     IPoint,
+    ShapeIntersection,
+    ShapeDistance,
     IShape,
     CanvasResizeMode,
     CanvasItemDirection,
@@ -176,24 +178,33 @@ export {GenericValue} from "./ngx-utils/utils/generic-value";
 export {FileSystemEntryOpenResult, FileSystemEntryOpenCb, FileSystemEntry} from "./ngx-utils/utils/file-system";
 export {
     dotProduct,
+    tripleProduct,
     isPoint,
+    ensurePoint,
     perpendicular,
-    ptAdd,
-    ptDistance,
-    ptLength,
-    ptMultiply,
-    ptSubtract,
+    negatePt,
+    normalizePt,
+    addPts,
+    distanceSq,
+    distance,
+    lerpPts,
+    lengthOfPt,
+    multiplyPts,
+    dividePts,
+    subPts,
     rotateDeg,
     rotateRad,
     toDegrees,
     toRadians,
+    gjkDistance,
+    gjkIntersection,
     Point, Rect, Oval, Circle
 } from "./ngx-utils/utils/geometry";
 export {Initializer} from "./ngx-utils/utils/initializer";
 export {JSONfn} from "./ngx-utils/utils/jsonfn";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
-export {normalizeRange, clamp, overflow, MathUtils} from "./ngx-utils/utils/math.utils";
+export {EPSILON, normalizeRange, clamp, overflow, MathUtils} from "./ngx-utils/utils/math.utils";
 export {
     isBrowser,
     getRoot,
