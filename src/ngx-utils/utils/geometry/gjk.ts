@@ -1,5 +1,5 @@
 import {IPoint, IShape, ShapeDistance, ShapeIntersection} from "../../common-types";
-import {tripleProduct, subPts, ensurePoint, negatePt, lerpPts, distance, addPts} from "./functions";
+import {tripleProduct, subPts, ensurePoint, negatePt, lerpPts, distance, addPts, normalizePt} from "./functions";
 import {EPSILON} from "../math.utils";
 
 interface SimplexLine {
@@ -21,40 +21,72 @@ const MAX_ITERS = 40;
 // GJK distance (robust)
 // =========================
 export function gjkDistance(A: IShape, B: IShape): ShapeDistance {
-
-    let intersection = gjkIntersection(A, B);
-
-    if (intersection.hit) return {distance: 0};
+    // 1) Quick overlap
+    const inter = gjkIntersection(A, B);
+    if (inter.hit) {
+        // Pass through pa/pb
+        return { distance: 0, pa: inter.pa ?? null, pb: inter.pb ?? null };
+    }
 
     const ca = A.center;
     const cb = B.center;
 
+    // 2) Bisection along the center-line to find the first hit pose
     let s = 0;
     let e = 1;
-    let center = ca;
     let iters = 0;
 
-    while (e - s > EPSILON) {
+    // Keep the best "hit" snapshot and its center so we can map witnesses back
+    let hitSnap: ReturnType<typeof gjkIntersection> | null = null;
+    let hitCenter = ca;
+
+    while ((e - s) > EPSILON && iters < MAX_ITERS) {
         iters++;
-        const t = (e + s) / 2;
-        const a = A.move(lerpPts(ca, cb, t));
-        const test = gjkIntersection(a, B);
-        center = a.center;
+        const t = (e + s) * 0.5;
+
+        // Assumes A.move(newCenter) returns a NEW shape whose center is exactly this point
+        const aMoved = A.move(lerpPts(ca, cb, t));
+        const test = gjkIntersection(aMoved, B);
+
         if (test.hit) {
-            intersection = test;
-            e = t;
-            if (iters >= MAX_ITERS) break;
+            hitSnap = test;
+            hitCenter = aMoved.center;
+            e = t; // shrink toward contact
         } else {
-            s = t;
+            s = t; // still separated
         }
     }
 
-    const result = distance(ca, center);
+    // 3) Make sure we end with a hit snapshot (in case we stopped on iteration cap)
+    if (!hitSnap) {
+        const aMoved = A.move(lerpPts(ca, cb, e));
+        const test = gjkIntersection(aMoved, B);
+        if (test.hit) {
+            hitSnap = test;
+            hitCenter = aMoved.center;
+        } else {
+            // Extremely degenerate: no hit even at e ~ 1 (shouldn't happen for non-degenerate shapes).
+            // Fall back to center-line direction as a last resort.
+            const dir = normalizePt(subPts(cb, ca));
+            const pa0 = A.support(dir);
+            const pb0 = B.support(negatePt(dir));
+            return { distance: distance(pa0, pb0), pa: pa0, pb: pb0 };
+        }
+    }
+
+    // 4) Map witnesses back to the original A pose
+    //    (We moved A by (hitCenter - ca); to undo, offset A's witness by (ca - hitCenter))
+    const offset = subPts(ca, hitCenter);
+    const pa0 = addPts(hitSnap!.pa, offset);
+    const pb0 = hitSnap!.pb;
+
+    // 5) True geometric separation is the distance between these boundary points
+    const d = distance(pa0, pb0);
 
     return {
-        distance: result,
-        pa: result > 0 ? addPts(intersection.pa, subPts(ca, center)) : null,
-        pb: result > 0 ? intersection.pb : null
+        distance: d,
+        pa: d > 0 ? pa0 : null,
+        pb: d > 0 ? pb0 : null
     };
 }
 
