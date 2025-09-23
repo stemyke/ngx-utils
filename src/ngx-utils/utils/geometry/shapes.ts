@@ -31,7 +31,7 @@ abstract class Shape implements IShape {
     }
 
     intersects(shape: IShape): boolean {
-        return gjkIntersection(this, shape).hit;
+        return this.intersection(shape).hit;
     }
 
     minDistance(shape: IShape): ShapeDistance {
