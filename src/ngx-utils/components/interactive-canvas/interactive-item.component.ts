@@ -164,7 +164,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     protected isValidByParams(): boolean {
         return !this.shapes.some(shape => {
             return this.canvas.excludedAreas.some(ex => {
-                return shape.distance(ex) < 1;
+                return shape.intersects(ex);
             });
         });
     }
