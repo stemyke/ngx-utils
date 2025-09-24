@@ -109,7 +109,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     rotation: number;
     basePan: number;
     cycles: number[];
-    exclusions: Rect[];
+    excludedAreas: Rect[];
 
     protected tempCanvas: HTMLCanvasElement;
     protected shouldDraw: boolean;
@@ -165,7 +165,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         this.rotation = 0;
         this.basePan = 0;
         this.cycles = [0];
-        this.exclusions = [];
+        this.excludedAreas = [];
 
         this.touched = false;
         this.panStartRotation = 0;
@@ -324,11 +324,11 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             + this.canvasHeight * this.panOffset;
         this.cycles = this.infinite
             ? [this.basePan - this.fullHeight, this.basePan, this.basePan + this.fullHeight] : [0];
-        this.exclusions = (this.params.exclusions || []).flatMap(coords => {
-            const x = (coords[2] + coords[0]) * .5 * this.ratio;
-            const y = (coords[3] + coords[1]) * .5 * this.ratio;
-            const width = Math.abs(coords[2] - coords[0]) * this.ratio;
-            const height = Math.abs(coords[3] - coords[1]) * this.ratio;
+        this.excludedAreas = (this.params.excludedAreas || []).flatMap(coords => {
+            const x = coords.x * this.ratio;
+            const y = coords.y * this.ratio;
+            const width = coords.width * this.ratio;
+            const height = coords.height * this.ratio;
             return this.cycles.map(cycle => {
                 return new Rect(x, y + cycle, width, height);
             });

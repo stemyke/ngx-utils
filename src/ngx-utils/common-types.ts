@@ -475,7 +475,13 @@ export type CanvasItemDirection = "horizontal" | "vertical" | "free" | "none";
 export type CanvasPaintFunc = (ctx: CanvasRenderingContext2D) => MaybePromise<GlobalCompositeOperation | null>;
 
 export type RangeCoords = [from: number, to: number];
-export type RectCoords = [left: number, top: number, right: number, bottom: number];
+
+export interface RectCoords {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
 
 /**
  * Interface for an interactive canvas params
@@ -483,7 +489,7 @@ export type RectCoords = [left: number, top: number, right: number, bottom: numb
 export interface InteractiveCanvasParams {
     xRange?: RangeCoords;
     yRange?: RangeCoords;
-    exclusions?: ReadonlyArray<RectCoords>;
+    excludedAreas?: ReadonlyArray<RectCoords>;
     [key: string]: any;
 }
 
@@ -537,7 +543,7 @@ export interface InteractiveCanvas {
     readonly rotation: number;
     readonly basePan: number;
     readonly cycles?: ReadonlyArray<number>;
-    readonly exclusions?: ReadonlyArray<IShape>;
+    readonly excludedAreas?: ReadonlyArray<IShape & RectCoords>;
     // --- Optionals, for back compatibility ---
     rendered?: boolean;
     // --- Functions ---
