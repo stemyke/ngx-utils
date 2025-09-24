@@ -201,7 +201,7 @@ function doSimplexBoolean(simplex: Simplex, d: Dir): ShapeIntersection {
     const v1 = AC; // C-A
     const b = {x: -A.p.x, y: -A.p.y};
     const det = v0.x * v1.y - v0.y * v1.x;
-    let uA, uB, uC;
+    let uA: number, uB: number, uC: number;
     if (Math.abs(det) > 1e-24) {
         const alpha = (b.x * v1.y - v1.x * b.y) / det; // weight for v0 (B)
         const beta = (v0.x * b.y - b.x * v0.y) / det; // weight for v1 (C)
