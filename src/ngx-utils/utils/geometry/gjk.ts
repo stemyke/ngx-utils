@@ -178,21 +178,21 @@ function doSimplexBoolean(simplex: Simplex, d: Dir): ShapeIntersection {
     const A = last, B = simplex[simplex.length - 2], C = simplex[simplex.length - 3];
     const AB = {x: B.p.x - A.p.x, y: B.p.y - A.p.y};
     const AC = {x: C.p.x - A.p.x, y: C.p.y - A.p.y};
-    const ABperp = tripleProduct(AC, AB, AB);
-    const ACperp = tripleProduct(AB, AC, AC);
+    const perpAB = tripleProduct(AC, AB, AB);
+    const perpAC = tripleProduct(AB, AC, AC);
 
     // If origin is outside AB region
-    if (ABperp.x * AO.x + ABperp.y * AO.y > 0) {
+    if (perpAB.x * AO.x + perpAB.y * AO.y > 0) {
         simplex.splice(simplex.length - 3, 1);
-        d.x = ABperp.x;
-        d.y = ABperp.y;
+        d.x = perpAB.x;
+        d.y = perpAB.y;
         return {hit: false};
     }
     // If origin is outside AC region
-    if (ACperp.x * AO.x + ACperp.y * AO.y > 0) {
+    if (perpAC.x * AO.x + perpAC.y * AO.y > 0) {
         simplex.splice(simplex.length - 2, 1);
-        d.x = ACperp.x;
-        d.y = ACperp.y;
+        d.x = perpAC.x;
+        d.y = perpAC.y;
         return {hit: false};
     }
     // Otherwise the origin is inside the triangle → overlap
