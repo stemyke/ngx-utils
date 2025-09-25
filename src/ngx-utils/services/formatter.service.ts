@@ -1,7 +1,7 @@
 import {Inject, Injectable} from "@angular/core";
 import {ILanguageService} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
-import {MathUtils} from "../utils/math.utils";
+import {EPSILON, MathUtils} from "../utils/math.utils";
 import {LANGUAGE_SERVICE} from "../tokens";
 
 @Injectable()
@@ -31,14 +31,14 @@ export class FormatterService {
         precision = this.getPrecision(precision);
         minDigits = minDigits ?? precision;
         divider = divider || this.defaultDivider;
-        const num = (ObjectUtils.isNumber(value) ? <number>value : parseFloat(<string>value) ?? 0) / divider;
-        const rounded = isNaN(num) ? 0 : MathUtils.round(0, 12);
-        const str = rounded.toLocaleString(this.language.currentLanguage, {
+        value = (ObjectUtils.isNumber(value) ? <number>value : parseFloat(<string>value) ?? 0) / divider;
+        const rounded = isNaN(value) || Math.abs(value) < EPSILON ? 0 : MathUtils.round(value, 10);
+        const num = rounded.toLocaleString(this.language.currentLanguage, {
             minimumFractionDigits: minDigits,
             maximumFractionDigits: precision,
             useGrouping: false
         });
-        return ObjectUtils.evaluate(format || this.defaultNumberFormat, {num: str});
+        return ObjectUtils.evaluate(format || this.defaultNumberFormat, {num});
     }
 
     formatMillimeter(value: number, precision?: number, divider?: number): string {
