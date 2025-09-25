@@ -31,8 +31,9 @@ export class FormatterService {
         precision = this.getPrecision(precision);
         minDigits = minDigits ?? precision;
         divider = divider || this.defaultDivider;
-        const num = ObjectUtils.isNumber(value) ? <number>value : parseFloat(<string>value) || 0;
-        const str = (num / divider).toLocaleString(this.language.currentLanguage, {
+        const num = (ObjectUtils.isNumber(value) ? <number>value : parseFloat(<string>value) ?? 0) / divider;
+        const rounded = isNaN(num) ? 0 : MathUtils.round(0, 12);
+        const str = rounded.toLocaleString(this.language.currentLanguage, {
             minimumFractionDigits: minDigits,
             maximumFractionDigits: precision,
             useGrouping: false
