@@ -320,7 +320,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     protected fixRotation(): void {
         if (this.fullHeight <= 0) return;
         this.rotation = overflow(Math.round(this.rotation * 100) / 100, -180, 180);
-        this.basePan = (this.rotation / 360 - 1) * this.fullHeight
+        this.basePan = this.rotation / 360 * this.fullHeight
             + this.canvasHeight * this.panOffset;
         this.cycles = this.infinite
             ? [this.basePan - this.fullHeight, this.basePan, this.basePan + this.fullHeight] : [0];
