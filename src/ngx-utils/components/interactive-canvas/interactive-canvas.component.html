@@ -1,5 +1,5 @@
 <div #containerElem
-     [ngClass]="['interactive-canvas-container', horizontal ? 'horizontal' : 'vertical']"
+     [ngClass]="['interactive-canvas-container', horizontal() ? 'horizontal' : 'vertical']"
      (resize)="resize()"
      (touchstart)="onTouchStart($event)"
      (mousedown)="onMouseDown($event)"

@@ -12,23 +12,28 @@ import {MaybePromise, StringKeys} from "./helper-types";
 export type DurationUnit = StringKeys<DurationLikeObject>;
 
 export interface TypedFactoryProvider<T> {
+    provide?: any;
     useFactory: (...args: any[]) => T;
     deps: any[];
 }
 
 export interface TypedValueProvider<T> {
+    provide?: any;
     useValue: T;
 }
 
 export interface TypedExistingProvider<T> {
+    provide?: any;
     useExisting: Type<T>;
 }
 
 export interface TypedClassProvider<T> {
+    provide?: any;
     useClass: Type<T>;
 }
 
 export interface TypedTokenProvider<T> {
+    provide?: any;
     useToken: InjectionToken<T>;
 }
 
@@ -499,11 +504,13 @@ export interface InteractiveCanvasParams {
 export interface InteractiveCanvasItem {
     readonly position: IPoint;
     readonly shapes: ReadonlyArray<IShape>;
-    readonly canvas: InteractiveCanvas;
-    readonly index: number;
-    readonly active: boolean;
     readonly isValid: boolean;
     readonly validPosition: IPoint;
+    readonly hovered: boolean;
+    readonly selected: boolean;
+    readonly active: boolean;
+    readonly canvas: InteractiveCanvas;
+    readonly index: number;
     draw(ctx: CanvasRenderingContext2D): MaybePromise<void>;
 }
 
@@ -514,19 +521,15 @@ export type InteractiveCanvasItems = ReadonlyArray<InteractiveCanvasItem>;
  * Some properties are optional for compatibility with other kind of renderer functions
  */
 export interface InteractiveCanvas {
-    // --- Inputs ---
-    readonly infinite?: boolean;
-    readonly resizeMode?: CanvasResizeMode;
-    readonly params?: InteractiveCanvasParams;
+    // --- Getters ---
+    readonly isInfinite?: boolean;
     readonly realWidth?: number;
     readonly realHeight?: number;
-    // --- Getters ---
-    readonly $items?: Observable<InteractiveCanvasItems>;
     readonly items?: InteractiveCanvasItems;
     readonly canvas: HTMLCanvasElement;
     readonly lockedItem?: InteractiveCanvasItem;
-    readonly selectedItem?: InteractiveCanvasItem;
     // --- Getters / setters ---
+    selectedItem?: InteractiveCanvasItem;
     hoveredItem?: InteractiveCanvasItem;
     // --- Calculated values on changes ---
     readonly xRange?: RangeCoords;

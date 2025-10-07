@@ -216,7 +216,9 @@ export {
     parseSelector,
     selectorMatchesList,
     provideEntryComponents,
-    provideWithOptions
+    provideOptions,
+    provideWithOptions,
+    injectOptions
 } from "./ngx-utils/utils/misc";
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";

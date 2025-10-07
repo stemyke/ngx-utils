@@ -1,5 +1,5 @@
-import {Injector, Provider, Type, ValueProvider, ɵComponentDef as ComponentDef} from "@angular/core";
-import {CssSelector, CssSelectorList, TypedFactoryProvider} from "../common-types";
+import {inject, Injector, Provider, Type, ValueProvider, ɵComponentDef as ComponentDef} from "@angular/core";
+import {CssSelector, CssSelectorList, TypedFactoryProvider, TypedValueProvider} from "../common-types";
 import {DYNAMIC_ENTRY_COMPONENTS, OPTIONS_TOKEN} from "../tokens";
 
 export function isBrowser(): boolean {
@@ -142,14 +142,18 @@ export function provideEntryComponents(components: Type<any>[], moduleId?: strin
     };
 }
 
-export function provideWithOptions<O extends Object, T = any>(type: Type<T>, options: O): TypedFactoryProvider<T> {
+export function provideOptions<O extends Record<string, any>>(options: O): Required<TypedValueProvider<O>> {
+    return {
+        provide: OPTIONS_TOKEN,
+        useValue: options
+    };
+}
+
+export function provideWithOptions<O extends Record<string, any>, T = any>(type: Type<T>, options: O): TypedFactoryProvider<T> {
     return {
         useFactory: function (parent: Injector) {
             const providers: Provider[] = [
-                {
-                    provide: OPTIONS_TOKEN,
-                    useValue: options
-                },
+                provideOptions(options),
                 {
                     provide: type,
                     useClass: type
@@ -162,4 +166,9 @@ export function provideWithOptions<O extends Object, T = any>(type: Type<T>, opt
         },
         deps: [Injector]
     }
+}
+
+export function injectOptions<O extends Record<string, any>>(defaults: O): O {
+    const options = inject(OPTIONS_TOKEN, {optional: true}) as O;
+    return Object.assign({}, defaults, options || {});
 }

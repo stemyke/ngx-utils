@@ -23,7 +23,7 @@ import {
 export const ICON_TYPE = new InjectionToken<Type<IconProps>>("icon-component-type");
 export const ICON_MAP = new InjectionToken<IconMap>("icon-map");
 export const BUTTON_TYPE = new InjectionToken<Type<ButtonProps>>("button-component-type");
-export const OPTIONS_TOKEN = new InjectionToken("custom-options-token");
+export const OPTIONS_TOKEN = new InjectionToken<Record<string, any>>("custom-options-token");
 export const ICON_SERVICE: InjectionToken<IIconService> = new InjectionToken<IIconService>("icon-service");
 export const LANGUAGE_SERVICE: InjectionToken<ILanguageService> = new InjectionToken<ILanguageService>("language-service");
 export const AUTH_SERVICE: InjectionToken<IAuthService> = new InjectionToken<IAuthService>("auth-service");

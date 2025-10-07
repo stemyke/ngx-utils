@@ -19,15 +19,6 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         return this.mShapes;
     }
 
-    get hovered(): boolean {
-        return this.canvas?.hoveredItem === this;
-    }
-
-    set hovered(value: boolean) {
-        if (!this.canvas) return;
-        this.canvas.hoveredItem = value ? this : null;
-    }
-
     get x(): number {
         return this.pos.x;
     }
@@ -75,12 +66,30 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         this.valid = true;
     }
 
+    get hovered(): boolean {
+        return this.canvas?.hoveredItem === this;
+    }
+
+    set hovered(value: boolean) {
+        if (!this.canvas) return;
+        this.canvas.hoveredItem = value ? this : null;
+    }
+
+    get selected(): boolean {
+        return this.canvas?.selectedItem === this;
+    }
+
+    set selected(value: boolean) {
+        if (!this.canvas) return;
+        this.canvas.selectedItem = value ? this : null;
+    }
+
     @Input() direction: CanvasItemDirection;
     @Input() disabled: boolean;
 
+    active: boolean;
     canvas: InteractiveCanvas;
     index: number;
-    active: boolean;
 
     protected valid: boolean;
     protected validPos: Point;
@@ -155,7 +164,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     protected restrictPosition(x: number, y: number): IPoint {
         return {
             x: clamp(x, this.canvas.xRange),
-            y: this.canvas.infinite
+            y: this.canvas.isInfinite
                 ? overflow(y, this.canvas.yRange)
                 : clamp(y, this.canvas.yRange)
         }
