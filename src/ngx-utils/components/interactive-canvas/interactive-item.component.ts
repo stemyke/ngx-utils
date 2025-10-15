@@ -136,8 +136,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         );
         this.pos = new Point(target);
         this.calcShapes();
-        this.valid = this.isValidByParams() &&
-            this.canvas.items.every(other => this === other || this.isValidByDistance(other));
+        this.valid = this.checkIsValid();
         this.validPos = this.valid ? this.pos : this.validPos;
     }
 
@@ -168,6 +167,11 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
                 ? overflow(y, this.canvas.yRange)
                 : clamp(y, this.canvas.yRange)
         }
+    }
+
+    protected checkIsValid(): boolean {
+        return this.isValidByParams() &&
+            this.canvas.items.every(other => this === other || this.isValidByDistance(other));
     }
 
     protected isValidByParams(): boolean {

@@ -1,5 +1,6 @@
 import {EventEmitter, Injectable} from "@angular/core";
-import {IIconService} from "../common-types";
+import {IIconService, SvgSourceModifier} from "../common-types";
+import {LocalHttpService} from "./local-http.service";
 
 declare const icons: {
     [icon: string]: string;
@@ -21,7 +22,7 @@ export class IconService implements IIconService {
 
     protected disabled: boolean;
 
-    constructor() {
+    constructor(readonly http: LocalHttpService) {
         this.iconsLoaded = new EventEmitter<any>();
         this.disabled = false;
     }
@@ -30,5 +31,15 @@ export class IconService implements IIconService {
         icon = typeof icons == "undefined" ? icon : (icons[icon] || icon);
         activeIcon = typeof icons == "undefined" ? activeIcon : (icons[activeIcon] || icon);
         return Promise.resolve(active ? activeIcon : icon);
+    }
+
+    async getIconUrl(icon: string, modifier?: SvgSourceModifier): Promise<string> {
+        const src = await this.getIcon(icon, icon, false);
+        return this.http.svgUrlFromSource(src, modifier);
+    }
+
+    async getIconImage(icon: string, modifier?: SvgSourceModifier): Promise<HTMLImageElement> {
+        const src = await this.getIcon(icon, icon, false);
+        return this.http.svgFromSource(src, modifier);
     }
 }

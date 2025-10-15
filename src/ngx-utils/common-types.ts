@@ -63,6 +63,7 @@ export interface IIconService {
     isDisabled: boolean;
     iconsLoaded: EventEmitter<any>;
     getIcon(icon: string, activeIcon: string, active: boolean): Promise<string>;
+    getIconImage(icon: string, modifier?: SvgSourceModifier): Promise<HTMLImageElement>;
 }
 
 // --- Language service ---
@@ -638,6 +639,16 @@ export interface IHttpService {
     url(url: string): string;
     makeListParams(page: number, itemsPerPage: number, orderBy?: string, orderDescending?: boolean, filter?: string): HttpRequestQuery;
 }
+
+// --- LocalHttp service ---
+
+export interface SvgDefinition {
+    source: SVGSVGElement;
+    width: number;
+    height: number;
+}
+
+export type SvgSourceModifier = (svg: SVGSVGElement, width: number, height: number) => string;
 
 // --- Api service ---
 

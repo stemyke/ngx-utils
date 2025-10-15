@@ -56,13 +56,6 @@ export class FileUtils {
         );
     }
 
-    static readFileAsBinaryString(file: Blob): Promise<string> {
-        return FileUtils.readFile(
-            // @dynamic
-            reader => reader.readAsBinaryString(file)
-        );
-    }
-
     static readFileAsDataURL(file: Blob): Promise<string> {
         return FileUtils.readFile(
             // @dynamic

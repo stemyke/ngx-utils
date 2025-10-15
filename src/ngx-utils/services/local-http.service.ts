@@ -1,12 +1,15 @@
 import {Injectable} from "@angular/core";
 
-import {HttpClientRequestOptions, IConfiguration} from "../common-types";
+import {HttpClientRequestOptions, IConfiguration, SvgDefinition, SvgSourceModifier} from "../common-types";
 import {BaseHttpService} from "./base-http.service";
+import {ObjectUtils} from "../utils/object.utils";
+import {svgToDataUri} from "../utils/string.utils";
 
 @Injectable()
 export class LocalHttpService extends BaseHttpService {
 
-    private images: { [url: string]: Promise<HTMLImageElement> };
+    protected svgs: Record<string, SvgDefinition>;
+    protected images: Record<string, Promise<HTMLImageElement>>;
 
     get name(): string {
         return "local-http";
@@ -22,6 +25,7 @@ export class LocalHttpService extends BaseHttpService {
 
     protected initService(): void {
         super.initService();
+        this.svgs = {};
         this.images = {};
     }
 
@@ -50,9 +54,57 @@ export class LocalHttpService extends BaseHttpService {
             image.crossOrigin = "Anonymous";
             image.src = this.url(url);
             image.onload = () => resolve(image);
-            image.onerror = reject;
+            image.onerror = error => {
+                console.warn(error);
+                reject(`Can't load image from url: ${url}`);
+            };
         });
 
         return this.images[url];
+    }
+
+    svgUrlFromSource(sourceStr: string, modifier?: SvgSourceModifier): string {
+        if (!sourceStr.startsWith("<svg")) {
+            throw new Error(`Src is possibly not an svg.. '${sourceStr.substring(0, 10)}'`);
+        }
+        if (!this.svgs[sourceStr]) {
+            const parser = document.createElement("div");
+            parser.innerHTML = sourceStr;
+            const source = parser.querySelector("svg");
+            const width = parseFloat(source.getAttribute("width"));
+            const height = parseFloat(source.getAttribute("height"));
+            const vb = source.getAttribute("viewBox").split(" ").map(parseFloat);
+            this.svgs[sourceStr] = {
+                source,
+                width: width || vb[2],
+                height: height || vb[3],
+            };
+        }
+        const def = this.svgs[sourceStr];
+        const sourceClone = def.source.cloneNode(true) as SVGSVGElement;
+        const svgModified = ObjectUtils.isFunction(modifier) ? modifier(sourceClone, def.width, def.height) : def.source.outerHTML;
+        return svgToDataUri(svgModified)
+    }
+
+    svgFromSource(sourceStr: string, modifier?: SvgSourceModifier): Promise<HTMLImageElement> {
+        return this.getImage(this.svgUrlFromSource(sourceStr, modifier));
+    }
+
+    async getSvgUrl(url: string, modifier?: SvgSourceModifier): Promise<string> {
+        try {
+            const svgSrc = await this.get(url, {responseType: "text"}) as string;
+            return this.svgUrlFromSource(svgSrc, modifier);
+        } catch (e) {
+            throw new Error(`Can't get svg from url: ${url}, Error: ${e?.message}`);
+        }
+    }
+
+    async getSvgImage(url: string, modifier?: SvgSourceModifier): Promise<HTMLImageElement> {
+        try {
+            const svgSrc = await this.get(url, {responseType: "text"}) as string;
+            return await this.svgFromSource(svgSrc, modifier);
+        } catch (e) {
+            throw new Error(`Can't get svg from url: ${url}, Error: ${e?.message}`);
+        }
     }
 }

@@ -1,3 +1,15 @@
+export function svgToDataUri(svgString: string) {
+    // Encode as UTF-8, then to Base64
+    const utf8Bytes = new TextEncoder().encode(svgString);
+    let binary = "";
+    for (let i = 0; i < utf8Bytes.length; i++) {
+        binary += String.fromCharCode(utf8Bytes[i]);
+    }
+    const base64 = btoa(binary);
+
+    return `data:image/svg+xml;base64,${base64}`;
+}
+
 export class StringUtils {
 
     static concat(separator: string, ...strings: string[]): string {

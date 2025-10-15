@@ -231,21 +231,26 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     }
 
     async tempPaint(cb: CanvasPaintFunc): Promise<void> {
-        const renderCanvas = this.canvas;
+        const mainCanvas = this.canvas;
+        const mainCtx = mainCanvas.getContext("2d");
         const canvas = this.tempCanvas;
-
-        canvas.width = renderCanvas.width;
-        canvas.height = renderCanvas.height;
-
         const ctx = canvas.getContext("2d");
+        const transform = mainCtx.getTransform();
+
+        canvas.width = mainCanvas.width;
+        canvas.height = mainCanvas.height;
+
         ctx.globalCompositeOperation = "source-over";
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.setTransform(transform);
 
-        const bgCtx = renderCanvas.getContext("2d");
+        mainCtx.resetTransform();
+        mainCtx.globalCompositeOperation = await cb(ctx) || "source-over";
+        mainCtx.drawImage(canvas, 0, 0);
+        mainCtx.globalCompositeOperation = "source-over";
+        mainCtx.setTransform(transform);
 
-        bgCtx.globalCompositeOperation = await cb(ctx) || "source-over";
-        bgCtx.drawImage(canvas, 0, 0);
-        bgCtx.globalCompositeOperation = "source-over";
+        ctx.resetTransform();
     }
 
     resize(): void {
@@ -280,22 +285,22 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     onTouchStart($event: TouchEvent): void {
         this.hoveredIndex = this.getIndexUnderPointer($event.touches.item(0));
         this.lockedIndex = this.hoveredIndex;
-        this.touched = true;
+        this.selectItem();
     }
 
-    @HostListener("window:touchend", ["$event"])
-    onTouchEnd($event: TouchEvent): void {
-        this.selectItem($event.touches.item(0));
+    @HostListener("window:touchend")
+    onTouchEnd(): void {
+        this.touched = false;
     }
 
     onMouseDown($event: MouseEvent): void {
         this.lockedIndex = this.getIndexUnderPointer($event);
-        this.touched = true;
+        this.selectItem();
     }
 
-    @HostListener("window:mouseup", ["$event"])
-    onMouseUp($event: MouseEvent): void {
-        this.selectItem($event);
+    @HostListener("window:mouseup")
+    onMouseUp(): void {
+        this.touched = false;
     }
 
     onMouseMove($event: MouseEvent): void {
@@ -384,14 +389,11 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         this.onRotate.emit(this.rotation);
     }
 
-    protected selectItem(pointer: InteractiveCanvasPointer): void {
-        const selected = this.getIndexUnderPointer(pointer);
-        const item = this.items[selected];
-        this.touched = false;
-        if (item) {
-            this.selectedItem = item;
-        }
-        this.hoveredIndex = selected;
+    protected selectItem(): void {
+        this.touched = true;
+        const item = this.items[this.lockedIndex];
+        if (!item) return;
+        this.selectedItem = item;
     }
 
     protected toCanvasPoint(pointer: InteractiveCanvasPointer): Point {
