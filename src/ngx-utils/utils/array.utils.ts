@@ -2,7 +2,7 @@ import {ObjectUtils} from "./object.utils";
 
 export class ArrayUtils {
 
-    static has(arr: any[], ...items: any[]): boolean {
+    static has(arr: ReadonlyArray<any>, ...items: any[]): boolean {
         if (!ObjectUtils.isArray(arr) || !ObjectUtils.isArray(items)) return false;
         for (let i = 0; i < items.length; i++) {
             if (arr.indexOf(items[i]) >= 0) return true;
@@ -10,7 +10,7 @@ export class ArrayUtils {
         return false;
     }
 
-    static match(arr: any[], str: string): boolean {
+    static match(arr: ReadonlyArray<any>, str: string): boolean {
         if (!ObjectUtils.isArray(arr) || !ObjectUtils.isString(str)) return false;
         for (let i = 0; i < arr.length; i++) {
             if (arr[i] instanceof RegExp) {
@@ -21,7 +21,7 @@ export class ArrayUtils {
         return false;
     }
 
-    static any<T>(arr: T[], cb: (item: T) => boolean): boolean {
+    static any<T>(arr: ReadonlyArray<T>, cb: (item: T) => boolean): boolean {
         if (!ObjectUtils.isArray(arr) || !ObjectUtils.isFunction(cb)) return false;
         for (let i = 0; i < arr.length; i++) {
             if (cb(arr[i])) return true;
@@ -48,7 +48,7 @@ export class ArrayUtils {
         return arr;
     }
 
-    static reversed(arr: any[]): any[] {
+    static reversed<T>(arr: ReadonlyArray<T>): T[] {
         const result = [];
         if (!ObjectUtils.isArray(arr)) return result;
         for (let i = arr.length - 1; i >= 0; i--) {
@@ -57,7 +57,7 @@ export class ArrayUtils {
         return result;
     }
 
-    static min<T>(arr: T[], cb: (item: T, index?: number) => number): T {
+    static min<T>(arr: ReadonlyArray<T>, cb: (item: T, index?: number) => number): T {
         if (!ObjectUtils.isArray(arr)) return null;
         let min = Number.MAX_SAFE_INTEGER;
         let result = null;
@@ -71,7 +71,7 @@ export class ArrayUtils {
         return result;
     }
 
-    static max<T>(arr: T[], cb: (item: T, index?: number) => number): T {
+    static max<T>(arr: ReadonlyArray<T>, cb: (item: T, index?: number) => number): T {
         if (!ObjectUtils.isArray(arr)) return null;
         let max = Number.MIN_SAFE_INTEGER;
         let result = null;
@@ -85,17 +85,17 @@ export class ArrayUtils {
         return result;
     }
 
-    static chunk<T>(arr: T[], size: number): Array<T[]> {
+    static chunk<T>(arr: ReadonlyArray<T>, size: number): Array<T[]> {
         if (!ObjectUtils.isArray(arr)) return [];
         size = Math.max(1, size);
-        const result = []
+        const result = [];
         for (let i = 0; i < arr.length; i += size) {
             result.push(arr.slice(i, i + size))
         }
         return result
     }
 
-    static unique<T>(arr: T[]): T[] {
+    static unique<T>(arr: ReadonlyArray<T>): T[] {
         if (!ObjectUtils.isArray(arr)) return [];
         return arr.filter((value, index, self) => {
             return self.indexOf(value) === index;
