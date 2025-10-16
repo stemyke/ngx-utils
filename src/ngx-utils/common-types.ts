@@ -63,6 +63,7 @@ export interface IIconService {
     isDisabled: boolean;
     iconsLoaded: EventEmitter<any>;
     getIcon(icon: string, activeIcon: string, active: boolean): Promise<string>;
+    getIconUrl(icon: string, modifier?: SvgSourceModifier): Promise<string>;
     getIconImage(icon: string, modifier?: SvgSourceModifier): Promise<HTMLImageElement>;
 }
 
