@@ -1,8 +1,7 @@
-import {Component, Input} from "@angular/core";
+import {Component, effect, input, untracked} from "@angular/core";
 
 import {IShape} from "../../common-types";
-import {Circle} from "../../utils/geometry";
-import {drawOval} from "../../utils/canvas";
+import {Circle, Rect} from "../../utils/geometry";
 import {InteractiveItemComponent} from "./interactive-item.component";
 
 @Component({
@@ -15,22 +14,18 @@ import {InteractiveItemComponent} from "./interactive-item.component";
 })
 export class InteractiveCircleComponent extends InteractiveItemComponent {
 
-    @Input() radius: number;
+    readonly radius = input(10);
 
     constructor() {
         super();
-        this.radius = 10;
-    }
-
-    draw(ctx: CanvasRenderingContext2D) {
-        const diameter = this.radius * 2 * this.canvas.ratio;
-        drawOval(ctx, diameter, diameter);
-        ctx.fill();
-        ctx.stroke();
+        effect(() => {
+            const radius = this.radius();
+            this.mFrame = new Rect(0, 0, radius * 2, radius * 2);
+        });
     }
 
     protected calcShape(x: number, y: number): IShape {
-        const ratio = this.canvas.ratio;
-        return new Circle(x, y, this.radius * ratio);
+        const radius = untracked(() => this.radius());
+        return new Circle(x, y, radius * this.canvas.ratio);
     }
 }

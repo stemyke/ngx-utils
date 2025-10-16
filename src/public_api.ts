@@ -90,6 +90,7 @@ export {
     CanvasPaintFunc,
     RangeCoords,
     RectCoords,
+    Frame,
     InteractiveCanvasParams,
     InteractiveCanvasItem,
     InteractiveCanvasItems,
@@ -171,7 +172,7 @@ export {AjaxRequestHandler} from "./ngx-utils/utils/ajax-request-handler";
 export {ArrayUtils} from "./ngx-utils/utils/array.utils";
 export {AuthGuard} from "./ngx-utils/utils/auth.guard";
 export {createTypedProvider, cachedFactory} from "./ngx-utils/utils/cached-factory";
-export {drawRect, drawOval, CanvasUtils} from "./ngx-utils/utils/canvas";
+export {CanvasUtils} from "./ngx-utils/utils/canvas";
 export {DateUtils} from "./ngx-utils/utils/date.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {ForbiddenZone} from "./ngx-utils/utils/forbidden-zone";

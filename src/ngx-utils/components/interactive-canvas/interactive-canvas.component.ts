@@ -26,7 +26,7 @@ import {
     IPoint,
     RangeCoords
 } from "../../common-types";
-import {Point, Rect} from "../../utils/geometry";
+import {Point, Rect, toRadians} from "../../utils/geometry";
 import {normalizeRange, overflow} from "../../utils/math.utils";
 import {UniversalService} from "../../services/universal.service";
 
@@ -467,7 +467,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             ctx.lineWidth = 1;
             ctx.strokeStyle = "black";
             ctx.fillStyle = "white";
-            await item.draw(ctx);
+            await item.draw(ctx, shape);
             ctx.restore();
         }
     }

@@ -1,6 +1,17 @@
 import {IPoint, IShape, ShapeDistance, ShapeIntersection} from "../../common-types";
 import {gjkDistance, gjkIntersection} from "./gjk";
-import {addPts, dotProduct, ensurePoint, isPoint, lengthOfPt, multiplyPts, perpendicular, rotateDeg, subPts} from "./functions";
+import {
+    addPts,
+    dotProduct,
+    ensurePoint,
+    isPoint,
+    lengthOfPt,
+    multiplyPts,
+    perpendicular,
+    rotateDeg,
+    subPts,
+    toRadians
+} from "./functions";
 
 abstract class Shape implements IShape {
 
@@ -21,6 +32,8 @@ abstract class Shape implements IShape {
     protected constructor(x: number, y: number) {
         this.pt = {x, y};
     }
+
+    abstract draw(ctx: CanvasRenderingContext2D, ratio?: number): void;
 
     abstract support(dir: IPoint): IPoint;
 
@@ -59,6 +72,12 @@ export class Point extends Shape {
         super(0, y);
         const x = Number(xOrP);
         this.pt = isPoint(xOrP) ? xOrP : {x: isNaN(x) ? 0 : xOrP as number, y};
+    }
+
+    draw(ctx: CanvasRenderingContext2D): void {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 1.5, 1.5, 0, 0, Math.PI * 2);
+        ctx.closePath();
     }
 
     support(): IPoint {
@@ -150,6 +169,18 @@ export class Rect extends Shape {
         super(x, y);
     }
 
+    draw(ctx: CanvasRenderingContext2D, ratio: number): void {
+        ratio = ratio ?? 1;
+        const w = this.width * ratio;
+        const h = this.height * ratio;
+        const angle = toRadians(this.rotation);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.rect(-w / 2, -h / 2, w, h);
+        ctx.closePath();
+        ctx.rotate(-angle);
+    }
+
     support(dir: IPoint) {
         const ang = this.rotation ?? 0;
         const dLocal = rotateDeg(ensurePoint(dir, {x: 1, y: 0}), -ang);
@@ -173,6 +204,18 @@ export class Oval extends Shape {
                 readonly height: number,
                 readonly rotation: number = 0) {
         super(x, y);
+    }
+
+    draw(ctx: CanvasRenderingContext2D, ratio: number): void {
+        ratio = ratio ?? 1;
+        const w = this.width * ratio;
+        const h = this.height * ratio;
+        const angle = toRadians(this.rotation);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, w / 2, h / 2, 0, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.rotate(-angle);
     }
 
     support(dir: IPoint) {

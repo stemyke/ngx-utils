@@ -464,6 +464,7 @@ export interface ShapeDistance {
 
 export interface IShape extends IPoint {
     readonly center: IPoint;
+    draw(ctx: CanvasRenderingContext2D, ratio?: number): void;
     support(dir: IPoint): IPoint;
     move(pos: IPoint): IShape;
     intersection(shape: IShape): ShapeIntersection;
@@ -490,6 +491,15 @@ export interface RectCoords {
 }
 
 /**
+ * Rectangle frame interface
+ */
+export interface Frame extends IShape {
+    width: number;
+    height: number;
+    rotation: number;
+}
+
+/**
  * Interface for an interactive canvas params
  */
 export interface InteractiveCanvasParams {
@@ -504,6 +514,7 @@ export interface InteractiveCanvasParams {
  */
 export interface InteractiveCanvasItem {
     readonly position: IPoint;
+    readonly frame: Frame;
     readonly shapes: ReadonlyArray<IShape>;
     readonly isValid: boolean;
     readonly validPosition: IPoint;
@@ -512,7 +523,7 @@ export interface InteractiveCanvasItem {
     readonly active: boolean;
     readonly canvas: InteractiveCanvas;
     readonly index: number;
-    draw(ctx: CanvasRenderingContext2D): MaybePromise<void>;
+    draw(ctx: CanvasRenderingContext2D, shape: IShape): MaybePromise<void>;
 }
 
 export type InteractiveCanvasItems = ReadonlyArray<InteractiveCanvasItem>;

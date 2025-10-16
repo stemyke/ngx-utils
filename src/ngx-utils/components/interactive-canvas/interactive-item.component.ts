@@ -1,8 +1,14 @@
 import {Component, Input, OnChanges} from "@angular/core";
-import {CanvasItemDirection, InteractiveCanvas, InteractiveCanvasItem, IPoint, IShape} from "../../common-types";
-import {Point} from "../../utils/geometry";
+import {
+    CanvasItemDirection,
+    InteractiveCanvas,
+    InteractiveCanvasItem,
+    IPoint,
+    IShape,
+    Frame
+} from "../../common-types";
+import {Point, Rect} from "../../utils/geometry";
 import {MaybePromise} from "../../helper-types";
-import {drawOval} from "../../utils/canvas";
 import {clamp, overflow} from "../../utils/math.utils";
 
 @Component({
@@ -13,7 +19,12 @@ import {clamp, overflow} from "../../utils/math.utils";
 export class InteractiveItemComponent implements OnChanges, InteractiveCanvasItem {
 
     protected pos: Point;
+    protected mFrame: Rect;
     protected mShapes: IShape[];
+
+    get frame(): Frame {
+        return this.mFrame;
+    }
 
     get shapes(): ReadonlyArray<IShape> {
         return this.mShapes;
@@ -100,11 +111,12 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         this.valid = true;
         this.pos = Point.Zero;
         this.direction = "none";
+        this.mFrame = new Rect(0, 0, 3, 3);
         this.mShapes = [];
     }
 
-    draw(ctx: CanvasRenderingContext2D): MaybePromise<void> {
-        drawOval(ctx, 4, 4);
+    draw(ctx: CanvasRenderingContext2D, shape: IShape): MaybePromise<void> {
+        shape.draw(ctx, 1);
         ctx.fill();
         ctx.stroke();
     }

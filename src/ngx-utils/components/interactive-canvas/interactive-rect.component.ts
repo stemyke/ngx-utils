@@ -1,7 +1,6 @@
-import {Component, Input} from "@angular/core";
+import {Component, effect, input, untracked} from "@angular/core";
 import {IShape} from "../../common-types";
-import {Rect, toRadians} from "../../utils/geometry";
-import {drawRect} from "../../utils/canvas";
+import {Rect} from "../../utils/geometry";
 import {InteractiveItemComponent} from "./interactive-item.component";
 
 @Component({
@@ -14,27 +13,22 @@ import {InteractiveItemComponent} from "./interactive-item.component";
 })
 export class InteractiveRectComponent extends InteractiveItemComponent {
 
-    @Input() width: number;
-    @Input() height: number;
-    @Input() rotation: number;
+    readonly width = input(10);
+    readonly height = input(10);
+    readonly rotation = input(0);
 
     constructor() {
         super();
-        this.width = 10;
-        this.height = 10;
-        this.rotation = 0;
-    }
-
-    draw(ctx: CanvasRenderingContext2D) {
-        const ratio = this.canvas.ratio;
-        ctx.rotate(toRadians(this.rotation));
-        drawRect(ctx, this.width * ratio, this.height * ratio);
-        ctx.fill();
-        ctx.stroke();
+        effect(() => {
+            this.mFrame = new Rect(0, 0, this.width(), this.height(), this.rotation());
+        });
     }
 
     protected calcShape(x: number, y: number): IShape {
         const ratio = this.canvas.ratio;
-        return new Rect(x, y, this.width * ratio, this.height * ratio, this.rotation)
+        const width = untracked(() => this.width());
+        const height = untracked(() => this.height());
+        const rotation = untracked(() => this.rotation());
+        return new Rect(x, y, width * ratio, height * ratio, rotation);
     }
 }
