@@ -271,11 +271,12 @@ export type ChipValue = string | number;
 export type ChipStatus = "valid" | "invalid";
 
 export interface ChipOption {
-    value: ChipValue;
     label: string;
+    value?: ChipValue;
     classes?: string;
     disabled?: boolean;
     picture?: string;
+    group?: ChipOption[];
 }
 
 // --- Dropdown ---
