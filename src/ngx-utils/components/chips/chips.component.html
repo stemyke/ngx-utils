@@ -1,5 +1,11 @@
-<div class="chips" [ngClass]="{disabled: disabled}" #chipContainer>
+<div dd
+     [closeInside]="false"
+     [autoPlacement]="autoPlacement"
+     [ngClass]="{disabled: disabled}" class="chips" #chipDropdown="dropdown">
     <input class="chips-input"
+           dropdownToggle
+           [switch]="false"
+           [attr.data-testid]="testId + '-input'"
            [type]="type == 'number' ? 'number': 'text'"
            [min]="min"
            [max]="max"
@@ -13,13 +19,37 @@
     <div class="chips-buttons" #chipButtons [ngClass]="{disabled: disabled}" (resize)="onResize()">
         <ng-container *ngFor="let item of valueOptions; let ix = index; trackBy:trackBy">
             <a class="chips-button" [ngClass]="'chips-' + statuses[ix]" (dblclick)="removeItem($event, ix)">
-                <span *ngIf="item.picture" class="chip-picture">
+                @if (item.picture) {
                     <img [src]="item.picture | safe:'url'"
+                         class="chip-picture"
                          referrerpolicy="no-referrer" [attr.alt]="item.label">
-                </span>
-                <span class="chips-label">{{ item.label }} </span>
-                <close-btn class="chips-remove" (click)="removeItem($event, ix)" *ngIf="!disabled"></close-btn>
+
+                }
+                <span class="chips-label"
+                      [attr.data-testid]="testId + '-label-' + ix">{{ item.label }} </span>
+                <close-btn class="chips-remove"
+                           [attr.data-testid]="testId + '-delete-' + ix"
+                           (click)="removeItem($event, ix)" *ngIf="!disabled"></close-btn>
             </a>
         </ng-container>
     </div>
+    @if (options) {
+        <div class="chips-dropdown" *dropdownContent>
+            <button [ngClass]="option.classes"
+                    [disabled]="option.disabled"
+                    (click)="enterOption(option.value)"
+                    *ngFor="let option of filteredOptions">
+                <div class="select-option">
+                    @if (option?.picture) {
+                        <img [src]="option.picture | safe:'url'"
+                             class="select-option-picture"
+                             referrerpolicy="no-referrer" [attr.alt]="option.label">
+                    }
+                    <div class="select-option-label">
+                        {{ option.label }}
+                    </div>
+                </div>
+            </button>
+        </div>
+    }
 </div>

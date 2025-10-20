@@ -115,11 +115,20 @@
         cursor: pointer;
         padding: 6px 12px;
         user-select: none;
+
+        a {
+            color: var(--dd-text-color);
+            text-decoration: none;
+        }
     }
 
     li:hover, li.active {
         background-color: var(--dd-highlight-color);
         color: var(--dd-highlight-text-color);
+
+        a {
+            color: var(--dd-highlight-text-color);
+        }
     }
 }
 

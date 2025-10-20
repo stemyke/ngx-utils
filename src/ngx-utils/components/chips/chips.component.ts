@@ -11,6 +11,8 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {ObjectUtils} from "../../utils/object.utils";
 import {ChipOption, ChipStatus, ChipValue} from "../../common-types";
+import {AutoPlacementOptions} from "@floating-ui/dom";
+import {DropdownDirective} from "../../directives/dropdown.directive";
 
 @Component({
     standalone: false,
@@ -24,6 +26,7 @@ import {ChipOption, ChipStatus, ChipValue} from "../../common-types";
 })
 export class ChipsComponent implements ControlValueAccessor, OnChanges {
 
+    @Input() testId: string;
     @Input() value: ChipValue | ChipValue[];
     @Input() multiple: boolean;
     @Input() disabled: boolean;
@@ -35,12 +38,13 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
     @Input() step: number;
     @Input() placeholder: string;
     @Input() unique: boolean;
+    @Input() strict: boolean;
     @Input() options: ReadonlyArray<ChipOption>;
 
     @Output() valueChange: EventEmitter<ChipValue | ChipValue[]>;
 
-    @ViewChild("chipContainer")
-    chipContainer: ElementRef<HTMLDivElement>;
+    @ViewChild("chipDropdown")
+    chipDropdown: DropdownDirective;
 
     @ViewChild("chipButtons")
     chipButtons: ElementRef<HTMLDivElement>;
@@ -52,6 +56,7 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
     valueOptions: ChipOption[];
     filteredOptions: ChipOption[];
     statuses: ChipStatus[];
+    autoPlacement: AutoPlacementOptions;
 
     private undoList: Function[];
     private previousValue: string;
@@ -60,6 +65,7 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
     onTouched: any = () => { };
 
     constructor(readonly cdr: ChangeDetectorRef) {
+        this.testId = "chips";
         this.value = [];
         this.multiple = true;
         this.statuses = [];
@@ -71,11 +77,16 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
         this.maxLength = this.max;
         this.step = 1;
         this.placeholder = "";
-        this.unique = false;
+        this.unique = true;
+        this.strict = true;
         this.valueChange = new EventEmitter();
         this.inputStyles = {};
         this.valueOptions = [];
         this.filteredOptions = [];
+        this.autoPlacement = {
+            autoAlignment: true,
+            allowedPlacements: ["top", "bottom"]
+        };
         this.undoList = [];
         this.previousValue = "";
     }
@@ -128,7 +139,7 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
     }
 
     onResize(): void {
-        const container = this.chipContainer.nativeElement;
+        const container = this.chipDropdown.nativeElement;
         const buttons = this.chipButtons.nativeElement;
         const style = getComputedStyle(buttons);
         const vertical = parseFloat(style.top);
@@ -147,6 +158,7 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
         const input = ev.target as HTMLInputElement;
         const changed = input.value !== this.previousValue;
         this.previousValue = input.value;
+        this.chipDropdown.show();
         if (ev.ctrlKey) {
             if (ev.key == "z") {
                 const fn = this.undoList.pop();
@@ -171,13 +183,15 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
     }
 
     onBlur(ev: FocusEvent): void {
+        if (this.chipDropdown.isOpened) return;
         const input = ev.target as HTMLInputElement;
         this.enterOption(input.value);
     }
 
-    enterOption(value: string): boolean {
+    enterOption(src: string | number): boolean {
+        const value = String(src);
         let option = this.createOption(value);
-        if (!option && this.filteredOptions?.length === 1) {
+        if (!option && value && this.filteredOptions?.length === 1) {
             const regex = new RegExp(value, "gi");
             option = this.filteredOptions.find(o => o.label?.match(regex));
         }
@@ -192,6 +206,7 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
             input.value = "";
             setTimeout(input.focus.bind(input), 500);
         }
+        this.chipDropdown.hide();
         return false;
     }
 
@@ -208,9 +223,12 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
         const label = String(value);
         if (this.options) {
             const option =
-                this.options.find(o => o.label === label) ||
+                (!this.strict ? null : this.options.find(o => o.label === label)) ??
                 this.options.find(o => o.value === value);
-            return option ?? null;
+            return option ?? (this.strict || !label ? null : {
+                value,
+                label,
+            });
         }
         return !label ? null : {
             value,

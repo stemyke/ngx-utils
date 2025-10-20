@@ -8,6 +8,7 @@
     <chips type="number" [(value)]="numberChips" [min]="5"></chips>
     <chips [(value)]="stringChips" [minLength]="5"></chips>
     <chips [(value)]="stringChips" [disabled]="true" [minLength]="5"></chips>
+    <chips [(value)]="optionChips" [options]="options" [strict]="false"></chips>
     <upload [accept]="['jpg', 'png']" [disabled]="true" [multiple]="true" [(ngModel)]="assets"></upload>
     <upload [accept]="['jpg', 'png']" [disabled]="false" [multiple]="true" [(ngModel)]="assets"></upload>
     <upload [accept]="['jpg', 'png']" [disabled]="true" [multiple]="false" [(ngModel)]="asset"></upload>

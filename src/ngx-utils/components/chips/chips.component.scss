@@ -2,8 +2,12 @@
 
     --chips-border-size: var(--border-size, 1px);
     --chips-border-radius: var(--border-radius, 5px);
+    --chips-top-border-radius: var(--chips-border-radius) var(--chips-border-radius) 0 0;
+    --chips-bottom-border-radius: 0 0 var(--chips-border-radius) var(--chips-border-radius);
     --chips-bg-color: var(--bg-color, #ffffff);
     --chips-border-color: var(--border-color, #ced4da);
+    --chips-highlight-color: var(--highlight-color, var(--primary-color, #888888));
+    --chips-highlight-text-color: var(--highlight-text-color, #ffffff);
     --chips-text-color: var(--text-color, #151515);
     --chips-text-size: var(--text-size, 16px);
     --chips-padding-vertical: 6px;
@@ -76,15 +80,10 @@
         --chipd-btn-color: var(--chips-btn-invalid-color)
     }
 
-    .chips-picture {
+    img.chip-picture {
         width: 28px;
         height: 28px;
-        overflow: hidden;
-        margin-right: 5px;
-
-        img {
-            max-height: 100%;
-        }
+        object-fit: cover;
     }
 
     .chips-label {
@@ -103,23 +102,63 @@
     }
 }
 
-.select-option {
+.chips-dropdown:not(:empty) {
+
+    position: relative;
+    z-index: 1;
+    width: var(--toggle-width, 0);
     display: flex;
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    margin: -3px 0;
+    padding: 0;
+    list-style: none;
+    border: var(--chips-border-size) solid var(--chips-border-color);
+    background: var(--chips-bg-color);
+    border-radius: var(--chips-bottom-border-radius);
+    overflow: hidden;
 
-    .select-option-picture {
-        width: 32px;
-        height: 32px;
-        overflow: hidden;
+    * {
+        box-sizing: border-box;
+    }
 
-        img {
-            max-height: 100%;
+    button {
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 6px 12px;
+        user-select: none;
+        text-align: left;
+    }
+
+    button:hover, button.active {
+        background-color: var(--chips-highlight-color);
+        color: var(--chips-highlight-text-color);
+
+        a {
+            color: var(--chips-highlight-text-color);
         }
     }
 
-    .select-option-label {
-        flex: 1;
+    .select-option {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+
+        .select-option-picture {
+            width: 32px;
+            height: 32px;
+            object-fit: cover;
+        }
+
+        .select-option-label {
+            flex: 1;
+        }
+    }
+}
+
+.dropdown-placement-top {
+    .chips-dropdown {
+        border-radius: var(--chips-top-border-radius);
     }
 }

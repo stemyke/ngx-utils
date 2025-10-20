@@ -195,6 +195,10 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
                 return result;
             }, {} as ITableColumns);
             this.cols = Object.keys(this.realColumns);
+            this.cols.forEach(col => {
+                const column = this.realColumns[col];
+                column.filterType = column.filterType || "text";
+            });
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
             const query = this.query || {};
             this.sortable = sortable.length > 0;
@@ -333,7 +337,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query);
     };
 
-    protected async loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string): Promise<IPaginationData> {
+    protected async loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string, query: ITableDataQuery): Promise<IPaginationData> {
         if (!this.localData) {
             return {
                 total: 0,
@@ -347,13 +351,39 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         const dataLength = this.localData.length;
         const length = Math.min(rowsPerPage, dataLength - from);
         const parallelData = this.parallelData || [];
-        let data = this.localData.map((item, ix) => {
+        const filterRx = ObjectUtils.isStringWithValue(filter) ? new RegExp(filter, "gi") : null;
+        let filterFn = !filterRx ? () => true : (ctx: PaginationItemContext) => {
+            return this.cols.some(col => {
+                const value = ctx.item[col];
+                return `${value}`.match(filterRx);
+            });
+        };
+        filterFn = Object.entries(query).reduce((fn, [key, filterValue]) => {
+            if (!filterValue) return fn;
+            const column = this.realColumns[key];
+            if (!column) return fn;
+            switch (column.filterType) {
+                case "enum":
+                    const filterArr = filterValue as string[];
+                    return filterArr.length == 0 ? fn : (ctx) => {
+                        const value = ctx.item[key];
+                        return filterArr.includes(value) && fn(ctx);
+                    }
+                case "checkbox":
+                   return (ctx) => {
+                       const value = ctx.item[key];
+                       return !!value && fn(ctx);
+                   };
+            }
+            const filterRx = new RegExp(`${filterValue}`, "gi");
+            return (ctx) => {
+                const value = ctx.item[key];
+                return `${value}`.match(filterRx) && fn(ctx);
+            };
+        }, filterFn);
+        const data = this.localData.map((item, ix) => {
             return new PaginationItemContext(item, parallelData[ix] || {}, dataLength, ix, ix);
-        });
-        if (ObjectUtils.isString(filter) && filter.length > 0) {
-            const filterRx = new RegExp(filter, "gi");
-            data = data.filter(c => c.filter(filterRx));
-        }
+        }).filter(filterFn);
         const items = orderBy ? data.sort(compare).splice(from, length) : data.splice(from, length);
         items.forEach((context, ix) => {
             context.index = ix;

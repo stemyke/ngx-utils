@@ -172,6 +172,7 @@ export class DropdownDirective implements OnDestroy {
     }
 
     hide() {
+        console.log("hi");
         if (!this.opened) return true;
         this.opened = false;
         this.hideEvent();
