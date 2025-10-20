@@ -239,7 +239,3 @@ export const providers = [
         useExisting: ErrorHandlerService
     }
 ];
-
-export function loadConfig(config: IConfigService): any {
-    return config.load;
-}

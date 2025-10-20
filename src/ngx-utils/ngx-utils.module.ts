@@ -32,7 +32,7 @@ import {
     TOASTER_SERVICE
 } from "./tokens";
 
-import {components, directives, loadConfig, pipes, providers} from "./ngx-utils.imports";
+import {components, directives, pipes, providers} from "./ngx-utils.imports";
 import {ApiService} from "./services/api.service";
 import {StaticAuthService} from "./services/auth.service";
 import {IconService} from "./services/icon.service";
@@ -193,7 +193,8 @@ export class NgxUtilsModule {
                     const initializer = config.initializeApp(inject(Injector));
                     return initializer();
                 }
-                return loadConfig(inject(CONFIG_SERVICE));
+                const configs = inject(CONFIG_SERVICE);
+                return configs.load();
             }),
         ];
     }
@@ -234,9 +235,5 @@ export class NgxUtilsModule {
                 }
             ]
         };
-    }
-
-    constructor() {
-
     }
 }
