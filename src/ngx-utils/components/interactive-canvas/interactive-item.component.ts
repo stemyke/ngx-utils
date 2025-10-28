@@ -1,11 +1,12 @@
 import {Component, Input, OnChanges} from "@angular/core";
 import {
     CanvasItemDirection,
+    Frame,
     InteractiveCanvas,
     InteractiveCanvasItem,
+    InteractiveCanvasParams,
     IPoint,
-    IShape,
-    Frame
+    IShape
 } from "../../common-types";
 import {Point, Rect} from "../../utils/geometry";
 import {MaybePromise} from "../../helper-types";
@@ -21,6 +22,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     protected pos: Point;
     protected mFrame: Rect;
     protected mShapes: IShape[];
+    protected mDistances: Map<InteractiveCanvasItem, number>;
 
     get frame(): Frame {
         return this.mFrame;
@@ -101,6 +103,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     active: boolean;
     canvas: InteractiveCanvas;
     index: number;
+    canvasParams: InteractiveCanvasParams;
 
     protected valid: boolean;
     protected validPos: Point;
@@ -108,11 +111,13 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     constructor() {
         this.active = false;
         this.index = -1;
+        this.canvasParams = {};
         this.valid = true;
         this.pos = Point.Zero;
         this.direction = "none";
         this.mFrame = new Rect(0, 0, 3, 3);
         this.mShapes = [];
+        this.mDistances = new Map();
     }
 
     draw(ctx: CanvasRenderingContext2D, shape: IShape): MaybePromise<void> {
@@ -166,6 +171,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     }
 
     moveEnd(): void {
+        this.mDistances.clear();
         if (this.valid) return;
         this.pos = this.validPos;
         this.valid = true;
@@ -195,7 +201,10 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     }
 
     protected isValidByDistance(other: InteractiveCanvasItem): boolean {
-        const minPixels = this.distToPixels(this.getMinDistance(other));
+        if (!this.mDistances.has(other)) {
+            this.mDistances.set(other, this.distToPixels(this.getMinDistance(other)));
+        }
+        const minPixels = this.mDistances.get(other);
         return !this.shapes.some(shape => {
             return other.shapes.some(os => {
                 return shape.distance(os) <= minPixels;

@@ -514,6 +514,7 @@ export interface InteractiveCanvasItem {
     readonly active: boolean;
     readonly canvas: InteractiveCanvas;
     readonly index: number;
+    readonly canvasParams: InteractiveCanvasParams;
     draw(ctx: CanvasRenderingContext2D, shape: IShape): MaybePromise<void>;
 }
 
@@ -549,7 +550,7 @@ export interface InteractiveCanvas {
     readonly rotation: number;
     readonly basePan: number;
     readonly cycles?: ReadonlyArray<number>;
-    readonly excludedAreas?: ReadonlyArray<IShape & RectCoords>;
+    readonly excludedAreas?: ReadonlyArray<Frame>;
     // --- Optionals, for back compatibility ---
     rendered?: boolean;
     // --- Functions ---

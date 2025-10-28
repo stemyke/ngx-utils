@@ -178,6 +178,8 @@ export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {ForbiddenZone} from "./ngx-utils/utils/forbidden-zone";
 export {GenericValue} from "./ngx-utils/utils/generic-value";
 export {FileSystemEntryOpenResult, FileSystemEntryOpenCb, FileSystemEntry} from "./ngx-utils/utils/file-system";
+export {ExclusionsRenderer} from "./ngx-utils/utils/canvas-renderers/exclusions-renderer";
+export {RulerCanvasRenderer} from "./ngx-utils/utils/canvas-renderers/ruler-canvas.renderer";
 export {
     dotProduct,
     tripleProduct,

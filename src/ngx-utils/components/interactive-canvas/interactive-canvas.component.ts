@@ -322,7 +322,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
 
     onPanMove($event: any): void {
         const item = this.lockedItem;
-        const horizontal = this.horizontal();
+        const horizontal = untracked(() => this.horizontal());
         const deltaX = $event.deltaX / this.ratio;
         const deltaY = $event.deltaY / this.ratio;
         const data: InteractivePanEvent = {
@@ -384,6 +384,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             });
         });
         this.items.forEach(item => {
+            item.canvasParams = params;
             item.calcShapes();
         });
         this.onRotate.emit(this.rotation);
