@@ -387,7 +387,6 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         const items = orderBy ? data.sort(compare).splice(from, length) : data.splice(from, length);
         items.forEach((context, ix) => {
             context.index = ix;
-            context.dataIndex = from + ix;
         });
         return {
             total: dataLength,
