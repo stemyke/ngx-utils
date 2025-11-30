@@ -292,6 +292,7 @@ export {RoundPipe} from "./ngx-utils/pipes/round.pipe";
 export {SafeHtmlPipe} from "./ngx-utils/pipes/safe-html.pipe";
 export {ShiftPipe} from "./ngx-utils/pipes/shift.pipe";
 export {SplitPipe} from "./ngx-utils/pipes/split.pipe";
+export {SyncAsyncPipe} from "./ngx-utils/pipes/sync-async.pipe";
 export {TranslatePipe} from "./ngx-utils/pipes/translate.pipe";
 export {ValuesPipe} from "./ngx-utils/pipes/values.pipe";
 

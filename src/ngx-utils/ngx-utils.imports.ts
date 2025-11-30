@@ -83,6 +83,7 @@ import {RoundPipe} from "./pipes/round.pipe";
 import {SafeHtmlPipe} from "./pipes/safe-html.pipe";
 import {ShiftPipe} from "./pipes/shift.pipe";
 import {SplitPipe} from "./pipes/split.pipe";
+import {SyncAsyncPipe} from "./pipes/sync-async.pipe";
 import {TranslatePipe} from "./pipes/translate.pipe";
 import {ValuesPipe} from "./pipes/values.pipe";
 
@@ -134,6 +135,7 @@ export const pipes = [
     SafeHtmlPipe,
     ShiftPipe,
     SplitPipe,
+    SyncAsyncPipe,
     TranslatePipe,
     ValuesPipe
 ];
