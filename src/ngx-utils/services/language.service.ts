@@ -35,7 +35,7 @@ export class LanguageService extends StaticLanguageService {
 
     protected initService(): void {
         super.initService();
-        this.client.setExtraRequestParam("language", "de");
+        this.client.setParam("language", "de");
         this.translationRequests = {};
         this.languageSettings = new BehaviorSubject<ILanguageSettings>(null);
         if (this.universal.isServer) return;
@@ -69,8 +69,8 @@ export class LanguageService extends StaticLanguageService {
 
     protected async useLanguage(lang: string): Promise<ITranslations> {
         lang = this.languages.indexOf(lang) < 0 ? this.languages[0] : lang;
-        this.client.setExtraRequestParam("language", lang);
-        if (lang == this.currentLang) return this.dictionary;
+        this.client.setParam("language", lang);
+        if (lang === this.currentLang) return this.dictionary;
         this.storage.set("language", lang);
         this.currentLang = lang;
         return this.loadDictionary();

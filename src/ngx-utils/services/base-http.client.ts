@@ -1,52 +1,37 @@
 import {Injectable} from "@angular/core";
-import {HttpClient, HttpHandler, HttpHeaders, HttpParams, HttpUrlEncodingCodec} from "@angular/common/http";
-import {HttpRequestHeaders, HttpRequestQuery} from "../common-types";
-import {ObjectUtils} from "../utils/object.utils";
+import {HttpClient, HttpHandler, HttpHeaders} from "@angular/common/http";
+import {RequestBag} from "./request-bag";
+import {HttpRequestHeaders, HttpRequestQuery, IBaseHttpClient} from "../common-types";
 
 @Injectable()
-export class BaseHttpClient extends HttpClient {
+export class BaseHttpClient extends HttpClient implements IBaseHttpClient {
 
-    requestHeaders: HttpRequestHeaders;
-    requestParams: HttpRequestQuery;
     renewTokenFunc: () => void;
 
-    protected extraRequestParams: HttpRequestQuery;
+    readonly bag: RequestBag;
 
     constructor(handler: HttpHandler) {
         super(handler);
-        this.requestHeaders = {};
-        this.requestParams = {};
-        this.extraRequestParams = {
-            language: "en"
-        };
+        this.bag = new RequestBag();
     }
 
-    makeHeaders(headers?: HttpRequestHeaders, withCredentials: boolean = true): HttpHeaders {
-        headers = Object.assign({}, this.requestHeaders, headers);
-        const authHeader = headers["Authorization"] as string || "";
-        if (!withCredentials && !authHeader.startsWith("Bearer")) {
-            delete headers["Authorization"];
-        }
-        return new HttpHeaders(headers);
+    get requestHeaders(): Readonly<HttpRequestHeaders> {
+        return this.bag.requestHeaders;
     }
 
-    makeParams(params?: HttpRequestQuery): HttpParams {
-        params = Object.assign({}, this.extraRequestParams, this.requestParams, params);
-        return new HttpParams({
-            encoder: new HttpUrlEncodingCodec(),
-            fromObject: Object.keys(params || {}).reduce((result, key) => {
-                const value = params[key];
-                result[key] = ObjectUtils.isObject(value) ? JSON.stringify(value) : (ObjectUtils.isNullOrUndefined(value) ? "" : value.toString());
-                return result;
-            }, {})
-        });
+    get requestParams(): Readonly<HttpRequestQuery> {
+        return this.bag.requestParams;
     }
 
-    setExtraRequestParam(name: string, value?: any): void {
-        if (typeof value == "undefined") {
-            delete this.extraRequestParams[name];
-            return;
-        }
-        this.extraRequestParams[name] = value;
+    setHeader(name: string, value?: string | string[]): void {
+        this.bag.setHeader(name, value);
+    }
+
+    setParam(name: string, value?: any): void {
+        this.bag.setParam(name, value);
+    }
+
+    makeHeaders(): HttpHeaders {
+        return this.bag.makeHeaders();
     }
 }

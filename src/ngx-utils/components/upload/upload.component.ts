@@ -1,12 +1,14 @@
 import {
     ChangeDetectorRef,
-    Component, ElementRef,
+    Component,
+    ElementRef,
     EventEmitter,
     forwardRef,
     Inject,
     Input,
     OnChanges,
-    Output, ViewChild,
+    Output,
+    ViewChild,
     ViewEncapsulation
 } from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
@@ -14,13 +16,19 @@ import {HttpErrorResponse, HttpEventType, HttpResponse} from "@angular/common/ht
 import {lastValueFrom} from "rxjs";
 import {map} from "rxjs/operators";
 
-import {IApiService, IFileUploadProcess, IFileUploadResult, IToasterService, UploadType} from "../../common-types";
+import {
+    IApiService,
+    IBaseHttpClient,
+    IFileUploadProcess,
+    IFileUploadResult,
+    IToasterService,
+    UploadType
+} from "../../common-types";
 import {API_SERVICE, TOASTER_SERVICE} from "../../tokens";
 
 import {ArrayUtils} from "../../utils/array.utils";
 import {ObjectUtils} from "../../utils/object.utils";
 import {FileUtils} from "../../utils/file.utils";
-import {BaseHttpClient} from "../../services/base-http.client";
 import {BtnComponent} from "../btn/btn.component";
 import {getRoot} from "../../utils/misc";
 
@@ -66,8 +74,8 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
     protected fileImageCache: Map<Blob, string>;
     protected acceptTypes: string[];
 
-    get http(): BaseHttpClient {
-        return this.api.client as BaseHttpClient;
+    get http(): IBaseHttpClient {
+        return this.api.client;
     }
 
     get root(): DocumentOrShadowRoot {

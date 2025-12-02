@@ -27,30 +27,38 @@ import {Observable, TimeoutError} from "rxjs";
 import {CONFIG_SERVICE, EXPRESS_REQUEST, LANGUAGE_SERVICE, TOASTER_SERVICE} from "../tokens";
 import {CacheService} from "./cache.service";
 import {hashCode} from "../utils/misc";
+import {RequestBag} from "./request-bag";
 
 @Injectable()
 export class BaseHttpService implements IHttpService {
 
-    protected static failedRequests: Array<() => void> = [];
-
     get name(): string {
         return "base";
+    }
+
+    get requestHeaders(): Readonly<HttpRequestHeaders> {
+        return this.bag.requestHeaders;
+    }
+
+    get requestParams(): Readonly<HttpRequestQuery> {
+        return this.bag.requestParams;
     }
 
     protected get withCredentials(): boolean {
         return true;
     }
 
-    requestHeaders: HttpRequestHeaders;
-    requestParams: HttpRequestQuery;
+    get universal(): UniversalService {
+        return this.storage.universal;
+    }
+
+    protected static failedRequests: Array<() => void> = [];
+
+    protected readonly bag: RequestBag;
 
     protected static retryFailedRequests(): void {
         BaseHttpService.failedRequests.forEach(r => r());
         BaseHttpService.failedRequests = [];
-    }
-
-    get universal(): UniversalService {
-        return this.storage.universal;
     }
 
     constructor(readonly injector: Injector,
@@ -62,13 +70,20 @@ export class BaseHttpService implements IHttpService {
                 @Inject(CONFIG_SERVICE) readonly configs: IConfigService,
                 @Optional() @Inject(EXPRESS_REQUEST) readonly request: Request = null
     ) {
-        this.requestHeaders = {};
-        this.requestParams = {};
+        this.bag = new RequestBag(this.client.bag);
         this.initService();
     }
 
     protected initService(): void {
 
+    }
+
+    setHeader(name: string, value?: string | string[]): void {
+        this.bag.setHeader(name, value);
+    }
+
+    setParam(name: string, value?: any): void {
+        this.bag.setParam(name, value);
     }
 
     cached(mode: CacheExpireMode): Observable<any> {
@@ -86,7 +101,7 @@ export class BaseHttpService implements IHttpService {
     }
 
     createUrl(url: string, params: HttpRequestQuery): string {
-        const httpParams = this.client.makeParams(params);
+        const httpParams = this.bag.makeParams(params);
         const query = httpParams.keys().map(key => {
             return `${key}=${httpParams.get(key)}`;
         }).join("&");
@@ -315,11 +330,11 @@ export class BaseHttpService implements IHttpService {
     }
 
     protected makeHeaders(options: HttpClientRequestOptions): HttpHeaders {
-        return this.client.makeHeaders(Object.assign({}, this.requestHeaders, options?.headers || {}));
+        return this.bag.makeHeaders(options?.headers || {});
     }
 
     protected makeParams(options: HttpClientRequestOptions): HttpParams {
-        return this.client.makeParams(Object.assign({}, this.requestParams, options?.params || {}));
+        return this.bag.makeParams(options?.params || {});
     }
 
     protected parseResponse(response: any, url: string, options: HttpClientRequestOptions, read: string): any {
@@ -331,7 +346,7 @@ export class BaseHttpService implements IHttpService {
     }
 
     protected parseUrl(url: string): string {
-        return this.url(url).replace(/(?:((?!:).\/)\/)/g, "$1");
+        return this.url(url).replace(/((?!:).\/)\//g, "$1");
     }
 
     protected absoluteUrl(url: string, options: HttpClientRequestOptions): string {

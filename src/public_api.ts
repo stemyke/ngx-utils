@@ -258,6 +258,7 @@ export {CacheService} from "./ngx-utils/services/cache.service";
 export {ComponentLoaderService} from "./ngx-utils/services/component-loader.service";
 export {IUrlDictionary, TranslatedUrlSerializer} from "./ngx-utils/services/translated-url.serializer";
 export {PromiseService} from "./ngx-utils/services/promise.service";
+export {RequestBag} from "./ngx-utils/services/request-bag";
 export {SocketService} from "./ngx-utils/services/socket.service";
 
 export {DragEventListener} from "./ngx-utils/plugins/drag-drop-handler";

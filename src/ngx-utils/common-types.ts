@@ -1,11 +1,9 @@
 import {ElementRef, EventEmitter, InjectionToken, Injector, NgZone, Provider, TemplateRef, Type} from "@angular/core";
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ActivatedRouteSnapshot, Data, LoadChildrenCallback, Route, Routes, UrlTree} from "@angular/router";
 import {Observable} from "rxjs";
 import {DurationLikeObject} from "luxon";
 
-import {ReflectUtils} from "./utils/reflect.utils";
-import {ObjectUtils} from "./utils/object.utils";
 import {MaybePromise, StringKeys} from "./helper-types";
 
 // --- Util
@@ -348,13 +346,13 @@ export interface ISearchObservable {
 // --- Reflect utils ---
 export function FactoryDependencies(...dependencies: Array<InjectionToken<any> | Provider>): MethodDecorator {
     return function (target: any, method: string): void {
-        ReflectUtils.defineMetadata("factoryDependencies", dependencies, target, method);
+        Reflect.defineMetadata("factoryDependencies", dependencies, target, method);
     };
 }
 
 export function ObjectType(type: string): ClassDecorator {
     return function (target: any): void {
-        ReflectUtils.defineMetadata("objectType", type, target);
+        Reflect.defineMetadata("objectType", type, target);
     };
 }
 
@@ -637,7 +635,11 @@ export type ProgressListener = (progress: IProgress) => void;
 export type CacheExpireMode = boolean | "auth" | Date;
 
 export interface IHttpService {
-    language: ILanguageService;
+    readonly language: ILanguageService;
+    readonly requestHeaders: Readonly<HttpRequestHeaders>;
+    readonly requestParams: Readonly<HttpRequestQuery>;
+    setHeader(name: string, value?: string | string[]): void;
+    setParam(name: string, value?: any): void;
     cached(mode: CacheExpireMode): Observable<any>;
     url(url: string): string;
     makeListParams(page: number, itemsPerPage: number, orderBy?: string, orderDescending?: boolean, filter?: string): HttpRequestQuery;
@@ -656,8 +658,11 @@ export type SvgSourceModifier = (svg: SVGSVGElement, width: number, height: numb
 // --- Api service ---
 
 export interface IBaseHttpClient extends HttpClient {
-    readonly requestHeaders: HttpRequestHeaders;
-    readonly requestParams: HttpRequestQuery;
+    readonly requestHeaders: Readonly<HttpRequestHeaders>;
+    readonly requestParams: Readonly<HttpRequestQuery>;
+    setHeader(name: string, value?: string | string[]): void;
+    setParam(name: string, value?: any): void;
+    makeHeaders(): HttpHeaders;
 }
 
 export interface IApiService extends IHttpService {
