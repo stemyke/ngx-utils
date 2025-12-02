@@ -661,6 +661,7 @@ export interface IBaseHttpClient extends HttpClient {
     readonly requestHeaders: Readonly<HttpRequestHeaders>;
     readonly requestParams: Readonly<HttpRequestQuery>;
     setHeader(name: string, value?: string | string[]): void;
+    getHeader(name: string): string;
     setParam(name: string, value?: any): void;
     makeHeaders(): HttpHeaders;
 }

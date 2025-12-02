@@ -50,6 +50,10 @@ export class RequestBag {
         this.headers[name] = value;
     }
 
+    getHeader(name: string): string {
+        return String(this.headers[name] || "");
+    }
+
     setParam(name: string, value?: any): void {
         if (value === undefined) {
             delete this.params[name];
