@@ -64,6 +64,7 @@ export {
     HttpPromise,
     IHttpService,
     EXPRESS_REQUEST,
+    IBaseHttpClient,
     IApiService,
     API_SERVICE,
     IOpenApiSchemaProperty,

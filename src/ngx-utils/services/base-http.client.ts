@@ -1,10 +1,10 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpHandler, HttpHeaders, HttpParams, HttpUrlEncodingCodec} from "@angular/common/http";
-import {IHttpHeaders, IHttpParams} from "../common-types";
+import {IBaseHttpClient, IHttpHeaders, IHttpParams} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 
 @Injectable()
-export class BaseHttpClient extends HttpClient {
+export class BaseHttpClient extends HttpClient implements IBaseHttpClient {
 
     requestHeaders: IHttpHeaders;
     requestParams: IHttpParams;

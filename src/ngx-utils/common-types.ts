@@ -418,6 +418,11 @@ export const EXPRESS_REQUEST = new InjectionToken<Request>("express-request");
 
 // --- Api service ---
 
+export interface IBaseHttpClient extends HttpClient {
+    requestHeaders: IHttpHeaders;
+    requestParams: IHttpParams;
+}
+
 export interface IApiService extends IHttpService {
     cache: any;
     client: HttpClient;
@@ -512,6 +517,7 @@ export class IConfiguration {
 }
 
 export interface IConfigService {
+    readonly http: IBaseHttpClient;
     readonly config: IConfiguration;
     readonly injector: Injector;
     readonly load: () => Promise<IConfiguration>;

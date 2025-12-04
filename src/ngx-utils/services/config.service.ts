@@ -1,9 +1,9 @@
 import {Inject, Injectable, Injector, isDevMode, Optional} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
 import JSON5 from "json5";
 import {UniversalService} from "./universal.service";
 import {APP_BASE_URL, BASE_CONFIG, IConfigService, IConfiguration, ROOT_ELEMENT, SCRIPT_PARAMS} from "../common-types";
 import {StringUtils} from "../utils/string.utils";
+import {BaseHttpClient} from "./base-http.client";
 
 @Injectable()
 export class ConfigService implements IConfigService {
@@ -26,7 +26,7 @@ export class ConfigService implements IConfigService {
         return `${this.loadedConfig.baseUrl}config/config.json`;
     }
 
-    constructor(readonly http: HttpClient,
+    constructor(readonly http: BaseHttpClient,
                 readonly universal: UniversalService,
                 readonly injector: Injector,
                 @Inject(ROOT_ELEMENT) readonly rootElement: any,
