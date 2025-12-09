@@ -35,6 +35,10 @@ export class BaseHttpClient extends HttpClient implements IBaseHttpClient {
         this.bag.setParam(name, value);
     }
 
+    setExtraRequestParam(name: string, value?: any): void {
+        this.bag.setParam(name, value);
+    }
+
     makeHeaders(): HttpHeaders {
         return this.bag.makeHeaders();
     }

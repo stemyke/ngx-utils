@@ -663,6 +663,8 @@ export interface IBaseHttpClient extends HttpClient {
     setHeader(name: string, value?: string | string[]): void;
     getHeader(name: string): string;
     setParam(name: string, value?: any): void;
+    // Just a backwards compatibility method for end users..
+    setExtraRequestParam(name: string, value?: any): void;
     makeHeaders(): HttpHeaders;
 }
 

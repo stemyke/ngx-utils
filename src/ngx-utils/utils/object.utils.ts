@@ -186,6 +186,20 @@ export class ObjectUtils {
         return ObjectUtils.copyRecursive(target, source, predicate || defaultPredicate, new Map());
     }
 
+    static hashCode(obj: any): number {
+        let hash = 0;
+        ObjectUtils.copyRecursive(null, obj, value => {
+            const str = JSON.stringify(value ?? "") || "";
+            for (let i = 0, len = str.length; i < len; i++) {
+                const chr = str.charCodeAt(i);
+                hash = (hash << 5) - hash + chr;
+                hash |= 0; // Convert to 32bit integer
+            }
+            return true;
+        }, new Map());
+        return hash;
+    }
+
     static getType(obj: any): string {
         const regex = new RegExp("\\s([a-zA-Z]+)");
         const target = !obj ? null : obj.constructor;

@@ -4,16 +4,18 @@ import {Request} from "express";
 
 import {
     CacheExpireMode,
-    IConfigService,
+    HttpClientRequestOptions,
     HttpRequestHeaders,
+    HttpRequestOptions,
     HttpRequestQuery,
+    IConfigService,
     IHttpService,
     IIssueContext,
     ILanguageService,
     IPaginationData,
-    HttpClientRequestOptions,
     IToasterService,
-    ProgressListener, HttpRequestOptions, UploadData
+    ProgressListener,
+    UploadData
 } from "../common-types";
 
 import {ObjectUtils} from "../utils/object.utils";
@@ -26,7 +28,6 @@ import {timeout} from "rxjs/operators";
 import {Observable, TimeoutError} from "rxjs";
 import {CONFIG_SERVICE, EXPRESS_REQUEST, LANGUAGE_SERVICE, TOASTER_SERVICE} from "../tokens";
 import {CacheService} from "./cache.service";
-import {hashCode} from "../utils/misc";
 import {RequestBag} from "./request-bag";
 
 @Injectable()
@@ -214,7 +215,7 @@ export class BaseHttpService implements IHttpService {
     protected toPromise(url: string, requestOptions: HttpRequestOptions, listener?: ProgressListener): Promise<any> {
         const {cache, read, ...options} = requestOptions;
         const absoluteUrl = this.absoluteUrl(url, options);
-        const cacheKey = `request-${hashCode(absoluteUrl)}-${hashCode(options)}`;
+        const cacheKey = `request-${ObjectUtils.hashCode(absoluteUrl)}-${ObjectUtils.hashCode(options)}`;
         const issueContext: IIssueContext = {url: absoluteUrl};
         return this.caches.use(`${cacheKey}-${read}`, async () => {
             const response = await this.caches.use(cacheKey, () => new HttpPromise(response => {

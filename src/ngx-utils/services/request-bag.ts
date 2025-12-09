@@ -31,7 +31,7 @@ export class RequestBag {
     }
 
     makeParams(paramsObj?: HttpRequestQuery): HttpParams {
-        const params = Object.assign({}, this.params?.headers || {}, this.params, paramsObj);
+        const params = Object.assign({}, this.source?.params || {}, this.params, paramsObj);
         return new HttpParams({
             encoder: new HttpUrlEncodingCodec(),
             fromObject: Object.keys(params || {}).reduce((result, key) => {
