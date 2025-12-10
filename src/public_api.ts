@@ -173,6 +173,7 @@ export {ArrayUtils} from "./ngx-utils/utils/array.utils";
 export {AuthGuard} from "./ngx-utils/utils/auth.guard";
 export {createTypedProvider, cachedFactory} from "./ngx-utils/utils/cached-factory";
 export {CanvasUtils} from "./ngx-utils/utils/canvas";
+export {md5} from "./ngx-utils/utils/crypto.utils";
 export {DateUtils} from "./ngx-utils/utils/date.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {ForbiddenZone} from "./ngx-utils/utils/forbidden-zone";
@@ -205,14 +206,13 @@ export {
     Point, Rect, Oval, Circle
 } from "./ngx-utils/utils/geometry";
 export {Initializer} from "./ngx-utils/utils/initializer";
-export {JSONfn} from "./ngx-utils/utils/jsonfn";
+export {stringify} from "./ngx-utils/utils/json.utils";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
 export {EPSILON, normalizeRange, clamp, overflow, MathUtils} from "./ngx-utils/utils/math.utils";
 export {
     isBrowser,
     getRoot,
-    hashCode,
     switchClass,
     getCssVariables,
     checkTransitions,

@@ -1,8 +1,8 @@
 import {ErrorHandler, Injectable, Injector} from "@angular/core";
 import {UniversalService} from "./universal.service";
 import {ErrorHandlerCallback, IToasterService} from "../common-types";
-import {hashCode} from "../utils/misc";
 import {ERROR_HANDLER, TOASTER_SERVICE} from "../tokens";
+import {md5} from "../utils/crypto.utils";
 
 @Injectable()
 export class ErrorHandlerService extends ErrorHandler {
@@ -30,7 +30,7 @@ export class ErrorHandlerService extends ErrorHandler {
             }
         }
         if (!this.universal || this.universal.isServer) return;
-        const key = hashCode(`${error.message} ${error.stack}`);
+        const key = md5(`${error.message} ${error.stack}`);
         if (this.errorMap[key] && this.errorMap[key].getTime() > date.getTime() - 5000) return;
         this.errorMap[key] = date;
         try {

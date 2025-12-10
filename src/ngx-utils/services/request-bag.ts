@@ -21,7 +21,7 @@ export class RequestBag {
     }
 
     makeHeaders(headersObj?: HttpRequestHeaders | HttpHeaders, withCredentials: boolean = true): HttpHeaders {
-        const source = headersObj instanceof HttpHeaders ? this.convertHeaders(headersObj) : headersObj || {};
+        const source = this.convertHeaders(headersObj);
         const headers = Object.assign({}, this.source?.headers || {}, this.headers, source);
         const authHeader = headers["Authorization"] as string || "";
         if (!withCredentials && !authHeader.startsWith("Bearer")) {
@@ -30,8 +30,9 @@ export class RequestBag {
         return new HttpHeaders(headers);
     }
 
-    makeParams(paramsObj?: HttpRequestQuery): HttpParams {
-        const params = Object.assign({}, this.source?.params || {}, this.params, paramsObj);
+    makeParams(paramsObj?: HttpParams | HttpRequestQuery): HttpParams {
+        const source = this.convertParams(paramsObj);
+        const params = Object.assign({}, this.source?.params || {}, this.params, source);
         return new HttpParams({
             encoder: new HttpUrlEncodingCodec(),
             fromObject: Object.keys(params || {}).reduce((result, key) => {
@@ -62,10 +63,23 @@ export class RequestBag {
         this.params[name] = value;
     }
 
-    protected convertHeaders(headers: HttpHeaders): HttpRequestHeaders {
-        return headers.keys().reduce((res, key) => {
-            res[key] = headers.getAll(key);
-            return res;
-        }, {} as HttpRequestHeaders);
+    convertHeaders(headers: HttpHeaders | HttpRequestHeaders): HttpRequestHeaders {
+        if (headers instanceof HttpHeaders) {
+            return headers.keys().reduce((res, key) => {
+                res[key] = headers.getAll(key);
+                return res;
+            }, {} as HttpRequestHeaders);
+        }
+        return headers || {};
+    }
+
+    convertParams(params: HttpParams | HttpRequestQuery): HttpRequestQuery {
+        if (params instanceof HttpParams) {
+            return params.keys().reduce((res, key) => {
+                res[key] = params.getAll(key);
+                return res;
+            }, {} as HttpRequestQuery);
+        }
+        return params || {};
     }
 }

@@ -29,6 +29,7 @@ import {Observable, TimeoutError} from "rxjs";
 import {CONFIG_SERVICE, EXPRESS_REQUEST, LANGUAGE_SERVICE, TOASTER_SERVICE} from "../tokens";
 import {CacheService} from "./cache.service";
 import {RequestBag} from "./request-bag";
+import {md5} from "../utils/crypto.utils";
 
 @Injectable()
 export class BaseHttpService implements IHttpService {
@@ -212,10 +213,21 @@ export class BaseHttpService implements IHttpService {
         this.toaster.warning(message, {issueContext, reason, options});
     }
 
+    protected makeCacheKey(url: string, read: string, options: HttpRequestOptions): string {
+        const headers = this.bag.convertHeaders(options?.headers);
+        const params = this.bag.convertParams(options?.params);
+        const hash = md5({url, read, options: {
+            ...options,
+            headers,
+            params
+        }});
+        return `request-${hash}`;
+    }
+
     protected toPromise(url: string, requestOptions: HttpRequestOptions, listener?: ProgressListener): Promise<any> {
         const {cache, read, ...options} = requestOptions;
         const absoluteUrl = this.absoluteUrl(url, options);
-        const cacheKey = `request-${ObjectUtils.hashCode(absoluteUrl)}-${ObjectUtils.hashCode(options)}`;
+        const cacheKey = this.makeCacheKey(absoluteUrl, read, requestOptions);
         const issueContext: IIssueContext = {url: absoluteUrl};
         return this.caches.use(`${cacheKey}-${read}`, async () => {
             const response = await this.caches.use(cacheKey, () => new HttpPromise(response => {

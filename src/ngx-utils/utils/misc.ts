@@ -17,22 +17,6 @@ export function getRoot(elem: HTMLElement): DocumentOrShadowRoot {
     return root || document;
 }
 
-/**
- * Returns a hash code from anything
- * @param  {string} obj The object to hash.
- * @return {number} A 32bit integer
- */
-export function hashCode(obj: any): number {
-    const str = typeof obj === "string" ? obj : JSON.stringify(obj);
-    let hash = 0;
-    for (let i = 0, len = str.length; i < len; i++) {
-        const chr = str.charCodeAt(i);
-        hash = (hash << 5) - hash + chr;
-        hash |= 0; // Convert to 32bit integer
-    }
-    return hash;
-}
-
 export function switchClass(elem: HTMLElement, className: string, status?: boolean): void {
     if (!elem?.classList) return;
     status = status ?? !elem.classList.contains(className);
