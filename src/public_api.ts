@@ -109,6 +109,7 @@ export {
     CacheExpireMode,
     IHttpService,
     SvgSourceModifier,
+    IBaseHttpClient,
     IApiService,
     DynamicSchemaRef,
     OpenApiSchemaProperty,

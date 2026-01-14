@@ -811,6 +811,7 @@ export class IConfiguration {
 }
 
 export interface IConfigService {
+    readonly http: IBaseHttpClient;
     readonly config: IConfiguration;
     readonly injector: Injector;
     readonly load: () => Promise<IConfiguration>;
