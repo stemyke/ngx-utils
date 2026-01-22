@@ -169,10 +169,10 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
             }
             return false;
         }
-        if (ev.key == "Enter") {
+        if (ev.key === "Enter" || ev.key === "Tab") {
             return this.enterOption(input.value);
         }
-        if (ev.key == "Backspace" && !input.value && !changed && this.valueOptions.length > 0) {
+        if (ev.key === "Backspace" && !input.value && !changed && this.valueOptions.length > 0) {
             this.makeUndo();
             this.updateValues(this.valueOptions.slice(0, this.valueOptions.length - 1));
             this.onTouched(this.value);
