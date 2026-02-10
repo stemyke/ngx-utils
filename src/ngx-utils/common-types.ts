@@ -72,8 +72,10 @@ export interface ITranslation {
 }
 
 export interface ITranslations {
-    [key: string]: any;
+    [key: string]: string;
 }
+
+export type GlobalTranslations = Record<string, ITranslations>;
 
 export interface ILanguageSetting {
     unavailable?: string;

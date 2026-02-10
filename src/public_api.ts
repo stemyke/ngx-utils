@@ -26,6 +26,7 @@ export {
     IIconService,
     ITranslation,
     ITranslations,
+    GlobalTranslations,
     ILanguageSetting,
     ILanguageSettings,
     ILanguageService,

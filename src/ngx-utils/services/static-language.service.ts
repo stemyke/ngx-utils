@@ -1,5 +1,6 @@
 import {Inject, Injectable} from "@angular/core";
 import {
+    GlobalTranslations,
     IConfigService,
     IConfiguration,
     ILanguageService,
@@ -15,6 +16,8 @@ import {BaseHttpClient} from "./base-http.client";
 import {HttpClient} from "@angular/common/http";
 import {CONFIG_SERVICE, PROMISE_SERVICE} from "../tokens";
 
+const emptyDict: ITranslations = {};
+
 @Injectable()
 export class StaticLanguageService implements ILanguageService {
 
@@ -23,11 +26,12 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     get dictionary(): ITranslations {
-        return this.translations[this.currentLanguage] || {};
+        return this.mergedTranslations[this.currentLanguage] || emptyDict;
     }
 
     set dictionary(value: ITranslations) {
         this.setDictionary(this.currentLang, value);
+        this.mergeTranslations();
     }
 
     get languages(): ReadonlyArray<string> {
@@ -49,6 +53,7 @@ export class StaticLanguageService implements ILanguageService {
 
     set editLanguage(lang: string) {
         this.editLang = lang || this.currentLanguage;
+        this.events.editLanguageChanged.emit(this.editLang);
     }
 
     get enableTranslations(): boolean {
@@ -84,7 +89,9 @@ export class StaticLanguageService implements ILanguageService {
     protected currentLang: string;
     protected enableTrans: boolean;
     protected languageList: string[];
-    protected readonly translations: ITranslations;
+    protected readonly translations: GlobalTranslations;
+    protected overrideTranslations: GlobalTranslations;
+    protected mergedTranslations: GlobalTranslations;
 
     constructor(@Inject(EventsService) readonly events: EventsService,
                 @Inject(StorageService) readonly storage: StorageService,
@@ -98,6 +105,10 @@ export class StaticLanguageService implements ILanguageService {
         this.translations = {
             none: {}
         };
+        this.overrideTranslations = {
+            none: {}
+        };
+        this.mergedTranslations = this.translations;
         this.initService();
     }
 
@@ -109,13 +120,23 @@ export class StaticLanguageService implements ILanguageService {
         languages = Array.isArray(languages) && languages.length > 0 ? languages : this.languageList;
         this.languageList = Array.from(new Set<string>(languages));
         this.languageList.forEach(lang => {
-            this.translations[lang] = this.translations[lang] || {};
+            this.translations[lang] = this.translations[lang] || emptyDict;
         });
     }
 
     addLanguages(languages: string[]): void {
         if (!Array.isArray(languages) || languages.length == 0) return;
         this.replaceLanguages(this.languageList.concat(languages));
+    }
+
+    setOverrideTranslations(translations: GlobalTranslations): void {
+        if (ObjectUtils.isObject(translations)) {
+            this.overrideTranslations = translations;
+            this.mergeTranslations();
+            return;
+        }
+        this.overrideTranslations = {};
+        this.mergedTranslations = this.translations;
     }
 
     getTranslationSync(key: string, params: Object = null): string {
@@ -205,5 +226,19 @@ export class StaticLanguageService implements ILanguageService {
             }
         })
         return browserLang;
+    }
+
+    protected mergeTranslations(): void {
+        const languages = new Set([
+            ...Object.keys(this.translations),
+            ...Object.keys(this.overrideTranslations)
+        ]);
+        this.mergedTranslations = Array.from(languages).reduce((merged, language) => {
+            merged[language] = {
+                ...(this.translations[language] || emptyDict),
+                ...(this.overrideTranslations[language] || emptyDict),
+            };
+            return merged;
+        }, {} as GlobalTranslations);
     }
 }
