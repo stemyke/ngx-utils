@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {BehaviorSubject, combineLatest, Observable} from "rxjs";
+import {BehaviorSubject, combineLatest, firstValueFrom, Observable} from "rxjs";
 import {map} from "rxjs/operators";
 import {ILanguageSetting, ILanguageSettings, ITranslations} from "../common-types";
 import {StaticLanguageService} from "./static-language.service";
@@ -7,7 +7,7 @@ import {StaticLanguageService} from "./static-language.service";
 @Injectable()
 export class LanguageService extends StaticLanguageService {
 
-    protected translationRequests: ITranslations;
+    protected translationRequests: Record<string, Promise<ITranslations>>;
     protected settingsPromise: Promise<ILanguageSettings>;
     protected languageSettings: BehaviorSubject<ILanguageSettings>;
 
@@ -67,14 +67,9 @@ export class LanguageService extends StaticLanguageService {
     }
 
     async getTranslation(key: string, params: any = null): Promise<string> {
-        if (!key) return "";
         try {
-            const lowerKey = key.toLocaleLowerCase();
-            const dict = await this.loadDictionary();
-            if (lowerKey in dict) {
-                return this.interpolate(dict[lowerKey], params);
-            }
-            return this.interpolate(key, params);
+            await this.getDictionary();
+            return super.getTranslation(key, params);
         } catch (reason) {
             console.log("ERROR IN TRANSLATIONS", reason);
             return key;
@@ -87,45 +82,43 @@ export class LanguageService extends StaticLanguageService {
         if (lang == this.currentLang) return this.dictionary;
         this.storage.set("language", lang);
         this.currentLang = lang;
-        const dict = await this.loadDictionary();
-        this.translations[lang] = dict;
-        return dict;
+        return this.getDictionary();
     }
 
-    protected loadDictionary(): Promise<any> {
-        const lang = this.currentLanguage;
-        this.translationRequests[lang] = this.translationRequests[lang] || new Promise(resolve => {
-            this.httpClient.get(`${this.config.translationUrl}${lang}`).toPromise().then(response => {
+    getDictionary(lang?: string): Promise<ITranslations> {
+        lang = this.languages.includes(lang) ? lang : this.currentLanguage;
+        this.translationRequests[lang] = this.translationRequests[lang] || firstValueFrom(this.client.get<ITranslations>(`${this.config.translationUrl}${lang}`))
+            .then(response => {
                 response = response || {};
-                resolve(Object.keys(response).reduce((result, key) => {
+                const dictionary = Object.keys(response).reduce((result, key) => {
                     result[key.toLocaleLowerCase()] = response[key];
                     return result;
-                }, {}));
-            }, () => {
-                resolve({});
-            });
-        });
+                }, {} as ITranslations);
+                this.translations[lang] = dictionary;
+                this.mergeTranslations();
+                return dictionary;
+            }).catch(error => {
+                console.warn("Translation dictionary problem:", error);
+                return {};
+            })
         return this.translationRequests[lang];
     }
 
     protected loadSettings(): Promise<ILanguageSettings> {
-        this.settingsPromise = this.settingsPromise || (this.client.get(`${this.config.translationUrl}languageSettings`).toPromise())
-            .then(
-                (settings: ILanguageSettings) => {
-                    return settings;
-                }, () => {
-                    return {
-                        languages: ["de", "en", "hu"],
-                        devLanguages: [],
-                        defaultLanguage: "de",
-                        settings: {
-                            de: {},
-                            hu: {},
-                            en: {}
-                        }
-                    };
-                }
-            );
+        this.settingsPromise = this.settingsPromise || firstValueFrom(this.client.get<ILanguageSettings>(`${this.config.translationUrl}languageSettings`))
+            .catch(error => {
+                console.warn("Translation settings problem:", error);
+                return {
+                    languages: ["de", "en", "hu"],
+                    devLanguages: [],
+                    defaultLanguage: "de",
+                    settings: {
+                        de: {},
+                        hu: {},
+                        en: {}
+                    }
+                };
+            });
         return this.settingsPromise;
     }
 }

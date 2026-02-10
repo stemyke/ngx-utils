@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Inject, Injectable, Pipe, PipeTransform} from "@angular/core";
-import {ILanguageService, LANGUAGE_SERVICE, TranslationQuery} from "../common-types";
+import {ILanguageService, ITranslations, LANGUAGE_SERVICE, TranslationQuery} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 
 @Injectable()
@@ -9,7 +9,7 @@ import {ObjectUtils} from "../utils/object.utils";
 })
 export class TranslatePipe implements PipeTransform {
 
-    private lang: string;
+    private dictionary: ITranslations;
     private disabled: boolean;
     private query: TranslationQuery;
     private args: any[];
@@ -27,9 +27,9 @@ export class TranslatePipe implements PipeTransform {
     transform(query: TranslationQuery, ...args: any[]): string {
         if (!query) return "";
         let dirty = false;
-        const lang = this.currentLang;
-        if (this.lang !== lang) {
-            this.lang = lang;
+        const dictionary = this.language.dictionary;
+        if (this.dictionary !== dictionary) {
+            this.dictionary = dictionary;
             dirty = true;
         }
         const disabled = this.language.disableTranslations;
@@ -62,7 +62,9 @@ export class TranslatePipe implements PipeTransform {
         }
         if (dirty) {
             if (typeof query === "object") {
-                this.lastValue = Array.isArray(query) ? this.language.getTranslationFromArray(query, this.params, lang) : this.language.getTranslationFromObject(query, this.params, lang);
+                this.lastValue = Array.isArray(query)
+                    ? this.language.getTranslationFromArray(query, this.params)
+                    : this.language.getTranslationFromObject(query, this.params);
                 return this.lastValue;
             }
             if (this.disabled) {

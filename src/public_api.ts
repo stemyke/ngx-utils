@@ -10,6 +10,7 @@ export {
     ICON_SERVICE,
     ITranslation,
     ITranslations,
+    GlobalTranslations,
     ILanguageSetting,
     ILanguageSettings,
     ILanguageService,
