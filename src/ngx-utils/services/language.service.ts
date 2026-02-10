@@ -67,26 +67,16 @@ export class LanguageService extends StaticLanguageService {
         this.events.languageChanged.next(lang);
     }
 
-    async getTranslation(key: string, params: any = null): Promise<string> {
-        try {
-            await this.getDictionary();
-            return super.getTranslation(key, params);
-        } catch (reason) {
-            console.log("ERROR IN TRANSLATIONS", reason);
-            return key;
-        }
-    }
-
     protected async useLanguage(lang: string): Promise<ITranslations> {
         lang = this.languages.indexOf(lang) < 0 ? this.languages[0] : lang;
         this.client.setParam("language", lang);
         if (lang === this.currentLang) return this.dictionary;
         this.storage.set("language", lang);
         this.currentLang = lang;
-        return this.getDictionary();
+        return this.loadDictionary();
     }
 
-    getDictionary(lang?: string): Promise<ITranslations> {
+    getDictionary(lang: string): Promise<ITranslations> {
         lang = this.languages.includes(lang) ? lang : this.currentLanguage;
         const ext = this.config.translationExt || ``;
         this.translationRequests[lang] = this.translationRequests[lang] || firstValueFrom(this.client.get<ITranslations>(`${this.config.translationUrl}${lang}${ext}`))
@@ -104,6 +94,10 @@ export class LanguageService extends StaticLanguageService {
                 return {};
             })
         return this.translationRequests[lang];
+    }
+
+    protected async loadDictionary(): Promise<ITranslations> {
+        return this.getDictionary(this.currentLang);
     }
 
     protected loadSettings(): Promise<ILanguageSettings> {
