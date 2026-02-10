@@ -8,7 +8,7 @@ export class EventsService {
     readonly eventForwarded: Subject<Event>;
     readonly stickyUpdated: Subject<boolean>;
     readonly languageChanged: Subject<string>;
-    readonly editLanguageChanged: EventEmitter<string>;
+    readonly editLanguageChanged: Subject<string>;
     readonly translationsEnabled: Subject<boolean>;
     readonly userChanged: Subject<any>;
 
@@ -27,7 +27,7 @@ export class EventsService {
         this.eventForwarded = new Subject();
         this.stickyUpdated = new Subject();
         this.languageChanged = new Subject();
-        this.editLanguageChanged = new EventEmitter<string>();
+        this.editLanguageChanged = new Subject<string>();
         this.translationsEnabled = new Subject();
         this.userChanged = new Subject();
         this.sticky = false;
