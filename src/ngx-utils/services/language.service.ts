@@ -69,7 +69,7 @@ export class LanguageService extends StaticLanguageService {
     async getTranslation(key: string, params: any = null): Promise<string> {
         try {
             await this.getDictionary();
-            return super.getTranslation(key, params);
+            return super.getTranslationSync(key, params);
         } catch (reason) {
             console.log("ERROR IN TRANSLATIONS", reason);
             return key;

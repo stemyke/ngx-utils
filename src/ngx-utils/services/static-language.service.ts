@@ -132,15 +132,14 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     getTranslationSync(key: string, params: any = null): string {
-        const lowerKey = (key || "").toLocaleLowerCase();
-        const translation = this.dictionary[lowerKey] || lowerKey;
-        return this.interpolate(translation == lowerKey ? key : translation, params);
+        key = String(key || "");
+        const lowerKey = key.toLocaleLowerCase();
+        const translation = !key ? "" : this.dictionary[lowerKey] || key;
+        return this.interpolate(translation, params);
     }
 
-    getTranslation(key: string, params?: any): Promise<string> {
-        const lowerKey = (key || "").toLocaleLowerCase();
-        const translation = this.dictionary[lowerKey] || lowerKey;
-        return this.promises.resolve(this.interpolate(translation, params));
+    async getTranslation(key: string, params?: any): Promise<string> {
+        return this.getTranslationSync(key, params);
     }
 
     getTranslations(...keys: string[]): Promise<ITranslations> {
