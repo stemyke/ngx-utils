@@ -140,7 +140,7 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     getTranslationSync(key: string, params: Object = null): string {
-        key = `${key ?? ""}`;
+        key = String(key ?? "");
         if (!key) return "";
         try {
             const lowerKey = key.toLocaleLowerCase();
