@@ -5,12 +5,14 @@
                    [showItems]="[5, 10, 25, 50, 100]"
                    [data]="tableData" [columns]="tableColumns">
     </dynamic-table>
-    <chips type="number" [(value)]="numberChips" [min]="5"></chips>
-    <chips [(value)]="stringChips" [minLength]="5"></chips>
-    <chips [(value)]="stringChips" [disabled]="true" [minLength]="5"></chips>
-    <chips [(value)]="optionChips" [options]="options" [strict]="false"></chips>
+    <chips type="number" [(ngModel)]="numberChips" [min]="5"></chips>
+    <chips [(ngModel)]="stringChips" [minLength]="5"></chips>
+    <chips [(ngModel)]="stringChips" [disabled]="true" [minLength]="5"></chips>
+    <chips [(ngModel)]="optionChips" [options]="options" [strict]="false"></chips>
     <upload [accept]="['jpg', 'png']" [disabled]="true" [multiple]="true" [(ngModel)]="assets"></upload>
     <upload [accept]="['jpg', 'png']" [disabled]="false" [multiple]="true" [(ngModel)]="assets"></upload>
     <upload [accept]="['jpg', 'png']" [disabled]="true" [multiple]="false" [(ngModel)]="asset"></upload>
     <upload [accept]="['jpg', 'png']" [disabled]="false" [multiple]="false" [(ngModel)]="asset"></upload>
+    <wysiwyg [(ngModel)]="html"></wysiwyg>
+    <textarea [(ngModel)]="html"></textarea>
 </div>

@@ -18,6 +18,7 @@ export class AppComponent implements OnInit {
     optionChips: string[];
     assets: string[];
     asset: string;
+    html: string;
 
     constructor(private universal: UniversalService) {
         this.options = [
@@ -68,6 +69,7 @@ export class AppComponent implements OnInit {
         this.optionChips = ["banana", "kiwi", "strawberry"];
         this.assets = ["639c462c34cfbe9ca7df1a0a", "687f5eefd2cfab7bb7fff3f8", "67e69e44638845f9da9f1278"];
         this.asset = "67e69e44638845f9da9f1278";
+        this.html = `<b>Bold</b> <i>Italic</i>`;
     }
 
     ngOnInit(): void {

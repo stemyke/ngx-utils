@@ -3,8 +3,6 @@ import {EVENT_MANAGER_PLUGINS} from "@angular/platform-browser";
 import {UrlSerializer} from "@angular/router";
 import {DeviceDetectorService} from "ngx-device-detector";
 
-import {IConfigService} from "./common-types";
-
 import {AuthGuard} from "./utils/auth.guard";
 import {AclService} from "./services/acl.service";
 import {ApiService} from "./services/api.service";
@@ -105,6 +103,7 @@ import {PaginationMenuComponent} from "./components/pagination-menu/pagination-m
 import {TabsComponent} from "./components/tabs/tabs.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {UploadComponent} from "./components/upload/upload.component";
+import {WysiwygComponent} from "./components/wysiwyg/wysiwyg.component";
 
 // --- Pipes ---
 export const pipes = [
@@ -184,7 +183,8 @@ export const components = [
     InteractiveRectComponent,
     TabsComponent,
     UnorderedListComponent,
-    UploadComponent
+    UploadComponent,
+    WysiwygComponent
 ];
 
 export const providers = [

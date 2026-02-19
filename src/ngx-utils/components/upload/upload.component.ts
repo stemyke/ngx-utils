@@ -38,11 +38,9 @@ import {getRoot} from "../../utils/misc";
     styleUrls: ["./upload.component.scss"],
     templateUrl: "./upload.component.html",
     encapsulation: ViewEncapsulation.None,
-    providers: [{
-        provide: NG_VALUE_ACCESSOR,
-        useExisting: forwardRef(() => UploadComponent),
-        multi: true,
-    }],
+    providers: [
+        {provide: NG_VALUE_ACCESSOR, useExisting: UploadComponent, multi: true}
+    ],
 })
 export class UploadComponent implements ControlValueAccessor, OnChanges {
 

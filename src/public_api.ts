@@ -339,5 +339,6 @@ export {PaginationMenuComponent} from "./ngx-utils/components/pagination-menu/pa
 export {TabsComponent} from "./ngx-utils/components/tabs/tabs.component";
 export {UnorderedListComponent} from "./ngx-utils/components/unordered-list/unordered-list.component";
 export {UploadComponent} from "./ngx-utils/components/upload/upload.component";
+export {WysiwygComponent} from "./ngx-utils/components/wysiwyg/wysiwyg.component";
 
 export {NgxUtilsModule} from "./ngx-utils/ngx-utils.module";

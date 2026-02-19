@@ -1,0 +1,179 @@
+.file-upload {
+
+    --upload-bg-lightness: 85%;
+    --upload-bg-opacity: 1;
+    --upload-padding: 5px;
+    --upload-border-width: 2px;
+    --upload-border-color: rgba(0, 0, 0, 0.25);
+
+    --upload-progress-bg: var(--primary-color, var(--mat-sys-primary, black));
+    --upload-progress-text: var(--text-color, var(--mat-sys-on-primary, white));
+
+    --upload-item-size: 120px;
+    --upload-item-radius: 5px;
+
+    --message-size: 20px;
+    --message-color: #7e7e7e;
+    --message-drop-color: #474747;
+
+    --btn-distance: 3px;
+    --btn-top-distance: var(--btn-distance);
+    --btn-left-distance: var(--btn-distance);
+    --btn-right-distance: var(--btn-distance);
+
+    margin: 5px 0;
+
+    * {
+        box-sizing: border-box;
+    }
+
+    &.disabled {
+        --upload-bg-lightness: 75%;
+    }
+
+    input[type=file] {
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        opacity: 0;
+    }
+
+    input[type="file"]::file-selector-button {
+        width: 100%;
+        height: 100%;
+    }
+
+    .upload-input {
+        width: 100%;
+        border: var(--upload-border-width) var(--upload-border-color) dashed;
+        border-radius: var(--upload-item-radius);
+        background-color: hsl(0 0% var(--upload-bg-lightness) / var(--upload-bg-opacity));
+        transition: 0.2s;
+        flex-wrap: wrap;
+        position: relative;
+        padding: var(--upload-padding);
+
+        .upload-message {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            font-size: var(--message-size);
+            color: var(--message-color);
+            transition: 0.2s;
+        }
+
+        .upload-message.has-value {
+            display: none;
+        }
+
+        .upload-container {
+            position: relative;
+            pointer-events: none;
+            min-height: var(--upload-item-size);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .upload-item {
+            position: relative;
+            pointer-events: auto;
+            width: var(--upload-item-size);
+            height: var(--upload-item-size);
+            border-radius: var(--upload-item-radius);
+            border: 2px solid white;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-item-bg {
+
+            background: white center center no-repeat;
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            div {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                backdrop-filter: blur(15px);
+            }
+
+            img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+                background: rgba(255, 255, 255, 0.75);
+            }
+        }
+
+        .upload-progress {
+            position: relative;
+            width: 90%;
+            height: 15px;
+            border: 1px solid darkgrey;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .upload-progress-bar {
+            position: absolute;
+            height: 15px;
+            background: var(--upload-progress-bg);
+            top: 0;
+        }
+
+        .upload-progress-num {
+            position: relative;
+            z-index: 1;
+            font-size: 12px;
+            line-height: 15px;
+            text-align: center;
+            color: var(--upload-progress-text);
+        }
+
+        &.drop-allowed {
+            --upload-bg-lightness: 95%;
+
+            .upload-message {
+                color: var(--message-drop-color);
+            }
+        }
+    }
+
+    .upload-btn {
+        position: relative;
+        margin-top: 5px;
+        width: fit-content;
+        display: block;
+    }
+
+    .remove-item-btn {
+        position: absolute;
+        top: var(--btn-top-distance);
+        right: var(--btn-right-distance);
+    }
+
+    .download-item-btn {
+        position: absolute;
+        top: var(--btn-top-distance);
+        left: var(--btn-left-distance);
+    }
+}
