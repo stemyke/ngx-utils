@@ -1,12 +1,12 @@
-import {Inject, Injectable} from "@angular/core";
+import {Inject, Injectable, Injector} from "@angular/core";
 import {
     DynamicSchemaRef,
     IApiService,
     OpenApiSchema,
     OpenApiSchemaProperty, OpenApiSchemaRef,
-    OpenApiSchemas
+    OpenApiSchemas, OpenApiSchemaSelector
 } from "../common-types";
-import {API_SERVICE, STATIC_SCHEMAS} from "../tokens";
+import {API_SERVICE, SCHEMA_SELECTOR, STATIC_SCHEMAS} from "../tokens";
 import {ObjectUtils} from "../utils/object.utils";
 
 @Injectable()
@@ -17,7 +17,9 @@ export class OpenApiService {
     private readonly dynamicSchemas: Record<string, OpenApiSchema>;
 
     constructor(@Inject(API_SERVICE) readonly api: IApiService,
-                @Inject(STATIC_SCHEMAS) protected readonly staticSchemas: OpenApiSchemas) {
+                @Inject(SCHEMA_SELECTOR) protected readonly schemaSelector: OpenApiSchemaSelector,
+                @Inject(STATIC_SCHEMAS) protected readonly staticSchemas: OpenApiSchemas,
+                protected readonly injector: Injector) {
         this.dynamicSchemas = {};
     }
 
@@ -76,7 +78,7 @@ export class OpenApiService {
 
     async getSchema(name: string): Promise<OpenApiSchema> {
         const schemas = await this.getSchemas();
-        return schemas[name] || null;
+        return this.schemaSelector(name, schemas, this.injector) || null;
     }
 
     protected async getDynamicSchema(definition: DynamicSchemaRef): Promise<OpenApiSchema> {

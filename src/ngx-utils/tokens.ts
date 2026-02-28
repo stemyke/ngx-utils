@@ -16,7 +16,7 @@ import {
     ILanguageService,
     IPromiseService,
     IToasterService,
-    OpenApiSchemas,
+    OpenApiSchemas, OpenApiSchemaSelector,
     ResizeEventStrategy
 } from "./common-types";
 
@@ -44,3 +44,4 @@ export const RESIZE_DELAY = new InjectionToken<number>("resize-event-delay");
 export const RESIZE_STRATEGY = new InjectionToken<ResizeEventStrategy>("resize-event-strategy");
 export const ERROR_HANDLER = new InjectionToken<ErrorHandlerCallback>("error-handler-callback");
 export const STATIC_SCHEMAS = new InjectionToken<OpenApiSchemas>("static-openapi-schemas");
+export const SCHEMA_SELECTOR = new InjectionToken<OpenApiSchemaSelector>("openapi-schema-selector");

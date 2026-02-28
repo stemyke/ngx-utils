@@ -10,7 +10,7 @@ import {
 } from "@angular/core";
 import {APP_BASE_HREF, CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-import {DynamicModuleInfo, IModuleConfig} from "./common-types";
+import {DynamicModuleInfo, IModuleConfig, OpenApiSchemaSelector} from "./common-types";
 import {
     API_SERVICE,
     APP_BASE_URL,
@@ -26,7 +26,7 @@ import {
     PROMISE_SERVICE,
     RESIZE_DELAY,
     RESIZE_STRATEGY,
-    ROOT_ELEMENT,
+    ROOT_ELEMENT, SCHEMA_SELECTOR,
     SOCKET_IO_PATH,
     STATIC_SCHEMAS,
     TOASTER_SERVICE
@@ -182,6 +182,12 @@ export class NgxUtilsModule {
             {
                 provide: STATIC_SCHEMAS,
                 useValue: (!config ? null : config.staticSchemas) ?? {},
+            },
+            {
+                provide: SCHEMA_SELECTOR,
+                useValue: (!config ? null : config.schemaSelector) ?? ((name, schemas) => {
+                    return schemas[name];
+                }) as OpenApiSchemaSelector,
             },
             {
                 provide: APP_BASE_HREF,

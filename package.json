@@ -1,6 +1,6 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "19.7.30",
+    "version": "19.8.0",
     "license": "MIT",
     "scripts": {
         "ng": "ng",

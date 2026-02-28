@@ -716,6 +716,8 @@ export interface OpenApiSchemas {
     [name: string]: OpenApiSchema;
 }
 
+export type OpenApiSchemaSelector = (name: string, schemas: OpenApiSchemas, injector: Injector) => OpenApiSchema;
+
 // --- Dynamic table ---
 export type TableFilterType = "text" | "enum" | "checkbox";
 
@@ -854,6 +856,7 @@ export interface IModuleConfig {
     resizeStrategy?: ResizeEventStrategy;
     socketPath?: string;
     staticSchemas?: OpenApiSchemas;
+    schemaSelector?: OpenApiSchemaSelector;
 }
 
 // --- Valued promise ---
