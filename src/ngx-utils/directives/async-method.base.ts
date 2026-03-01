@@ -8,18 +8,22 @@ import {
     input,
     OnChanges,
     output,
-    signal
+    signal, untracked
 } from "@angular/core";
 import {AsyncMethod, IAsyncMessage} from "../common-types";
 import {TOASTER_SERVICE} from "../tokens";
 import {computedPrevious} from "../utils/signal-utils";
 import {switchClass} from "../utils/misc";
 
+async function defaultMethod(): Promise<IAsyncMessage> {
+    return null;
+}
+
 @Directive({
     standalone: false,
     selector: "[__asmb__]"
 })
-export class AsyncMethodBase implements OnChanges {
+export class AsyncMethodBase<T extends AsyncMethod = AsyncMethod> implements OnChanges {
 
     readonly disabled = signal(false);
     readonly context = input<any>({});
@@ -51,27 +55,20 @@ export class AsyncMethodBase implements OnChanges {
         });
     }
 
-    protected getMethod(): AsyncMethod {
-        return async () => null;
-    }
-
     ngOnChanges(): void {
         this.cdr.detectChanges();
     }
 
     @HostListener("click", ["$event"])
-    click(ev: MouseEvent) {
-        ev?.preventDefault();
-        if (this.disabled()) return true;
-        this.callMethod(ev);
-        return true;
+    onClick(ev: MouseEvent) {
+        return this.handleClick(ev);
     }
 
     callMethod(ev?: MouseEvent): boolean {
         if (this.loading()) return true;
         this.loading.set(true);
-        const method = this.getMethod();
-        const result = !method ? null : method(this.context(), ev);
+        const method = this.getMethod() || defaultMethod;
+        const result = method(...this.getArgs(ev));
         if (!(result instanceof Promise)) {
             this.loading.set(false);
             return false;
@@ -94,5 +91,20 @@ export class AsyncMethodBase implements OnChanges {
             }
         });
         return true;
+    }
+
+    protected handleClick(ev: MouseEvent): boolean {
+        ev?.preventDefault();
+        if (this.disabled()) return true;
+        this.callMethod(ev);
+        return true;
+    }
+
+    protected getMethod(): T {
+        return null;
+    }
+
+    protected getArgs(ev: MouseEvent): unknown[] {
+        return untracked(() => [this.context(), ev]);
     }
 }

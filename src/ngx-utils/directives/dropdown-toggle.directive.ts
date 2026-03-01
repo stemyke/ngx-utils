@@ -1,4 +1,4 @@
-import {Directive, inject, input} from "@angular/core";
+import {Directive, inject, input, untracked} from "@angular/core";
 import {DropdownDirective} from "./dropdown.directive";
 import {AsyncMethodBase} from "./async-method.base";
 import {AsyncMethod} from "../common-types";
@@ -17,8 +17,8 @@ export class DropdownToggleDirective extends AsyncMethodBase {
     readonly switch = input(true);
     readonly dropdown = inject(DropdownDirective);
 
-    protected getMethod(): AsyncMethod {
-        return this.beforeOpen();
+    protected getMethod() {
+        return untracked(() => this.beforeOpen());
     }
 
     callMethod(ev: MouseEvent): boolean {

@@ -1,4 +1,4 @@
-import {Directive, input} from "@angular/core";
+import {Directive, input, untracked} from "@angular/core";
 import {AsyncMethod} from "../common-types";
 import {AsyncMethodBase} from "./async-method.base";
 
@@ -14,7 +14,7 @@ export class AsyncMethodDirective extends AsyncMethodBase {
 
     readonly method = input<AsyncMethod>(null, {alias: "async-method"});
 
-    protected getMethod(): AsyncMethod {
-        return this.method();
+    protected getMethod() {
+        return untracked(() => this.method());
     }
 }
