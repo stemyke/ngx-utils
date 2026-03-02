@@ -15,10 +15,6 @@ import {TOASTER_SERVICE} from "../tokens";
 import {computedPrevious} from "../utils/signal-utils";
 import {switchClass} from "../utils/misc";
 
-async function defaultMethod(): Promise<IAsyncMessage> {
-    return null;
-}
-
 @Directive({
     standalone: false,
     selector: "[__asmb__]"
@@ -67,17 +63,17 @@ export class AsyncMethodBase<T extends AsyncMethod = AsyncMethod> implements OnC
     callMethod(ev?: MouseEvent): boolean {
         if (this.loading()) return true;
         this.loading.set(true);
-        const method = this.getMethod() || defaultMethod;
-        const result = method(...this.getArgs(ev));
+        const method = this.getMethod();
+        const result = !method ? null : method(...this.getArgs(ev));
         if (!(result instanceof Promise)) {
             this.loading.set(false);
             return false;
         }
-        result.then(result => {
+        result.then(msg => {
             this.loading.set(false);
-            if (result) {
-                this.onSuccess.emit(result);
-                this.toaster.success(result.message, result.context);
+            if (msg) {
+                this.onSuccess.emit(msg);
+                this.toaster.success(msg.message, msg.context);
             }
         }, reason => {
             if (!reason || !reason.message)
