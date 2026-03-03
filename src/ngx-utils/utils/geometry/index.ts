@@ -29,5 +29,6 @@ export {
     Circle,
     Point,
     Rect,
-    Oval
+    Oval,
+    ShapeGroup
 } from "./shapes";

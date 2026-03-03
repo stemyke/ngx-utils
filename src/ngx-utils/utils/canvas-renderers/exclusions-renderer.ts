@@ -10,12 +10,9 @@ export class ExclusionsRenderer {
     async [Invokable.call](renderCanvas: InteractiveCanvas): Promise<void> {
         const ctx = renderCanvas.ctx;
         renderCanvas.excludedAreas?.forEach(shape => {
-            ctx.save();
-            ctx.translate(shape.x, shape.y);
             ctx.fillStyle = "rgba(128,128,128,0.55)";
-            shape.draw(ctx);
-            ctx.fill();
-            ctx.restore();
+            const path = shape.getPath(shape.x, shape.y, 1);
+            ctx.fill(path);
         })
     }
 }

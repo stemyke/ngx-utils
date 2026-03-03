@@ -455,7 +455,8 @@ export interface ShapeDistance {
 
 export interface IShape extends IPoint {
     readonly center: IPoint;
-    draw(ctx: CanvasRenderingContext2D, ratio?: number): void;
+    readonly subShapes?: ReadonlyArray<IShape>;
+    getPath(x: number, y: number, ratio?: number): Path2D;
     support(dir: IPoint): IPoint;
     move(pos: IPoint): IShape;
     intersection(shape: IShape): ShapeIntersection;

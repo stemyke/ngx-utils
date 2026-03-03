@@ -37,7 +37,7 @@ export function gjkDistance(A: IShape, B: IShape): ShapeDistance {
     let iters = 0;
 
     // Keep the best "hit" snapshot and its center so we can map witnesses back
-    let hitSnap: ReturnType<typeof gjkIntersection> | null = null;
+    let hitSnap: ShapeIntersection | null = null;
     let hitCenter = ca;
 
     while ((e - s) > EPSILON && iters < MAX_ITERS) {
@@ -94,6 +94,16 @@ export function gjkDistance(A: IShape, B: IShape): ShapeDistance {
 // Boolean GJK (robust)
 // =========================
 export function gjkIntersection(A: IShape, B: IShape): ShapeIntersection {
+    for (const AA of getShapes(A)) {
+        for (const BB of getShapes(B)) {
+            const int = gjkIntersectionSingle(AA, BB);
+            if (int.hit) return int;
+        }
+    }
+    return {hit: false};
+}
+
+function gjkIntersectionSingle(A: IShape, B: IShape): ShapeIntersection {
     const MAX = 64, EPS = 1e-12;
     const sup = (dir: IPoint): SimplexLine => {
         const a = ensurePoint(A.support(dir), A.center);
@@ -137,6 +147,25 @@ export function gjkIntersection(A: IShape, B: IShape): ShapeIntersection {
     }
     // Max iterations without resolution → disjoint
     return {hit: false};
+}
+
+function* getShapes(shape: IShape, worldX: number = 0, worldY: number = 0): Generator<IShape> {
+    if (!shape) return;
+
+    // Calculate this specific shape's actual world position
+    const currentWorldX = worldX + shape.x;
+    const currentWorldY = worldY + shape.y;
+
+    if (!shape.subShapes || shape.subShapes.length === 0) {
+        // Yield a temporary 'leaf' shape moved to the correct world coordinate
+        yield shape.move({ x: currentWorldX, y: currentWorldY });
+        return;
+    }
+
+    // Recurse into children, passing down the current world position
+    for (const sub of shape.subShapes) {
+        yield* getShapes(sub, currentWorldX, currentWorldY);
+    }
 }
 
 function doSimplexBoolean(simplex: Simplex, d: Dir): ShapeIntersection {

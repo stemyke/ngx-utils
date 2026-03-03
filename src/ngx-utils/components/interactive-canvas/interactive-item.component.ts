@@ -121,9 +121,9 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     }
 
     draw(ctx: CanvasRenderingContext2D, shape: IShape): MaybePromise<void> {
-        shape.draw(ctx, 1);
-        ctx.fill();
-        ctx.stroke();
+        const path = shape.getPath(0, 0, 1);
+        ctx.fill(path);
+        ctx.stroke(path);
     }
 
     ngOnChanges(): void {

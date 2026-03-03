@@ -207,7 +207,7 @@ export {
     toRadians,
     gjkDistance,
     gjkIntersection,
-    Point, Rect, Oval, Circle
+    Point, Rect, Oval, Circle, ShapeGroup
 } from "./ngx-utils/utils/geometry";
 export {Initializer} from "./ngx-utils/utils/initializer";
 export {stringify} from "./ngx-utils/utils/json.utils";

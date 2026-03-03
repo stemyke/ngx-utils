@@ -33,7 +33,7 @@ abstract class Shape implements IShape {
         this.pt = {x, y};
     }
 
-    abstract draw(ctx: CanvasRenderingContext2D, ratio?: number): void;
+    abstract getPath(x: number, y: number, ratio?: number): Path2D;
 
     abstract support(dir: IPoint): IPoint;
 
@@ -74,10 +74,10 @@ export class Point extends Shape {
         this.pt = isPoint(xOrP) ? xOrP : {x: isNaN(x) ? 0 : xOrP as number, y};
     }
 
-    draw(ctx: CanvasRenderingContext2D): void {
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 1.5, 1.5, 0, 0, Math.PI * 2);
-        ctx.closePath();
+    getPath(x: number, y: number): Path2D {
+        const path = new Path2D();
+        path.ellipse(x, y, 1.5, 1.5, 0, 0, Math.PI * 2);
+        return path;
     }
 
     support(): IPoint {
@@ -169,16 +169,25 @@ export class Rect extends Shape {
         super(x, y);
     }
 
-    draw(ctx: CanvasRenderingContext2D, ratio: number): void {
+    getPath(x: number, y: number, ratio?: number): Path2D {
         ratio = ratio ?? 1;
         const w = this.width * ratio;
         const h = this.height * ratio;
-        const angle = toRadians(this.rotation);
-        ctx.rotate(angle);
-        ctx.beginPath();
-        ctx.rect(-w / 2, -h / 2, w, h);
-        ctx.closePath();
-        ctx.rotate(-angle);
+
+        // 1. Create the local path for the rectangle (centered at 0,0)
+        const rectPath = new Path2D();
+        rectPath.rect(-w / 2, -h / 2, w, h);
+
+        // 2. Create a DOMMatrix to handle the rotation
+        const matrix = new DOMMatrix()
+            .translate(x, y) // Move to position
+            .rotate(this.rotation); // Apply rotation (in degrees)
+
+        // 3. Create the final path and apply the matrix
+        const finalPath = new Path2D();
+        finalPath.addPath(rectPath, matrix);
+
+        return finalPath;
     }
 
     support(dir: IPoint) {
@@ -206,16 +215,28 @@ export class Oval extends Shape {
         super(x, y);
     }
 
-    draw(ctx: CanvasRenderingContext2D, ratio: number): void {
-        ratio = ratio ?? 1;
-        const w = this.width * ratio;
-        const h = this.height * ratio;
-        const angle = toRadians(this.rotation);
-        ctx.rotate(angle);
-        ctx.beginPath();
-        ctx.ellipse(0, 0, w / 2, h / 2, 0, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.rotate(-angle);
+    getPath(x: number, y: number, ratio: number = 1): Path2D {
+        // 1. Calculate radii based on ratio
+        const radiusX = (this.width * ratio) / 2;
+        const radiusY = (this.height * ratio) / 2;
+
+        // 2. Create the local ellipse at (0,0)
+        const ovalPath = new Path2D();
+        // Parameters: x, y, radiusX, radiusY, rotation, startAngle, endAngle
+        ovalPath.ellipse(0, 0, radiusX, radiusY, 0, 0, Math.PI * 2);
+        ovalPath.closePath();
+
+        // 3. Create the transformation matrix
+        // Note: We use the passed in x and y here
+        const matrix = new DOMMatrix()
+            .translate(x, y)
+            .rotate(this.rotation);
+
+        // 4. Combine them
+        const path = new Path2D();
+        path.addPath(ovalPath, matrix);
+
+        return path;
     }
 
     support(dir: IPoint) {
@@ -241,5 +262,34 @@ export class Circle extends Oval {
 
     move(pos: IPoint): Circle {
         return new Circle(pos.x, pos.y, this.radius, this.rotation);
+    }
+}
+
+export class ShapeGroup extends Shape {
+
+    constructor(x: number, y: number, readonly subShapes: ReadonlyArray<IShape>) {
+        super(x, y);
+    }
+
+    getPath(x: number, y: number, ratio: number = 1): Path2D {
+        const groupPath = new Path2D();
+
+        for (const shape of this.subShapes) {
+            // Calculate child's position relative to the Group's (x, y)
+            const childPath = shape.getPath(x + shape.x, y + shape.y, ratio);
+
+            // Add it to our master group path
+            groupPath.addPath(childPath);
+        }
+
+        return groupPath;
+    }
+
+    support(): IPoint {
+        return this.center;
+    }
+
+    move(pos: IPoint): IShape {
+        return new ShapeGroup(pos.x, pos.y, this.subShapes);
     }
 }
