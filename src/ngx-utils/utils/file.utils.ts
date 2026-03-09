@@ -8,6 +8,18 @@ export class FileUtils {
 
     static readonly base64: RegExp = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/g;
 
+    protected static readonly blobCache: Map<string, Promise<Blob>> = new Map();
+
+    protected static readBlob(http: HttpClient, url: string): Promise<Blob> {
+        if (!FileUtils.blobCache.has(url)) {
+            FileUtils.blobCache.set(url, firstValueFrom(http.get(url, {
+                responseType: "blob",
+                transferCache: true,
+            })));
+        }
+        return FileUtils.blobCache.get(url);
+    }
+
     static getExtension(file: File): string {
         return file ? file.name.substring(file.name.lastIndexOf(".")).toLowerCase() : null;
     }
@@ -82,9 +94,7 @@ export class FileUtils {
         if (url.match(FileUtils.base64)) {
             return FileUtils.base64ToBlob(url);
         }
-        return firstValueFrom(http.get(url, {
-            responseType: "blob"
-        }));
+        return this.readBlob(http, url);
     }
 
     static async readDataFromUrl(http: HttpClient, url: string): Promise<string> {
@@ -94,10 +104,7 @@ export class FileUtils {
         if (url.match(FileUtils.base64)) {
             return url;
         }
-        const blob = await firstValueFrom(http.get(url, {
-            responseType: "blob"
-        }));
-        return FileUtils.readFileAsDataURL(blob);
+        return FileUtils.readFileAsDataURL(await this.readBlob(http, url));
     }
 
     static getVideoCover(file: File, seekTo: number = null, quality: number = .75) {
