@@ -8,7 +8,8 @@ export {
     StringKeys,
     CapitalizeFirst,
     CamelJoin,
-    PrefixedPick
+    PrefixedPick,
+    RequireAtLeastOne
 } from "./ngx-utils/helper-types";
 
 export {

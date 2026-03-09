@@ -24,3 +24,8 @@ export type PrefixedPick<
 > = {
     [P in keyof T as P extends K ? CamelJoin<Prefix, P> : never]: T[P];
 };
+
+export type RequireAtLeastOne<T, Keys extends keyof T = keyof T> =
+    Keys extends keyof T
+        ? Required<Pick<T, Keys>> & Partial<Omit<T, Keys>>
+        : never;
