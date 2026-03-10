@@ -68,6 +68,22 @@ export class FileUtils {
         );
     }
 
+    static async readFileAsBinaryString(file: Blob): Promise<string> {
+        const arrayBuffer = await FileUtils.readFile<ArrayBuffer>(
+            // @dynamic
+            reader => reader.readAsArrayBuffer(file)
+        );
+        const bytes = new Uint8Array(arrayBuffer);
+        let binary = "";
+
+        // Convert ArrayBuffer to binary string
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+
+        return binary;
+    }
+
     static readFileAsDataURL(file: Blob): Promise<string> {
         return FileUtils.readFile(
             // @dynamic
@@ -160,12 +176,12 @@ export class FileUtils {
         return null;
     }
 
-    private static readFile(callback: (reader: FileReader) => void): Promise<string> {
-        return new Promise<string>(
+    private static readFile<T extends string | ArrayBuffer>(callback: (reader: FileReader) => void): Promise<T> {
+        return new Promise<T>(
             // @dynamic
             (resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = (event: any) => resolve(event.target.result);
+                reader.onload = () => resolve(reader.result as T);
                 reader.onerror = reject;
                 callback(reader);
             }
