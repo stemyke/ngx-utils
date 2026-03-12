@@ -19,6 +19,7 @@ export {
     multiplyPts,
     dividePts,
     subPts,
+    eqPts,
     rotateDeg,
     rotateRad,
     toDegrees,

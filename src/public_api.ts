@@ -202,6 +202,7 @@ export {
     multiplyPts,
     dividePts,
     subPts,
+    eqPts,
     rotateDeg,
     rotateRad,
     toDegrees,
@@ -214,7 +215,7 @@ export {Initializer} from "./ngx-utils/utils/initializer";
 export {stringify} from "./ngx-utils/utils/json.utils";
 export {ReflectUtils} from "./ngx-utils/utils/reflect.utils";
 export {LoaderUtils} from "./ngx-utils/utils/loader.utils";
-export {EPSILON, normalizeRange, clamp, overflow, MathUtils} from "./ngx-utils/utils/math.utils";
+export {EPSILON, normalizeRange, clamp, overflow, isEqual, isZero, MathUtils} from "./ngx-utils/utils/math.utils";
 export {
     isBrowser,
     getRoot,

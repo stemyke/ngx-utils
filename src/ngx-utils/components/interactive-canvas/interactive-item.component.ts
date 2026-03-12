@@ -8,9 +8,9 @@ import {
     IPoint,
     IShape
 } from "../../common-types";
-import {Point, Rect} from "../../utils/geometry";
 import {MaybePromise} from "../../helper-types";
-import {clamp, overflow} from "../../utils/math.utils";
+import {eqPts, Point, Rect} from "../../utils/geometry";
+import {clamp, isEqual, overflow} from "../../utils/math.utils";
 
 @Component({
     standalone: false,
@@ -20,6 +20,7 @@ import {clamp, overflow} from "../../utils/math.utils";
 export class InteractiveItemComponent implements OnChanges, InteractiveCanvasItem {
 
     protected pos: Point;
+    protected rot: number;
     protected mFrame: Rect;
     protected mShapes: IShape[];
     protected mDistances: Map<InteractiveCanvasItem, number>;
@@ -65,8 +66,19 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         this.validPosition = this.pos;
     }
 
+    get rotation() {
+        return this.rot;
+    }
+
+    @Input()
+    set rotation(value: number) {
+        if (isNaN(value)) return;
+        this.rot = value;
+        this.validRotation = this.rot;
+    }
+
     get isValid(): boolean {
-        return this.valid;
+        return eqPts(this.pos, this.validPos) && isEqual(this.rot, this.validRot);
     }
 
     get validPosition(): IPoint {
@@ -76,7 +88,15 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     set validPosition(value: IPoint) {
         if (typeof value !== "object" || isNaN(value.x) || isNaN(value.y) || value === this.validPos) return;
         this.validPos = new Point(value.x, value.y);
-        this.valid = true;
+    }
+
+    get validRotation(): number {
+        return this.validRot;
+    }
+
+    set validRotation(value: number) {
+        if (isNaN(value)) return;
+        this.validRot = value;
     }
 
     get hovered(): boolean {
@@ -105,15 +125,17 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     index: number;
     canvasParams: InteractiveCanvasParams;
 
-    protected valid: boolean;
     protected validPos: Point;
+    protected validRot: number;
 
     constructor() {
         this.active = false;
         this.index = -1;
         this.canvasParams = {};
-        this.valid = true;
         this.pos = Point.Zero;
+        this.validPos = Point.Zero;
+        this.rot = 0;
+        this.validRot = 0;
         this.direction = "none";
         this.mFrame = new Rect(0, 0, 3, 3);
         this.mShapes = [];
@@ -145,18 +167,6 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         return false;
     }
 
-    moveTo(x: number, y: number): void {
-        if (!this.canvas || this.direction === "none") return;
-        const target = this.restrictPosition(
-            this.direction === "vertical" ? this.pos.x : x,
-            this.direction === "horizontal" ? this.pos.y : y
-        );
-        this.pos = new Point(target);
-        this.calcShapes();
-        this.valid = this.checkIsValid();
-        this.validPos = this.valid ? this.pos : this.validPos;
-    }
-
     moveBy(dx: number, dy: number): void {
         const {x, y} = this.pos;
         this.moveTo(x + dx, y + dy);
@@ -170,11 +180,34 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         this.moveTo(this.pos.x, y);
     }
 
+    moveTo(x: number, y: number): void {
+        if (!this.canvas || this.direction === "none") return;
+        const target = this.restrictPosition(
+            this.direction === "vertical" ? this.pos.x : x,
+            this.direction === "horizontal" ? this.pos.y : y
+        );
+        this.pos = new Point(target);
+        this.calcShapes();
+        this.validPos = this.checkIsValid() ? this.pos : this.validPos;
+    }
+
     moveEnd(): void {
         this.mDistances.clear();
-        if (this.valid) return;
+        if (this.isValid) return;
         this.pos = this.validPos;
-        this.valid = true;
+        this.calcShapes();
+    }
+
+    rotateTo(value: number): void {
+        this.rot = isNaN(value) ? this.rot : value;
+        this.calcShapes();
+        this.validRot = this.checkIsValid() ? this.rot : this.validRot;
+    }
+
+    rotateEnd(): void {
+        this.mDistances.clear();
+        if (this.isValid) return;
+        this.rot = this.validRot;
         this.calcShapes();
     }
 

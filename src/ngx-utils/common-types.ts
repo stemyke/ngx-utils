@@ -506,10 +506,12 @@ export interface InteractiveCanvasParams {
  */
 export interface InteractiveCanvasItem {
     readonly position: IPoint;
+    readonly rotation: number;
     readonly frame: Frame;
     readonly shapes: ReadonlyArray<IShape>;
     readonly isValid: boolean;
     readonly validPosition: IPoint;
+    readonly validRotation: number;
     readonly hovered: boolean;
     readonly selected: boolean;
     readonly active: boolean;

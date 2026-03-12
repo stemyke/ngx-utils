@@ -1,13 +1,14 @@
 import {IPoint} from "../../common-types";
+import {isEqual} from "../math.utils";
 
 export function dotProduct(a: IPoint, b: IPoint): number {
     return a.x * b.x + a.y * b.y;
 }
 
 export function tripleProduct(a: IPoint, b: IPoint, c: IPoint): IPoint {
-    const ac=a.x*c.x+a.y*c.y;
-    const bc=b.x*c.x+b.y*c.y;
-    return {x:b.x*ac-a.x*bc,y:b.y*ac-a.y*bc};
+    const ac = a.x * c.x + a.y * c.y;
+    const bc = b.x * c.x + b.y * c.y;
+    return {x: b.x * ac - a.x * bc, y: b.y * ac - a.y * bc};
 }
 
 export function isPoint(v: IPoint | number): v is IPoint {
@@ -66,6 +67,10 @@ export function dividePts(a: IPoint, b: IPoint | number): IPoint {
 
 export function subPts(a: IPoint, b: IPoint): IPoint {
     return {x: a.x - b.x, y: a.y - b.y};
+}
+
+export function eqPts(a: IPoint, b: IPoint): boolean {
+    return isEqual(a.x, b.x) && isEqual(a.y, b.y);
 }
 
 export function rotateDeg(p: IPoint, ang: number): IPoint {
