@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {BehaviorSubject, combineLatest, firstValueFrom, Observable} from "rxjs";
 import {map} from "rxjs/operators";
 import {ILanguageSetting, ILanguageSettings, ITranslations} from "../common-types";
-import {StaticLanguageService} from "./static-language.service";
+import {StaticLanguageService, EMPTY_DICT} from "./static-language.service";
 
 @Injectable()
 export class LanguageService extends StaticLanguageService {
@@ -35,7 +35,7 @@ export class LanguageService extends StaticLanguageService {
 
     protected initService(): void {
         super.initService();
-        this.client.setParam("language", "de");
+        this.client.setParam("language", "en");
         this.translationRequests = {};
         this.languageSettings = new BehaviorSubject<ILanguageSettings>(null);
         if (this.universal.isServer) return;
@@ -62,13 +62,21 @@ export class LanguageService extends StaticLanguageService {
         if (this.languageList.length === 0) {
             this.languageList = [defaultLanguage];
         }
-        const lang = this.languages.indexOf(defaultLanguage) < 0 ? settings.defaultLanguage || this.languageList[0] : defaultLanguage;
+        const lang = this.selectLanguage(this.currentLang)
+            ?? this.selectLanguage(defaultLanguage)
+            ?? this.selectLanguage(settings.defaultLanguage || this.languageList[0]);
         await this.useLanguage(lang);
         this.events.languageChanged.next(lang);
     }
 
+    protected selectLanguage(lang: string): string {
+        if (!lang) return null;
+        return this.languageList.length === 0 || this.languageList.includes(lang)
+            ? lang : null;
+    }
+
     protected async useLanguage(lang: string): Promise<ITranslations> {
-        lang = this.languages.indexOf(lang) < 0 ? this.languages[0] : lang;
+        lang = this.selectLanguage(lang);
         this.client.setParam("language", lang);
         if (lang === this.currentLang) return this.dictionary;
         this.storage.set("language", lang);
@@ -76,8 +84,8 @@ export class LanguageService extends StaticLanguageService {
         return this.loadDictionary();
     }
 
-    getDictionary(lang: string): Promise<ITranslations> {
-        lang = this.languages.includes(lang) ? lang : this.currentLanguage;
+    async getDictionary(lang: string): Promise<ITranslations> {
+        if (!lang) return EMPTY_DICT;
         const ext = this.config.translationExt || ``;
         this.translationRequests[lang] = this.translationRequests[lang] || firstValueFrom(this.client.get<ITranslations>(`${this.config.translationUrl}${lang}${ext}`))
             .then(response => {
@@ -91,7 +99,7 @@ export class LanguageService extends StaticLanguageService {
                 return dictionary;
             }).catch(error => {
                 console.warn("Translation dictionary problem:", error);
-                return {};
+                return EMPTY_DICT;
             })
         return this.translationRequests[lang];
     }

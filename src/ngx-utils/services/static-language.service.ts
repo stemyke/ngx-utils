@@ -16,7 +16,7 @@ import {BaseHttpClient} from "./base-http.client";
 import {HttpClient} from "@angular/common/http";
 import {CONFIG_SERVICE, PROMISE_SERVICE} from "../tokens";
 
-const emptyDict: ITranslations = {};
+export const EMPTY_DICT: ITranslations = {};
 
 @Injectable()
 export class StaticLanguageService implements ILanguageService {
@@ -26,7 +26,7 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     get dictionary(): ITranslations {
-        return this.mergedTranslations[this.currentLanguage] || emptyDict;
+        return this.mergedTranslations[this.currentLanguage] || EMPTY_DICT;
     }
 
     set dictionary(value: ITranslations) {
@@ -120,7 +120,7 @@ export class StaticLanguageService implements ILanguageService {
         languages = Array.isArray(languages) && languages.length > 0 ? languages : this.languageList;
         this.languageList = Array.from(new Set<string>(languages));
         this.languageList.forEach(lang => {
-            this.translations[lang] = this.translations[lang] || emptyDict;
+            this.translations[lang] = this.translations[lang] || EMPTY_DICT;
         });
     }
 
@@ -235,8 +235,8 @@ export class StaticLanguageService implements ILanguageService {
         ]);
         this.mergedTranslations = Array.from(languages).reduce((merged, language) => {
             merged[language] = {
-                ...(this.translations[language] || emptyDict),
-                ...(this.overrideTranslations[language] || emptyDict),
+                ...(this.translations[language] || EMPTY_DICT),
+                ...(this.overrideTranslations[language] || EMPTY_DICT),
             };
             return merged;
         }, {} as GlobalTranslations);
