@@ -713,6 +713,7 @@ export interface OpenApiSchema {
         [name: string]: OpenApiSchemaProperty;
     };
     required: string[];
+    [key: string]: any;
 }
 
 export interface OpenApiSchemas {
