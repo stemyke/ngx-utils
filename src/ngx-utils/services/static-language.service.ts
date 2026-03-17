@@ -196,7 +196,8 @@ export class StaticLanguageService implements ILanguageService {
 
     protected interpolate(expr: string | Function, params?: Object): string {
         if (typeof expr === "string") {
-            return this.interpolateString(expr, params);
+            // Force single spaces to be empty strings, for labeling in forms.
+            return expr === " " ? "" : this.interpolateString(expr, params);
         }
         if (typeof expr === "function") {
             return expr(params);
