@@ -156,3 +156,29 @@ export function injectOptions<O extends Record<string, any>>(defaults: O): O {
     const options = inject(OPTIONS_TOKEN, {optional: true}) as O;
     return Object.assign({}, defaults, options || {});
 }
+
+export interface DiffEntityResult<T extends { id?: string | number }> {
+    removed: T[];
+    added: T[];
+    updated: T[];
+}
+
+/**
+ * Compares two arrays of entities and categorizes them into
+ * added, removed, and updated buckets.
+ */
+export function diffEntities<T extends { id?: string | number }>(current: T[], incoming: T[]): DiffEntityResult<T> {
+    const currentMap = new Map(current.map(item => [item.id, item]));
+    const incomingIds = new Set(incoming.map(item => item.id).filter(Boolean));
+
+    return {
+        // 1. Removed: Was in current, but ID is missing from incoming
+        removed: current.filter(item => !incomingIds.has(item.id)),
+
+        // 2. Added: ID is missing entirely (new record)
+        added: incoming.filter(item => !item.id),
+
+        // 3. Updated: ID exists in both lists
+        updated: incoming.filter(item => item.id && currentMap.has(item.id))
+    };
+}

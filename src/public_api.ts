@@ -228,7 +228,9 @@ export {
     provideEntryComponents,
     provideOptions,
     provideWithOptions,
-    injectOptions
+    injectOptions,
+    DiffEntityResult,
+    diffEntities
 } from "./ngx-utils/utils/misc";
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
