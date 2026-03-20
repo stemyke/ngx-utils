@@ -1,6 +1,7 @@
 import {ObjectUtils} from "./object.utils";
 
 export class SetUtils {
+
     static equals(set: Set<any>, obj: any): boolean {
         if (!ObjectUtils.isSet(set) || !ObjectUtils.isSet(obj))
             return false;
@@ -15,5 +16,10 @@ export class SetUtils {
     static addArray(set: Set<any>, items: any[]): void {
         if (!ObjectUtils.isSet(set) || !ObjectUtils.isArray(items)) return;
         items.forEach(i => set.add(i));
+    }
+
+    static merge(set: Set<any>, other: Set<any>): void {
+        if (!ObjectUtils.isSet(set) || !ObjectUtils.isSet(other)) return;
+        other.forEach(i => set.add(i));
     }
 }
