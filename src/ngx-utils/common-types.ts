@@ -480,6 +480,7 @@ export interface RectCoords {
     y: number;
     width: number;
     height: number;
+    meta?: Record<string, any>;
 }
 
 /**
