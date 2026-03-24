@@ -16,6 +16,7 @@ export class BaseDialogService<DR = any> implements IDialogService<DR> {
 
     dialog(config: IDialogConfig): DR {
         if (!config) return null;
+        console.log(config.title, config.message);
         const button = !config.buttons ? null : config.buttons[0];
         if (!button) return null;
         this.toaster.handleAsyncMethod(button.method);
