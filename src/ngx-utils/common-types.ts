@@ -86,6 +86,13 @@ export interface ILanguageService {
 export const LANGUAGE_SERVICE: InjectionToken<ILanguageService> = new InjectionToken<ILanguageService>("language-service");
 
 // --- Auth Service ---
+export interface IUserData {
+    _id?: string;
+    id?: string;
+    email?: string;
+    [key: string]: any;
+}
+
 export interface IAuthService {
     isAuthenticated: boolean;
     userChanged: EventEmitter<any>;

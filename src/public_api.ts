@@ -15,6 +15,7 @@ export {
     ILanguageSettings,
     ILanguageService,
     LANGUAGE_SERVICE,
+    IUserData,
     IAuthService,
     RouteValidator,
     IRouteData,

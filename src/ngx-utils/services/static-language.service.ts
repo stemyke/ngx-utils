@@ -1,13 +1,13 @@
 import {Inject, Injectable} from "@angular/core";
 import {
-    CONFIG_SERVICE, GlobalTranslations,
+    CONFIG_SERVICE,
+    GlobalTranslations,
     IConfigService,
     IConfiguration,
     ILanguageService,
     IPromiseService,
     ITranslation,
-    ITranslations,
-    PROMISE_SERVICE
+    ITranslations, PROMISE_SERVICE
 } from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 import {EventsService} from "./events.service";
@@ -16,7 +16,7 @@ import {UniversalService} from "./universal.service";
 import {BaseHttpClient} from "./base-http.client";
 import {HttpClient} from "@angular/common/http";
 
-const emptyDict: ITranslations = {};
+export const EMPTY_DICT: ITranslations = {};
 
 @Injectable()
 export class StaticLanguageService implements ILanguageService {
@@ -26,11 +26,11 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     get dictionary(): ITranslations {
-        return this.mergedTranslations[this.currentLanguage] || emptyDict;
+        return this.mergedTranslations[this.currentLanguage] || EMPTY_DICT;
     }
 
     set dictionary(value: ITranslations) {
-        this.translations[this.currentLanguage] = value;
+        this.setDictionary(this.currentLang, value);
         this.mergeTranslations();
     }
 
@@ -44,7 +44,7 @@ export class StaticLanguageService implements ILanguageService {
 
     set currentLanguage(lang: string) {
         this.currentLang = lang;
-        this.events.languageChanged.emit(lang);
+        this.events.languageChanged.next(lang);
     }
 
     get editLanguage(): string {
@@ -53,16 +53,24 @@ export class StaticLanguageService implements ILanguageService {
 
     set editLanguage(lang: string) {
         this.editLang = lang || this.currentLanguage;
-        this.events.editLanguageChanged.emit(this.editLang);
+        this.events.editLanguageChanged.next(this.editLang);
+    }
+
+    get enableTranslations(): boolean {
+        return this.enableTrans;
+    }
+
+    set enableTranslations(value: boolean) {
+        this.enableTrans = value;
+        this.events.translationsEnabled.next(value);
     }
 
     get disableTranslations(): boolean {
-        return this.disableTrans;
+        return !this.enableTranslations;
     }
 
     set disableTranslations(value: boolean) {
-        this.disableTrans = value;
-        this.events.languageChanged.emit(this.currentLang);
+        this.enableTranslations = !value;
     }
 
     get httpClient(): HttpClient {
@@ -79,7 +87,7 @@ export class StaticLanguageService implements ILanguageService {
 
     protected editLang: string;
     protected currentLang: string;
-    protected disableTrans: boolean;
+    protected enableTrans: boolean;
     protected languageList: string[];
     protected readonly translations: GlobalTranslations;
     protected overrideTranslations: GlobalTranslations;
@@ -92,7 +100,7 @@ export class StaticLanguageService implements ILanguageService {
                 @Inject(BaseHttpClient) protected client: BaseHttpClient) {
         this.editLang = null;
         this.currentLang = null;
-        this.disableTrans = false;
+        this.enableTrans = true;
         this.languageList = [];
         this.translations = {
             none: {}
@@ -112,7 +120,7 @@ export class StaticLanguageService implements ILanguageService {
         languages = Array.isArray(languages) && languages.length > 0 ? languages : this.languageList;
         this.languageList = Array.from(new Set<string>(languages));
         this.languageList.forEach(lang => {
-            this.translations[lang] = this.translations[lang] || emptyDict;
+            this.translations[lang] = this.translations[lang] || EMPTY_DICT;
         });
     }
 
@@ -131,14 +139,24 @@ export class StaticLanguageService implements ILanguageService {
         this.mergedTranslations = this.translations;
     }
 
-    getTranslationSync(key: string, params: any = null): string {
-        key = String(key || "");
-        const lowerKey = key.toLocaleLowerCase();
-        const translation = !key ? "" : this.dictionary[lowerKey] || key;
-        return this.interpolate(translation, params);
+    getTranslationSync(key: string, params: Object = null): string {
+        key = String(key ?? "");
+        if (!key) return "";
+        try {
+            const lowerKey = key.toLocaleLowerCase();
+            const dict = this.dictionary;
+            if (lowerKey in dict && this.enableTranslations) {
+                return this.interpolate(dict[lowerKey], params);
+            }
+            return this.interpolate(key, params);
+        } catch (reason) {
+            console.warn("ERROR IN TRANSLATIONS", reason);
+            return key;
+        }
     }
 
-    async getTranslation(key: string, params?: any): Promise<string> {
+    async getTranslation(key: string, params: any = null): Promise<string> {
+        await this.loadDictionary();
         return this.getTranslationSync(key, params);
     }
 
@@ -164,9 +182,22 @@ export class StaticLanguageService implements ILanguageService {
         return this.interpolate(translation ? translation.translation : "", params);
     }
 
-    protected interpolate(expr: string | Function, params?: any): string {
+    protected async loadDictionary(): Promise<ITranslations> {
+        return this.dictionary;
+    }
+
+    protected setDictionary(lang: string, dictionary: ITranslations): ITranslations {
+        this.translations[lang] = Object.keys(dictionary || {}).reduce((res, key) => {
+            res[key.toLocaleLowerCase()] = dictionary[key];
+            return res;
+        }, {} as ITranslations);
+        return this.translations[lang];
+    }
+
+    protected interpolate(expr: string | Function, params?: Object): string {
         if (typeof expr === "string") {
-            return this.interpolateString(expr, params);
+            // Force single spaces to be empty strings, for labeling in forms.
+            return expr === " " ? "" : this.interpolateString(expr, params);
         }
         if (typeof expr === "function") {
             return expr(params);
@@ -174,10 +205,10 @@ export class StaticLanguageService implements ILanguageService {
         return expr as string;
     }
 
-    protected interpolateString(expr: string, params?: any) {
+    protected interpolateString(expr: string, params?: Object) {
         if (!expr || !params) return expr;
         return expr.replace(/{{\s?([^{}\s]*)\s?}}/g, (substring: string, b: string) => {
-            const r = ObjectUtils.getValue(params, b);
+            const r = ObjectUtils.getValue(params, b, "");
             return ObjectUtils.isDefined(r) ? r : substring;
         });
     }
@@ -205,8 +236,8 @@ export class StaticLanguageService implements ILanguageService {
         ]);
         this.mergedTranslations = Array.from(languages).reduce((merged, language) => {
             merged[language] = {
-                ...(this.translations[language] || emptyDict),
-                ...(this.overrideTranslations[language] || emptyDict),
+                ...(this.translations[language] || EMPTY_DICT),
+                ...(this.overrideTranslations[language] || EMPTY_DICT),
             };
             return merged;
         }, {} as GlobalTranslations);
