@@ -154,7 +154,7 @@
                                             </span>
                                             <span [ngClass]="['option-' + option, column + '-option-' + option, option]"
                                                   *ngFor="let option of query[column] | values; let ix = index">
-                                            <ng-container *ngIf="ix > 0"> | </ng-container>
+                                            <ng-container *ngIf="ix > 0">&nbsp;|&nbsp;</ng-container>
                                             <ng-container [ngTemplateOutlet]="optionItem"
                                                           [ngTemplateOutletContext]="{option: option}"></ng-container>
                                         </span>
