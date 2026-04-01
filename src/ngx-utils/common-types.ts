@@ -731,7 +731,7 @@ export interface ITableOrders {
 }
 
 export interface ITableColumn {
-    title?: string;
+    title: string;
     sort?: string;
     filter?: boolean;
     filterType?: TableFilterType;

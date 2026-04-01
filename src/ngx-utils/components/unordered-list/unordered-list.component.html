@@ -1,4 +1,4 @@
-<ng-template let-keyPrefix="keyPrefix" let-key="item.key" let-isArray="isArray" #defaultKeyTemplate>
+<ng-template let-keyPrefix="keyPrefix" let-key="item.key" #defaultKeyTemplate>
     {{ (keyPrefix ? keyPrefix + key : key) | translate }}:
 </ng-template>
 <ng-template let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-val="item.value" let-path="path"
@@ -52,8 +52,8 @@
 <ng-container *ngIf="(isObject || isArray); else value" [ngSwitch]="listStyle">
     <ul [ngClass]="'level-' + level" *ngSwitchCase="'list'">
         <li *ngFor="let item of data | entries" [ngClass]="item.classList">
-            <ng-container [unorderedListItem]="item"
-                          type="item"
+            <ng-container type="item"
+                          [unorderedListItem]="item"
                           [data]="data"
                           [keyPrefix]="keyPrefix"
                           [listStyle]="listStyle"
@@ -65,8 +65,8 @@
     </ul>
     <table [ngClass]="'level-' + level" *ngSwitchDefault>
         <tr *ngFor="let item of data | entries" [ngClass]="item.classList">
-            <ng-container [unorderedListItem]="item"
-                          type="item"
+            <ng-container type="item"
+                          [unorderedListItem]="item"
                           [data]="data"
                           [keyPrefix]="keyPrefix"
                           [listStyle]="listStyle"

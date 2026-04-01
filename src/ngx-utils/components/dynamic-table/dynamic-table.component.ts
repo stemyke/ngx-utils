@@ -1,13 +1,13 @@
 import {
-    AfterContentInit,
     AfterViewInit,
     Component,
+    computed, contentChild,
     ContentChild,
-    ContentChildren,
-    ElementRef,
+    contentChildren,
+    ElementRef, input,
     Input,
-    OnChanges, OnDestroy,
-    QueryList,
+    OnChanges,
+    OnDestroy, output,
     SimpleChanges,
     TemplateRef,
     ViewChild,
@@ -21,7 +21,8 @@ import {
     ITableDataQuery,
     ITableTemplates,
     PaginationItemContext,
-    TableColumns, TableDataItems,
+    TableColumns,
+    TableDataItems,
     TableDataLoader
 } from "../../common-types";
 import {ObjectUtils} from "../../utils/object.utils";
@@ -41,7 +42,7 @@ import {Observable, of, Subscription} from "rxjs";
     styleUrls: ["./dynamic-table.component.scss"],
     templateUrl: "./dynamic-table.component.html",
 })
-export class DynamicTableComponent implements AfterContentInit, AfterViewInit, OnChanges, OnDestroy {
+export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     @Input() dataLoader: TableDataLoader;
     @Input() data: TableDataItems | Observable<TableDataItems>;
@@ -90,11 +91,10 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @Input() dropFn: DragEventHandler<void>;
 
     tableId: string;
-    templates: ITableTemplates;
     filter: string;
     query: ITableDataQuery;
     hasQuery: boolean;
-    realColumns: ITableColumns;
+    columnDefs: ITableColumns;
     cols: string[];
     sortable: boolean;
 
@@ -123,8 +123,27 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     @ViewChild("pagination")
     protected pagination: PaginationDirective;
 
-    @ContentChildren(DynamicTableTemplateDirective)
-    protected templateDirectives: QueryList<DynamicTableTemplateDirective>;
+    readonly globalTemplatePrefix = input("dynamic-table");
+
+    readonly fallbackTemplate = contentChild<TemplateRef<any>>("fallbackTemplate");
+
+    readonly templateDirectives = contentChildren(DynamicTableTemplateDirective);
+
+    readonly templates= computed(() => {
+        return (this.templateDirectives() || []).reduce((result, directive) => {
+            if (ObjectUtils.isArray(directive.column)) {
+                directive.column.forEach(column => {
+                    result[column] = directive;
+                });
+                return result;
+            }
+            if (!ObjectUtils.isStringWithValue(directive.column)) return result;
+            result[directive.column] = directive;
+            return result;
+        }, {} as ITableTemplates);
+    });
+
+    readonly onClick = output<Record<string, any>>();
 
     protected static compare(orderBy: string, a: PaginationItemContext, b: PaginationItemContext): number {
         a = a.item ? a.item[orderBy] : null;
@@ -138,13 +157,12 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         this.tableId = UniqueUtils.uuid();
         this.orderBy = "";
         this.orderDescending = false;
-        this.templates = {};
         this.filter = "";
         this.query = {};
         this.hasQuery = false;
         this.testId = "table";
         this.titlePrefix = "label";
-        this.realColumns = {};
+        this.columnDefs = {};
         this.cols = [];
         this.sortable = false;
         this.localData = [];
@@ -154,20 +172,6 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         const elem = this.element.nativeElement;
         if (!elem) return;
         elem.style.setProperty(`--${name}`, value);
-    }
-
-    ngAfterContentInit(): void {
-        this.templates = this.templateDirectives.reduce((result, directive) => {
-            if (ObjectUtils.isArray(directive.column)) {
-                directive.column.forEach(column => {
-                    result[column] = directive;
-                });
-                return result;
-            }
-            if (!ObjectUtils.isString(directive.column) || directive.column.length == 0) return result;
-            result[directive.column] = directive;
-            return result;
-        }, {});
     }
 
     ngAfterViewInit(): void {
@@ -182,7 +186,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         const orderBy = this.orderBy;
         if (changes.columns) {
             const columns = changes.columns.currentValue || [];
-            this.realColumns = ObjectUtils.isArray(columns) ? columns.reduce((result, column) => {
+            this.columnDefs = ObjectUtils.isArray(columns) ? columns.reduce((result, column) => {
                 if (!ObjectUtils.isString(column) || column.length == 0)
                     return result;
                 result[column] = {title: `${this.titlePrefix}.${column}`, sort: column};
@@ -194,12 +198,12 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
                     : value;
                 return result;
             }, {} as ITableColumns);
-            this.cols = Object.keys(this.realColumns);
+            this.cols = Object.keys(this.columnDefs);
             this.cols.forEach(col => {
-                const column = this.realColumns[col];
+                const column = this.columnDefs[col];
                 column.filterType = column.filterType || "text";
             });
-            const sortable = this.cols.filter(c => this.realColumns[c].sort);
+            const sortable = this.cols.filter(c => this.columnDefs[c].sort);
             const query = this.query || {};
             this.sortable = sortable.length > 0;
             this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
@@ -211,9 +215,9 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             }, {});
             this.setProperty("cell-width", MathUtils.round(100 / this.cols.length, 4) + "%");
         }
-        this.hasQuery = this.cols.some(col => this.realColumns[col].filter);
-        if (changes.orderBy && this.realColumns && this.cols) {
-            const sortable = this.cols.filter(c => this.realColumns[c].sort);
+        this.hasQuery = this.cols.some(col => this.columnDefs[col].filter);
+        if (changes.orderBy && this.columnDefs && this.cols) {
+            const sortable = this.cols.filter(c => this.columnDefs[c].sort);
             this.sortable = sortable.length > 0;
             this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
         }
@@ -237,7 +241,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         ev.dataTransfer.setData(item.id, "id");
     }
 
-    onDragEnter(ev: DragEvent, elem: HTMLElement, item: any) {
+    onDragEnter(ev: DragEvent, elem: HTMLElement, item: Record<string, any>) {
         ev.preventDefault();
         if (!elem || !item || !ObjectUtils.isFunction(this.dragEnterFn) || !this.dragEnterFn({ev, elem, item})) {
             ev.dataTransfer.effectAllowed = "none";
@@ -255,7 +259,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         elem.classList.remove("drop-allowed");
     }
 
-    onDrop(ev: DragEvent, elem: HTMLElement, item: any) {
+    onDrop(ev: DragEvent, elem: HTMLElement, item: Record<string, any>) {
         ev.preventDefault();
         ev.stopPropagation();
         if (!elem || !item || !ObjectUtils.isFunction(this.dropFn)) {
@@ -292,7 +296,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     }
 
     setQueryValue(c: string, value: string | boolean) {
-        const col = this.realColumns[c];
+        const col = this.columnDefs[c];
         if (!col?.filter) return;
         switch (col.filterType) {
             case "enum":
@@ -333,7 +337,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     }
 
     loadData = (page: number, itemsPerPage: number): Promise<IPaginationData> => {
-        const orderBy = this.realColumns[this.orderBy]?.sort;
+        const orderBy = this.columnDefs[this.orderBy]?.sort;
         return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query);
     };
 
@@ -360,7 +364,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
         };
         filterFn = Object.entries(query).reduce((fn, [key, filterValue]) => {
             if (!filterValue) return fn;
-            const column = this.realColumns[key];
+            const column = this.columnDefs[key];
             if (!column) return fn;
             switch (column.filterType) {
                 case "enum":

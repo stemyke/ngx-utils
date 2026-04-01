@@ -92,6 +92,7 @@ import {CloseBtnComponent} from "./components/close-btn/close-btn.component";
 import {DropListComponent} from "./components/drop-list/drop-list.component";
 import {DropdownBoxComponent} from "./components/dropdown-box/dropdown-box.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
+import {DynamicTableCellComponent} from "./components/dynamic-table-cell/dynamic-table-cell.component";
 import {FakeModuleComponent} from "./components/fake-module/fake-module.component";
 import {IconComponent} from "./components/icon/icon.component";
 import {IconDefaultComponent} from "./components/icon-default/icon-default.component";
@@ -173,6 +174,7 @@ export const components = [
     DropListComponent,
     DropdownBoxComponent,
     DynamicTableComponent,
+    DynamicTableCellComponent,
     FakeModuleComponent,
     PaginationMenuComponent,
     IconComponent,

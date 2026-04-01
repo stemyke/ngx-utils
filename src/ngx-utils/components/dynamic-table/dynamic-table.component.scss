@@ -20,6 +20,10 @@
         box-sizing: border-box;
     }
 
+    div.table-enum {
+        text-align: center;
+    }
+
     .search-input {
         background: var(--bg-color);
         color: var(--text-color);
@@ -222,5 +226,21 @@
         &.sort-asc:after {
             --arrow-color: black;
         }
+    }
+}
+
+.table-enum {
+
+    --enum-color: #c6c6c6;
+    --enum-radius: 5px;
+
+    span {
+        display: inline-block;
+        padding: 2px 5px;
+        background: color-mix(in srgb, var(--enum-color), #ffffff75);
+        border: 1px solid var(--enum-color);
+        border-radius: var(--enum-radius);
+        user-select: none;
+        cursor: default;
     }
 }

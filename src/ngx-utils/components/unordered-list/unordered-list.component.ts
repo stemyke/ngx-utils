@@ -16,6 +16,7 @@ import {UnorderedListTemplateDirective} from "../../directives/unordered-list-te
 @Component({
     standalone: false,
     selector: "unordered-list",
+    styleUrls: ["./unordered-list.component.scss"],
     templateUrl: "./unordered-list.component.html"
 })
 export class UnorderedListComponent implements OnChanges, AfterContentInit, AfterViewInit {

@@ -5,6 +5,7 @@ export interface IEntry {
     key: string;
     value: any;
     index: number;
+    [key: string]: any;
 }
 
 const emptyEntries: IEntry[] = [];

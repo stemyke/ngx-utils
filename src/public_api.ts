@@ -334,6 +334,7 @@ export {CloseBtnComponent} from "./ngx-utils/components/close-btn/close-btn.comp
 export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.component";
 export {DropdownBoxComponent} from "./ngx-utils/components/dropdown-box/dropdown-box.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";
+export {DynamicTableCellComponent} from "./ngx-utils/components/dynamic-table-cell/dynamic-table-cell.component";
 export {FakeModuleComponent} from "./ngx-utils/components/fake-module/fake-module.component";
 export {IconComponent} from "./ngx-utils/components/icon/icon.component";
 export {IconDefaultComponent} from "./ngx-utils/components/icon-default/icon-default.component";

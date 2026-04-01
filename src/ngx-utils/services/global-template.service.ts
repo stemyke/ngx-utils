@@ -1,17 +1,18 @@
-import {EventEmitter, Injectable, TemplateRef} from "@angular/core";
+import {Injectable, TemplateRef} from "@angular/core";
+import {BehaviorSubject, Subject} from "rxjs";
 import {ObjectUtils} from "../utils/object.utils";
 import {GlobalComponentModifier} from "../common-types";
 
 @Injectable()
 export class GlobalTemplateService {
 
-    readonly templatesUpdated: EventEmitter<void>;
+    readonly templatesUpdated: Subject<ReadonlyArray<string>>;
 
-    protected globalTemplates: { [id: string]: TemplateRef<any> };
-    protected componentModifiers: { [id: string]: GlobalComponentModifier };
+    protected readonly globalTemplates: { [id: string]: TemplateRef<any> };
+    protected readonly componentModifiers: { [id: string]: GlobalComponentModifier };
 
     constructor() {
-        this.templatesUpdated = new EventEmitter<any>();
+        this.templatesUpdated = new BehaviorSubject([]);
         this.globalTemplates = {};
         this.componentModifiers = {};
     }
@@ -28,12 +29,12 @@ export class GlobalTemplateService {
 
     add(id: string, template: TemplateRef<any>): void {
         this.globalTemplates[id] = template;
-        this.templatesUpdated.emit();
+        this.templatesUpdated.next(Object.keys(this.globalTemplates));
     }
 
     remove(id: string): void {
         delete this.globalTemplates[id];
-        this.templatesUpdated.emit();
+        this.templatesUpdated.next(Object.keys(this.globalTemplates));
     }
 
     addComponentModifier(id: string, modifier: GlobalComponentModifier): void {

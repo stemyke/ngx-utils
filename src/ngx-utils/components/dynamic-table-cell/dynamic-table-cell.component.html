@@ -1,0 +1,22 @@
+<ng-template #fallback let-value="value">
+    {{ value ?? '-' }}
+</ng-template>
+<ng-template #defaultTemplate let-context let-column="column" let-id="id" let-value="value">
+    @switch (column.filterType) {
+        @case ('checkbox') {
+            <icon [name]="value ? 'check' : 'xmark'"></icon>
+        }
+        @case ('enum') {
+            <div [ngClass]="`table-enum enum-${id} enum-value-${value}`">
+                <span>{{ `${id}.${value}` | translate }}</span>
+            </div>
+        }
+        @default {
+            <ng-container [ngxTemplateOutlet]="fallbackTemplate() || fallback"
+                          [context]="context"></ng-container>
+        }
+    }
+</ng-template>
+<ng-container [ngxTemplateOutlet]="template() || defaultTemplate"
+              [context]="context()"
+              [additionalContext]="{defaultTemplate}"></ng-container>
