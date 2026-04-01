@@ -98,32 +98,13 @@ export class AuthGuard implements CanActivate {
         });
     }
 
-    getConfig(route: IRoute, config: IRoute[], path: string[]): IRoute[] {
-        if (!config) return null;
-        const match = config.findIndex(t => t == route);
-        if (match >= 0) return config;
-        for (const subConfig of config) {
-            if (subConfig.path)
-                path.push(subConfig.path);
-            const loadedChildren = (subConfig["_loadedConfig"] || {routes: null}).routes || subConfig["_loadedRoutes"];
-            const match = this.getConfig(route, subConfig.children || loadedChildren, path);
-            if (!match) {
-                if (subConfig.path)
-                    path.length -= 1;
-                continue;
-            }
-            return match;
-        }
-        return null;
-    }
-
     getReturnState(route: IRoute): Promise<string[]> {
         if (!route) return Promise.resolve(null);
         if (ObjectUtils.isObject(route.data) && ObjectUtils.isArray(route.data.returnState)) {
             return Promise.resolve(route.data.returnState);
         }
         const path = [];
-        const config = this.getConfig(route, this.state.routerConfig, path);
+        const config = this.state.getConfig(route, path);
         return new Promise<string[]>(resolve => {
             this.getReturnStateRecursive(config).then(rs => {
                 if (!ObjectUtils.isArray(rs)) {
@@ -135,7 +116,7 @@ export class AuthGuard implements CanActivate {
         });
     }
 
-    private getReturnStateRecursive(config: IRoute[], c: number = 0): Promise<string[]> {
+    protected getReturnStateRecursive(config: ReadonlyArray<IRoute>, c: number = 0): Promise<string[]> {
         if (!config || c >= config.length) return Promise.resolve(null);
         return new Promise<string[]>(resolve => {
             const route = config[c];

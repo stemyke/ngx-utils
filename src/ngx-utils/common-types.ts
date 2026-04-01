@@ -132,17 +132,30 @@ export interface IRoute extends Route {
 }
 
 // --- Acl Service ---
-export interface IAclComponent {
-    onUserInitialized(): void;
-    onUserChanged(): void;
-}
-
 export interface IRouteStateInfo {
     route: IRoute;
     guard: any;
     dirty: boolean;
     first: boolean;
     component?: any;
+}
+
+export interface MenuItem {
+    path: string;
+    page: string;
+    label: string;
+    side: string;
+    external: boolean;
+    data: IRouteData;
+}
+
+export interface IAclComponent {
+    onUserInitialized(): void;
+    onUserChanged(): void;
+}
+
+export interface IAclService {
+    getCurrentMenu(): Promise<ReadonlyArray<MenuItem>>;
 }
 
 // --- State Service ---

@@ -195,6 +195,29 @@ export class StateService {
         return this.$observable.subscribe(osOrNext);
     }
 
+    getConfig(route: IRoute, path: string[] = []): ReadonlyArray<IRoute> {
+        return this.getConfigRecursive(route, this.routerConfig, path) || [];
+    }
+
+    protected getConfigRecursive(route: IRoute, config: IRoute[], path: string[]): IRoute[] {
+        if (!config) return null;
+        const match = config.findIndex(t => t == route);
+        if (match >= 0) return config;
+        for (const subConfig of config) {
+            if (subConfig.path)
+                path.push(subConfig.path);
+            const loadedChildren = (subConfig["_loadedConfig"] || {routes: null}).routes || subConfig["_loadedRoutes"];
+            const match = this.getConfigRecursive(route, subConfig.children || loadedChildren, path);
+            if (!match) {
+                if (subConfig.path)
+                    path.length -= 1;
+                continue;
+            }
+            return match;
+        }
+        return null;
+    }
+
     protected openInNewWindow(tree: UrlTree, target: string): boolean {
         if (!this.universal.isBrowser) return false;
         const baseUrl = window.location.href.replace(this.router.url, "");

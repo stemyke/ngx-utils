@@ -1,6 +1,6 @@
 import {Injectable, Injector, Type} from "@angular/core";
 import {StateService} from "./state.service";
-import {IAclComponent, IRouteStateInfo} from "../common-types";
+import {IAclComponent, IAclService, IRouteStateInfo, MenuItem} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
 import {AuthGuard} from "../utils/auth.guard";
 import {EventsService} from "./events.service";
@@ -8,7 +8,7 @@ import {EventsService} from "./events.service";
 const emptyGuards: any[] = [];
 
 @Injectable()
-export class AclService {
+export class AclService implements IAclService {
 
     protected components: IRouteStateInfo[];
 
@@ -16,33 +16,32 @@ export class AclService {
                 readonly state: StateService,
                 readonly events: EventsService) {
         this.components = [];
-        this.events.userChanged.subscribe(() => {
+        this.events.userChanged.subscribe(async () => {
             this.components.forEach(t => t.dirty = true);
             const info = this.getStateInfo();
-            const check: Promise<boolean> = info && info.guard instanceof AuthGuard ? info.guard.checkRoute(info.route) : Promise.resolve(true);
-            check.then(result => {
-                if (result) {
-                    if (!info || !info.dirty) return;
-                    info.dirty = false;
-                    const component: IAclComponent = info.component;
-                    if (!info.component) return;
-                    if (info.first) {
-                        if (ObjectUtils.isFunction(component.onUserInitialized)) {
-                            component.onUserInitialized();
-                        }
-                        info.first = false;
-                        return;
+            const result = info && info.guard instanceof AuthGuard
+                ? await info.guard.checkRoute(info.route)
+                : true;
+            if (result) {
+                if (!info || !info.dirty) return;
+                info.dirty = false;
+                const component: IAclComponent = info.component;
+                if (!info.component) return;
+                if (info.first) {
+                    if (ObjectUtils.isFunction(component.onUserInitialized)) {
+                        component.onUserInitialized();
                     }
-                    if (ObjectUtils.isFunction(component.onUserChanged)) {
-                        component.onUserChanged();
-                    }
+                    info.first = false;
                     return;
                 }
-                (info.guard as AuthGuard).getReturnState(info.route).then(returnState => {
-                    if (!returnState) return;
-                    this.state.navigate(returnState);
-                });
-            });
+                if (ObjectUtils.isFunction(component.onUserChanged)) {
+                    component.onUserChanged();
+                }
+                return;
+            }
+            const returnState = await (info.guard as AuthGuard).getReturnState(info.route);
+            if (!returnState) return;
+            await this.state.navigate(returnState);
         });
         this.state.subscribe(() => {
             const info = this.getStateInfo();
@@ -53,6 +52,26 @@ export class AclService {
             }
             info.first = false;
         });
+    }
+
+    async getCurrentMenu(): Promise<MenuItem[]> {
+        const path = [] as string[];
+        const config = this.state.getConfig(this.state.route, path);
+        const checks = await Promise.all(config.map(async route => {
+            const guard = (route.canActivate || []).find(g => g instanceof AuthGuard);
+            return guard ? await guard.checkRoute(route) : ObjectUtils.isStringWithValue(route.data?.name);
+        }));
+        const basePath = path.join("/").replace(/^([a-z]+)/gi, `/$1`);
+        return config.map((route, index) => {
+            return !checks[index] ? null : {
+                path: `${basePath}/${route.path}`,
+                page: route.data.page || route.data.id,
+                label: route.data.name,
+                side: route.data.side || `left`,
+                external: false,
+                data: route.data
+            };
+        }).filter(Boolean);
     }
 
     protected getStateInfo(): IRouteStateInfo {
