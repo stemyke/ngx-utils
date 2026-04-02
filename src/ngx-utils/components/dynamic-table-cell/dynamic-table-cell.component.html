@@ -7,8 +7,9 @@
             <icon [name]="value ? 'check' : 'xmark'"></icon>
         }
         @case ('enum') {
-            <div [ngClass]="`table-enum enum-${id} enum-value-${value}`">
-                <span>{{ `${id}.${value}` | translate }}</span>
+            @let optionPrefix = column.enumPrefix || id;
+            <div [ngClass]="`table-enum enum-${optionPrefix} enum-value-${value}`">
+                <span>{{ `${optionPrefix}.${value}` | translate }}</span>
             </div>
         }
         @default {

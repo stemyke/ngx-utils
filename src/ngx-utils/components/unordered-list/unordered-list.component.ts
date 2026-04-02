@@ -7,14 +7,18 @@ import {
     Input,
     OnChanges,
     QueryList,
-    SimpleChanges, TemplateRef, ViewChild
+    SimpleChanges,
+    TemplateRef,
+    ViewChild,
+    ViewEncapsulation
 } from "@angular/core";
-import {UnorderedListStyle, UnorderedListTemplates, UnorderedListTemplate} from "../../common-types";
+import {UnorderedListStyle, UnorderedListTemplate, UnorderedListTemplates} from "../../common-types";
 import {ObjectUtils} from "../../utils/object.utils";
 import {UnorderedListTemplateDirective} from "../../directives/unordered-list-template.directive";
 
 @Component({
     standalone: false,
+    encapsulation: ViewEncapsulation.None,
     selector: "unordered-list",
     styleUrls: ["./unordered-list.component.scss"],
     templateUrl: "./unordered-list.component.html"

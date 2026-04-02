@@ -141,9 +141,10 @@
                         <th *ngFor="let column of cols" [ngClass]="['column-' + column, 'filter-column']">
                             <ng-container *ngIf="columnDefs[column].filter" [ngSwitch]="columnDefs[column].filterType">
                                 <ng-container *ngSwitchCase="'enum'">
+                                    @let optionPrefix = columnDefs[column].enumPrefix || column;
                                     <ng-template #optionItem let-option="option">
-                                        <span [ngClass]="`table-enum enum-${column} enum-value-${option}`">
-                                            <span>{{ `${column}.${option}` | translate }}</span>
+                                        <span [ngClass]="`table-enum enum-${optionPrefix} enum-value-${option}`">
+                                            <span>{{ `${optionPrefix}.${option}` | translate }}</span>
                                         </span>
                                     </ng-template>
                                     <dropdown-box componentClass="filter-box"
@@ -154,10 +155,10 @@
                                             </span>
                                             <span [ngClass]="['option-' + option, column + '-option-' + option, option]"
                                                   *ngFor="let option of query[column] | values; let ix = index">
-                                            <ng-container *ngIf="ix > 0">&nbsp;|&nbsp;</ng-container>
-                                            <ng-container [ngTemplateOutlet]="optionItem"
-                                                          [ngTemplateOutletContext]="{option: option}"></ng-container>
-                                        </span>
+                                                <ng-container *ngIf="ix > 0">&nbsp;|&nbsp;</ng-container>
+                                                <ng-container [ngTemplateOutlet]="optionItem"
+                                                              [ngTemplateOutletContext]="{option: option}"></ng-container>
+                                            </span>
                                         </ng-container>
                                         <ul>
                                             @for (option of columnDefs[column].enum; track option) {
