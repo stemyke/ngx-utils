@@ -1,18 +1,23 @@
 <ng-template let-keyPrefix="keyPrefix" let-key="item.key" #defaultKeyTemplate>
     {{ (keyPrefix ? keyPrefix + key : key) | translate }}:
 </ng-template>
-<ng-template let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-val="item.value" let-path="path"
-             let-templates="templates" let-isObject="valueIsObject" let-isArray="valueIsArray" #defaultValueTemplate>
-    <ng-template #value>
-        <span [innerHTML]="val"></span>
-    </ng-template>
-    <unordered-list [data]="val"
-                    [keyPrefix]="keyPrefix"
-                    [listStyle]="listStyle"
-                    [path]="path"
-                    [level]="level + 1"
-                    [templates]="templates"
-                    *ngIf="(isObject || isArray); else value"></unordered-list>
+<ng-template let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-key="item.key" let-value="item.value" let-path="path"
+             let-templates="templates" let-type="valueType" #defaultValueTemplate>
+    @if (type === 'enum') {
+        <span [ngClass]="`list-enum enum-${key} enum-value-${value}`">
+            <span>{{ `${key}.${value}` | translate }}</span>
+        </span>
+    }
+    @else if (type === 'object' || type === 'array') {
+        <unordered-list [data]="value"
+                        [keyPrefix]="keyPrefix"
+                        [listStyle]="listStyle"
+                        [path]="path"
+                        [level]="level + 1"
+                        [templates]="templates"></unordered-list>
+    } @else {
+        <span [innerHTML]="value"></span>
+    }
 </ng-template>
 <ng-template let-item="item" let-data="data" let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-path="path" let-level="level" let-templates="templates" #defaultItemTemplate>
     <ng-template #itemKey>

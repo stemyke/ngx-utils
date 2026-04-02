@@ -118,6 +118,8 @@
         a {
             color: var(--dd-text-color);
             text-decoration: none;
+            display: flex;
+            gap: 5px;
         }
     }
 

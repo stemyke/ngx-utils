@@ -243,6 +243,7 @@ export {computedPrevious, cssStyles, cssVariables} from "./ngx-utils/utils/signa
 export {SocketFactory, SocketData, SocketDataValue, SocketDataObj, SocketClient} from "./ngx-utils/utils/socket-client";
 export {TimerUtils} from "./ngx-utils/utils/timer.utils";
 export {UniqueUtils} from "./ngx-utils/utils/unique.utils";
+export {Enum} from "./ngx-utils/utils/wrap-types";
 
 export {UniversalService} from "./ngx-utils/services/universal.service";
 export {AclService} from "./ngx-utils/services/acl.service";

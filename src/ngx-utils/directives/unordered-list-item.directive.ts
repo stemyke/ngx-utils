@@ -1,7 +1,6 @@
-import {Directive, ElementRef, Input, OnChanges, Renderer2, SimpleChanges, ViewContainerRef} from "@angular/core";
-import {UnorderedListStyle, UnorderedListTemplates, UnorderedListTemplate} from "../common-types";
+import {Directive, ElementRef, Input, OnChanges, ViewContainerRef} from "@angular/core";
+import {UnorderedListStyle, UnorderedListTemplate, UnorderedListTemplates} from "../common-types";
 import {ObjectUtils} from "../utils/object.utils";
-import {StringUtils} from "../utils/string.utils";
 
 @Directive({
     standalone: false,
@@ -29,11 +28,11 @@ export class UnorderedListItemDirective implements OnChanges {
         return this.elementRef.nativeElement;
     }
 
-    constructor(private elementRef: ElementRef, private renderer: Renderer2, private viewContainer: ViewContainerRef) {
+    constructor(private elementRef: ElementRef, private viewContainer: ViewContainerRef) {
 
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges(): void {
         if (!this.templates || !this.defaultTemplates || !this.item) return;
         const promise = this.item.value instanceof Promise ? this.item.value : Promise.resolve(this.item.value);
         promise.then(value => {
