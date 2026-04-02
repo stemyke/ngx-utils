@@ -4,6 +4,7 @@ import {ITableColumn} from "../../common-types";
 import {LANGUAGE_SERVICE} from "../../tokens";
 
 import {GlobalTemplateService} from "../../services/global-template.service";
+import {ObjectUtils} from "../../utils/object.utils";
 
 @Component({
     standalone: false,
@@ -25,17 +26,14 @@ export class DynamicTableCellComponent {
     readonly templateKeys = toSignal(this.globalTemplates.templatesUpdated);
     readonly template = computed(() => {
         const prefix = this.globalTemplatePrefix();
-        const key = `${prefix}-col-${this.id}`;
+        const key = `${prefix}-col-${this.id()}`;
         const keys = this.templateKeys();
         return !keys?.includes(key) ? null : this.globalTemplates.get(key);
-    });
-    readonly value = computed(() => {
-        return this.item()?.[this.id()];
     });
     readonly context = computed(() => {
         const item = this.item();
         const id = this.id();
-        const value = item?.[id] ?? "-";
+        const value = ObjectUtils.getValue(item, id, "-");
         return {
             item, id, value,
             column: this.column(),

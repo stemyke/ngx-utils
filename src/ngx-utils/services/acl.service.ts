@@ -58,8 +58,10 @@ export class AclService implements IAclService {
         const path = [] as string[];
         const config = this.state.getConfig(this.state.route, path);
         const checks = await Promise.all(config.map(async route => {
-            const guard = (route.canActivate || []).find(g => g instanceof AuthGuard);
-            return guard ? await guard.checkRoute(route) : ObjectUtils.isStringWithValue(route.data?.name);
+            if (!ObjectUtils.isStringWithValue(route.data?.name)) return false;
+            const guardType: Type<AuthGuard> = (route.canActivate || []).find(g => g === AuthGuard);
+            const guard = !guardType ? null : this.injector.get(guardType);
+            return guard ? await guard.checkRoute(route) : true;
         }));
         const basePath = path.join("/").replace(/^([a-z]+)/gi, `/$1`);
         return config.map((route, index) => {
