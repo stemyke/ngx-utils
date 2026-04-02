@@ -152,7 +152,6 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     constructor(protected element: ElementRef<HTMLElement>) {
-        this.dataLoader = this.loadLocalData;
         this.placeholder = "";
         this.tableId = UniqueUtils.uuid();
         this.orderBy = "";
@@ -336,9 +335,10 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
         this.refresh();
     }
 
-    loadData = (page: number, itemsPerPage: number): Promise<IPaginationData> => {
+    loadData = async (page: number, itemsPerPage: number): Promise<IPaginationData> => {
         const orderBy = this.columnDefs[this.orderBy]?.sort;
-        return this.dataLoader(page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query);
+        const dataLoader = this.dataLoader || this.loadLocalData;
+        return dataLoader.call(this, page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query);
     };
 
     protected async loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string, query: ITableDataQuery): Promise<IPaginationData> {
