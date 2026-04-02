@@ -173,7 +173,7 @@ export function diffEntities<T extends { id?: string | number }>(current: T[], i
 
     return {
         // 1. Removed: Was in current, but ID is missing from incoming
-        removed: current.filter(item => !incomingIds.has(item.id)),
+        removed: current.filter(item => !incomingIds.has(item.id) && item.id),
 
         // 2. Added: ID is missing entirely (new record)
         added: incoming.filter(item => !item.id),
