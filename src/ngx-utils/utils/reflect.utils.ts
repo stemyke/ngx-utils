@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import {Injector, TypeProvider} from "@angular/core";
+import {Injector, TypeProvider, runInInjectionContext} from "@angular/core";
 import {ResolveFactory} from "../common-types";
 import {ObjectUtils} from "./object.utils";
 
@@ -32,6 +32,6 @@ export class ReflectUtils {
         const parameters = depends.map(function (dep) {
             return injector.get(dep);
         }).concat(factory.params);
-        return factory.func.apply(null, parameters);
+        return runInInjectionContext(injector, () => factory.func.apply(factory.type ?? null, parameters));
     }
 }

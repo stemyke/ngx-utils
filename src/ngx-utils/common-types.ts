@@ -360,6 +360,7 @@ export interface ISearchObservable {
 
 // --- Reflect utils ---
 export function FactoryDependencies(...dependencies: Array<InjectionToken<any> | Provider>): MethodDecorator {
+    console.warn(`FactoryDependencies is deprecated, please use Angular's inject() method to retrieve the services instead`);
     return function (target: any, method: string): void {
         Reflect.defineMetadata("factoryDependencies", dependencies, target, method);
     };
