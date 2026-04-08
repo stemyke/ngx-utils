@@ -1,6 +1,6 @@
-import {Inject, Injectable, Injector} from "@angular/core";
+import {inject, Inject, Injectable, Injector} from "@angular/core";
 import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlSegment} from "@angular/router";
-import {FactoryDependencies, IAuthService, IRoute, RouteValidator} from "../common-types";
+import {IAuthService, IRoute, RouteValidator} from "../common-types";
 import {ReflectUtils} from "./reflect.utils";
 import {ObjectUtils} from "./object.utils";
 import {StateService} from "../services/state.service";
@@ -21,31 +21,26 @@ export class AuthGuard implements CanActivate {
         return Promise.resolve(true);
     }
 
-    @FactoryDependencies(AUTH_SERVICE)
-    static guardAuthField(auth: IAuthService, expression: string = `auth.isAuthenticated`): RouteValidator {
-        // @dynamic
-        const lambda = (): Promise<boolean> => {
-            return Promise.resolve(ObjectUtils.evaluate(expression, {auth}));
+    static guardAuthField(expression: string = `auth.isAuthenticated`): RouteValidator {
+        const auth = inject(AUTH_SERVICE);
+        return async (): Promise<boolean> => {
+            return ObjectUtils.evaluate(expression, {auth});
         };
-        return lambda;
     }
 
-    @FactoryDependencies(StateService)
-    static guardStateField(state: StateService, expression: string = `state.data`): RouteValidator {
-        // @dynamic
-        const lambda = (): Promise<boolean> => {
-            return Promise.resolve(ObjectUtils.evaluate(expression, {state}));
+    static guardStateField(expression: string = `state.data`): RouteValidator {
+        const state = inject(StateService);
+        return async (): Promise<boolean> => {
+            return ObjectUtils.evaluate(expression, {state});
         };
-        return lambda;
     }
 
-    @FactoryDependencies(AUTH_SERVICE, StateService)
-    static guardAuthStateField(auth: IAuthService, state: StateService, expression: string = `auth.isAuthenticated`): RouteValidator {
-        // @dynamic
-        const lambda = (): Promise<boolean> => {
-            return Promise.resolve(ObjectUtils.evaluate(expression, {auth, state}));
+    static guardAuthStateField(expression: string = `auth.isAuthenticated`): RouteValidator {
+        const auth = inject(AUTH_SERVICE);
+        const state = inject(StateService);
+        return async (): Promise<boolean> => {
+            return ObjectUtils.evaluate(expression, {auth, state});
         };
-        return lambda;
     }
 
     static wildRouteMatch(segments: UrlSegment[]) {
