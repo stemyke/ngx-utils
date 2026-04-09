@@ -4,32 +4,32 @@ export class LoaderUtils {
 
     private static promises: ILoaderPromises<ILoadableElement> = {};
 
-    static loadScript(src: string, async: boolean = false, type: ScriptType = "text/javascript", parent?: Node) {
+    static loadScript(src: string, async: boolean = false, type: ScriptType = "text/javascript", parent?: Node, time: boolean | string = true) {
         return LoaderUtils.loadElement(src, parent, () => {
             const script = document.createElement("script");
             script.type = type;
-            script.src = LoaderUtils.updateSrc(src);
+            script.src = LoaderUtils.updateSrc(src, time);
             script.async = async;
             return script;
         });
     }
 
-    static loadStyle(src: string, parent?: Node) {
+    static loadStyle(src: string, parent?: Node, time: boolean | string = true) {
         return LoaderUtils.loadElement(src, parent, () => {
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.type = "text/css";
-            link.href = LoaderUtils.updateSrc(src);
+            link.href = LoaderUtils.updateSrc(src, time);
             return link;
         });
     }
 
-    private static updateSrc(src: string) {
-        if (src?.startsWith("data:")) {
+    private static updateSrc(src: string, time: boolean | string) {
+        if (src.startsWith("data:") || !time) {
             return src;
         }
         const url = new URL(src);
-        url.searchParams.set("time", String(Date.now()));
+        url.searchParams.set("time", typeof time === "string" ? time : String(Date.now()));
         return url.toString();
     }
 
