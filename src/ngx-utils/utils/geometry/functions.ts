@@ -46,9 +46,17 @@ export function distance(a: IPoint, b: IPoint): number {
     return Math.sqrt(distanceSq(a, b));
 }
 
+export function scalePt(p: IPoint, s: number): IPoint {
+    return {x: p.x * s, y: p.y * s};
+}
+
 export function lerpPts(a: IPoint, b: IPoint, t: number): IPoint {
     const diff = subPts(b, a);
     return addPts(a, multiplyPts(diff, t));
+}
+
+export function lengthSq(p: IPoint): number {
+    return p.x * p.x + p.y * p.y;
 }
 
 export function lengthOfPt(p: IPoint): number {

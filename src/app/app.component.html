@@ -1,4 +1,19 @@
 <div class="app-wrap">
+    <interactive-canvas [width]="100" [height]="100" [beforeItems]="renderers">
+        @for (rect of rects; track ix; let ix = $index) {
+            <interactive-rect [position]="rect.center"
+                              [width]="rect.width"
+                              [height]="rect.height"
+                              [rotation]="rect.rotation"
+                              direction="free"></interactive-rect>
+        }
+        @for (circle of circles; track ix; let ix = $index) {
+            <interactive-circle [position]="circle.center"
+                                [radius]="circle.radius"
+                                [rotation]="circle.rotation"
+                                direction="free"></interactive-circle>
+        }
+    </interactive-canvas>
     <dynamic-table filterLabel="blab"
                    [itemsPerPage]="5"
                    [showFilter]="true"

@@ -11,13 +11,13 @@ import {
     output,
     Renderer2,
     untracked,
-    ViewChild
+    ViewChild, ViewEncapsulation
 } from "@angular/core";
 
 import {
     CanvasPaintFunc,
     CanvasResizeMode,
-    InteractiveCanvas,
+    InteractiveCanvas, InteractiveCanvasArea,
     InteractiveCanvasItem,
     InteractiveCanvasParams,
     InteractiveCanvasPointer,
@@ -38,6 +38,7 @@ const emptyDash: number[] = [];
 @Component({
     standalone: false,
     selector: "interactive-canvas",
+    encapsulation: ViewEncapsulation.None,
     styleUrls: ["./interactive-canvas.component.scss"],
     templateUrl: "./interactive-canvas.component.html"
 })
@@ -157,7 +158,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     rotation: number;
     basePan: number;
     cycles: number[];
-    excludedAreas: Rect[];
+    excludedAreas: InteractiveCanvasArea[];
 
     protected tempCanvas: HTMLCanvasElement;
     protected shouldDraw: boolean;
@@ -374,14 +375,17 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             + this.canvasHeight * untracked(() => this.panOffset());
         this.cycles = this.infinite
             ? [this.basePan - this.fullHeight, this.basePan, this.basePan + this.fullHeight] : [0];
-        this.excludedAreas = (params.excludedAreas || []).flatMap(coords => {
+        this.excludedAreas = (params.excludedAreas || []).map(coords => {
             const x = coords.x * this.ratio;
             const y = coords.y * this.ratio;
             const width = coords.width * this.ratio;
             const height = coords.height * this.ratio;
-            return this.cycles.map(cycle => {
-                return new Rect(x, y + cycle, width, height);
-            });
+            return {
+                id: coords.id || "",
+                shapes: this.cycles.map(cycle => {
+                    return new Rect(x, y + cycle, width, height);
+                })
+            }
         });
         this.items.forEach(item => {
             item.canvasParams = params;

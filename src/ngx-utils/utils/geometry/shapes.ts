@@ -1,5 +1,5 @@
 import {IPoint, IShape, ShapeDistance, ShapeIntersection} from "../../common-types";
-import {gjkDistance, gjkIntersection} from "./gjk";
+import {gjkIntersection, gjkDistance} from "./gjk";
 import {
     addPts,
     dotProduct,
@@ -9,8 +9,7 @@ import {
     multiplyPts,
     perpendicular,
     rotateDeg,
-    subPts,
-    toRadians
+    subPts
 } from "./functions";
 
 abstract class Shape implements IShape {
@@ -193,12 +192,13 @@ export class Rect extends Shape {
     support(dir: IPoint) {
         const ang = this.rotation ?? 0;
         const dLocal = rotateDeg(ensurePoint(dir, {x: 1, y: 0}), -ang);
-        const hw = Math.max(0, this.width / 2),
-            hh = Math.max(0, this.height / 2);
-        if (hw === 0 && hh === 0) return ensurePoint(this.center);
+        const hw = this.width / 2;
+        const hh = this.height / 2;
+        // Standard AABB support
         const lx = dLocal.x >= 0 ? hw : -hw;
         const ly = dLocal.y >= 0 ? hh : -hh;
-        return addPts(rotateDeg({x: lx, y: ly}, ang), this.center);
+        // Return relative to this shape's position (Parent Space)
+        return addPts(rotateDeg({x: lx, y: ly}, ang), this.pt);
     }
 
     move(pos: IPoint): Rect {
@@ -241,13 +241,14 @@ export class Oval extends Shape {
 
     support(dir: IPoint) {
         const ang = this.rotation ?? 0;
-        const d = rotateDeg(ensurePoint(dir, {x: 1, y: 0}), -ang);
-        const a = Math.max(0, this.width / 2),
-            b = Math.max(0, this.height / 2);
-        if (a === 0 && b === 0) return ensurePoint(this.center);
-        const q = Math.hypot(a * d.x, b * d.y) || 1;
-        const lx = (a * a * d.x) / q, ly = (b * b * d.y) / q;
-        return addPts(rotateDeg({x: lx, y: ly}, ang), this.center);
+        const dLocal = rotateDeg(ensurePoint(dir, { x: 1, y: 0 }), -ang);
+        const hw = this.width / 2;
+        const hh = this.height / 2;
+        // Ellipse support formula (Avoids boxy corners)
+        const q = Math.hypot(hw * dLocal.x, hh * dLocal.y) || 1;
+        const lx = (hw * hw * dLocal.x) / q;
+        const ly = (hh * hh * dLocal.y) / q;
+        return addPts(rotateDeg({ x: lx, y: ly }, ang), this.pt);
     }
 
     move(pos: IPoint): Oval {
@@ -285,8 +286,27 @@ export class ShapeGroup extends Shape {
         return groupPath;
     }
 
-    support(): IPoint {
-        return this.center;
+    support(dir: IPoint): IPoint {
+        let bestPoint: IPoint | null = null;
+        let maxDot = -Infinity;
+
+        for (const shape of this.subShapes) {
+            // 1. Get child's support (Relative to this Group's origin)
+            const p = shape.support(dir);
+
+            // 2. Move that point into the space ABOVE this group
+            const worldPoint = addPts(p, this.pt);
+
+            // 3. We must compare dot products in a consistent space
+            const d = worldPoint.x * dir.x + worldPoint.y * dir.y;
+
+            if (d > maxDot) {
+                maxDot = d;
+                bestPoint = worldPoint;
+            }
+        }
+
+        return bestPoint ?? this.center;
     }
 
     move(pos: IPoint): IShape {

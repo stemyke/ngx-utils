@@ -29,6 +29,7 @@
                             "src/app/app.scss"
                         ],
                         "scripts": [
+                            "node_modules/hammerjs/hammer.min.js",
                             "src/icons.js"
                         ]
                     },

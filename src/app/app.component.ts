@@ -1,5 +1,13 @@
 import {Component, OnInit, ViewEncapsulation} from "@angular/core";
-import {ChipOption, Enum, ITableColumns, UniversalService} from "../public_api";
+import {
+    ChipOption,
+    Circle, DistanceRenderer,
+    Enum,
+    InteractiveCanvasRenderer,
+    ITableColumns,
+    Rect,
+    UniversalService
+} from "../public_api";
 
 @Component({
     standalone: false,
@@ -20,6 +28,9 @@ export class AppComponent implements OnInit {
     asset: string;
     html: string;
     listData: Record<string, any>;
+    rects: Rect[];
+    circles: Circle[];
+    renderers: InteractiveCanvasRenderer[];
 
     constructor(private universal: UniversalService) {
         this.options = [
@@ -52,6 +63,7 @@ export class AppComponent implements OnInit {
                 filter: true,
                 filterType: "enum",
                 sort: "title",
+
                 enum: ["Cím1", "Cím2", "Cím3"]
             },
             content: {
@@ -74,6 +86,17 @@ export class AppComponent implements OnInit {
         this.listData = {
             deliveryMethod: new Enum("standard")
         };
+        this.rects = [
+            new Rect(10, 30, 15, 15, 0),
+            new Rect(45, 70, 5, 100, 0),
+        ];
+        this.circles = [
+            new Circle(70, 50, 5),
+            new Circle(80, 15, 5),
+        ];
+        this.renderers = [
+            new DistanceRenderer()
+        ];
     }
 
     ngOnInit(): void {

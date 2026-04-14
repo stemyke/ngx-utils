@@ -3,6 +3,7 @@ import {
     CanvasItemDirection,
     Frame,
     InteractiveCanvas,
+    InteractiveCanvasArea,
     InteractiveCanvasItem,
     InteractiveCanvasParams,
     IPoint,
@@ -23,7 +24,10 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     protected rot: number;
     protected mFrame: Rect;
     protected mShapes: IShape[];
-    protected mDistances: Map<InteractiveCanvasItem, number>;
+
+    get id(): string {
+        return null;
+    }
 
     get frame(): Frame {
         return this.mFrame;
@@ -127,6 +131,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
 
     protected validPos: Point;
     protected validRot: number;
+    protected otherAreas: InteractiveCanvasArea[];
 
     constructor() {
         this.active = false;
@@ -139,13 +144,17 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         this.direction = "none";
         this.mFrame = new Rect(0, 0, 3, 3);
         this.mShapes = [];
-        this.mDistances = new Map();
     }
 
     draw(ctx: CanvasRenderingContext2D, shape: IShape): MaybePromise<void> {
         const path = shape.getPath(0, 0, 1);
         ctx.fill(path);
         ctx.stroke(path);
+
+        if (!this.isValid) {
+            ctx.fillStyle = `rgba(232, 28, 28, 0.55)`;
+            ctx.fill(path);
+        }
     }
 
     ngOnChanges(): void {
@@ -187,12 +196,13 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
             this.direction === "horizontal" ? this.pos.y : y
         );
         this.pos = new Point(target);
+        this.makeDistances();
         this.calcShapes();
         this.validPos = this.checkIsValid() ? this.pos : this.validPos;
     }
 
     moveEnd(): void {
-        this.mDistances.clear();
+        this.clearDistances();
         if (this.isValid) return;
         this.pos = this.validPos;
         this.calcShapes();
@@ -200,15 +210,33 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
 
     rotateTo(value: number): void {
         this.rot = isNaN(value) ? this.rot : value;
+        this.makeDistances();
         this.calcShapes();
         this.validRot = this.checkIsValid() ? this.rot : this.validRot;
     }
 
     rotateEnd(): void {
-        this.mDistances.clear();
+        this.clearDistances();
         if (this.isValid) return;
         this.rot = this.validRot;
         this.calcShapes();
+    }
+
+    protected makeDistances(): void {
+        if (!this.canvas || this.otherAreas) return;
+        this.otherAreas = [
+            ...(this.canvas.excludedAreas || []),
+            ...(this.canvas.items || []).filter(item => item !== this),
+        ];
+        this.otherAreas.forEach(area => {
+            area.distance = this.distToPixels(this.getMinDistance(area));
+        });
+    }
+
+    protected clearDistances(): void {
+        if (!this.otherAreas) return;
+        this.otherAreas.forEach(area => area.distance = null);
+        this.otherAreas = null;
     }
 
     protected restrictPosition(x: number, y: number): IPoint {
@@ -222,35 +250,27 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
 
     protected checkIsValid(): boolean {
         return this.isValidByParams() &&
-            this.canvas.items.every(other => this === other || this.isValidByDistance(other));
+            this.otherAreas.every(other => this.isValidByDistance(other));
     }
 
     protected isValidByParams(): boolean {
-        return !this.shapes.some(shape => {
-            return this.canvas.excludedAreas.some(ex => {
-                return shape.intersects(ex);
-            });
-        });
+        return true;
     }
 
-    protected isValidByDistance(other: InteractiveCanvasItem): boolean {
-        if (!this.mDistances.has(other)) {
-            this.mDistances.set(other, this.distToPixels(this.getMinDistance(other)));
-        }
-        const minPixels = this.mDistances.get(other);
+    protected isValidByDistance(other: InteractiveCanvasArea): boolean {
         return !this.shapes.some(shape => {
             return other.shapes.some(os => {
-                return shape.distance(os) <= minPixels;
+                return shape.distance(os) <= other.distance;
             });
         });
     }
 
     protected distToPixels(value: number): number {
-        return !this.canvas ? 1 : Math.max(1, (isNaN(value) || value < 0 ? 0 : value) * (this.canvas.ratio ?? 1));
+        return !this.canvas ? 1 : (isNaN(value) || value < 0 ? 0 : value) * (this.canvas.ratio ?? 1);
     }
 
-    protected getMinDistance(other: InteractiveCanvasItem): number {
-        return !other ? 0 : null;
+    protected getMinDistance(other: InteractiveCanvasArea): number {
+        return !other ? 0 : 10;
     }
 
     protected calcShape(x: number, y: number): IShape {

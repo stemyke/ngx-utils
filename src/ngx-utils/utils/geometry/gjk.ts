@@ -1,6 +1,17 @@
 import {IPoint, IShape, ShapeDistance, ShapeIntersection} from "../../common-types";
-import {tripleProduct, subPts, ensurePoint, negatePt, lerpPts, distance, addPts, normalizePt} from "./functions";
-import {EPSILON} from "../math.utils";
+import {
+    tripleProduct,
+    subPts,
+    ensurePoint,
+    negatePt,
+    lerpPts,
+    distance,
+    addPts,
+    normalizePt,
+    dotProduct, lengthOfPt, scalePt, lengthSq
+} from "./functions";
+import {clamp, EPSILON} from "../math.utils";
+import {dot} from "node:test/reporters";
 
 interface SimplexLine {
     p: IPoint;
@@ -15,78 +26,88 @@ interface Dir {
     y: number;
 }
 
-const MAX_ITERS = 40;
 
 // =========================
 // GJK distance (robust)
 // =========================
+const MAX_ITERS = 40;
+const GJK_EPS = 1e-9;
+
 export function gjkDistance(A: IShape, B: IShape): ShapeDistance {
-    // 1) Quick overlap
+    // 1) Fast boolean hit check using your existing intersection logic
     const inter = gjkIntersection(A, B);
     if (inter.hit) {
-        // Pass through pa/pb
-        return { distance: 0, pa: inter.pa ?? null, pb: inter.pb ?? null };
+        return { distance: 0, pa: inter.pa, pb: inter.pb };
     }
 
-    const ca = A.center;
-    const cb = B.center;
+    // 2) Initialization
+    let d = subPts(B.center, A.center);
+    if (Math.hypot(d.x, d.y) < GJK_EPS) d = { x: 1, y: 0 };
 
-    // 2) Bisection along the center-line to find the first hit pose
-    let s = 0;
-    let e = 1;
-    let iters = 0;
+    const simplex: {p: IPoint, a: IPoint, b: IPoint}[] = [];
+    let lastDistSq = Infinity;
 
-    // Keep the best "hit" snapshot and its center so we can map witnesses back
-    let hitSnap: ShapeIntersection | null = null;
-    let hitCenter = ca;
+    // 3) GJK Distance Loop
+    for (let i = 0; i < MAX_ITERS; i++) {
+        const pa = A.support(d);
+        const pb = B.support(negatePt(d));
+        const p = subPts(pa, pb);
 
-    while ((e - s) > EPSILON && iters < MAX_ITERS) {
-        iters++;
-        const t = (e + s) * 0.5;
-
-        // Assumes A.move(newCenter) returns a NEW shape whose center is exactly this point
-        const aMoved = A.move(lerpPts(ca, cb, t));
-        const test = gjkIntersection(aMoved, B);
-
-        if (test.hit) {
-            hitSnap = test;
-            hitCenter = aMoved.center;
-            e = t; // shrink toward contact
-        } else {
-            s = t; // still separated
+        // Check if new point moves us past origin in direction d
+        const dotP = p.x * d.x + p.y * d.y;
+        if (lastDistSq !== Infinity && (dotP < 0 || Math.abs(lastDistSq - dotP) < GJK_EPS)) {
+            break;
         }
-    }
 
-    // 3) Make sure we end with a hit snapshot (in case we stopped on iteration cap)
-    if (!hitSnap) {
-        const aMoved = A.move(lerpPts(ca, cb, e));
-        const test = gjkIntersection(aMoved, B);
-        if (test.hit) {
-            hitSnap = test;
-            hitCenter = aMoved.center;
-        } else {
-            // Extremely degenerate: no hit even at e ~ 1 (shouldn't happen for non-degenerate shapes).
-            // Fall back to center-line direction as a last resort.
-            const dir = normalizePt(subPts(cb, ca));
-            const pa0 = A.support(dir);
-            const pb0 = B.support(negatePt(dir));
-            return { distance: distance(pa0, pb0), pa: pa0, pb: pb0 };
+        simplex.push({ p, a: pa, b: pb });
+
+        // Calculate closest point on Simplex
+        const result = solveDistanceSimplex(simplex);
+        const distSq = result.closest.x * result.closest.x + result.closest.y * result.closest.y;
+
+        // If distance is zero, we are overlapping
+        if (distSq < GJK_EPS) {
+            return { distance: 0, pa: result.pa, pb: result.pb };
         }
+
+        if (lastDistSq - distSq < GJK_EPS) break;
+        lastDistSq = distSq;
+
+        // Search direction: From closest point P to Origin
+        d = { x: -result.closest.x, y: -result.closest.y };
+        if (Math.hypot(d.x, d.y) < GJK_EPS) break;
     }
 
-    // 4) Map witnesses back to the original A pose
-    //    (We moved A by (hitCenter - ca); to undo, offset A's witness by (ca - hitCenter))
-    const offset = subPts(ca, hitCenter);
-    const pa0 = addPts(hitSnap!.pa, offset);
-    const pb0 = hitSnap!.pb;
+    const final = solveDistanceSimplex(simplex);
+    return {
+        distance: Math.sqrt(lastDistSq),
+        pa: final.pa,
+        pb: final.pb
+    };
+}
 
-    // 5) True geometric separation is the distance between these boundary points
-    const d = distance(pa0, pb0);
+function solveDistanceSimplex(simplex: {p: IPoint, a: IPoint, b: IPoint}[]) {
+    if (simplex.length === 1) {
+        return { closest: simplex[0].p, pa: simplex[0].a, pb: simplex[0].b };
+    }
+
+    // Segment B-A
+    const B = simplex[simplex.length - 1];
+    const A = simplex[simplex.length - 2];
+    const AB = subPts(A.p, B.p);
+    const BO = { x: -B.p.x, y: -B.p.y };
+
+    const abLenSq = AB.x * AB.x + AB.y * AB.y;
+    let t = (abLenSq > 1e-12) ? (BO.x * AB.x + BO.y * AB.y) / abLenSq : 0;
+    t = Math.max(0, Math.min(1, t));
+
+    // For distance calculation, always reduce to the best 2 points
+    if (simplex.length > 2) simplex.splice(0, simplex.length - 2);
 
     return {
-        distance: d,
-        pa: d > 0 ? pa0 : null,
-        pb: d > 0 ? pb0 : null
+        closest: { x: B.p.x + AB.x * t, y: B.p.y + AB.y * t },
+        pa: { x: B.a.x + (A.a.x - B.a.x) * t, y: B.a.y + (A.a.y - B.a.y) * t },
+        pb: { x: B.b.x + (A.b.x - B.b.x) * t, y: B.b.y + (A.b.y - B.b.y) * t }
     };
 }
 

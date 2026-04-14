@@ -494,7 +494,7 @@ export interface RectCoords {
     y: number;
     width: number;
     height: number;
-    meta?: Record<string, any>;
+    id?: string;
 }
 
 /**
@@ -517,13 +517,20 @@ export interface InteractiveCanvasParams {
 }
 
 /**
+ * Interface for an area that covers a part of the interactive canvas
+ */
+export interface InteractiveCanvasArea {
+    readonly id: string;
+    readonly shapes: ReadonlyArray<IShape>;
+    distance?: number;
+}
+/**
  * Interface for an interactive canvas item
  */
-export interface InteractiveCanvasItem {
+export interface InteractiveCanvasItem extends InteractiveCanvasArea {
     readonly position: IPoint;
     readonly rotation: number;
     readonly frame: Frame;
-    readonly shapes: ReadonlyArray<IShape>;
     readonly isValid: boolean;
     readonly validPosition: IPoint;
     readonly validRotation: number;
@@ -568,7 +575,7 @@ export interface InteractiveCanvas {
     readonly rotation: number;
     readonly basePan: number;
     readonly cycles?: ReadonlyArray<number>;
-    readonly excludedAreas?: ReadonlyArray<Frame>;
+    readonly excludedAreas?: ReadonlyArray<InteractiveCanvasArea>;
     // --- Optionals, for back compatibility ---
     rendered?: boolean;
     // --- Functions ---

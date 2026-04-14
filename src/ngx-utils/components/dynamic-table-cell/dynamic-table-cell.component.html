@@ -4,7 +4,9 @@
 <ng-template #defaultTemplate let-context let-column="column" let-id="id" let-value="value">
     @switch (column.filterType) {
         @case ('checkbox') {
-            <icon [name]="value ? 'check' : 'xmark'"></icon>
+            <div class="table-checkbox">
+                <icon [name]="value ? 'check' : 'xmark'"></icon>
+            </div>
         }
         @case ('enum') {
             @let optionPrefix = column.enumPrefix || id;
