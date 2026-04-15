@@ -1,7 +1,8 @@
-import {IPoint, IShape, ShapeDistance, ShapeIntersection} from "../../common-types";
-import {gjkIntersection, gjkDistance} from "./gjk";
+import {IPoint, IShape, ShapeIntersection} from "../../common-types";
+import {gjkIntersection} from "./gjk";
 import {
     addPts,
+    distance,
     dotProduct,
     ensurePoint,
     isPoint,
@@ -36,22 +37,20 @@ abstract class Shape implements IShape {
 
     abstract support(dir: IPoint): IPoint;
 
+    abstract expand(value: number): IShape;
+
     abstract move(pos: IPoint): IShape;
 
-    intersection(shape: IShape): ShapeIntersection {
-        return gjkIntersection(this, shape);
+    intersection(shape: IShape, logs: boolean): ShapeIntersection {
+        return gjkIntersection(this, shape, logs);
     }
 
-    intersects(shape: IShape): boolean {
-        return this.intersection(shape).hit;
-    }
-
-    minDistance(shape: IShape): ShapeDistance {
-        return gjkDistance(this, shape);
+    intersects(shape: IShape, logs: boolean): boolean {
+        return this.intersection(shape, logs).hit;
     }
 
     distance(shape: IShape): number {
-        return this.minDistance(shape).distance;
+        return distance(this.center, shape.center);
     }
 }
 
@@ -81,6 +80,10 @@ export class Point extends Shape {
 
     support(): IPoint {
         return this.center;
+    }
+
+    expand(): IShape {
+        return this;
     }
 
     move(pos: IPoint): IShape {
@@ -164,7 +167,8 @@ export class Rect extends Shape {
     constructor(x: number, y: number,
                 readonly width: number,
                 readonly height: number,
-                readonly rotation: number = 0) {
+                readonly rotation: number = 0,
+                readonly radius: number = 0) {
         super(x, y);
     }
 
@@ -172,10 +176,11 @@ export class Rect extends Shape {
         ratio = ratio ?? 1;
         const w = this.width * ratio;
         const h = this.height * ratio;
+        const r = this.radius * ratio;
 
         // 1. Create the local path for the rectangle (centered at 0,0)
         const rectPath = new Path2D();
-        rectPath.rect(-w / 2, -h / 2, w, h);
+        rectPath.roundRect(-w / 2, -h / 2, w, h, r);
 
         // 2. Create a DOMMatrix to handle the rotation
         const matrix = new DOMMatrix()
@@ -189,20 +194,43 @@ export class Rect extends Shape {
         return finalPath;
     }
 
-    support(dir: IPoint) {
+    support(dir: IPoint, logs?: boolean): IPoint {
         const ang = this.rotation ?? 0;
+
+        // 1. Move search direction into local space
         const dLocal = rotateDeg(ensurePoint(dir, {x: 1, y: 0}), -ang);
-        const hw = this.width / 2;
-        const hh = this.height / 2;
-        // Standard AABB support
+
+        // 2. Use the SHARP dimensions for the base calculation
+        // We subtract the radius here because the 'roundRect' expansion
+        // happens outward from the inner core.
+        const hw = Math.max(0, this.width / 2 - this.radius);
+        const hh = Math.max(0, this.height / 2 - this.radius);
+
+        // 3. Find the local corner of that inner core
         const lx = dLocal.x >= 0 ? hw : -hw;
         const ly = dLocal.y >= 0 ? hh : -hh;
-        // Return relative to this shape's position (Parent Space)
-        return addPts(rotateDeg({x: lx, y: ly}, ang), this.pt);
+
+        // 4. Rotate that core corner back to world space
+        const corePoint = addPts(rotateDeg({x: lx, y: ly}, ang), this.pt);
+
+        // 5. Add the "Radial Expansion"
+        // This turns the sharp corner into a circular arc for GJK
+        const mag = Math.hypot(dir.x, dir.y);
+        if (mag < 1e-9 || this.radius <= 0) return corePoint;
+
+        return {
+            x: corePoint.x + (dir.x / mag) * this.radius,
+            y: corePoint.y + (dir.y / mag) * this.radius
+        };
+    }
+
+    expand(value: number): Rect {
+        value = Math.abs(value ?? 0);
+        return new Rect(this.x, this.y, this.width + value * 2, this.height + value * 2, this.rotation, this.radius + value);
     }
 
     move(pos: IPoint): Rect {
-        return new Rect(pos.x, pos.y, this.width, this.height, this.rotation);
+        return new Rect(pos.x, pos.y, this.width, this.height, this.rotation, this.radius);
     }
 }
 
@@ -241,14 +269,25 @@ export class Oval extends Shape {
 
     support(dir: IPoint) {
         const ang = this.rotation ?? 0;
+        // 1. Move search direction into local, non-rotated space
         const dLocal = rotateDeg(ensurePoint(dir, { x: 1, y: 0 }), -ang);
+
         const hw = this.width / 2;
         const hh = this.height / 2;
-        // Ellipse support formula (Avoids boxy corners)
+
+        // 2. High-precision ellipse support formula
+        // This finds the EXACT point on the curved boundary
         const q = Math.hypot(hw * dLocal.x, hh * dLocal.y) || 1;
         const lx = (hw * hw * dLocal.x) / q;
         const ly = (hh * hh * dLocal.y) / q;
+
+        // 3. Rotate back and add this shape's position
         return addPts(rotateDeg({ x: lx, y: ly }, ang), this.pt);
+    }
+
+    expand(value: number): Oval {
+        value = Math.abs(value ?? 0);
+        return new Oval(this.x, this.y, this.width + value * 2, this.height + value * 2, this.rotation);
     }
 
     move(pos: IPoint): Oval {
@@ -261,6 +300,11 @@ export class Circle extends Oval {
         super(x, y, radius * 2, radius * 2, rotation);
     }
 
+    expand(value: number): Circle {
+        value = Math.abs(value ?? 0);
+        return new Circle(this.x, this.y, this.radius + value, this.rotation);
+    }
+
     move(pos: IPoint): Circle {
         return new Circle(pos.x, pos.y, this.radius, this.rotation);
     }
@@ -268,7 +312,7 @@ export class Circle extends Oval {
 
 export class ShapeGroup extends Shape {
 
-    constructor(x: number, y: number, readonly subShapes: ReadonlyArray<IShape>) {
+    constructor(x: number, y: number, protected readonly subShapes: ReadonlyArray<IShape>) {
         super(x, y);
     }
 
@@ -306,7 +350,12 @@ export class ShapeGroup extends Shape {
             }
         }
 
-        return bestPoint ?? this.center;
+        return bestPoint ?? this.pt;
+    }
+
+    expand(value: number): IShape {
+        value = Math.abs(value ?? 0);
+        return new ShapeGroup(this.x, this.y, this.subShapes.map(s => s.expand(value)));
     }
 
     move(pos: IPoint): IShape {

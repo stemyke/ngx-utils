@@ -461,21 +461,14 @@ export interface ShapeIntersection {
     point?: IPoint;
 }
 
-export interface ShapeDistance {
-    distance: number;
-    pa?: IPoint;
-    pb?: IPoint;
-}
-
 export interface IShape extends IPoint {
     readonly center: IPoint;
-    readonly subShapes?: ReadonlyArray<IShape>;
     getPath(x: number, y: number, ratio?: number): Path2D;
-    support(dir: IPoint): IPoint;
+    support(dir: IPoint, logs?: boolean): IPoint;
+    expand(value: number): IShape;
     move(pos: IPoint): IShape;
-    intersection(shape: IShape): ShapeIntersection;
-    intersects(shape: IShape): boolean;
-    minDistance(shape: IShape): ShapeDistance;
+    intersection(shape: IShape, logs?: boolean): ShapeIntersection;
+    intersects(shape: IShape, logs?: boolean): boolean;
     distance(shape: IShape): number;
 }
 
@@ -522,7 +515,6 @@ export interface InteractiveCanvasParams {
 export interface InteractiveCanvasArea {
     readonly id: string;
     readonly shapes: ReadonlyArray<IShape>;
-    distance?: number;
 }
 /**
  * Interface for an interactive canvas item
@@ -540,6 +532,7 @@ export interface InteractiveCanvasItem extends InteractiveCanvasArea {
     readonly canvas: InteractiveCanvas;
     readonly index: number;
     readonly canvasParams: InteractiveCanvasParams;
+    readonly hitShapes: ReadonlyArray<IShape>;
     draw(ctx: CanvasRenderingContext2D, shape: IShape): MaybePromise<void>;
 }
 

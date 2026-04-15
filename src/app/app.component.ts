@@ -1,8 +1,9 @@
 import {Component, OnInit, ViewEncapsulation} from "@angular/core";
 import {
     ChipOption,
-    Circle, DistanceRenderer,
+    Circle,
     Enum,
+    HitZoneRenderer,
     InteractiveCanvasRenderer,
     ITableColumns,
     Rect,
@@ -87,15 +88,15 @@ export class AppComponent implements OnInit {
             deliveryMethod: new Enum("standard")
         };
         this.rects = [
-            new Rect(10, 30, 15, 15, 0),
+            new Rect(10, 30, 15, 15, 10),
             new Rect(45, 70, 5, 100, 0),
         ];
         this.circles = [
-            new Circle(70, 50, 5),
-            new Circle(80, 15, 5),
+            new Circle(70, 15, 5),
+            new Circle(80, 50, 20),
         ];
         this.renderers = [
-            new DistanceRenderer()
+            new HitZoneRenderer()
         ];
     }
 

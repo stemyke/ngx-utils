@@ -87,7 +87,6 @@ export {
     PaginationItemContext,
     IPoint,
     ShapeIntersection,
-    ShapeDistance,
     IShape,
     CanvasResizeMode,
     CanvasItemDirection,
@@ -187,8 +186,8 @@ export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {ForbiddenZone} from "./ngx-utils/utils/forbidden-zone";
 export {GenericValue} from "./ngx-utils/utils/generic-value";
 export {FileSystemEntryOpenResult, FileSystemEntryOpenCb, FileSystemEntry} from "./ngx-utils/utils/file-system";
-export {DistanceRenderer} from "./ngx-utils/utils/canvas-renderers/distance-renderer";
-export {ExclusionsRenderer} from "./ngx-utils/utils/canvas-renderers/exclusions-renderer";
+export {HitZoneRenderer} from "./ngx-utils/utils/canvas-renderers/hit-zone.renderer";
+export {ExclusionsRenderer} from "./ngx-utils/utils/canvas-renderers/exclusions.renderer";
 export {RulerCanvasRenderer} from "./ngx-utils/utils/canvas-renderers/ruler-canvas.renderer";
 export {
     dotProduct,
@@ -213,8 +212,6 @@ export {
     rotateRad,
     toDegrees,
     toRadians,
-    gjkDistance,
-    gjkIntersection,
     Point, Rect, Oval, Circle, ShapeGroup
 } from "./ngx-utils/utils/geometry";
 export {Initializer} from "./ngx-utils/utils/initializer";

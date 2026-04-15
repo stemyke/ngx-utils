@@ -128,10 +128,10 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     canvas: InteractiveCanvas;
     index: number;
     canvasParams: InteractiveCanvasParams;
+    hitShapes: ReadonlyArray<IShape>;
 
     protected validPos: Point;
     protected validRot: number;
-    protected otherAreas: InteractiveCanvasArea[];
 
     constructor() {
         this.active = false;
@@ -196,13 +196,13 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
             this.direction === "horizontal" ? this.pos.y : y
         );
         this.pos = new Point(target);
-        this.makeDistances();
+        this.makeHitShapes();
         this.calcShapes();
         this.validPos = this.checkIsValid() ? this.pos : this.validPos;
     }
 
     moveEnd(): void {
-        this.clearDistances();
+        this.clearHitShapes();
         if (this.isValid) return;
         this.pos = this.validPos;
         this.calcShapes();
@@ -210,33 +210,32 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
 
     rotateTo(value: number): void {
         this.rot = isNaN(value) ? this.rot : value;
-        this.makeDistances();
+        this.makeHitShapes();
         this.calcShapes();
         this.validRot = this.checkIsValid() ? this.rot : this.validRot;
     }
 
     rotateEnd(): void {
-        this.clearDistances();
+        this.clearHitShapes();
         if (this.isValid) return;
         this.rot = this.validRot;
         this.calcShapes();
     }
 
-    protected makeDistances(): void {
-        if (!this.canvas || this.otherAreas) return;
-        this.otherAreas = [
+    protected makeHitShapes(): void {
+        if (!this.canvas || this.hitShapes) return;
+        this.canvas.selectedItem = this;
+        this.hitShapes = [
             ...(this.canvas.excludedAreas || []),
             ...(this.canvas.items || []).filter(item => item !== this),
-        ];
-        this.otherAreas.forEach(area => {
-            area.distance = this.distToPixels(this.getMinDistance(area));
+        ].flatMap(area => {
+            const distance = this.distToPixels(this.getMinDistance(area));
+            return area.shapes.map(shape => shape.expand(distance));
         });
     }
 
-    protected clearDistances(): void {
-        if (!this.otherAreas) return;
-        this.otherAreas.forEach(area => area.distance = null);
-        this.otherAreas = null;
+    protected clearHitShapes(): void {
+        this.hitShapes = null;
     }
 
     protected restrictPosition(x: number, y: number): IPoint {
@@ -250,18 +249,16 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
 
     protected checkIsValid(): boolean {
         return this.isValidByParams() &&
-            this.otherAreas.every(other => this.isValidByDistance(other));
+            this.hitShapes.every(other => this.isValidByDistance(other));
     }
 
     protected isValidByParams(): boolean {
         return true;
     }
 
-    protected isValidByDistance(other: InteractiveCanvasArea): boolean {
+    protected isValidByDistance(other: IShape): boolean {
         return !this.shapes.some(shape => {
-            return other.shapes.some(os => {
-                return shape.distance(os) <= other.distance;
-            });
+            return other.intersects(shape, true);
         });
     }
 

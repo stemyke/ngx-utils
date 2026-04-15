@@ -1,5 +1,4 @@
 export {
-    gjkDistance,
     gjkIntersection
 } from "./gjk"
 

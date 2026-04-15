@@ -458,3 +458,44 @@ export class CanvasUtils {
         return fontSize;
     }
 }
+
+let osCanvas: HTMLCanvasElement = null;
+
+export function getOffScreenCanvas(): HTMLCanvasElement {
+    osCanvas = osCanvas || document.createElement("canvas");
+    return osCanvas;
+}
+
+export function createStripePattern(size: number, color1: string, color2: string) {
+    const patternCanvas = getOffScreenCanvas();
+    const ctx = patternCanvas.getContext("2d");
+
+    // The size of the tile determines the thickness of the stripes
+    patternCanvas.width = size;
+    patternCanvas.height = size;
+
+    // 1. Fill background
+    ctx.fillStyle = color1;
+    ctx.fillRect(0, 0, size, size);
+
+    // 2. Draw the diagonal stripes
+    ctx.fillStyle = color2;
+    ctx.beginPath();
+
+    // Bottom-left triangle
+    ctx.moveTo(0, size);
+    ctx.lineTo(size, 0);
+    ctx.lineTo(size / 2, 0);
+    ctx.lineTo(0, size / 2);
+    ctx.closePath();
+
+    // Top-right triangle
+    ctx.moveTo(size, size);
+    ctx.lineTo(size, size / 2);
+    ctx.lineTo(size / 2, size);
+    ctx.closePath();
+
+    ctx.fill();
+
+    return ctx.createPattern(patternCanvas, "repeat");
+}
