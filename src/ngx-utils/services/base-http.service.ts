@@ -1,9 +1,8 @@
 import {Inject, Injectable, Injector, Optional} from "@angular/core";
 import {HttpErrorResponse, HttpEventType, HttpHeaders, HttpParams, HttpResponse} from "@angular/common/http";
-import {Request} from "express";
 
 import {
-    CacheExpireMode,
+    CacheExpireMode, ExpressRequest,
     HttpClientRequestOptions,
     HttpRequestHeaders,
     HttpRequestOptions,
@@ -70,7 +69,7 @@ export class BaseHttpService implements IHttpService {
                 @Inject(LANGUAGE_SERVICE) readonly language: ILanguageService,
                 @Inject(TOASTER_SERVICE) readonly toaster: IToasterService,
                 @Inject(CONFIG_SERVICE) readonly configs: IConfigService,
-                @Optional() @Inject(EXPRESS_REQUEST) readonly request: Request = null
+                @Optional() @Inject(EXPRESS_REQUEST) readonly request: ExpressRequest = null
     ) {
         this.bag = new RequestBag(this.client.bag);
         this.initService();

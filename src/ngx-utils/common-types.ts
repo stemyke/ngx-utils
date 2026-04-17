@@ -676,6 +676,9 @@ export interface SvgDefinition {
 export type SvgSourceModifier = (svg: SVGSVGElement, width: number, height: number) => string;
 
 // --- Api service ---
+export interface ExpressRequest {
+    [key: string]: any;
+}
 
 export interface IBaseHttpClient extends HttpClient {
     readonly requestHeaders: Readonly<HttpRequestHeaders>;
