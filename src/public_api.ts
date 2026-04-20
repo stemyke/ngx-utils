@@ -93,7 +93,6 @@ export {
     CanvasPaintFunc,
     RangeCoords,
     RectCoords,
-    Frame,
     InteractiveCanvasParams,
     InteractiveCanvasArea,
     InteractiveCanvasItem,

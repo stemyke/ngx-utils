@@ -3,7 +3,8 @@ import {
     contentChildren,
     effect,
     ElementRef,
-    HostListener, inject,
+    HostListener,
+    inject,
     input,
     model,
     OnDestroy,
@@ -11,13 +12,15 @@ import {
     output,
     Renderer2,
     untracked,
-    ViewChild, ViewEncapsulation
+    ViewChild,
+    ViewEncapsulation
 } from "@angular/core";
 
 import {
     CanvasPaintFunc,
     CanvasResizeMode,
-    InteractiveCanvas, InteractiveCanvasArea,
+    InteractiveCanvas,
+    InteractiveCanvasArea,
     InteractiveCanvasItem,
     InteractiveCanvasParams,
     InteractiveCanvasPointer,
@@ -26,7 +29,7 @@ import {
     IPoint,
     RangeCoords
 } from "../../common-types";
-import {Point, Rect, toRadians} from "../../utils/geometry";
+import {Point, Rect} from "../../utils/geometry";
 import {normalizeRange, overflow} from "../../utils/math.utils";
 import {UniversalService} from "../../services/universal.service";
 
@@ -77,9 +80,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     /**
      * Canvas params
      */
-    readonly params = input({}, {
-        transform: (v: InteractiveCanvasParams) => v || {}
-    });
+    readonly params = input<InteractiveCanvasParams>({});
 
     /**
      * Model signal for selected index
@@ -164,10 +165,10 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     protected shouldDraw: boolean;
     protected hoveredIndex: number;
 
-    @ViewChild("containerElem", {static: true})
+    @ViewChild("containerElem")
     protected containerElem: ElementRef<HTMLDivElement>;
 
-    @ViewChild("canvasElem", {static: true})
+    @ViewChild("canvasElem")
     protected canvasElem: ElementRef<HTMLCanvasElement>;
 
     protected touched: boolean;
@@ -216,7 +217,7 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
         effect(() => {
             const realWidth = this.width();
             const realHeight = this.height();
-            const params = this.params();
+            const params = this.params() || {};
             this.xRange = normalizeRange(params.xRange || [0, realWidth]);
             this.yRange = normalizeRange(params.yRange || [0, realHeight]);
             this.resize();
@@ -368,12 +369,12 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     protected fixRotation(): void {
         // No need to track params changes because this function will be called from an effect
         // already depending on params anyway
-        const params = untracked(() => this.params());
+        const params = untracked(() => this.params()) || {};
         if (this.fullHeight <= 0) return;
         this.rotation = overflow(Math.round(this.rotation * 100) / 100, -180, 180);
         this.basePan = this.rotation / 360 * this.fullHeight
             + this.canvasHeight * untracked(() => this.panOffset());
-        this.cycles = this.infinite
+        this.cycles = this.isInfinite
             ? [this.basePan - this.fullHeight, this.basePan, this.basePan + this.fullHeight] : [0];
         this.excludedAreas = (params.excludedAreas || []).map(coords => {
             const x = coords.x * this.ratio;
@@ -423,22 +424,9 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
     }
 
     protected updateCursor(): void {
-        const cursor = this.getCursor();
+        if (!this.containerElem) return;
+        const cursor = this.hoveredItem?.cursor ?? "default";
         this.renderer.setStyle(this.containerElem.nativeElement, "cursor", cursor);
-    }
-
-    protected getCursor(): string {
-        const hovered = this.hoveredItem;
-        if (!hovered) return "default";
-        switch (hovered.direction) {
-            case "free":
-                return "all-scroll";
-            case "horizontal":
-                return "";
-            case "vertical":
-                return "row-resize";
-        }
-        return "pointer";
     }
 
     protected redraw() {
@@ -492,15 +480,16 @@ export class InteractiveCanvasComponent implements InteractiveCanvas, OnInit, On
             ctx.translate(-this.canvasWidth, 0);
         }
         const renderCtx = untracked(() => this.renderCtx());
+        const params = untracked(() => this.params());
         const beforeItems = untracked(() => this.beforeItems());
         const afterItems = untracked(() => this.afterItems());
         try {
             for (const renderer of beforeItems) {
-                await renderer(this, renderCtx);
+                await renderer(this, renderCtx, params);
             }
             await this.drawItems();
             for (const renderer of afterItems) {
-                await renderer(this, renderCtx);
+                await renderer(this, renderCtx, params);
             }
         } catch (e) {
             console.warn(`There was an error rendering the canvas: ${e}`);

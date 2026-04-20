@@ -1,7 +1,6 @@
 import {Component, Input, OnChanges} from "@angular/core";
 import {
     CanvasItemDirection,
-    Frame,
     InteractiveCanvas,
     InteractiveCanvasArea,
     InteractiveCanvasItem,
@@ -27,10 +26,6 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
 
     get id(): string {
         return null;
-    }
-
-    get frame(): Frame {
-        return this.mFrame;
     }
 
     get shapes(): ReadonlyArray<IShape> {
@@ -121,6 +116,18 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         this.canvas.selectedItem = value ? this : null;
     }
 
+    get cursor(): string {
+        switch (this.direction) {
+            case "free":
+                return "all-scroll";
+            case "horizontal":
+                return "col-resize";
+            case "vertical":
+                return "row-resize";
+        }
+        return "pointer";
+    }
+
     @Input() direction: CanvasItemDirection;
     @Input() disabled: boolean;
 
@@ -128,6 +135,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     canvas: InteractiveCanvas;
     index: number;
     canvasParams: InteractiveCanvasParams;
+    otherItems: ReadonlyArray<IShape>;
     hitShapes: ReadonlyArray<IShape>;
 
     protected validPos: Point;
@@ -142,7 +150,6 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
         this.rot = 0;
         this.validRot = 0;
         this.direction = "none";
-        this.mFrame = new Rect(0, 0, 3, 3);
         this.mShapes = [];
     }
 
@@ -267,7 +274,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     }
 
     protected getMinDistance(other: InteractiveCanvasArea): number {
-        return !other ? 0 : 10;
+        return !other ? null : 0.1;
     }
 
     protected calcShape(x: number, y: number): IShape {

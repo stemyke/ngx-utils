@@ -491,15 +491,6 @@ export interface RectCoords {
 }
 
 /**
- * Rectangle frame interface
- */
-export interface Frame extends IShape {
-    width: number;
-    height: number;
-    rotation: number;
-}
-
-/**
  * Interface for an interactive canvas params
  */
 export interface InteractiveCanvasParams {
@@ -522,12 +513,13 @@ export interface InteractiveCanvasArea {
 export interface InteractiveCanvasItem extends InteractiveCanvasArea {
     readonly position: IPoint;
     readonly rotation: number;
-    readonly frame: Frame;
     readonly isValid: boolean;
     readonly validPosition: IPoint;
     readonly validRotation: number;
     readonly hovered: boolean;
     readonly selected: boolean;
+    readonly cursor: string;
+    readonly direction: CanvasItemDirection;
     readonly active: boolean;
     readonly canvas: InteractiveCanvas;
     readonly index: number;
@@ -575,7 +567,7 @@ export interface InteractiveCanvas {
     tempPaint(cb: CanvasPaintFunc): Promise<void>;
 }
 
-export type InteractiveCanvasRenderer = (renderCanvas: InteractiveCanvas, renderCtx: Record<string, any>) => MaybePromise<void>;
+export type InteractiveCanvasRenderer = (renderCanvas: InteractiveCanvas, renderCtx: Record<string, any>, params?: InteractiveCanvasParams) => MaybePromise<void>;
 
 export interface InteractivePanEvent {
     canvas: InteractiveCanvas;
