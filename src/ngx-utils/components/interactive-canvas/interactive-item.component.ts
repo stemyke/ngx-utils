@@ -237,7 +237,6 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
             ...(this.canvas.items || []).filter(item => item !== this),
         ].flatMap(area => {
             const distance = this.distToPixels(this.getMinDistance(area));
-            console.log("Min", this.id, area.id, distance);
             return area.shapes.map(shape => shape.offset(distance));
         });
     }
