@@ -226,7 +226,7 @@ export class Rect extends Shape {
 
     offset(value: number): Rect {
         value = value ?? 0;
-        return new Rect(this.x, this.y, this.width + value * 2, this.height + value * 2, this.rotation, this.radius + value);
+        return new Rect(this.x, this.y, this.width + value * 2, this.height + value * 2, this.rotation, this.radius + Math.abs(value));
     }
 
     move(pos: IPoint): Rect {

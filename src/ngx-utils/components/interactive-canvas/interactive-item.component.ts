@@ -10,7 +10,7 @@ import {
 } from "../../common-types";
 import {MaybePromise} from "../../helper-types";
 import {eqPts, Point, Rect} from "../../utils/geometry";
-import {clamp, isEqual, overflow} from "../../utils/math.utils";
+import {clamp, EPSILON, isEqual, overflow} from "../../utils/math.utils";
 
 @Component({
     standalone: false,
@@ -237,6 +237,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
             ...(this.canvas.items || []).filter(item => item !== this),
         ].flatMap(area => {
             const distance = this.distToPixels(this.getMinDistance(area));
+            console.log("Min", this.id, area.id, distance);
             return area.shapes.map(shape => shape.offset(distance));
         });
     }
@@ -270,7 +271,7 @@ export class InteractiveItemComponent implements OnChanges, InteractiveCanvasIte
     }
 
     protected distToPixels(value: number): number {
-        return !this.canvas ? 1 : (isNaN(value) || value < 0 ? 0 : value) * (this.canvas.ratio ?? 1);
+        return !this.canvas ? 1 : (isNaN(value) ? 1 : value) * (this.canvas.ratio ?? 1);
     }
 
     protected getMinDistance(other: InteractiveCanvasArea): number {

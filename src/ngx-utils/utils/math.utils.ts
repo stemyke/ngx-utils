@@ -1,7 +1,7 @@
 import {ObjectUtils} from "./object.utils";
 import {RangeCoords} from "../common-types";
 
-export const EPSILON = 1e-9;
+export const EPSILON = 1e-8;
 
 /**
  * Normalize a range
