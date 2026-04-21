@@ -37,7 +37,7 @@ abstract class Shape implements IShape {
 
     abstract support(dir: IPoint): IPoint;
 
-    abstract expand(value: number): IShape;
+    abstract offset(value: number): IShape;
 
     abstract move(pos: IPoint): IShape;
 
@@ -82,7 +82,7 @@ export class Point extends Shape {
         return this.center;
     }
 
-    expand(): IShape {
+    offset(): IShape {
         return this;
     }
 
@@ -194,7 +194,7 @@ export class Rect extends Shape {
         return finalPath;
     }
 
-    support(dir: IPoint, logs?: boolean): IPoint {
+    support(dir: IPoint): IPoint {
         const ang = this.rotation ?? 0;
 
         // 1. Move search direction into local space
@@ -224,8 +224,8 @@ export class Rect extends Shape {
         };
     }
 
-    expand(value: number): Rect {
-        value = Math.abs(value ?? 0);
+    offset(value: number): Rect {
+        value = value ?? 0;
         return new Rect(this.x, this.y, this.width + value * 2, this.height + value * 2, this.rotation, this.radius + value);
     }
 
@@ -285,8 +285,8 @@ export class Oval extends Shape {
         return addPts(rotateDeg({ x: lx, y: ly }, ang), this.pt);
     }
 
-    expand(value: number): Oval {
-        value = Math.abs(value ?? 0);
+    offset(value: number): Oval {
+        value = value ?? 0;
         return new Oval(this.x, this.y, this.width + value * 2, this.height + value * 2, this.rotation);
     }
 
@@ -300,8 +300,8 @@ export class Circle extends Oval {
         super(x, y, radius * 2, radius * 2, rotation);
     }
 
-    expand(value: number): Circle {
-        value = Math.abs(value ?? 0);
+    offset(value: number): Circle {
+        value = value ?? 0;
         return new Circle(this.x, this.y, this.radius + value, this.rotation);
     }
 
@@ -353,9 +353,9 @@ export class ShapeGroup extends Shape {
         return bestPoint ?? this.pt;
     }
 
-    expand(value: number): IShape {
-        value = Math.abs(value ?? 0);
-        return new ShapeGroup(this.x, this.y, this.subShapes.map(s => s.expand(value)));
+    offset(value: number): IShape {
+        value = value ?? 0;
+        return new ShapeGroup(this.x, this.y, this.subShapes.map(s => s.offset(value)));
     }
 
     move(pos: IPoint): IShape {

@@ -465,7 +465,7 @@ export interface IShape extends IPoint {
     readonly center: IPoint;
     getPath(x: number, y: number, ratio?: number): Path2D;
     support(dir: IPoint, logs?: boolean): IPoint;
-    expand(value: number): IShape;
+    offset(value: number): IShape;
     move(pos: IPoint): IShape;
     intersection(shape: IShape, logs?: boolean): ShapeIntersection;
     intersects(shape: IShape, logs?: boolean): boolean;
