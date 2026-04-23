@@ -12,10 +12,10 @@
     span {
         display: inline-block;
         padding: 2px 5px;
-        background: color-mix(in srgb, var(--enum-color), #ffffff75);
+        background: color-mix(in srgb, var(--enum-color), #ffffff77 50%);
+        color: color-mix(in srgb, var(--enum-color), #000 70%);
         border: 1px solid var(--enum-color);
         border-radius: var(--enum-radius);
         user-select: none;
-        cursor: default;
     }
 }
