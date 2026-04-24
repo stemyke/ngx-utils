@@ -208,7 +208,7 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
             this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
             this.query = this.cols.reduce((res, col) => {
                 const value = query[col];
-                if (!value) return res;
+                if (ObjectUtils.isNullOrUndefined(value)) return res;
                 res[col] = value;
                 return res;
             }, {});

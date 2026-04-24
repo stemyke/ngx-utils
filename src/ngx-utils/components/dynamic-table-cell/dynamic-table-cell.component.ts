@@ -33,7 +33,7 @@ export class DynamicTableCellComponent {
     readonly context = computed(() => {
         const item = this.item();
         const id = this.id();
-        const value = ObjectUtils.getValue(item, id, "-");
+        const value = ObjectUtils.getValue(item, id, null);
         return {
             item, id, value,
             column: this.column(),

@@ -309,8 +309,8 @@ input.table-checkbox {
     border-radius: 3px;
     background-color: white;
     position: relative;
-    font-size: 13px;
-    line-height: 1rem;
+    font-size: 11px;
+    line-height: 11px;
     vertical-align: middle;
 
     &:focus {
@@ -324,19 +324,17 @@ input.table-checkbox {
 
     &::after {
         position: absolute;
-        content: '✖';
+        content: '\2716\FE0E';
         text-align: center;
         width: 100%;
         height: 100%;
     }
 
     &:checked::after {
-        content: '✔';
+        content: '\2714\FE0E';
     }
 
     &:indeterminate::after {
-        content: '—';
-        font-weight: 900;
-        font-size: 14px;
+        content: '━';
     }
 }

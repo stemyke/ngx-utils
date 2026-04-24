@@ -23,7 +23,7 @@ import {MathUtils} from "../utils/math.utils";
 import {BaseHttpClient} from "./base-http.client";
 import {UniversalService} from "./universal.service";
 import {StorageService} from "./storage.service";
-import {takeUntil, timeout} from "rxjs/operators";
+import {takeUntil, timeout as rxTimeout} from "rxjs/operators";
 import {Observable, Subject, TimeoutError} from "rxjs";
 import {CONFIG_SERVICE, EXPRESS_REQUEST, LANGUAGE_SERVICE, TOASTER_SERVICE} from "../tokens";
 import {CacheService} from "./cache.service";
@@ -224,7 +224,7 @@ export class BaseHttpService implements IHttpService {
     }
 
     protected toPromise(url: string, requestOptions: HttpRequestOptions, listener?: ProgressListener): Promise<any> {
-        const {read, cache, controller, ...options} = requestOptions;
+        const {read, cache, controller, timeout, ...options} = requestOptions;
         const absoluteUrl = this.absoluteUrl(url, options);
         const cacheKey = this.makeCacheKey(absoluteUrl, read, requestOptions);
         const issueContext: IIssueContext = {url: absoluteUrl};
@@ -265,10 +265,10 @@ export class BaseHttpService implements IHttpService {
                     signal.addEventListener("abort", onAbort, { once: true });
                 }
                 // Make request
-                const request = this.client.request<any>(options.method, absoluteUrl)
+                const request = this.client.request(options.method, absoluteUrl, options)
                     .pipe(takeUntil(canceler));
-                const finalRequest = ObjectUtils.isNumber(options.timeout) && options.timeout > 0
-                    ? request.pipe(timeout(options.timeout)) : request;
+                const finalRequest = ObjectUtils.isNumber(timeout) && timeout > 0
+                    ? request.pipe(rxTimeout(timeout)) : request;
                 finalRequest.subscribe({
                     next: event => {
                         if (options.reportProgress && event?.type === HttpEventType.UploadProgress) {
