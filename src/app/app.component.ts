@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewEncapsulation} from "@angular/core";
 import {
+    ApiService,
     ChipOption,
     Circle,
     Enum,
@@ -7,7 +8,7 @@ import {
     InteractiveCanvasRenderer,
     ITableColumns,
     Rect,
-    UniversalService
+    TableDataLoader
 } from "../public_api";
 
 @Component({
@@ -21,6 +22,8 @@ export class AppComponent implements OnInit {
     options: ChipOption[];
     tableColumns: ITableColumns;
     tableData: any[];
+    apiTableColumns: ITableColumns;
+    apiTableData: TableDataLoader;
 
     numberChips: number[];
     stringChips: string[];
@@ -33,7 +36,7 @@ export class AppComponent implements OnInit {
     circles: Circle[];
     renderers: InteractiveCanvasRenderer[];
 
-    constructor(private universal: UniversalService) {
+    constructor(readonly api: ApiService) {
         this.options = [
             {
                 value: "teszt",
@@ -78,6 +81,28 @@ export class AppComponent implements OnInit {
                 filterType: "checkbox"
             }
         };
+        this.apiTableColumns = {
+            company: {
+                title: "Company Name",
+                filter: true
+            },
+            externalId: {
+                title: "External Id",
+                filter: true
+            },
+            shop: {
+                title: "Is shop?",
+                filter: true,
+                filterType: "checkbox"
+            }
+        };
+        this.apiTableData = async (page, itemsPerPage, orderBy, orderDescending, filter, query, controller) => {
+            const params = this.api.makeListParams(page, itemsPerPage, orderBy, orderDescending);
+            params.filter = filter;
+            params.query = query;
+            return await this.api.list("jewelers", params, {controller});
+        };
+
         this.numberChips = [3, 10, 15, 44];
         this.stringChips = ["banana", "kiwi", "strawberry"];
         this.optionChips = ["banana", "kiwi", "strawberry"];
@@ -164,4 +189,6 @@ export class AppComponent implements OnInit {
             }
         ];
     }
+
+
 }

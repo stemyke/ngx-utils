@@ -38,13 +38,15 @@ export class PaginationDirective implements OnChanges {
 
     maxPage: number;
 
-    private data: IPaginationData;
-    private updateTimer: ITimer;
+    protected data: IPaginationData;
+    protected updateTimer: ITimer;
+    protected controller: AbortController;
 
     constructor(readonly zone: NgZone, readonly renderer: Renderer2, readonly element: ElementRef) {
         this.pageChange = new EventEmitter<number>();
         this.onRefresh = new EventEmitter<PaginationDirective>();
         this.updateTimer = TimerUtils.createTimeout(() => this.loadData(), this.updateTime);
+        this.controller = new AbortController();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -56,23 +58,25 @@ export class PaginationDirective implements OnChanges {
     }
 
     refresh(time?: number): void {
+        this.renderer.addClass(this.element.nativeElement, "loading");
         time = isNaN(time) || time <= 0 ? this.updateTime : time;
-        this.updateTimer.time = isNaN(time) || time <= 0 ? 100 : time;
+        this.updateTimer.time = isNaN(time) || time <= 0 ? 350 : time;
         Promise.resolve(this.waitFor).then(() => {
             this.updateTimer.run();
         });
     }
 
-    paginate(page: number): void {
+    paginate(page: number, time?: number): void {
         this.page = page;
         this.pageChange.emit(page);
-        this.refresh();
+        this.refresh(time);
     }
 
     private loadData(): void {
         if (!this.loader) return;
-        this.renderer.addClass(this.element.nativeElement, "loading");
-        this.loader(this.page, this.itemsPerPage).then(data => {
+        this.controller.abort("new data");
+        this.controller = new AbortController();
+        this.loader(this.page, this.itemsPerPage, this.controller).then(data => {
             this.maxPage = !data || data.total <= 0 ? 1 : Math.floor((data.total - 1) / this.itemsPerPage) + 1;
             this.data = data;
             const baseIndex = (this.page - 1) * this.itemsPerPage;

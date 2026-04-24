@@ -276,13 +276,12 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     refresh(time?: number): void {
-        if (!this.pagination) return;
-        this.pagination.refresh(time);
+        this.pagination?.refresh(time);
     }
 
     setFilter(filter: string) {
         this.filter = filter;
-        this.refresh(this.filterTime ?? 300);
+        this.pagination?.paginate(0, this.filterTime);
     }
 
     setSorting(column: string, toggle?: DropdownDirective) {
@@ -294,7 +293,7 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
         this.refresh();
     }
 
-    setQueryValue(c: string, value: string | boolean) {
+    setQueryValue(c: string, value?: string | boolean) {
         const col = this.columnDefs[c];
         if (!col?.filter) return;
         switch (col.filterType) {
@@ -313,11 +312,11 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
                 this.query[c] = Array.from(set);
                 break;
             case "checkbox":
-                if (this.query[c]) {
+                if (this.query[c] === false) {
                     delete this.query[c];
                     break;
                 }
-                this.query[c] = true;
+                this.query[c] = !this.query[c];
                 break;
             default:
                 if (!value) {
@@ -327,7 +326,7 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
                 this.query[c] = value;
                 break;
         }
-        this.refresh(this.filterTime ?? 300);
+        this.pagination?.paginate(0, this.filterTime);
     }
 
     setItemsPerPage(count: number) {
@@ -335,10 +334,10 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
         this.refresh();
     }
 
-    loadData = async (page: number, itemsPerPage: number): Promise<IPaginationData> => {
+    loadData = async (page: number, itemsPerPage: number, controller: AbortController): Promise<IPaginationData> => {
         const orderBy = this.columnDefs[this.orderBy]?.sort;
         const dataLoader = this.dataLoader || this.loadLocalData;
-        return dataLoader.call(this, page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query);
+        return dataLoader.call(this, page, itemsPerPage, orderBy, this.orderDescending, this.filter, this.query, controller);
     };
 
     protected async loadLocalData(page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean, filter: string, query: ITableDataQuery): Promise<IPaginationData> {
@@ -363,7 +362,6 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
             });
         };
         filterFn = Object.entries(query).reduce((fn, [key, filterValue]) => {
-            if (!filterValue) return fn;
             const column = this.columnDefs[key];
             if (!column) return fn;
             switch (column.filterType) {
@@ -374,12 +372,12 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
                         return filterArr.includes(value) && fn(ctx);
                     }
                 case "checkbox":
-                   return (ctx) => {
+                   return ObjectUtils.isBoolean(filterValue) ? (ctx) => {
                        const value = ctx.item[key];
-                       return !!value && fn(ctx);
-                   };
+                       return !!value === filterValue && fn(ctx);
+                   } : fn;
             }
-            const filterRx = new RegExp(`${filterValue}`, "gi");
+            const filterRx = new RegExp(`${filterValue || ""}`, "gi");
             return (ctx) => {
                 const value = ctx.item[key];
                 return `${value}`.match(filterRx) && fn(ctx);

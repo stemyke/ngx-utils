@@ -24,3 +24,7 @@ export function impatientPromise<T>(factory: () => Promise<T>): () => Promise<T>
         return lastPromise
     };
 }
+
+export function promiseTimeout(time: number = 1000): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, time));
+}

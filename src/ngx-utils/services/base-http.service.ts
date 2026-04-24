@@ -23,8 +23,8 @@ import {MathUtils} from "../utils/math.utils";
 import {BaseHttpClient} from "./base-http.client";
 import {UniversalService} from "./universal.service";
 import {StorageService} from "./storage.service";
-import {timeout} from "rxjs/operators";
-import {Observable, TimeoutError} from "rxjs";
+import {takeUntil, timeout} from "rxjs/operators";
+import {Observable, Subject, TimeoutError} from "rxjs";
 import {CONFIG_SERVICE, EXPRESS_REQUEST, LANGUAGE_SERVICE, TOASTER_SERVICE} from "../tokens";
 import {CacheService} from "./cache.service";
 import {RequestBag} from "./request-bag";
@@ -224,7 +224,7 @@ export class BaseHttpService implements IHttpService {
     }
 
     protected toPromise(url: string, requestOptions: HttpRequestOptions, listener?: ProgressListener): Promise<any> {
-        const {cache, read, ...options} = requestOptions;
+        const {read, cache, controller, ...options} = requestOptions;
         const absoluteUrl = this.absoluteUrl(url, options);
         const cacheKey = this.makeCacheKey(absoluteUrl, read, requestOptions);
         const issueContext: IIssueContext = {url: absoluteUrl};
@@ -250,7 +250,23 @@ export class BaseHttpService implements IHttpService {
                 }
                 this.toastWarning(`${url} endpoint error is not handled properly! Click here, to quickly create an issue.`, issueContext, reason, options);
             }, (resolve, reject) => {
-                const request = this.client.request(options.method, absoluteUrl, options);
+                const canceler = new Subject<any>();
+                const signal = controller?.signal;
+                const onAbort = () => {
+                    canceler.next(`Request for '${url}' is aborted.`);
+                    canceler.complete();
+                };
+                // Set up abort logic
+                if (signal) {
+                    if (signal.aborted) {
+                        reject(new Error(`Request for '${url}' is already aborted.`))
+                        return;
+                    }
+                    signal.addEventListener("abort", onAbort, { once: true });
+                }
+                // Make request
+                const request = this.client.request<any>(options.method, absoluteUrl)
+                    .pipe(takeUntil(canceler));
                 const finalRequest = ObjectUtils.isNumber(options.timeout) && options.timeout > 0
                     ? request.pipe(timeout(options.timeout)) : request;
                 finalRequest.subscribe({
@@ -297,7 +313,11 @@ export class BaseHttpService implements IHttpService {
                                 return;
                             }
                         }
+                        signal?.removeEventListener("abort", onAbort);
                         reject(response);
+                    },
+                    complete: () => {
+                        signal?.removeEventListener("abort", onAbort);
                     }
                 });
             }), cache);

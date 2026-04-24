@@ -408,7 +408,7 @@ export interface IPaginationData {
     meta?: any;
 }
 
-export type PaginationDataLoader = (page: number, itemsPerPage: number) => Promise<IPaginationData>;
+export type PaginationDataLoader = (page: number, itemsPerPage: number, controller: AbortController) => Promise<IPaginationData>;
 
 export class PaginationItemContext {
 
@@ -625,6 +625,10 @@ export interface HttpRequestOptions extends HttpClientRequestOptions {
      * Specifies when the cache for the request expires as an Observable
      */
     cache?: Observable<any>;
+    /**
+     * Specifies an abort controller to make the request abortable
+     */
+    controller?: AbortController;
 }
 
 /**
@@ -773,7 +777,7 @@ export type TableDataItems = ReadonlyArray<any>;
 
 export type TableDataLoader = (
     page: number, rowsPerPage: number, orderBy: string, orderDescending: boolean,
-    filter: string, query: ITableDataQuery
+    filter: string, query: ITableDataQuery, controller: AbortController
 ) => Promise<IPaginationData>;
 
 export type DragDropEvent<K extends string = "item", T = any> = {

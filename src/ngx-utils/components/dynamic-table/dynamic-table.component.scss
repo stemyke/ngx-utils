@@ -1,3 +1,9 @@
+@keyframes table-load-spin {
+    100% {
+        rotate: 360deg;
+    }
+}
+
 .dynamic-table {
 
     --table-bg: transparent;
@@ -59,6 +65,51 @@
 
     .table-content-row {
         position: relative;
+    }
+
+    .table-content-row tbody {
+        position: relative;
+
+        tr:last-child td:first-child {
+            padding: 0;
+            border-bottom-width: 0;
+        }
+    }
+
+    .table-content-row.loading tbody {
+        $spacing: 1px;
+        height: 50px;
+
+        tr:last-child td:first-child:before {
+            content: '';
+            display: table-row;
+            position: absolute;
+            top: $spacing;
+            right: $spacing;
+            bottom: $spacing;
+            left: $spacing;
+            background-color: rgba(50, 50, 50, 0.25);
+            z-index: 1;
+        }
+
+        tr:last-child td:first-child:after {
+            content: '';
+            display: table-row;
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border: 3px solid rgba(255, 255, 255, 0.75);
+            border-radius: 50%;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            animation: table-load-spin 575ms infinite linear;
+            vertical-align: middle;
+            margin-right: 5px;
+            top: 50%;
+            left: 50%;
+            translate: -50% -50%;
+            z-index: 2;
+        }
     }
 
     .sort-dropdown {
@@ -152,6 +203,10 @@
         }
 
         tbody tr:last-child td {
+            border-top-width: 0;
+        }
+
+        tbody tr:last-child td, tbody tr:nth-last-child(2) td {
             border-bottom-width: 0;
         }
 
@@ -242,5 +297,46 @@
         border: 1px solid var(--enum-color);
         border-radius: var(--enum-radius);
         user-select: none;
+    }
+}
+
+input.table-checkbox {
+    appearance: none;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    border: 1px solid black;
+    border-radius: 3px;
+    background-color: white;
+    position: relative;
+    font-size: 13px;
+    line-height: 1rem;
+    vertical-align: middle;
+
+    &:focus {
+        outline: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid #acacac;
+        outline-offset: 0;
+    }
+
+    &::after {
+        position: absolute;
+        content: '✖';
+        text-align: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    &:checked::after {
+        content: '✔';
+    }
+
+    &:indeterminate::after {
+        content: '—';
+        font-weight: 900;
+        font-size: 14px;
     }
 }

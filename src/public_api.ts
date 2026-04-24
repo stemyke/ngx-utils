@@ -236,7 +236,7 @@ export {
 } from "./ngx-utils/utils/misc";
 export {ObjectUtils} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
-export {CancelablePromise, cancelablePromise, impatientPromise} from "./ngx-utils/utils/promise.utils";
+export {CancelablePromise, cancelablePromise, impatientPromise, promiseTimeout} from "./ngx-utils/utils/promise.utils";
 export {svgToDataUri, StringUtils} from "./ngx-utils/utils/string.utils";
 export {SetUtils} from "./ngx-utils/utils/set.utils";
 export {computedPrevious, cssStyles, cssVariables} from "./ngx-utils/utils/signal-utils";

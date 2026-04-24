@@ -20,6 +20,11 @@
                    [showItems]="[5, 10, 25, 50, 100]"
                    [data]="tableData" [columns]="tableColumns">
     </dynamic-table>
+    <dynamic-table filterLabel="blab"
+                   [itemsPerPage]="10"
+                   [showItems]="[5, 10, 25]"
+                   [dataLoader]="apiTableData" [columns]="apiTableColumns">
+    </dynamic-table>
     <chips type="number" [(ngModel)]="numberChips" [min]="5"></chips>
     <chips [(ngModel)]="stringChips" [minLength]="5"></chips>
     <chips [(ngModel)]="stringChips" [disabled]="true" [minLength]="5"></chips>
