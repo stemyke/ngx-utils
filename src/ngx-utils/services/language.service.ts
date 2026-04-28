@@ -3,6 +3,7 @@ import {BehaviorSubject, combineLatest, firstValueFrom, Observable} from "rxjs";
 import {map} from "rxjs/operators";
 import {ILanguageSetting, ILanguageSettings, ITranslations} from "../common-types";
 import {StaticLanguageService, EMPTY_DICT} from "./static-language.service";
+import {ObjectUtils} from "../utils/object.utils";
 
 @Injectable()
 export class LanguageService extends StaticLanguageService {
@@ -87,21 +88,37 @@ export class LanguageService extends StaticLanguageService {
     async getDictionary(lang: string): Promise<ITranslations> {
         if (!lang) return EMPTY_DICT;
         const ext = this.config.translationExt || ``;
-        this.translationRequests[lang] = this.translationRequests[lang] || firstValueFrom(this.client.get<ITranslations>(`${this.config.translationUrl}${lang}${ext}`))
-            .then(response => {
-                response = response || {};
-                const dictionary = Object.keys(response).reduce((result, key) => {
-                    result[key.toLocaleLowerCase()] = response[key];
-                    return result;
-                }, {} as ITranslations);
+        this.translationRequests[lang] = this.translationRequests[lang] || this.getMergedDictionary(lang, ext)
+            .then(dictionary => {
                 this.translations[lang] = dictionary;
                 this.mergeTranslations();
-                return dictionary;
+                return this.mergedTranslations[lang];
             }).catch(error => {
                 console.warn("Translation dictionary problem:", error);
                 return EMPTY_DICT;
             })
         return this.translationRequests[lang];
+    }
+
+    protected async getMergedDictionary(lang: string, ext: string): Promise<ITranslations> {
+        const urls = [...Object.values(this.config.translationUrls || {}), this.config.translationUrl]
+            .filter(ObjectUtils.isStringWithValue)
+            .map(url => `${url}${lang}${ext}`);
+        const translations = await Promise.all(urls.map(async url => {
+            try {
+                return await firstValueFrom(this.client.get<ITranslations>(url));
+            } catch (error) {
+                console.warn(`Translation dictionary problem: '${url}'`, error);
+                return EMPTY_DICT;
+            }
+        }));
+        const result: ITranslations = {};
+        translations.forEach(dict => {
+            Object.entries(dict).forEach(([key, value]) => {
+                result[key.toLocaleLowerCase()] = value;
+            });
+        });
+        return result;
     }
 
     protected async loadDictionary(): Promise<ITranslations> {

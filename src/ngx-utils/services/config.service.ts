@@ -1,5 +1,7 @@
 import {Inject, Injectable, Injector, isDevMode, Optional} from "@angular/core";
+import {firstValueFrom} from "rxjs";
 import JSON5 from "json5";
+
 import {UniversalService} from "./universal.service";
 import {IConfigService, IConfiguration} from "../common-types";
 import {StringUtils} from "../utils/string.utils";
@@ -71,11 +73,11 @@ export class ConfigService implements IConfigService {
         }
         const configUrl = this.configUrl;
         try {
-            const config5 = await this.http.get(isDevMode() ? `${configUrl}5` : configUrl, {responseType: "text"}).toPromise();
+            const config5 = await firstValueFrom(this.http.get(isDevMode() ? `${configUrl}5` : configUrl, {responseType: "text"}));
             return JSON5.parse(config5);
         } catch (e) {
             try {
-                const config = await this.http.get(configUrl).toPromise();
+                const config = await firstValueFrom(this.http.get(configUrl));
                 console.log(`Can't parse json5 config: ${e}`);
                 return config;
             } catch (e) {
@@ -84,8 +86,14 @@ export class ConfigService implements IConfigService {
         }
     }
 
-    protected prepareConfig(config: IConfiguration): Promise<IConfiguration> {
-        return Promise.resolve(config);
+    protected async prepareConfig(config: IConfiguration): Promise<IConfiguration> {
+        config.apiUrl = this.prepareUrl(config.apiUrl, "/");
+        config.translationUrl = this.prepareUrl(config.translationUrl, "/");
+        config.translationUrls = config.translationUrls || {};
+        Object.entries(config.translationUrls).forEach(([key, value]) => {
+            config.translationUrls[key] = this.prepareUrl(value, "/");
+        });
+        return config;
     }
 
     cloneRootElem(): any {

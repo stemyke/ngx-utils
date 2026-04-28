@@ -828,7 +828,9 @@ export class IConfiguration {
     cdnUrl?: string;
     baseUrl?: string;
     baseDomain?: string;
+    apiUrl?: string;
     translationUrl?: string;
+    translationUrls?: Record<string, any>;
     translationExt?: string;
     [key: string]: any;
 }
