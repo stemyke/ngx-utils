@@ -816,6 +816,7 @@ export interface DynamicModuleInfo {
 export interface DynamicComponentLocation {
     moduleId: string;
     selector: string;
+    fallback?: true;
 }
 
 export interface DynamicEntryComponents {

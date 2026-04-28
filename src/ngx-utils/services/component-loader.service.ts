@@ -86,11 +86,11 @@ export class ComponentLoaderService {
 
         const moduleInfo = moduleInfoList[0];
 
-        if (!moduleInfo) {
+        if (moduleInfo) {
+            await this.loadModule(moduleInfo);
+        } else if (!location.fallback) {
             throw new Error(`Module with id '${location.moduleId}' not found.`);
         }
-
-        await this.loadModule(moduleInfo);
 
         return this.findComponentType(location.selector, location.moduleId);
     }
