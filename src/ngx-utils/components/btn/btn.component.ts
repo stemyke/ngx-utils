@@ -23,6 +23,7 @@ export class BtnComponent {
     readonly tooltip = input("");
     readonly icon = input("");
     readonly disabled = input(false);
+    readonly path = input("false");
     readonly type = input("primary" as ButtonType);
     readonly size = input("normal" as ButtonSize);
 
@@ -35,6 +36,7 @@ export class BtnComponent {
             tooltip: this.tooltip(),
             icon: this.icon(),
             disabled: this.disabled(),
+            path: this.path(),
             type: this.type(),
             size: this.size()
         };
