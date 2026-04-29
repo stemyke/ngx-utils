@@ -14,6 +14,7 @@ export class BtnDefaultComponent implements ButtonProps {
     @Input() tooltip: string;
     @Input() icon: string;
     @Input() disabled: boolean;
+    @Input() path: string;
     @Input() type: ButtonType;
     @Input() size: ButtonSize;
 
