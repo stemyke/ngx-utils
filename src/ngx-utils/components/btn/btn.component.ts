@@ -50,12 +50,8 @@ export class BtnComponent {
     @HostListener("click", ["$event"])
     public onBtnClick(event: MouseEvent): void {
         const isNewTabAction = event.ctrlKey || event.metaKey || event.button === 1;
-        console.log("Hallo?", isNewTabAction);
-        // We only want to intercept if it's a standard left-click
         if (!isNewTabAction) {
-            // This stops the <a> tag's default navigation logic
             event.preventDefault();
-            console.log("Standard click logic running here!");
         }
     }
 }

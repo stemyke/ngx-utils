@@ -3,21 +3,26 @@ import {
     Component,
     computed,
     contentChildren,
-    effect,
+    effect, inject,
     input,
     model,
-    output, signal,
+    output,
+    signal,
     TemplateRef,
     ViewEncapsulation
 } from "@angular/core";
-import {ButtonSize, ButtonType, TabOption, TabValue} from "../../common-types";
+import {Router, UrlSerializer, UrlTree} from "@angular/router";
+
+import {AsyncMethod, ButtonSize, ButtonType, IAsyncMessage, TabOption, TabValue} from "../../common-types";
 import {TabsItemDirective} from "../../directives/tabs-item.directive";
 import {switchClass} from "../../utils/misc";
+import {ObjectUtils} from "../../utils/object.utils";
 
-export interface ExtendedTabOption extends TabOption {
+export interface ExtendedTabOption extends Omit<TabOption, "path"> {
     active?: boolean;
     template?: TemplateRef<any>;
     className?: string;
+    path?: string;
 }
 
 @Component({
@@ -30,6 +35,8 @@ export interface ExtendedTabOption extends TabOption {
 })
 export class TabsComponent {
 
+    readonly urlSerializer = inject(UrlSerializer);
+    readonly router = inject(Router);
     readonly value = model<TabValue>();
     readonly options = input<TabOption[]>([]);
     readonly type = input("primary" as ButtonType);
@@ -41,7 +48,17 @@ export class TabsComponent {
     readonly template = signal<TemplateRef<any>>(null);
 
     readonly tabs = computed(() => {
-        const options = Array.from(this.options() || []) as ExtendedTabOption[];
+        const options: ExtendedTabOption[] = (this.options() || [])
+            .filter(option => ObjectUtils.isStringWithValue(option?.label))
+            .map(option => {
+                const path = !option.path
+                    ? null
+                    : (option.path instanceof UrlTree ? this.urlSerializer.serialize(option.path) : option.path);
+                return {
+                    ...option,
+                    path
+                } satisfies ExtendedTabOption;
+            });
         const current = this.value();
         this.tabItems().forEach(item => {
             const value = item.value();
@@ -53,6 +70,8 @@ export class TabsComponent {
 
             if (!label) return;
 
+            const path = item.path();
+
             options.push({
                 value,
                 label,
@@ -60,6 +79,9 @@ export class TabsComponent {
                 tooltip: item.tooltip(),
                 icon: item.icon(),
                 disabled: item.disabled(),
+                path: !path
+                    ? null
+                    : (path instanceof UrlTree ? this.urlSerializer.serialize(path) : path),
                 template: item.template
             });
         });
@@ -73,6 +95,16 @@ export class TabsComponent {
         return options;
     });
 
+    readonly select: AsyncMethod = async (option: ExtendedTabOption): Promise<IAsyncMessage> => {
+        if (option.path) {
+            await this.router.navigateByUrl(option.path);
+            return null;
+        }
+        this.value.set(option.value);
+        this.selectedChange.emit(option);
+        return null;
+    };
+
     constructor() {
         effect(() => {
             const tabOptions = this.tabs();
@@ -85,10 +117,5 @@ export class TabsComponent {
                 this.template.set(selectedOption.template);
             }
         });
-    }
-
-    select(option: TabOption): void {
-        this.value.set(option.value);
-        this.selectedChange.emit(option);
     }
 }

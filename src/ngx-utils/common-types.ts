@@ -277,6 +277,7 @@ export type TabValue = string | number;
 export interface TabOption extends Omit<Partial<ButtonProps>, "size" | "state" | "style" | "path"> {
     value: TabValue;
     classes?: string | string[];
+    path?: string | UrlTree;
 }
 
 // --- Chips ---

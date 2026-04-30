@@ -11,9 +11,11 @@
                      [tooltip]="option.tooltip"
                      [icon]="option.icon"
                      [disabled]="option.disabled"
+                     [path]="option.path"
                      [type]="option.active ? tabType : 'transparent'"
                      [size]="tabSize"
-                     (click)="select(option)"></btn>
+                     [async-method]="select"
+                     [context]="option"></btn>
             </li>
         }
     </ul>

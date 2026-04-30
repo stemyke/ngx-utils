@@ -1,4 +1,5 @@
 import {Directive, ElementRef, inject, input, TemplateRef} from "@angular/core";
+import {UrlTree} from "@angular/router";
 
 @Directive({
     standalone: false,
@@ -11,6 +12,7 @@ export class TabsItemDirective {
     readonly tooltip = input("");
     readonly icon = input("");
     readonly disabled = input(false);
+    readonly path = input<string | UrlTree>(null);
     readonly classes = input<string | string[]>("");
 
     readonly element = inject(ElementRef, {optional: true});
