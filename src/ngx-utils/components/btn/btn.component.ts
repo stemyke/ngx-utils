@@ -9,6 +9,7 @@ import {
 } from "@angular/core";
 import {ButtonProps, ButtonSize, ButtonType} from "../../common-types";
 import {BUTTON_TYPE} from "../../tokens";
+import {UrlTree} from "@angular/router";
 
 @Component({
     standalone: false,
@@ -23,7 +24,7 @@ export class BtnComponent {
     readonly tooltip = input("");
     readonly icon = input("");
     readonly disabled = input(false);
-    readonly path = input("false");
+    readonly path = input<string | UrlTree>("");
     readonly type = input("primary" as ButtonType);
     readonly size = input("normal" as ButtonSize);
 
