@@ -265,7 +265,7 @@ export interface ButtonProps {
     tooltip: string;
     icon: string;
     disabled: boolean;
-    path: string | UrlTree;
+    path: string;
     type: ButtonType;
     size: ButtonSize;
 }
@@ -274,7 +274,7 @@ export interface ButtonProps {
 
 export type TabValue = string | number;
 
-export interface TabOption extends Omit<Partial<ButtonProps>, "size" | "state" | "style"> {
+export interface TabOption extends Omit<Partial<ButtonProps>, "size" | "state" | "style" | "path"> {
     value: TabValue;
     classes?: string | string[];
 }

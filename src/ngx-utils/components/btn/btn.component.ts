@@ -2,7 +2,7 @@ import {
     ChangeDetectionStrategy,
     Component,
     computed,
-    ElementRef,
+    ElementRef, HostListener,
     inject,
     input,
     ViewEncapsulation
@@ -24,7 +24,7 @@ export class BtnComponent {
     readonly tooltip = input("");
     readonly icon = input("");
     readonly disabled = input(false);
-    readonly path = input<string | UrlTree>("");
+    readonly path = input<string>(null);
     readonly type = input("primary" as ButtonType);
     readonly size = input("normal" as ButtonSize);
 
@@ -47,4 +47,15 @@ export class BtnComponent {
         return !(target instanceof HTMLElement) || this.element.nativeElement?.contains(target);
     }
 
+    @HostListener("click", ["$event"])
+    public onBtnClick(event: MouseEvent): void {
+        const isNewTabAction = event.ctrlKey || event.metaKey || event.button === 1;
+        console.log("Hallo?", isNewTabAction);
+        // We only want to intercept if it's a standard left-click
+        if (!isNewTabAction) {
+            // This stops the <a> tag's default navigation logic
+            event.preventDefault();
+            console.log("Standard click logic running here!");
+        }
+    }
 }
