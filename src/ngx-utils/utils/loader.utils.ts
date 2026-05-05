@@ -8,7 +8,7 @@ export class LoaderUtils {
         return LoaderUtils.loadElement(src, parent, time, url => {
             const script = document.createElement("script");
             script.type = type;
-            script.src = LoaderUtils.updateSrc(src, time);
+            script.src = url;
             script.async = async;
             return script;
         });
@@ -19,7 +19,7 @@ export class LoaderUtils {
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.type = "text/css";
-            link.href = LoaderUtils.updateSrc(src, time);
+            link.href = url;
             return link;
         });
     }
