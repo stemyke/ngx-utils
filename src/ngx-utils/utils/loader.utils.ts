@@ -1,40 +1,42 @@
-import {ScriptType, ILoaderPromises, ILoadableElement} from "../common-types";
+import {LoadableElement, LoaderPromises, ScriptType} from "../common-types";
 
 export class LoaderUtils {
 
-    private static promises: ILoaderPromises<ILoadableElement> = {};
+    private static promises: LoaderPromises<LoadableElement> = {};
 
-    static loadScript(src: string, async: boolean = false, type: ScriptType = "text/javascript", parent?: Node, time: boolean | string = true) {
-        return LoaderUtils.loadElement(src, parent, () => {
+    static loadScript(src: string | URL, async: boolean = false, type: ScriptType = "text/javascript", parent?: Node, time: boolean | string = false) {
+        return LoaderUtils.loadElement(src, parent, time, url => {
             const script = document.createElement("script");
             script.type = type;
-            script.src = LoaderUtils.updateSrc(src, time);
+            script.src = url;
             script.async = async;
             return script;
         });
     }
 
-    static loadStyle(src: string, parent?: Node, time: boolean | string = true) {
-        return LoaderUtils.loadElement(src, parent, () => {
+    static loadStyle(src: string | URL, parent?: Node, time: boolean | string = false) {
+        return LoaderUtils.loadElement(src, parent, time, url => {
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.type = "text/css";
-            link.href = LoaderUtils.updateSrc(src, time);
+            link.href = url;
             return link;
         });
     }
 
-    private static updateSrc(src: string, time: boolean | string) {
-        if (src.startsWith("data:") || !time) {
-            return src;
+    private static updateSrc(src: string | URL, time: boolean | string): string {
+        const srcStr = String(src || "");
+        if (srcStr.startsWith("data:") || !time) {
+            return srcStr;
         }
         const url = new URL(src);
         url.searchParams.set("time", typeof time === "string" ? time : String(Date.now()));
         return url.toString();
     }
 
-    private static loadElement<T extends ILoadableElement>(src: string, parent: Node, setup: () => T): Promise<T> {
-        const promises = LoaderUtils.promises as ILoaderPromises<T>;
+    private static loadElement<T extends LoadableElement>(url: string | URL, parent: Node, time: boolean | string, setup: (url: string) => T): Promise<T> {
+        const promises = LoaderUtils.promises as LoaderPromises<T>;
+        const src = LoaderUtils.updateSrc(url, time);
         parent = parent || document;
         if (parent == document) {
             parent = document.body;
@@ -46,7 +48,7 @@ export class LoaderUtils {
                 elem.remove();
             }
         }
-        elem = setup();
+        elem = setup(src);
         promise = new Promise<T>((resolve, reject) => {
             if (elem.readyState) {
                 // Internet explorer

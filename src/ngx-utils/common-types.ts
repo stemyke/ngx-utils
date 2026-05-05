@@ -342,17 +342,15 @@ export type AjaxRequestCallback = (details: IAjaxRequestDetails, params: any) =>
 // --- Loader utils ---
 export type ScriptType = "text/javascript" | "module";
 
-export interface ILoadableElement extends HTMLElement {
+export interface LoadableElement extends HTMLElement {
     readyState?: string;
     onreadystatechange?: Function;
 }
 
-export interface ILoaderPromises<T extends ILoadableElement> {
-    [src: string]: {
-        elem: T;
-        promise: Promise<T>;
-    }
-}
+export type LoaderPromises<T extends LoadableElement> = Record<string, {
+    elem: T;
+    promise: Promise<T>;
+}>;
 
 // --- Observable utils ---
 export interface ISearchObservable {
