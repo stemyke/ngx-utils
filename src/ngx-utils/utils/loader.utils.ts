@@ -1,58 +1,71 @@
-import {ScriptType, IScriptPromises, IStylePromises} from "../common-types";
+import {LoadableElement, LoaderPromises, ScriptType} from "../common-types";
 
 export class LoaderUtils {
 
-    static scriptPromises: IScriptPromises = {};
-    static stylePromises: IStylePromises = {};
+    private static promises: LoaderPromises<LoadableElement> = {};
 
-    static loadScript(src: string, async: boolean = false, type: ScriptType = "text/javascript"): Promise<HTMLScriptElement> {
-        this.scriptPromises[src] = this.scriptPromises[src] || new Promise<any>((resolve, reject) => {
-            // Load script
-            const script: any = document.createElement("script");
+    static loadScript(src: string | URL, async: boolean = false, type: ScriptType = "text/javascript", parent?: Node, time: boolean | string = false) {
+        return LoaderUtils.loadElement(src, parent, time, url => {
+            const script = document.createElement("script");
             script.type = type;
-            script.src = src;
+            script.src = LoaderUtils.updateSrc(src, time);
             script.async = async;
-            if (script.readyState) {
-                // Internet explorer
-                script.onreadystatechange = () => {
-                    if (script.readyState === "loaded" || script.readyState === "complete") {
-                        script.onreadystatechange = null;
-                        resolve(script);
-                    }
-                };
-            } else {
-                // Other browsers
-                script.onload = () => resolve(script);
-            }
-            script.onerror = (error: any) => reject(error);
-            document.body.appendChild(script);
+            return script;
         });
-        return this.scriptPromises[src];
     }
 
-    static loadStyle(src: string): Promise<HTMLLinkElement> {
-        this.stylePromises[src] = this.stylePromises[src] || new Promise<any>((resolve, reject) => {
-            // Load script
-            const link: any = document.createElement("link");
+    static loadStyle(src: string | URL, parent?: Node, time: boolean | string = false) {
+        return LoaderUtils.loadElement(src, parent, time, url => {
+            const link = document.createElement("link");
             link.rel = "stylesheet";
             link.type = "text/css";
-            link.href = src;
+            link.href = LoaderUtils.updateSrc(src, time);
+            return link;
+        });
+    }
 
-            if (link.readyState) {
+    private static updateSrc(src: string | URL, time: boolean | string): string {
+        const srcStr = String(src || "");
+        if (srcStr.startsWith("data:") || !time) {
+            return srcStr;
+        }
+        const url = new URL(src);
+        url.searchParams.set("time", typeof time === "string" ? time : String(Date.now()));
+        return url.toString();
+    }
+
+    private static loadElement<T extends LoadableElement>(url: string | URL, parent: Node, time: boolean | string, setup: (url: string) => T): Promise<T> {
+        const promises = LoaderUtils.promises as LoaderPromises<T>;
+        const src = LoaderUtils.updateSrc(url, time);
+        parent = parent || document;
+        if (parent == document) {
+            parent = document.body;
+        }
+        let {elem, promise} = promises[src] || {};
+        if (elem) {
+            if (parent === elem.parentElement) return promise;
+            if (elem.parentElement) {
+                elem.remove();
+            }
+        }
+        elem = setup(src);
+        promise = new Promise<T>((resolve, reject) => {
+            if (elem.readyState) {
                 // Internet explorer
-                link.onreadystatechange = () => {
-                    if (link.readyState === "loaded" || link.readyState === "complete") {
-                        link.onreadystatechange = null;
-                        resolve(link);
+                elem.onreadystatechange = () => {
+                    if (elem.readyState === "loaded" || elem.readyState === "complete") {
+                        elem.onreadystatechange = null;
+                        resolve(elem);
                     }
                 };
             } else {
                 // Other browsers
-                link.onload = () => resolve(link);
+                elem.onload = () => resolve(elem);
             }
-            link.onerror = (error: any) => reject(error);
-            document.body.appendChild(link);
+            elem.onerror = (error: any) => reject(error);
         });
-        return this.stylePromises[src];
+        parent.appendChild(elem);
+        promises[src] = {elem, promise};
+        return promise;
     }
 }
