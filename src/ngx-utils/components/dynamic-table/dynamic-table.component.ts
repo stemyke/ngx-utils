@@ -159,6 +159,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        const orderBy = this.orderBy;
         if (changes.columns) {
             const columns = changes.columns.currentValue || [];
             this.realColumns = ObjectUtils.isArray(columns) ? columns.reduce((result, column) => {
@@ -174,12 +175,16 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
                 return result;
             }, {} as ITableColumns);
             this.cols = Object.keys(this.realColumns);
+            this.cols.forEach(col => {
+                const column = this.realColumns[col];
+                column.filterType = column.filterType || "text";
+            });
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
             const query = this.query || {};
             this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
             this.query = this.cols.reduce((res, col) => {
                 const value = query[col];
-                if (!value) return res;
+                if (ObjectUtils.isNullOrUndefined(value)) return res;
                 res[col] = value;
                 return res;
             }, {});
@@ -190,7 +195,7 @@ export class DynamicTableComponent implements AfterContentInit, AfterViewInit, O
             const sortable = this.cols.filter(c => this.realColumns[c].sort);
             this.orderBy = sortable.includes(this.orderBy) ? this.orderBy : sortable[0] || null;
         }
-        if (!changes.data && !changes.parallelData && !changes.dataLoader && !changes.itemsPerPage && !changes.orderBy && !changes.orderDescending) return;
+        if (!changes.data && !changes.parallelData && !changes.dataLoader && !changes.itemsPerPage && !changes.orderDescending && orderBy === this.orderBy) return;
         this.refresh();
     }
 
