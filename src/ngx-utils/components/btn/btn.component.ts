@@ -24,7 +24,7 @@ export class BtnComponent {
     readonly tooltip = input("");
     readonly icon = input("");
     readonly disabled = input(false);
-    readonly path = input<string>(null);
+    readonly path = input<string | UrlTree>(null);
     readonly type = input("primary" as ButtonType);
     readonly size = input("normal" as ButtonSize);
 

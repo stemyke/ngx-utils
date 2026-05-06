@@ -265,7 +265,7 @@ export interface ButtonProps {
     tooltip: string;
     icon: string;
     disabled: boolean;
-    path: string;
+    path: string | UrlTree;
     type: ButtonType;
     size: ButtonSize;
 }

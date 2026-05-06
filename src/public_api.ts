@@ -257,6 +257,7 @@ export {ErrorHandlerService} from "./ngx-utils/services/error-handler.service";
 export {EventsService} from "./ngx-utils/services/events.service";
 export {FormatterService} from "./ngx-utils/services/formatter.service";
 export {GlobalTemplateService} from "./ngx-utils/services/global-template.service";
+export {HrefSerializer} from "./ngx-utils/services/href-serializer";
 export {IconService} from "./ngx-utils/services/icon.service";
 export {LanguageService} from "./ngx-utils/services/language.service";
 export {LocalHttpService} from "./ngx-utils/services/local-http.service";

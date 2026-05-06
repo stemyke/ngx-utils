@@ -15,6 +15,7 @@ import {ErrorHandlerService} from "./services/error-handler.service";
 import {EventsService} from "./services/events.service";
 import {FormatterService} from "./services/formatter.service";
 import {GlobalTemplateService} from "./services/global-template.service";
+import {HrefSerializer} from "./services/href-serializer";
 import {IconService} from "./services/icon.service";
 import {LanguageService} from "./services/language.service";
 import {LocalHttpService} from "./services/local-http.service";
@@ -203,6 +204,7 @@ export const providers = [
     EventsService,
     FormatterService,
     GlobalTemplateService,
+    HrefSerializer,
     IconService,
     LanguageService,
     LocalHttpService,
@@ -218,7 +220,6 @@ export const providers = [
     TranslatedUrlSerializer,
     UniversalService,
     DeviceDetectorService,
-    GlobalTemplateService,
     {
         provide: EVENT_MANAGER_PLUGINS,
         useClass: DragDropEventPlugin,

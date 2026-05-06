@@ -3,7 +3,8 @@ import {
     Component,
     computed,
     contentChildren,
-    effect, inject,
+    effect,
+    inject,
     input,
     model,
     output,
@@ -11,18 +12,17 @@ import {
     TemplateRef,
     ViewEncapsulation
 } from "@angular/core";
-import {Router, UrlSerializer, UrlTree} from "@angular/router";
+import {Router} from "@angular/router";
 
 import {AsyncMethod, ButtonSize, ButtonType, IAsyncMessage, TabOption, TabValue} from "../../common-types";
 import {TabsItemDirective} from "../../directives/tabs-item.directive";
 import {switchClass} from "../../utils/misc";
 import {ObjectUtils} from "../../utils/object.utils";
 
-export interface ExtendedTabOption extends Omit<TabOption, "path"> {
+export interface ExtendedTabOption extends TabOption {
     active?: boolean;
     template?: TemplateRef<any>;
     className?: string;
-    path?: string;
 }
 
 @Component({
@@ -35,7 +35,6 @@ export interface ExtendedTabOption extends Omit<TabOption, "path"> {
 })
 export class TabsComponent {
 
-    readonly urlSerializer = inject(UrlSerializer);
     readonly router = inject(Router);
     readonly value = model<TabValue>();
     readonly options = input<TabOption[]>([]);
@@ -49,16 +48,7 @@ export class TabsComponent {
 
     readonly tabs = computed(() => {
         const options: ExtendedTabOption[] = (this.options() || [])
-            .filter(option => ObjectUtils.isStringWithValue(option?.label))
-            .map(option => {
-                const path = !option.path
-                    ? null
-                    : (option.path instanceof UrlTree ? this.urlSerializer.serialize(option.path) : option.path);
-                return {
-                    ...option,
-                    path
-                } satisfies ExtendedTabOption;
-            });
+            .filter(option => ObjectUtils.isStringWithValue(option?.label));
         const current = this.value();
         this.tabItems().forEach(item => {
             const value = item.value();
@@ -70,8 +60,6 @@ export class TabsComponent {
 
             if (!label) return;
 
-            const path = item.path();
-
             options.push({
                 value,
                 label,
@@ -79,9 +67,7 @@ export class TabsComponent {
                 tooltip: item.tooltip(),
                 icon: item.icon(),
                 disabled: item.disabled(),
-                path: !path
-                    ? null
-                    : (path instanceof UrlTree ? this.urlSerializer.serialize(path) : path),
+                path: item.path(),
                 template: item.template
             });
         });

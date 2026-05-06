@@ -164,6 +164,7 @@ export class BaseHttpService implements IHttpService {
         return new Promise<IPaginationData>(resolve => {
             this.getPromise(url, options).then(data => {
                 if (ObjectUtils.isArray(data)) {
+                    const params = options?.params ?? {};
                     const limit = isNaN(params.limit) || Number(params.limit) <= 0
                         ? Number.MAX_SAFE_INTEGER
                         : Number(params.limit);
