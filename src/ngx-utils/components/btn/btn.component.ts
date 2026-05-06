@@ -2,14 +2,14 @@ import {
     ChangeDetectionStrategy,
     Component,
     computed,
-    ElementRef, HostListener,
+    ElementRef,
     inject,
     input,
     ViewEncapsulation
 } from "@angular/core";
+import {UrlTree} from "@angular/router";
 import {ButtonProps, ButtonSize, ButtonType} from "../../common-types";
 import {BUTTON_TYPE} from "../../tokens";
-import {UrlTree} from "@angular/router";
 
 @Component({
     standalone: false,
@@ -45,13 +45,5 @@ export class BtnComponent {
 
     contains(target: EventTarget): boolean {
         return !(target instanceof HTMLElement) || this.element.nativeElement?.contains(target);
-    }
-
-    @HostListener("click", ["$event"])
-    public onBtnClick(event: MouseEvent): void {
-        const isNewTabAction = event.ctrlKey || event.metaKey || event.button === 1;
-        if (!isNewTabAction) {
-            event.preventDefault();
-        }
     }
 }

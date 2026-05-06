@@ -8,7 +8,8 @@ import {
     input,
     OnChanges,
     output,
-    signal, untracked
+    signal,
+    untracked
 } from "@angular/core";
 import {AsyncMethod, IAsyncMessage} from "../common-types";
 import {TOASTER_SERVICE} from "../tokens";
@@ -90,7 +91,13 @@ export class AsyncMethodBase<T extends AsyncMethod = AsyncMethod> implements OnC
     }
 
     protected handleClick(ev: MouseEvent): boolean {
-        ev?.preventDefault();
+        if (ev) {
+            // If it's a new tab action then we dont handle the click
+            if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
+                return true;
+            }
+            ev.preventDefault();
+        }
         if (this.disabled()) return true;
         this.callMethod(ev);
         return true;
