@@ -164,9 +164,15 @@ export class BaseHttpService implements IHttpService {
         return new Promise<IPaginationData>(resolve => {
             this.getPromise(url, options).then(data => {
                 if (ObjectUtils.isArray(data)) {
+                    const limit = isNaN(params.limit) || Number(params.limit) <= 0
+                        ? Number.MAX_SAFE_INTEGER
+                        : Number(params.limit);
+                    const page = Math.max(Number(params.page), 0);
+                    const start = Math.max(page * limit, 0);
+                    const end = Math.min(start + limit, data.length - 1);
                     resolve({
                         total: data.length,
-                        items: data,
+                        items: data.slice(start, end),
                         meta: {}
                     });
                     return;
