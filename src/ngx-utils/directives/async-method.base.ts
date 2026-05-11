@@ -93,7 +93,7 @@ export class AsyncMethodBase<T extends AsyncMethod = AsyncMethod> implements OnC
     protected handleClick(ev: MouseEvent): boolean {
         if (ev) {
             // If it's a new tab action then we dont handle the click
-            if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
+            if (ev.ctrlKey || ev.shiftKey || ev.metaKey || ev.button === 1) {
                 return true;
             }
             ev.preventDefault();
