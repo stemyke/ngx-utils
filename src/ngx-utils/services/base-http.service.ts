@@ -145,7 +145,7 @@ export class BaseHttpService implements IHttpService {
                         : Number(params.limit);
                     const page = Math.max(Number(params.page), 0);
                     const start = Math.max(page * limit, 0);
-                    const end = Math.min(start + limit, data.length - 1);
+                    const end = Math.min(start + limit, data.length);
                     resolve({
                         total: data.length,
                         items: data.slice(start, end),
