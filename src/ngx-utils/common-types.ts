@@ -648,7 +648,7 @@ export interface IProgress {
 
 export type ProgressListener = (progress: IProgress) => void;
 
-export type CacheExpireMode = boolean | "auth" | Date;
+export type CacheExpireMode = boolean | number | "auth" | Date;
 
 export interface IHttpService {
     readonly language: ILanguageService;

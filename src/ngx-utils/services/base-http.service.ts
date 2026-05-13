@@ -94,6 +94,10 @@ export class BaseHttpService implements IHttpService {
         if (mode instanceof Date) {
             return this.caches.expiresAt(mode);
         }
+        const num = Number(mode);
+        if (0 < num) {
+            return this.caches.expiresIn(num);
+        }
         return mode === false ? this.caches.ignore : this.caches.permanent;
     }
 
