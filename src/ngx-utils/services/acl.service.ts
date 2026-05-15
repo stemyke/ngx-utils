@@ -69,6 +69,7 @@ export class AclService implements IAclService {
                 path: `${basePath}/${route.path}`,
                 page: route.data.page || route.data.id,
                 label: route.data.name,
+                icon: route.data.icon,
                 side: route.data.side || `left`,
                 external: false,
                 data: route.data

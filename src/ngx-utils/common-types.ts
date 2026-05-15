@@ -144,6 +144,7 @@ export interface MenuItem {
     path: string;
     page: string;
     label: string;
+    icon: string;
     side: string;
     external: boolean;
     data: IRouteData;
