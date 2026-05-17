@@ -1,6 +1,6 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "19.9.29",
+    "version": "19.9.30",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -29,7 +29,7 @@
         "invokable": "^1.0.3",
         "ngx-device-detector": "^9.0.0",
         "@floating-ui/dom": "^1.7.6",
-        "zone.js": "^0.16.2",
+        "zone.js": "~0.15.0",
         "json5": "^2.2.3"
     },
     "devDependencies": {
