@@ -46,7 +46,7 @@ export class BaseHttpService implements IHttpService {
     }
 
     protected get withCredentials(): boolean {
-        return true;
+        return false;
     }
 
     get universal(): UniversalService {
