@@ -724,6 +724,7 @@ export interface OpenApiSchemaProperty extends DynamicSchemaRef, OpenApiSchemaRe
 }
 
 export interface OpenApiSchema {
+    name?: string;
     properties: {
         [name: string]: OpenApiSchemaProperty;
     };

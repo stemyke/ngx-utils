@@ -96,8 +96,9 @@ export class OpenApiService {
 
     protected extractSchemas(res: any): OpenApiSchemas {
         const schemas: OpenApiSchemas = Object.assign({}, res.components?.schemas || res.definitions || {});
-        Object.values(schemas).forEach(schema => {
+        Object.entries(schemas).forEach(([name, schema]) => {
             Object.keys(schema.properties || {}).forEach(p => {
+                schema.name = name;
                 schema.properties[p].id = p;
             });
         });
