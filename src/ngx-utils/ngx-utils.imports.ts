@@ -90,6 +90,7 @@ import {BtnComponent} from "./components/btn/btn.component";
 import {BtnDefaultComponent} from "./components/btn-default/btn-default.component";
 import {ChipsComponent} from "./components/chips/chips.component";
 import {CloseBtnComponent} from "./components/close-btn/close-btn.component";
+import {CodeEditorComponent} from "./components/code-editor/code-editor.component";
 import {DropListComponent} from "./components/drop-list/drop-list.component";
 import {DropdownBoxComponent} from "./components/dropdown-box/dropdown-box.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
@@ -172,6 +173,7 @@ export const components = [
     BtnDefaultComponent,
     ChipsComponent,
     CloseBtnComponent,
+    CodeEditorComponent,
     DropListComponent,
     DropdownBoxComponent,
     DynamicTableComponent,

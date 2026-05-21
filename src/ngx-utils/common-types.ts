@@ -700,17 +700,45 @@ export interface IApiService extends IHttpService {
 }
 
 // --- OpenApi service ---
+
+/**
+ * Discriminator defines a function which returns a schema name based on a target object
+ */
+export type DiscriminatorFn = (target: Object) => string;
+
+/**
+ * The source options for a discriminator function
+ */
+export interface DiscriminatorOptions {
+    propertyName: string;
+    mapping: Record<string, string>;
+}
+
+/**
+ * A holder that defines the schema discriminator
+ */
+export interface Discriminator {
+    discriminator: DiscriminatorOptions;
+    discriminatorFn?: DiscriminatorFn;
+}
+
+/**
+ * A dynamic OpenApi schema definition (contains options for loading a dynamic schema)
+ */
 export interface DynamicSchemaRef {
     dynamicSchema?: string;
     dynamicSchemaUrl?: string;
     dynamicSchemaName?: string;
 }
 
+/**
+ * An OpenApi schema reference. Contains the path of a schema
+ */
 export interface OpenApiSchemaRef {
     $ref?: string;
 }
 
-export interface OpenApiSchemaProperty extends DynamicSchemaRef, OpenApiSchemaRef {
+export interface OpenApiSchemaProperty extends DynamicSchemaRef, OpenApiSchemaRef, Discriminator {
     id: string;
     type?: string;
     format?: string;
@@ -737,6 +765,9 @@ export interface OpenApiSchemas {
 }
 
 export type OpenApiSchemaSelector = (name: string, schemas: OpenApiSchemas, injector: Injector) => OpenApiSchema;
+
+// --- Code editor ---
+export const EDITOR_TYPES = ["php", "json", "html", "css", "scss"] as ReadonlyArray<string>;
 
 // --- Dynamic table ---
 export type TableFilterType = "text" | "enum" | "checkbox";

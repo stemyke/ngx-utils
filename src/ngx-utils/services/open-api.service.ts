@@ -1,5 +1,7 @@
 import {Inject, Injectable, Injector} from "@angular/core";
 import {
+    Discriminator,
+    DiscriminatorFn,
     DynamicSchemaRef,
     IApiService,
     OpenApiSchema,
@@ -7,7 +9,7 @@ import {
     OpenApiSchemas, OpenApiSchemaSelector
 } from "../common-types";
 import {API_SERVICE, SCHEMA_SELECTOR, STATIC_SCHEMAS} from "../tokens";
-import {ObjectUtils} from "../utils/object.utils";
+import {isObject, isStringWithValue, ObjectUtils} from "../utils/object.utils";
 
 @Injectable()
 export class OpenApiService {
@@ -97,11 +99,29 @@ export class OpenApiService {
     protected extractSchemas(res: any): OpenApiSchemas {
         const schemas: OpenApiSchemas = Object.assign({}, res.components?.schemas || res.definitions || {});
         Object.entries(schemas).forEach(([name, schema]) => {
+            schema.name = name;
             Object.keys(schema.properties || {}).forEach(p => {
-                schema.name = name;
-                schema.properties[p].id = p;
+                const prop = schema.properties[p];
+                prop.id = p;
+                prop.discriminatorFn = this.getDiscriminatorFn(prop);
             });
         });
         return schemas;
+    }
+
+    protected getDiscriminatorFn(discriminator: Discriminator): DiscriminatorFn {
+        const opts = discriminator?.discriminator;
+        if (!isObject(opts)) return null;
+        const {propertyName, mapping} = opts;
+        if (!isStringWithValue(propertyName) || !isObject(mapping)) return null;
+        const map = Object.fromEntries(
+            Object.entries(mapping)
+                .filter(entry => isStringWithValue(entry[1]))
+                .map(entry => [entry[0], entry[1].split("/").pop()])
+        );
+        return (target) => {
+            const value = !target ? null : target[propertyName];
+            return map[value];
+        };
     }
 }

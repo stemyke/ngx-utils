@@ -1,0 +1,14 @@
+.code-editor > div {
+    margin: 10px 0;
+
+    .cm-editor {
+        outline: none;
+    }
+
+    .cm-scroller {
+        min-height: 150px;
+        max-height: 345px;
+        background: #fefefe;
+        border: 1px solid #ddd;
+    }
+}

@@ -114,11 +114,15 @@ export {
     SvgSourceModifier,
     IBaseHttpClient,
     IApiService,
+    DiscriminatorFn,
+    DiscriminatorOptions,
+    Discriminator,
     DynamicSchemaRef,
     OpenApiSchemaProperty,
     OpenApiSchema,
     OpenApiSchemas,
     OpenApiSchemaSelector,
+    EDITOR_TYPES,
     TableFilterType,
     ITableOrders,
     ITableColumn,
@@ -234,7 +238,9 @@ export {
     DiffEntityResult,
     diffEntities
 } from "./ngx-utils/utils/misc";
-export {ObjectUtils} from "./ngx-utils/utils/object.utils";
+export {
+    getType, isObject, isString, isStringWithValue, isFunction, toStringArray, ObjectUtils
+} from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
 export {CancelablePromise, cancelablePromise, impatientPromise, promiseTimeout} from "./ngx-utils/utils/promise.utils";
 export {svgToDataUri, StringUtils} from "./ngx-utils/utils/string.utils";
@@ -335,6 +341,7 @@ export {BtnComponent} from "./ngx-utils/components/btn/btn.component";
 export {BtnDefaultComponent} from "./ngx-utils/components/btn-default/btn-default.component";
 export {ChipsComponent} from "./ngx-utils/components/chips/chips.component";
 export {CloseBtnComponent} from "./ngx-utils/components/close-btn/close-btn.component";
+export {CodeEditorComponent} from "./ngx-utils/components/code-editor/code-editor.component";
 export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.component";
 export {DropdownBoxComponent} from "./ngx-utils/components/dropdown-box/dropdown-box.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";

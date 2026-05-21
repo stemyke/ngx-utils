@@ -12,6 +12,33 @@ export function shouldCopyDefault(key: any, value: any): boolean {
     return true;
 }
 
+export function getType(obj: any): string {
+    const regex = new RegExp("\\s([a-zA-Z]+)");
+    const target = !obj ? null : obj.constructor;
+    const type = !target ? null : Reflect.getMetadata("objectType", target);
+    return (type || Object.prototype.toString.call(obj).match(regex)[1]).toLowerCase();
+}
+
+export function isObject(value: any): boolean {
+    return getType(value) === "object";
+}
+
+export function isString(value: any): value is string {
+    return typeof value === "string";
+}
+
+export function isStringWithValue(value: any): value is string {
+    return isString(value) && value.length > 0;
+}
+
+export function isFunction(value: any): value is Function {
+    return typeof value === "function";
+}
+
+export function toStringArray(value: string | string[]): string[] {
+    return (Array.isArray(value) ? value : String(value || "").split(",")).filter(isStringWithValue);
+}
+
 const hasBlob = typeof Blob !== "undefined" && !!Blob;
 const hasFile = typeof File !== "undefined" && !!File;
 
@@ -187,10 +214,7 @@ export class ObjectUtils {
     }
 
     static getType(obj: any): string {
-        const regex = new RegExp("\\s([a-zA-Z]+)");
-        const target = !obj ? null : obj.constructor;
-        const type = !target ? null : Reflect.getMetadata("objectType", target);
-        return (type || Object.prototype.toString.call(obj).match(regex)[1]).toLowerCase();
+        return getType(obj);
     }
 
     static isPrimitive(value: any): boolean {
@@ -199,7 +223,7 @@ export class ObjectUtils {
     }
 
     static isObject(value: any): boolean {
-        return ObjectUtils.getType(value) === "object";
+        return isObject(value);
     }
 
     static isDefined(value: any): boolean {
@@ -211,15 +235,15 @@ export class ObjectUtils {
     }
 
     static isString(value: any): value is string {
-        return typeof value === "string";
+        return isString(value);
     }
 
     static isStringWithValue(value: any): value is string {
-        return ObjectUtils.isString(value) && value.length > 0;
+        return isStringWithValue(value);
     }
 
     static isFunction(value: any): value is Function {
-        return typeof value === "function";
+        return isFunction(value);
     }
 
     static isDate(value: any): value is Date {

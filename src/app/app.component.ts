@@ -35,6 +35,7 @@ export class AppComponent implements OnInit {
     rects: Rect[];
     circles: Circle[];
     renderers: InteractiveCanvasRenderer[];
+    jsonData: Record<string, any>;
 
     constructor(readonly api: ApiService) {
         this.options = [
@@ -123,6 +124,12 @@ export class AppComponent implements OnInit {
         this.renderers = [
             new HitZoneRenderer()
         ];
+        this.jsonData = {
+            test: [1, 2],
+            hello: {
+                another: "Whyyy"
+            }
+        };
     }
 
     ngOnInit(): void {
