@@ -253,6 +253,7 @@ export interface IconMap {
 
 export interface IconProps {
     name: string;
+    [key: string]: any;
 }
 
 // --- Button ---

@@ -1,6 +1,6 @@
 import {Inject, Injectable, Injector, isDevMode, Optional} from "@angular/core";
 import {firstValueFrom} from "rxjs";
-import JSON5 from "json5";
+import {parse} from "json5";
 
 import {UniversalService} from "./universal.service";
 import {IConfigService, IConfiguration} from "../common-types";
@@ -74,7 +74,7 @@ export class ConfigService implements IConfigService {
         const configUrl = this.configUrl;
         try {
             const config5 = await firstValueFrom(this.http.get(isDevMode() ? `${configUrl}5` : configUrl, {responseType: "text"}));
-            return JSON5.parse(config5);
+            return parse(config5);
         } catch (e) {
             try {
                 const config = await firstValueFrom(this.http.get(configUrl));
