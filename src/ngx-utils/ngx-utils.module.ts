@@ -91,6 +91,11 @@ export function getRootElement(): HTMLElement {
     return typeof document !== "undefined" ? document.body : null;
 }
 
+export function defaultAppInitializer(): Promise<any> {
+    const configs = inject(CONFIG_SERVICE);
+    return configs.load();
+}
+
 @NgModule({
     declarations: [
         ...pipes,
@@ -194,14 +199,7 @@ export class NgxUtilsModule {
                 useFactory: loadBaseHref,
                 deps: [APP_BASE_URL]
             },
-            provideAppInitializer(() => {
-                if (config && config.initializeApp) {
-                    const initializer = config.initializeApp(inject(Injector));
-                    return initializer();
-                }
-                const configs = inject(CONFIG_SERVICE);
-                return configs.load();
-            }),
+            provideAppInitializer(config?.initializeApp || defaultAppInitializer),
         ];
     }
 

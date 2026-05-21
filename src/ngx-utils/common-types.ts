@@ -891,7 +891,7 @@ export type ErrorHandlerCallback = (error: string) => any;
 export type GlobalComponentModifier = (component: any) => any;
 
 // --- Module ---
-export type AppInitializerFunc = () => Promise<void> | void;
+export type AppInitializerFunc = () => Observable<unknown> | Promise<unknown> | void;
 
 export interface IModuleConfig {
     apiService?: Type<IApiService>
@@ -905,7 +905,7 @@ export interface IModuleConfig {
     iconType?: Type<IconProps>;
     iconMap?: IconMap;
     buttonType?: Type<ButtonProps>;
-    initializeApp?: (injector: Injector) => AppInitializerFunc;
+    initializeApp?: AppInitializerFunc;
     baseUrl?: (injector: Injector) => string;
     resizeDelay?: number;
     resizeStrategy?: ResizeEventStrategy;
