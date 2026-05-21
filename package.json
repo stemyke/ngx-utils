@@ -1,10 +1,10 @@
 {
     "name": "@stemy/ngx-utils",
-    "version": "19.9.33",
+    "version": "19.9.34",
     "license": "MIT",
     "scripts": {
         "start": "ng serve",
-        "build": "ng-packagr",
+        "build": "ng-packagr -p ./ng-package.json -c ./tsconfig.json",
         "public": "npm publish ./dist --access public --ignore-scripts"
     },
     "public": true,

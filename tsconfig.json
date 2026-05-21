@@ -8,6 +8,7 @@
     "compilerOptions": {
         "module": "esnext",
         "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
         "downlevelIteration": true,
         "outDir": "./dist/out-tsc",
         "baseUrl": ".",
@@ -21,11 +22,7 @@
         "typeRoots": [
             "node_modules/@types"
         ],
-        "paths": {
-            "jszip": [
-                "node_modules/jszip/dist/jszip.js"
-            ]
-        },
+        "paths": {},
         "lib": [
             "es2020",
             "dom"

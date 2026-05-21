@@ -1,6 +1,6 @@
 import {Inject, Injectable, Injector, isDevMode, Optional} from "@angular/core";
 import {firstValueFrom} from "rxjs";
-import {parse} from "json5";
+import JSON5 from "json5";
 
 import {UniversalService} from "./universal.service";
 import {IConfigService, IConfiguration} from "../common-types";
@@ -74,11 +74,11 @@ export class ConfigService implements IConfigService {
         const configUrl = this.configUrl;
         try {
             const config5 = await firstValueFrom(this.http.get(isDevMode() ? `${configUrl}5` : configUrl, {responseType: "text"}));
-            return parse(config5);
+            return JSON5.parse(config5);
         } catch (e) {
+            console.log(`Can't parse json5 config: ${e}`, JSON5);
             try {
                 const config = await firstValueFrom(this.http.get(configUrl));
-                console.log(`Can't parse json5 config: ${e}`);
                 return config;
             } catch (e) {
                 throw new Error(`Config file not found at: ${configUrl}`);
