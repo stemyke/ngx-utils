@@ -109,7 +109,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         let length = transfer.items?.length ?? 0;
         for (let i = 0; i < length; i++) {
             const item = transfer.items[i];
-            if (this.checkType(item.type)) {
+            if (this.checkType(item)) {
                 ev.dataTransfer.effectAllowed = "copy";
                 ev.dataTransfer.dropEffect = "copy";
                 this.dropAllowed = true;
@@ -119,7 +119,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         length = transfer.files?.length ?? 0;
         for (let i = 0; i < length; i++) {
             const file = transfer.files[i];
-            if (this.checkType(file.type)) {
+            if (this.checkType(file)) {
                 ev.dataTransfer.effectAllowed = "copy";
                 ev.dataTransfer.dropEffect = "copy";
                 this.dropAllowed = true;
@@ -195,7 +195,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         const files: File[] = [];
         for (let i = 0; i < length; i++) {
             const file = input.files.item(i);
-            if (this.checkType(file.type)) {
+            if (this.checkType(file)) {
                 files.push(file);
             }
         }
@@ -288,8 +288,9 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
         return results.filter(r => r !== null);
     }
 
-    protected checkType(type: string): boolean {
+    protected checkType(file: File | DataTransferItem): boolean {
         if (this.acceptTypes.length == 0) return true;
+        let type = file.type || String((file as File).name || "").split(".").pop();
         type = type.split("/").pop().replace(/\./g, "");
         return this.acceptTypes.includes(type);
     }
