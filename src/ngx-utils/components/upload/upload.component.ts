@@ -3,7 +3,6 @@ import {
     Component,
     ElementRef,
     EventEmitter,
-    forwardRef,
     Inject,
     Input,
     OnChanges,
@@ -49,6 +48,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
     @Input() inline: boolean;
     @Input() accept: string | string[];
     @Input() baseUrl: string;
+    @Input() uploadUrl: string;
     @Input() message: string;
     @Input() multiple: boolean;
     @Input() buttonText: string;
@@ -252,7 +252,7 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
             });
             return process;
         });
-        const baseUrl = this.baseUrl || this.api.url("assets");
+        const baseUrl = this.uploadUrl || this.baseUrl || this.api.url("assets");
         const requests = this.processing.map(async (p): Promise<IFileUploadResult> => {
             await p.promise;
             if (this.inline) {
