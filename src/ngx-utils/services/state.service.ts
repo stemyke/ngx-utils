@@ -92,7 +92,7 @@ export class StateService {
     get $observable(): Observable<ActivatedRouteSnapshot> {
         return this.$snapshot.pipe(
             skipWhile(snapshot => snapshot === emptySnapshot),
-            debounceTime(25)
+            debounceTime(10)
         )
     }
 

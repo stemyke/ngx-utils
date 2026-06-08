@@ -1,5 +1,5 @@
 import {from, Observable, Subject, Subscription} from "rxjs";
-import {mergeMap} from "rxjs/operators";
+import {debounceTime, map, mergeMap} from "rxjs/operators";
 
 import {ISearchObservable} from "../common-types";
 import {TimerUtils} from "./timer.utils";
@@ -39,19 +39,26 @@ export class ObservableUtils {
     static subscribe(...subscribers: ISubscriberInfo[]): Subscription {
         const subscriptions: Subscription[] = [];
         subscribers.forEach(info => {
+            const timeout = info.timeout ?? 15;
             let alreadyCalled = false;
-            const timer = TimerUtils.createTimeout();
             info.subjects.forEach(subject => {
-                const ss = subject.subscribe((value) => {
-                    alreadyCalled = true;
-                    timer.set(() => {
+                const ss = subject
+                    .pipe(
+                        map(v => {
+                            alreadyCalled = true;
+                            return v;
+                        }),
+                        debounceTime(timeout)
+                    )
+                    .subscribe((value) => {
                         info.cb(subject, value);
-                    }, info.timeout ?? 0);
-                });
+                    });
                 subscriptions.push(ss);
             });
-            if (alreadyCalled) return;
-            info.cb();
+            setTimeout(() => {
+                if (alreadyCalled) return;
+                info.cb();
+            }, timeout);
         });
         return ObservableUtils.multiSubscription(...subscriptions);
     }
