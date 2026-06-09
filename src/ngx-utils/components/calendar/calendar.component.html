@@ -8,6 +8,7 @@
     </div>
 
     <div class="calendar-grid days-header">
+        <div class="day-label"></div>
         @for (day of daysOfWeek; track day) {
             <div class="day-label">{{ "day." + day | translate }}</div>
         }
@@ -15,16 +16,25 @@
 
     <div class="calendar-grid days-grid" (mouseleave)="onGridMouseLeave()">
         @for (cell of calendarCells(); track cell.id) {
-            <div
-                class="calendar-cell"
-                [class.filler]="!cell.isCurrentMonth"
-                [class.disabled]="cell.isDisabled"
-                [class.in-range]="cell.isInDragRange"
-                [class.active]="cell.isSelected"
-                (mousedown)="onMouseDown(cell, $event)"
-                (mouseenter)="onMouseEnter(cell)">
-                <span class="cell-number">{{ cell.date.getDate() }}</span>
-            </div>
+            @if (cell.isWeekNum) {
+                <div class="calendar-cell week-number-cell">
+                    {{ cell.weekNumber }}
+                </div>
+            }
+
+            @else {
+                <div
+                    class="calendar-cell"
+                    [class.filler]="!cell.isCurrentMonth"
+                    [class.disabled]="cell.isDisabled"
+                    [class.in-range]="cell.isInDragRange"
+                    [class.active]="cell.isSelected"
+                    (mousedown)="onMouseDown(cell, $event)"
+                    (mouseenter)="onMouseEnter(cell)"
+                >
+                    <span class="cell-number">{{ cell.date?.getDate() }}</span>
+                </div>
+            }
         }
     </div>
 </div>

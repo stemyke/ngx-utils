@@ -1,8 +1,5 @@
-import {Component, computed, effect, input, model, signal, ViewEncapsulation} from "@angular/core";
-
-// Helper to normalize dates to midnight UTC/Local depending on your needs, keeping it simple here
-const toMidnight = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
-const isSameDay = (d1: Date, d2: Date) => d1.getTime() === d2.getTime();
+import { Component, computed, effect, input, model, signal, ViewEncapsulation } from "@angular/core";
+import { parseValidDate, toMidnight, isSameDay } from "../../utils/date.utils";
 
 @Component({
     standalone: false,
@@ -16,89 +13,65 @@ export class CalendarComponent {
     readonly months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
     readonly daysOfWeek = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
-    /**
-     * Value can be a single Date or an array of Dates
-     */
     readonly value = model<Date | Date[] | null>(null);
-
-    /**
-     * Minimum date (as iso string or actual date object)
-     */
     readonly min = input<string | Date | null>(null);
-
-    /**
-     * Maximum date (as iso string or actual date object)
-     */
     readonly max = input<string | Date | null>(null);
-
-    /**
-     * Disabled list if dates (as iso strings or actual date objects)
-     */
     readonly disabledDates = input<(string | Date)[] | null>([]);
-
-    /**
-     * Disabled days of week from 0-7, where 0 and 7 both means saturday
-     */
     readonly disabledDays = input<number[]>([]);
 
-    // --- Internal Navigation Signals ---
     readonly currentMonth = signal<number>(new Date().getMonth());
     readonly currentYear = signal<number>(new Date().getFullYear());
 
-    // --- Dragging Engine Signals ---
     private readonly isDragging = signal<boolean>(false);
     private readonly dragStartCellDate = signal<Date | null>(null);
     private readonly dragCurrentCellDate = signal<Date | null>(null);
     private readonly initialSelectedStateBeforeDrag = signal<Map<number, boolean>>(new Map());
 
-    // --- Parsed Signal Restrictions ---
-    private readonly minDate = computed(() => this.parseValidDate(this.min()));
-    private readonly maxDate = computed(() => this.parseValidDate(this.max()));
+    private isInitialized = false;
+
+    private readonly minDate = computed(() => parseValidDate(this.min()));
+    private readonly maxDate = computed(() => parseValidDate(this.max()));
 
     private readonly disabledTimestamps = computed(() => {
         const inputs = this.disabledDates() || [];
         return inputs
-            .map(d => this.parseValidDate(d))
+            .map(d => parseValidDate(d))
             .filter((d): d is Date => d !== null)
             .map(d => toMidnight(d).getTime());
     });
 
-    // Determines mode dynamically based on the bound value structure
     readonly isMultiSelect = computed(() => Array.isArray(this.value()));
 
-    // --- Computed Grid Generation ---
     readonly calendarCells = computed(() => {
         const year = this.currentYear();
         const month = this.currentMonth();
 
-        // First day of current display month
         const firstDayOfMonth = new Date(year, month, 1);
-        // Determine offset day index mapped to Mon -> Sun (0 -> 6)
-        // JS days: 0 (Sun) - 6 (Sat). Custom mapping:
         let startOffset = firstDayOfMonth.getDay() - 1;
-        if (startOffset === -1) startOffset = 6; // Sunday becomes last index
+        if (startOffset === -1) startOffset = 6;
 
-        // Get grid start date (rolling back into previous month view if needed)
+        if (startOffset === 0) {
+            startOffset = 7;
+        }
+
         const gridStartDate = new Date(year, month, 1 - startOffset);
-
         const cells = [];
-        const totalGridSlots = 42; // standard 6-row calendar layout
+        const totalRows = 6;
 
         const min = this.minDate();
         const max = this.maxDate();
         const disabledTimes = this.disabledTimestamps();
         const disDays = this.disabledDays();
 
-        // Map internal JS day index (0=Sun, 1=Mon...6=Sat) to custom disabled layout rule where 0 and 7 = Sat
         const isDayOfWeekDisabled = (jsDay: number) => {
             return disDays.some(d => {
-                if (d === 0 || d === 7) return jsDay === 6; // Saturday restriction
-                if (d === 1) return jsDay === 1; // Mon
-                if (d === 2) return jsDay === 2; // Tue
-                if (d === 3) return jsDay === 3; // Wed
-                if (d === 4) return jsDay === 4; // Thu
-                if (d === 5) return jsDay === 5; // Fri
-                if (d === 6) return jsDay === 0; // Sunday restriction
+                if (d === 0 || d === 7) return jsDay === 6;
+                if (d === 1) return jsDay === 1;
+                if (d === 2) return jsDay === 2;
+                if (d === 3) return jsDay === 3;
+                if (d === 4) return jsDay === 4;
+                if (d === 5) return jsDay === 5;
+                if (d === 6) return jsDay === 0;
                 return false;
             });
         };
@@ -106,125 +79,189 @@ export class CalendarComponent {
         const currentValue = this.value();
         const startDrag = this.dragStartCellDate();
         const currentDrag = this.dragCurrentCellDate();
+        const dragging = this.isDragging();
+        const dragSnapshot = this.initialSelectedStateBeforeDrag();
 
-        for (let i = 0; i < totalGridSlots; i++) {
-            const cellDate = new Date(gridStartDate.getFullYear(), gridStartDate.getMonth(), gridStartDate.getDate() + i);
-            const cellMidnight = toMidnight(cellDate);
-            const timestamp = cellMidnight.getTime();
+        // Loop row by row to easily calculate and inject week numbers at the start of each row
+        for (let row = 0; row < totalRows; row++) {
 
-            // Check restrictions
-            let isDisabled = false;
-            if (min && cellMidnight < toMidnight(min)) isDisabled = true;
-            if (max && cellMidnight > toMidnight(max)) isDisabled = true;
-            if (disabledTimes.includes(timestamp)) isDisabled = true;
-            if (isDayOfWeekDisabled(cellMidnight.getDay())) isDisabled = true;
+            // 1. Calculate the actual date at the beginning of this row's day sequence
+            const firstDateOfRow = new Date(
+                gridStartDate.getFullYear(),
+                gridStartDate.getMonth(),
+                gridStartDate.getDate() + (row * 7)
+            );
 
-            // Determine regular selection state
-            let isSelected = false;
-            if (!this.isMultiSelect()) {
-                isSelected = currentValue instanceof Date && isSameDay(currentValue, cellMidnight);
-            } else if (Array.isArray(currentValue)) {
-                isSelected = currentValue.some(d => isSameDay(d, cellMidnight));
-            }
-
-            // Handle Live Negation Drag state overlay mechanics
-            let isInDragRange = false;
-            if (this.isDragging() && startDrag && currentDrag && !isDisabled) {
-                const startT = toMidnight(startDrag).getTime();
-                const endT = toMidnight(currentDrag).getTime();
-                const minT = Math.min(startT, endT);
-                const maxT = Math.max(startT, endT);
-
-                if (timestamp >= minT && timestamp <= maxT) {
-                    isInDragRange = true;
-                    // Negate original selection state during drag window overlay
-                    const originalState = this.initialSelectedStateBeforeDrag().get(timestamp) || false;
-                    isSelected = !originalState;
-                } else {
-                    // Revert back to original historical baseline state outside current drag bounds
-                    isSelected = this.initialSelectedStateBeforeDrag().get(timestamp) || false;
-                }
-            }
-
+            // 2. Inject the Week Number column element flag
             cells.push({
-                id: timestamp,
-                date: cellDate,
-                isCurrentMonth: cellDate.getMonth() === month,
-                isDisabled,
-                isSelected,
-                isInDragRange
+                id: `week-${row}-${firstDateOfRow.getTime()}`,
+                date: null,
+                isCurrentMonth: false,
+                isDisabled: true, // Mark true to protect it from drag mechanics naturally
+                isSelected: false,
+                isInDragRange: false,
+                isWeekNum: true,
+                weekNumber: this.getISOWeekNumber(firstDateOfRow)
             });
+
+            // 3. Inject the subsequent 7 day cells for this row
+            for (let col = 0; col < 7; col++) {
+                const cellDate = new Date(firstDateOfRow.getFullYear(), firstDateOfRow.getMonth(), firstDateOfRow.getDate() + col);
+                const cellMidnight = toMidnight(cellDate);
+                const timestamp = cellMidnight.getTime();
+
+                let isDisabled = false;
+                if (min && cellMidnight < toMidnight(min)) isDisabled = true;
+                if (max && cellMidnight > toMidnight(max)) isDisabled = true;
+                if (disabledTimes.includes(timestamp)) isDisabled = true;
+                if (isDayOfWeekDisabled(cellMidnight.getDay())) isDisabled = true;
+
+                let isSelected = false;
+                if (!this.isMultiSelect()) {
+                    isSelected = currentValue instanceof Date && isSameDay(currentValue, cellMidnight);
+                } else if (Array.isArray(currentValue)) {
+                    isSelected = currentValue.some(d => isSameDay(d, cellMidnight));
+                }
+
+                let isInDragRange = false;
+                if (dragging && startDrag && currentDrag && !isDisabled) {
+                    const startT = toMidnight(startDrag).getTime();
+                    const endT = toMidnight(currentDrag).getTime();
+                    const minT = Math.min(startT, endT);
+                    const maxT = Math.max(startT, endT);
+
+                    if (timestamp >= minT && timestamp <= maxT) {
+                        isInDragRange = true;
+                        const originalState = dragSnapshot.get(timestamp) || false;
+                        isSelected = !originalState;
+                    } else {
+                        isSelected = dragSnapshot.get(timestamp) || false;
+                    }
+                }
+
+                cells.push({
+                    id: String(timestamp),
+                    date: cellDate,
+                    isCurrentMonth: cellDate.getMonth() === month,
+                    isDisabled,
+                    isSelected,
+                    isInDragRange,
+                    isWeekNum: false,
+                    weekNumber: null
+                });
+            }
         }
 
         return cells;
     });
 
-    // Sync viewpoint view with current value on initial load
     constructor() {
         effect(() => {
             const val = this.value();
-            if (val) {
-                const referenceDate = Array.isArray(val) ? val[0] : val;
-                if (referenceDate instanceof Date) {
+            if (val && !this.isInitialized) {
+                let referenceDate: Date | null = null;
+
+                if (Array.isArray(val) && val.length > 0) {
+                    const maxTimestamp = Math.max(...val.map(d => d.getTime()));
+                    referenceDate = new Date(maxTimestamp);
+                } else if (val instanceof Date) {
+                    referenceDate = val;
+                }
+
+                if (referenceDate && !isNaN(referenceDate.getTime())) {
                     this.currentMonth.set(referenceDate.getMonth());
                     this.currentYear.set(referenceDate.getFullYear());
+                    this.isInitialized = true;
                 }
             }
-        }, { allowSignalWrites: true });
+        });
     }
 
-    // --- Interaction Event Methods ---
     onMouseDown(cell: any, event: MouseEvent) {
-        if (cell.isDisabled) return;
+        // Explicitly bail out if it's a week number cell or disabled
+        if (cell.isWeekNum || cell.isDisabled) return;
 
         if (!this.isMultiSelect()) {
             this.value.set(cell.date);
             return;
         }
 
-        // Initialize Multi-selection Drag Engine Configuration
-        this.isDragging.set(true);
         this.dragStartCellDate.set(cell.date);
         this.dragCurrentCellDate.set(cell.date);
+        this.isDragging.set(true);
 
-        // Snapshot state profiles inside current grid window to compute fast visual mutations
         const snapshotMap = new Map<number, boolean>();
-        this.calendarCells().forEach(c => {
-            snapshotMap.set(c.id, c.isSelected);
+        const currentDates = this.value() as Date[] || [];
+
+        currentDates.forEach(d => {
+            snapshotMap.set(toMidnight(d).getTime(), true);
         });
+
         this.initialSelectedStateBeforeDrag.set(snapshotMap);
     }
 
     onMouseEnter(cell: any) {
-        if (!this.isDragging() || cell.isDisabled) return;
+        // Ignore dragging calculations completely over week number headers
+        if (!this.isDragging() || cell.isWeekNum) return;
         this.dragCurrentCellDate.set(cell.date);
     }
 
     onGridMouseLeave() {
-        // Keeps drag alive but cleans path views outside scope boundaries if preferred
+        // Keeps drag engine context alive smoothly
     }
 
     onMouseUpGlobal() {
         if (!this.isDragging()) return;
 
-        // Persist visual calculated states into model value array binding context
-        const mutatedArraySelection: Date[] = [];
-        this.calendarCells().forEach(cell => {
-            if (cell.isSelected && !cell.isDisabled) {
-                mutatedArraySelection.push(toMidnight(cell.date));
-            }
-        });
+        const startDrag = this.dragStartCellDate();
+        const currentDrag = this.dragCurrentCellDate();
+        const dragSnapshot = this.initialSelectedStateBeforeDrag();
 
-        this.value.set(mutatedArraySelection);
+        if (startDrag && currentDrag) {
+            const startT = toMidnight(startDrag).getTime();
+            const endT = toMidnight(currentDrag).getTime();
+            const minT = Math.min(startT, endT);
+            const maxT = Math.max(startT, endT);
 
-        // Reset Drag state machine
+            const previousSelection = this.value() as Date[] || [];
+            const updatedSelectionMap = new Map<number, Date>();
+
+            previousSelection.forEach(d => {
+                const t = toMidnight(d).getTime();
+                if (t < minT || t > maxT) {
+                    updatedSelectionMap.set(t, d);
+                }
+            });
+
+            this.calendarCells().forEach(cell => {
+                // Skip calculations for week numbers
+                if (cell.isWeekNum) return;
+
+                const t = Number(cell.id);
+                if (t >= minT && t <= maxT && !cell.isDisabled) {
+                    const wasSelectedBeforeDrag = dragSnapshot.get(t) || false;
+                    const shouldBeSelectedNow = !wasSelectedBeforeDrag;
+
+                    if (shouldBeSelectedNow) {
+                        updatedSelectionMap.set(t, toMidnight(cell.date));
+                    } else {
+                        updatedSelectionMap.delete(t);
+                    }
+                }
+            });
+
+            this.value.set(Array.from(updatedSelectionMap.values()));
+
+            this.currentMonth.set(currentDrag.getMonth());
+            this.currentYear.set(currentDrag.getFullYear());
+        }
+
         this.isDragging.set(false);
         this.dragStartCellDate.set(null);
         this.dragCurrentCellDate.set(null);
         this.initialSelectedStateBeforeDrag.set(new Map());
     }
 
-    // --- Month Navigation Actions ---
     prevMonth() {
         if (this.currentMonth() === 0) {
             this.currentMonth.set(11);
@@ -243,10 +280,18 @@ export class CalendarComponent {
         }
     }
 
-    // --- Helper Methods ---
-    private parseValidDate(value: string | Date | null): Date | null {
-        if (!value) return null;
-        const date = value instanceof Date ? value : new Date(value);
-        return isNaN(date.getTime()) ? null : date;
+    /**
+     * Standard ISO-8601 week calculation helper
+     */
+    private getISOWeekNumber(date: Date): number {
+        const target = new Date(date.valueOf());
+        const dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        const firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() !== 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000);
     }
 }

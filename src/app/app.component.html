@@ -1,6 +1,6 @@
 <div class="app-wrap">
-    <calendar [disabledDays]="[0, 3]"></calendar>
-    <calendar></calendar>
+    <calendar [disabledDays]="[0, 3]" [(value)]="date"></calendar>
+    <calendar [(value)]="dates"></calendar>
     <wysiwyg [(ngModel)]="html"></wysiwyg>
     <code-editor [(ngModel)]="html" lang="html"></code-editor>
     <code-editor [(ngModel)]="jsonData" lang="json"></code-editor>

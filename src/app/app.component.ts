@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewEncapsulation} from "@angular/core";
 import {
+    addDate,
     ApiService,
     ChipOption,
     Circle,
@@ -8,7 +9,8 @@ import {
     InteractiveCanvasRenderer,
     ITableColumns,
     Rect,
-    TableDataLoader
+    TableDataLoader,
+    toMidnight
 } from "../public_api";
 
 @Component({
@@ -25,6 +27,8 @@ export class AppComponent implements OnInit {
     apiTableColumns: ITableColumns;
     apiTableData: TableDataLoader;
 
+    date: Date;
+    dates: Date[];
     numberChips: number[];
     stringChips: string[];
     optionChips: string[];
@@ -38,6 +42,8 @@ export class AppComponent implements OnInit {
     jsonData: Record<string, any>;
 
     constructor(readonly api: ApiService) {
+        this.date = toMidnight(new Date());
+        this.dates = [addDate(this.date, 50), this.date, addDate(this.date)]
         this.options = [
             {
                 value: "teszt",
