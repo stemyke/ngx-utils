@@ -1,0 +1,30 @@
+<div class="calendar-container" (mouseup)="onMouseUpGlobal()">
+    <div class="calendar-header">
+        <btn (click)="prevMonth()" icon="chevron-left"></btn>
+        <div class="header-label">
+            {{ "month." + months[currentMonth()] | translate }} {{ currentYear() }}
+        </div>
+        <btn (click)="nextMonth()" icon="chevron-right"></btn>
+    </div>
+
+    <div class="calendar-grid days-header">
+        @for (day of daysOfWeek; track day) {
+            <div class="day-label">{{ "day." + day | translate }}</div>
+        }
+    </div>
+
+    <div class="calendar-grid days-grid" (mouseleave)="onGridMouseLeave()">
+        @for (cell of calendarCells(); track cell.id) {
+            <div
+                class="calendar-cell"
+                [class.filler]="!cell.isCurrentMonth"
+                [class.disabled]="cell.isDisabled"
+                [class.in-range]="cell.isInDragRange"
+                [class.active]="cell.isSelected"
+                (mousedown)="onMouseDown(cell, $event)"
+                (mouseenter)="onMouseEnter(cell)">
+                <span class="cell-number">{{ cell.date.getDate() }}</span>
+            </div>
+        }
+    </div>
+</div>

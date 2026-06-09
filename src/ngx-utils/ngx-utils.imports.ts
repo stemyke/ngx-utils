@@ -107,6 +107,7 @@ import {TabsComponent} from "./components/tabs/tabs.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {UploadComponent} from "./components/upload/upload.component";
 import {WysiwygComponent} from "./components/wysiwyg/wysiwyg.component";
+import {CalendarComponent} from "./components/calendar/calendar.component";
 
 // --- Pipes ---
 export const pipes = [
@@ -171,6 +172,7 @@ export const directives = [
 export const components = [
     BtnComponent,
     BtnDefaultComponent,
+    CalendarComponent,
     ChipsComponent,
     CloseBtnComponent,
     CodeEditorComponent,
