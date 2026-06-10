@@ -26,6 +26,8 @@
                 <div
                     class="calendar-cell"
                     [class.filler]="!cell.isCurrentMonth"
+                    [class.filler-start]="cell.isFillerStart"
+                    [class.filler-end]="cell.isFillerEnd"
                     [class.disabled]="cell.isDisabled"
                     [class.in-range]="cell.isInDragRange"
                     [class.range-start]="cell.isRangeStart"

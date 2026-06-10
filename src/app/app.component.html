@@ -15,7 +15,8 @@
     <calendar [min]="minDate"
               [disabledDays]="disabledDays"
               [disabledDates]="disabledDates" [(value)]="date"></calendar>
-    <calendar [(value)]="dates"></calendar>
+    <calendar [disabledDays]="disabledDays"
+              [(value)]="dates"></calendar>
     <wysiwyg [(ngModel)]="html"></wysiwyg>
     <code-editor [(ngModel)]="html" lang="html"></code-editor>
     <code-editor [(ngModel)]="jsonData" lang="json"></code-editor>

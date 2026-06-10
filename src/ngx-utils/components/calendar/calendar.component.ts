@@ -5,11 +5,13 @@ export interface CalendarCell {
     id: string;
     date: Date | null;
     isCurrentMonth: boolean;
+    isFillerEnd: boolean,
+    isFillerStart: boolean,
     isDisabled: boolean;
     isSelected: boolean;
+    isInDragRange: boolean;
     isWeekNum: boolean;
     weekNumber: number | null;
-    isInDragRange: boolean;
     isRangeStart: boolean;
     isRangeEnd: boolean;
 }
@@ -89,7 +91,6 @@ export class CalendarComponent {
             return val.filter(d => d instanceof Date && !isNaN(d.getTime()) && !checkInvalid(d));
         } else if (val instanceof Date && !isNaN(val.getTime())) {
             if (checkInvalid(val)) {
-                // Use the shared robust fallback finder routine
                 return this.findClosestValidDate(val, min, max, disabledTimes, isDayOfWeekDisabled);
             }
             return val;
@@ -107,7 +108,7 @@ export class CalendarComponent {
         if (startOffset === 0) startOffset = 7;
 
         const gridStartDate = new Date(year, month, 1 - startOffset);
-        const cells: CalendarCell[] = [];
+        const rawCells: CalendarCell[] = [];
         const totalRows = 6;
 
         const min = this.minDate();
@@ -147,13 +148,22 @@ export class CalendarComponent {
             dragMaxT = Math.max(startT, endT);
         }
 
+        // --- PRE-CALCULATE EXACT JUNCTION TIMESTAMPS ---
+        // 1. Exact absolute timestamp of the 1st day of the NEXT month
+        const nextMonthFirstDayT = toMidnight(new Date(year, month + 1, 1)).getTime();
+
+        // 2. Exact absolute timestamp of the LAST day of the PREVIOUS month (1 day before the 1st of the current month)
+        const prevMonthLastDayT = toMidnight(new Date(year, month, 0)).getTime();
+
+        // Phase 1: Pure single-pass generation loop
         for (let row = 0; row < totalRows; row++) {
             const firstDateOfRow = new Date(gridStartDate.getFullYear(), gridStartDate.getMonth(), gridStartDate.getDate() + (row * 7));
 
-            cells.push({
+            rawCells.push({
                 id: `week-${row}-${firstDateOfRow.getTime()}`,
                 date: null, isCurrentMonth: false, isDisabled: true, isSelected: false, isInDragRange: false,
-                isWeekNum: true, weekNumber: getISOWeekNumber(firstDateOfRow), isRangeStart: false, isRangeEnd: false
+                isWeekNum: true, weekNumber: getISOWeekNumber(firstDateOfRow), isRangeStart: false, isRangeEnd: false,
+                isFillerStart: false, isFillerEnd: false
             });
 
             for (let col = 0; col < 7; col++) {
@@ -178,21 +188,23 @@ export class CalendarComponent {
                 let isRangeStart = false;
                 let isRangeEnd = false;
 
-                if (dragging && !isDisabled) {
+                if (dragging) {
                     if (multiSelectMode && startDrag && currentDrag) {
                         if (timestamp >= dragMinT && timestamp <= dragMaxT) {
                             isInDragRange = true;
-                            isSelected = targetState;
+                            if (!isDisabled) {
+                                isSelected = targetState;
+                            }
                             if (timestamp === dragMinT) isRangeStart = true;
                             if (timestamp === dragMaxT) isRangeEnd = true;
                         } else {
-                            isSelected = dragSnapshot.get(timestamp) || false;
+                            isSelected = multiSelectMode ? (dragSnapshot.get(timestamp) || false) : false;
                         }
                     }
                     else if (!multiSelectMode && currentDragT !== null) {
                         if (timestamp === currentDragT) {
                             isInDragRange = true;
-                            isSelected = true;
+                            if (!isDisabled) isSelected = true;
                             isRangeStart = true;
                             isRangeEnd = true;
                         } else {
@@ -201,14 +213,20 @@ export class CalendarComponent {
                     }
                 }
 
-                cells.push({
+                // --- DIRECT BLUEPRINT TIMESTAMP MATCHING ---
+                // This eliminates index tracking offsets, header pollution, and loops entirely
+                const isFillerEnd = timestamp === prevMonthLastDayT;
+                const isFillerStart = timestamp === nextMonthFirstDayT;
+
+                rawCells.push({
                     id: String(timestamp), date: cellDate, isCurrentMonth: cellDate.getMonth() === month,
-                    isDisabled, isSelected, isInDragRange, isWeekNum: false, weekNumber: null, isRangeStart, isRangeEnd
+                    isDisabled, isSelected, isInDragRange, isWeekNum: false, weekNumber: null, isRangeStart, isRangeEnd,
+                    isFillerStart, isFillerEnd
                 });
             }
         }
 
-        return cells;
+        return rawCells;
     });
 
     constructor() {
@@ -273,9 +291,14 @@ export class CalendarComponent {
 
             if (startDrag && currentDrag) {
                 if (!this.isMultiSelect()) {
-                    this.value.set(currentDrag);
-                    this.currentMonth.set(currentDrag.getMonth());
-                    this.currentYear.set(currentDrag.getFullYear());
+                    // Prevent saving on release if user drops mouse over a disabled date track
+                    const cellCells = this.calendarCells();
+                    const hoveredCell = cellCells.find(c => c.date && isSameDay(c.date, currentDrag));
+                    if (hoveredCell && !hoveredCell.isDisabled) {
+                        this.value.set(currentDrag);
+                        this.currentMonth.set(currentDrag.getMonth());
+                        this.currentYear.set(currentDrag.getFullYear());
+                    }
                 }
                 else {
                     const targetState = this.dragTargetState();
@@ -301,14 +324,9 @@ export class CalendarComponent {
 
                     const isDayOfWeekDisabled = (jsDay: number) => {
                         return disDays.some(d => {
-                            if (d === 0 || d === 7) return jsDay === 6;
-                            if (d === 1) return jsDay === 1;
-                            if (d === 2) return jsDay === 2;
-                            if (d === 3) return jsDay === 3;
-                            if (d === 4) return jsDay === 4;
-                            if (d === 5) return jsDay === 5;
-                            if (d === 6) return jsDay === 0;
-                            return false;
+                            // Map 7 down to 0 so both match Sunday
+                            const targetDay = d === 7 ? 0 : d;
+                            return jsDay === targetDay;
                         });
                     };
 
@@ -364,18 +382,15 @@ export class CalendarComponent {
         }
     }
 
-    // --- Core Dynamic Fallback Resolution Finder ---
     private findClosestValidDate(
         baseDate: Date,
         min: Date | null,
         max: Date | null,
         disabledTimes: number[],
-        isDayOfWeekDisabled: (jsDay: number) => boolean
+        isDayOfWeekDisabled = (jsDay: number) => false
     ): Date {
         const midnightBase = toMidnight(baseDate);
-
-        // Determine the direction to step based on the boundary violation
-        let direction = 1; // March forward by default
+        let direction = 1;
         let testDate = new Date(midnightBase.getTime());
 
         if (min && midnightBase < toMidnight(min)) {
@@ -386,12 +401,11 @@ export class CalendarComponent {
             direction = -1;
         }
 
-        const maxIterations = 365; // High loop ceiling guard
+        const maxIterations = 365;
         let iterations = 0;
 
         while (iterations < maxIterations) {
             const currentT = testDate.getTime();
-
             let isInvalid = false;
             if (min && testDate < toMidnight(min)) isInvalid = true;
             if (max && testDate > toMidnight(max)) isInvalid = true;
@@ -399,14 +413,12 @@ export class CalendarComponent {
             if (isDayOfWeekDisabled(testDate.getDay())) isInvalid = true;
 
             if (!isInvalid) {
-                return testDate; // Found a working day!
+                return testDate;
             }
-
-            // Step forward or backward by one day
             testDate.setDate(testDate.getDate() + direction);
             iterations++;
         }
 
-        return min ? min : (max ? max : new Date()); // Ultimate safe fallback
+        return min ? min : (max ? max : new Date());
     }
 }
