@@ -12,7 +12,9 @@
 </dropdown-box>
 <hr>
 <div class="app-wrap">
-    <calendar [disabledDays]="[0, 3]" [(value)]="date"></calendar>
+    <calendar [min]="minDate"
+              [disabledDays]="disabledDays"
+              [disabledDates]="disabledDates" [(value)]="date"></calendar>
     <calendar [(value)]="dates"></calendar>
     <wysiwyg [(ngModel)]="html"></wysiwyg>
     <code-editor [(ngModel)]="html" lang="html"></code-editor>

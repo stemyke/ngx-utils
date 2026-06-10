@@ -27,6 +27,9 @@ export class AppComponent implements OnInit {
     apiTableColumns: ITableColumns;
     apiTableData: TableDataLoader;
 
+    minDate: Date;
+    disabledDates: Date[];
+    disabledDays: number[];
     date: Date;
     dates: Date[];
     numberChips: number[];
@@ -42,6 +45,9 @@ export class AppComponent implements OnInit {
     jsonData: Record<string, any>;
 
     constructor(readonly api: ApiService, @Inject(LANGUAGE_SERVICE) readonly language: ILanguageService) {
+        this.minDate = addDate(toMidnight(new Date()), 30);
+        this.disabledDates = [addDate(this.minDate, 0), addDate(this.minDate, 2)];
+        this.disabledDays = [6, 7];
         this.date = toMidnight(new Date());
         this.dates = [addDate(this.date, 50), this.date, addDate(this.date)];
         this.language.addLanguages(["en", "de", "hu"]);

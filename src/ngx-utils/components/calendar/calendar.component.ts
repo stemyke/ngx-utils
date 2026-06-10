@@ -89,7 +89,8 @@ export class CalendarComponent {
             return val.filter(d => d instanceof Date && !isNaN(d.getTime()) && !checkInvalid(d));
         } else if (val instanceof Date && !isNaN(val.getTime())) {
             if (checkInvalid(val)) {
-                return min ? min : (max ? max : new Date());
+                // Use the shared robust fallback finder routine
+                return this.findClosestValidDate(val, min, max, disabledTimes, isDayOfWeekDisabled);
             }
             return val;
         }
@@ -178,7 +179,6 @@ export class CalendarComponent {
                 let isRangeEnd = false;
 
                 if (dragging && !isDisabled) {
-                    // --- Case A: Multi-Select Range Selection ---
                     if (multiSelectMode && startDrag && currentDrag) {
                         if (timestamp >= dragMinT && timestamp <= dragMaxT) {
                             isInDragRange = true;
@@ -189,15 +189,14 @@ export class CalendarComponent {
                             isSelected = dragSnapshot.get(timestamp) || false;
                         }
                     }
-                    // --- Case B: Single-Select Focused Cell Highlighting ---
                     else if (!multiSelectMode && currentDragT !== null) {
                         if (timestamp === currentDragT) {
                             isInDragRange = true;
-                            isSelected = true; // Preview selected state cleanly on the active cell
+                            isSelected = true;
                             isRangeStart = true;
                             isRangeEnd = true;
                         } else {
-                            isSelected = false; // Hide preview selection on all other cells
+                            isSelected = false;
                         }
                     }
                 }
@@ -363,5 +362,51 @@ export class CalendarComponent {
         } else {
             this.currentMonth.update(m => m + 1);
         }
+    }
+
+    // --- Core Dynamic Fallback Resolution Finder ---
+    private findClosestValidDate(
+        baseDate: Date,
+        min: Date | null,
+        max: Date | null,
+        disabledTimes: number[],
+        isDayOfWeekDisabled: (jsDay: number) => boolean
+    ): Date {
+        const midnightBase = toMidnight(baseDate);
+
+        // Determine the direction to step based on the boundary violation
+        let direction = 1; // March forward by default
+        let testDate = new Date(midnightBase.getTime());
+
+        if (min && midnightBase < toMidnight(min)) {
+            testDate = new Date(toMidnight(min).getTime());
+            direction = 1;
+        } else if (max && midnightBase > toMidnight(max)) {
+            testDate = new Date(toMidnight(max).getTime());
+            direction = -1;
+        }
+
+        const maxIterations = 365; // High loop ceiling guard
+        let iterations = 0;
+
+        while (iterations < maxIterations) {
+            const currentT = testDate.getTime();
+
+            let isInvalid = false;
+            if (min && testDate < toMidnight(min)) isInvalid = true;
+            if (max && testDate > toMidnight(max)) isInvalid = true;
+            if (disabledTimes.includes(currentT)) isInvalid = true;
+            if (isDayOfWeekDisabled(testDate.getDay())) isInvalid = true;
+
+            if (!isInvalid) {
+                return testDate; // Found a working day!
+            }
+
+            // Step forward or backward by one day
+            testDate.setDate(testDate.getDate() + direction);
+            iterations++;
+        }
+
+        return min ? min : (max ? max : new Date()); // Ultimate safe fallback
     }
 }
