@@ -70,12 +70,6 @@ export class LanguageService extends StaticLanguageService {
         this.events.languageChanged.next(lang);
     }
 
-    protected selectLanguage(lang: string): string {
-        if (!lang) return null;
-        return this.languageList.length === 0 || this.languageList.includes(lang)
-            ? lang : null;
-    }
-
     protected async useLanguage(lang: string): Promise<ITranslations> {
         lang = this.selectLanguage(lang);
         this.client.setParam("language", lang);

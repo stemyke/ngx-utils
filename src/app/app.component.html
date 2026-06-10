@@ -1,3 +1,16 @@
+<dropdown-box componentClass="sort-dropdown" #sortDd>
+    <ng-container toggle-content>
+        {{ "lang." + language.currentLanguage | translate }}
+    </ng-container>
+    <ul>
+        <ng-container *ngFor="let lang of language.languages">
+            <li (click)="language.currentLanguage = lang">
+                {{ "lang." + lang | translate }}
+            </li>
+        </ng-container>
+    </ul>
+</dropdown-box>
+<hr>
 <div class="app-wrap">
     <calendar [disabledDays]="[0, 3]" [(value)]="date"></calendar>
     <calendar [(value)]="dates"></calendar>

@@ -27,7 +27,8 @@ export class HammerConfig extends HammerGestureConfig {
         BrowserModule,
         FormsModule,
         NgxUtilsModule.forRoot(),
-        HammerModule
+        HammerModule,
+        NgxUtilsModule
     ],
     providers: [
         {

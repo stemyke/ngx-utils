@@ -1,7 +1,6 @@
-import {Component, computed, effect, HostListener, input, model, signal, ViewEncapsulation} from "@angular/core";
-import { parseValidDate, toMidnight, isSameDay } from "../../utils/date.utils";
+import { Component, computed, effect, input, model, signal, untracked, ViewEncapsulation, HostListener } from "@angular/core";
+import { parseValidDate, toMidnight, isSameDay, getISOWeekNumber } from "../../utils/date.utils";
 
-// --- Local Strongly Typed Interface for Grid Cells ---
 export interface CalendarCell {
     id: string;
     date: Date | null;
@@ -42,7 +41,6 @@ export class CalendarComponent {
     private readonly initialSelectedStateBeforeDrag = signal<Map<number, boolean>>(new Map());
 
     private readonly dragTargetState = signal<boolean>(true);
-
     private isInitialized = false;
 
     private readonly minDate = computed(() => parseValidDate(this.min()));
@@ -58,6 +56,46 @@ export class CalendarComponent {
 
     readonly isMultiSelect = computed(() => Array.isArray(this.value()));
 
+    readonly validatedValue = computed(() => {
+        const val = this.value();
+        const min = this.minDate();
+        const max = this.maxDate();
+        const disabledTimes = this.disabledTimestamps();
+        const disDays = this.disabledDays();
+
+        const isDayOfWeekDisabled = (jsDay: number) => {
+            return disDays.some(d => {
+                if (d === 0 || d === 7) return jsDay === 6;
+                if (d === 1) return jsDay === 1;
+                if (d === 2) return jsDay === 2;
+                if (d === 3) return jsDay === 3;
+                if (d === 4) return jsDay === 4;
+                if (d === 5) return jsDay === 5;
+                if (d === 6) return jsDay === 0;
+                return false;
+            });
+        };
+
+        const checkInvalid = (d: Date): boolean => {
+            const midnight = toMidnight(d);
+            if (min && midnight < toMidnight(min)) return true;
+            if (max && midnight > toMidnight(max)) return true;
+            if (disabledTimes.includes(midnight.getTime())) return true;
+            if (isDayOfWeekDisabled(midnight.getDay())) return true;
+            return false;
+        };
+
+        if (Array.isArray(val)) {
+            return val.filter(d => d instanceof Date && !isNaN(d.getTime()) && !checkInvalid(d));
+        } else if (val instanceof Date && !isNaN(val.getTime())) {
+            if (checkInvalid(val)) {
+                return min ? min : (max ? max : new Date());
+            }
+            return val;
+        }
+        return null;
+    });
+
     readonly calendarCells = computed<CalendarCell[]>(() => {
         const year = this.currentYear();
         const month = this.currentMonth();
@@ -65,10 +103,7 @@ export class CalendarComponent {
         const firstDayOfMonth = new Date(year, month, 1);
         let startOffset = firstDayOfMonth.getDay() - 1;
         if (startOffset === -1) startOffset = 6;
-
-        if (startOffset === 0) {
-            startOffset = 7;
-        }
+        if (startOffset === 0) startOffset = 7;
 
         const gridStartDate = new Date(year, month, 1 - startOffset);
         const cells: CalendarCell[] = [];
@@ -92,16 +127,19 @@ export class CalendarComponent {
             });
         };
 
-        const currentValue = this.value();
+        const currentValue = this.validatedValue();
         const startDrag = this.dragStartCellDate();
         const currentDrag = this.dragCurrentCellDate();
         const dragging = this.isDragging();
         const dragSnapshot = this.initialSelectedStateBeforeDrag();
         const targetState = this.dragTargetState();
+        const multiSelectMode = this.isMultiSelect();
 
         let dragMinT = Infinity;
         let dragMaxT = -Infinity;
-        if (dragging && startDrag && currentDrag) {
+        let currentDragT = currentDrag ? toMidnight(currentDrag).getTime() : null;
+
+        if (multiSelectMode && dragging && startDrag && currentDrag) {
             const startT = toMidnight(startDrag).getTime();
             const endT = toMidnight(currentDrag).getTime();
             dragMinT = Math.min(startT, endT);
@@ -109,23 +147,12 @@ export class CalendarComponent {
         }
 
         for (let row = 0; row < totalRows; row++) {
-            const firstDateOfRow = new Date(
-                gridStartDate.getFullYear(),
-                gridStartDate.getMonth(),
-                gridStartDate.getDate() + (row * 7)
-            );
+            const firstDateOfRow = new Date(gridStartDate.getFullYear(), gridStartDate.getMonth(), gridStartDate.getDate() + (row * 7));
 
             cells.push({
                 id: `week-${row}-${firstDateOfRow.getTime()}`,
-                date: null,
-                isCurrentMonth: false,
-                isDisabled: true,
-                isSelected: false,
-                isInDragRange: false,
-                isWeekNum: true,
-                weekNumber: this.getISOWeekNumber(firstDateOfRow),
-                isRangeStart: false,
-                isRangeEnd: false
+                date: null, isCurrentMonth: false, isDisabled: true, isSelected: false, isInDragRange: false,
+                isWeekNum: true, weekNumber: getISOWeekNumber(firstDateOfRow), isRangeStart: false, isRangeEnd: false
             });
 
             for (let col = 0; col < 7; col++) {
@@ -140,7 +167,7 @@ export class CalendarComponent {
                 if (isDayOfWeekDisabled(cellMidnight.getDay())) isDisabled = true;
 
                 let isSelected = false;
-                if (!this.isMultiSelect()) {
+                if (!multiSelectMode) {
                     isSelected = currentValue instanceof Date && isSameDay(currentValue, cellMidnight);
                 } else if (Array.isArray(currentValue)) {
                     isSelected = currentValue.some(d => isSameDay(d, cellMidnight));
@@ -150,29 +177,34 @@ export class CalendarComponent {
                 let isRangeStart = false;
                 let isRangeEnd = false;
 
-                if (dragging && startDrag && currentDrag && !isDisabled) {
-                    if (timestamp >= dragMinT && timestamp <= dragMaxT) {
-                        isInDragRange = true;
-                        isSelected = targetState;
-
-                        if (timestamp === dragMinT) isRangeStart = true;
-                        if (timestamp === dragMaxT) isRangeEnd = true;
-                    } else {
-                        isSelected = dragSnapshot.get(timestamp) || false;
+                if (dragging && !isDisabled) {
+                    // --- Case A: Multi-Select Range Selection ---
+                    if (multiSelectMode && startDrag && currentDrag) {
+                        if (timestamp >= dragMinT && timestamp <= dragMaxT) {
+                            isInDragRange = true;
+                            isSelected = targetState;
+                            if (timestamp === dragMinT) isRangeStart = true;
+                            if (timestamp === dragMaxT) isRangeEnd = true;
+                        } else {
+                            isSelected = dragSnapshot.get(timestamp) || false;
+                        }
+                    }
+                    // --- Case B: Single-Select Focused Cell Highlighting ---
+                    else if (!multiSelectMode && currentDragT !== null) {
+                        if (timestamp === currentDragT) {
+                            isInDragRange = true;
+                            isSelected = true; // Preview selected state cleanly on the active cell
+                            isRangeStart = true;
+                            isRangeEnd = true;
+                        } else {
+                            isSelected = false; // Hide preview selection on all other cells
+                        }
                     }
                 }
 
                 cells.push({
-                    id: String(timestamp),
-                    date: cellDate,
-                    isCurrentMonth: cellDate.getMonth() === month,
-                    isDisabled,
-                    isSelected,
-                    isInDragRange,
-                    isWeekNum: false,
-                    weekNumber: null,
-                    isRangeStart,
-                    isRangeEnd
+                    id: String(timestamp), date: cellDate, isCurrentMonth: cellDate.getMonth() === month,
+                    isDisabled, isSelected, isInDragRange, isWeekNum: false, weekNumber: null, isRangeStart, isRangeEnd
                 });
             }
         }
@@ -182,46 +214,45 @@ export class CalendarComponent {
 
     constructor() {
         effect(() => {
-            const val = this.value();
+            const val = this.validatedValue();
             if (val && !this.isInitialized) {
-                let referenceDate: Date | null = null;
+                untracked(() => {
+                    let referenceDate: Date | null = null;
+                    if (Array.isArray(val) && val.length > 0) {
+                        const maxTimestamp = Math.max(...val.map(d => d.getTime()));
+                        referenceDate = new Date(maxTimestamp);
+                    } else if (val instanceof Date) {
+                        referenceDate = val;
+                    }
 
-                if (Array.isArray(val) && val.length > 0) {
-                    const maxTimestamp = Math.max(...val.map(d => d.getTime()));
-                    referenceDate = new Date(maxTimestamp);
-                } else if (val instanceof Date) {
-                    referenceDate = val;
-                }
-
-                if (referenceDate && !isNaN(referenceDate.getTime())) {
-                    this.currentMonth.set(referenceDate.getMonth());
-                    this.currentYear.set(referenceDate.getFullYear());
-                    this.isInitialized = true;
-                }
+                    if (referenceDate && !isNaN(referenceDate.getTime())) {
+                        this.currentMonth.set(referenceDate.getMonth());
+                        this.currentYear.set(referenceDate.getFullYear());
+                        this.isInitialized = true;
+                    }
+                });
             }
         });
     }
 
     onMouseDown(cell: CalendarCell, event: MouseEvent): void {
-        if (cell.isWeekNum || cell.isDisabled) return;
-
-        if (!this.isMultiSelect()) {
-            if (cell.date) this.value.set(cell.date);
-            return;
-        }
+        if (cell.isWeekNum || cell.isDisabled || !cell.date) return;
 
         this.dragStartCellDate.set(cell.date);
         this.dragCurrentCellDate.set(cell.date);
-
-        this.dragTargetState.set(!cell.isSelected);
         this.isDragging.set(true);
 
         const snapshotMap = new Map<number, boolean>();
-        const currentDates = this.value() as Date[] || [];
 
-        currentDates.forEach(d => {
-            snapshotMap.set(toMidnight(d).getTime(), true);
-        });
+        if (!this.isMultiSelect()) {
+            this.dragTargetState.set(true);
+        } else {
+            this.dragTargetState.set(!cell.isSelected);
+            const currentDates = this.validatedValue() as Date[] || [];
+            currentDates.forEach(d => {
+                snapshotMap.set(toMidnight(d).getTime(), true);
+            });
+        }
 
         this.initialSelectedStateBeforeDrag.set(snapshotMap);
     }
@@ -231,53 +262,84 @@ export class CalendarComponent {
         this.dragCurrentCellDate.set(cell.date);
     }
 
-    onGridMouseLeave(): void {
-        // Keeps drag engine context alive smoothly
-    }
+    onGridMouseLeave(): void { }
 
     @HostListener("window:mouseup", ["$event"])
     onMouseUpGlobal(): void {
         if (!this.isDragging()) return;
 
-        const startDrag = this.dragStartCellDate();
-        const currentDrag = this.dragCurrentCellDate();
-        const dragSnapshot = this.initialSelectedStateBeforeDrag();
-        const targetState = this.dragTargetState();
+        untracked(() => {
+            const startDrag = this.dragStartCellDate();
+            const currentDrag = this.dragCurrentCellDate();
 
-        if (startDrag && currentDrag) {
-            const startT = toMidnight(startDrag).getTime();
-            const endT = toMidnight(currentDrag).getTime();
-            const minT = Math.min(startT, endT);
-            const maxT = Math.max(startT, endT);
-
-            const previousSelection = this.value() as Date[] || [];
-            const updatedSelectionMap = new Map<number, Date>();
-
-            previousSelection.forEach(d => {
-                const t = toMidnight(d).getTime();
-                if (t < minT || t > maxT) {
-                    updatedSelectionMap.set(t, d);
+            if (startDrag && currentDrag) {
+                if (!this.isMultiSelect()) {
+                    this.value.set(currentDrag);
+                    this.currentMonth.set(currentDrag.getMonth());
+                    this.currentYear.set(currentDrag.getFullYear());
                 }
-            });
+                else {
+                    const targetState = this.dragTargetState();
+                    const startT = toMidnight(startDrag).getTime();
+                    const endT = toMidnight(currentDrag).getTime();
+                    const minT = Math.min(startT, endT);
+                    const maxT = Math.max(startT, endT);
 
-            this.calendarCells().forEach(cell => {
-                if (cell.isWeekNum) return;
+                    const previousSelection = this.validatedValue() as Date[] || [];
+                    const updatedSelectionMap = new Map<number, Date>();
 
-                const t = Number(cell.id);
-                if (t >= minT && t <= maxT && !cell.isDisabled && cell.date) {
-                    if (targetState) {
-                        updatedSelectionMap.set(t, toMidnight(cell.date));
-                    } else {
-                        updatedSelectionMap.delete(t);
+                    previousSelection.forEach(d => {
+                        const t = toMidnight(d).getTime();
+                        if (t < minT || t > maxT) {
+                            updatedSelectionMap.set(t, d);
+                        }
+                    });
+
+                    const min = this.minDate();
+                    const max = this.maxDate();
+                    const disabledTimes = this.disabledTimestamps();
+                    const disDays = this.disabledDays();
+
+                    const isDayOfWeekDisabled = (jsDay: number) => {
+                        return disDays.some(d => {
+                            if (d === 0 || d === 7) return jsDay === 6;
+                            if (d === 1) return jsDay === 1;
+                            if (d === 2) return jsDay === 2;
+                            if (d === 3) return jsDay === 3;
+                            if (d === 4) return jsDay === 4;
+                            if (d === 5) return jsDay === 5;
+                            if (d === 6) return jsDay === 0;
+                            return false;
+                        });
+                    };
+
+                    const dynamicDateCursor = new Date(minT);
+                    const loopEndMidnight = new Date(maxT);
+
+                    while (dynamicDateCursor <= loopEndMidnight) {
+                        const currentT = dynamicDateCursor.getTime();
+                        let isDayRestricted = false;
+                        if (min && dynamicDateCursor < toMidnight(min)) isDayRestricted = true;
+                        if (max && dynamicDateCursor > toMidnight(max)) isDayRestricted = true;
+                        if (disabledTimes.includes(currentT)) isDayRestricted = true;
+                        if (isDayOfWeekDisabled(dynamicDateCursor.getDay())) isDayRestricted = true;
+
+                        if (!isDayRestricted) {
+                            if (targetState) {
+                                updatedSelectionMap.set(currentT, new Date(currentT));
+                            } else {
+                                updatedSelectionMap.delete(currentT);
+                            }
+                        }
+                        dynamicDateCursor.setDate(dynamicDateCursor.getDate() + 1);
                     }
+
+                    this.value.set(Array.from(updatedSelectionMap.values()));
+                    this.currentMonth.set(currentDrag.getMonth());
+                    this.currentYear.set(currentDrag.getFullYear());
                 }
-            });
-
-            this.value.set(Array.from(updatedSelectionMap.values()));
-
-            this.currentMonth.set(currentDrag.getMonth());
-            this.currentYear.set(currentDrag.getFullYear());
-        }
+            }
+        });
 
         this.isDragging.set(false);
         this.dragStartCellDate.set(null);
@@ -301,17 +363,5 @@ export class CalendarComponent {
         } else {
             this.currentMonth.update(m => m + 1);
         }
-    }
-
-    private getISOWeekNumber(date: Date): number {
-        const target = new Date(date.valueOf());
-        const dayNr = (date.getDay() + 6) % 7;
-        target.setDate(target.getDate() - dayNr + 3);
-        const firstThursday = target.valueOf();
-        target.setMonth(0, 1);
-        if (target.getDay() !== 4) {
-            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-        }
-        return 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000);
     }
 }

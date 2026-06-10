@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
     constructor(readonly api: ApiService, @Inject(LANGUAGE_SERVICE) readonly language: ILanguageService) {
         this.date = toMidnight(new Date());
         this.dates = [addDate(this.date, 50), this.date, addDate(this.date)];
-        this.language.addLanguages(["en", "de", "es"]);
+        this.language.addLanguages(["en", "de", "hu"]);
         this.language.currentLanguage = this.language.defaultLanguage;
         this.options = [
             {

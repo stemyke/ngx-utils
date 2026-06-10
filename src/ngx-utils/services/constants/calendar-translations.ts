@@ -1,4 +1,6 @@
-export const CALENDAR_TRANSLATIONS: Record<string, Record<string, string>> = {
+import {GlobalTranslations} from "../../common-types";
+
+export const CALENDAR_TRANSLATIONS: GlobalTranslations = {
     en: {
         "month.jan": "January",
         "month.feb": "February",
@@ -19,6 +21,48 @@ export const CALENDAR_TRANSLATIONS: Record<string, Record<string, string>> = {
         "day.fri": "Fri",
         "day.sat": "Sat",
         "day.sun": "Sun"
+    },
+    de: {
+        "month.jan": "Januar",
+        "month.feb": "Februar",
+        "month.mar": "März",
+        "month.apr": "April",
+        "month.may": "Mai",
+        "month.jun": "Juni",
+        "month.jul": "Juli",
+        "month.aug": "August",
+        "month.sep": "September",
+        "month.oct": "Oktober",
+        "month.nov": "November",
+        "month.dec": "Dezember",
+        "day.mon": "Mo",
+        "day.tue": "Di",
+        "day.wed": "Mi",
+        "day.thu": "Do",
+        "day.fri": "Fr",
+        "day.sat": "Sa",
+        "day.sun": "So"
+    },
+    hu: {
+        "month.jan": "január",
+        "month.feb": "február",
+        "month.mar": "Március",
+        "month.apr": "Április",
+        "month.may": "Május",
+        "month.jun": "Június",
+        "month.jul": "Július",
+        "month.aug": "Augusztus",
+        "month.sep": "Szeptember",
+        "month.oct": "Október",
+        "month.nov": "November",
+        "month.dec": "December",
+        "day.mon": "Hét",
+        "day.tue": "Kedd",
+        "day.wed": "Sze",
+        "day.thu": "Csüt",
+        "day.fri": "Pén",
+        "day.sat": "Szo",
+        "day.sun": "Vas"
     },
     es: {
         "month.jan": "Enero",
@@ -61,27 +105,6 @@ export const CALENDAR_TRANSLATIONS: Record<string, Record<string, string>> = {
         "day.fri": "Ven",
         "day.sat": "Sam",
         "day.sun": "Dim"
-    },
-    de: {
-        "month.jan": "Januar",
-        "month.feb": "Februar",
-        "month.mar": "März",
-        "month.apr": "April",
-        "month.may": "Mai",
-        "month.jun": "Juni",
-        "month.jul": "Juli",
-        "month.aug": "August",
-        "month.sep": "September",
-        "month.oct": "Oktober",
-        "month.nov": "November",
-        "month.dec": "Dezember",
-        "day.mon": "Mo",
-        "day.tue": "Di",
-        "day.wed": "Mi",
-        "day.thu": "Do",
-        "day.fri": "Fr",
-        "day.sat": "Sa",
-        "day.sun": "So"
     },
     it: {
         "month.jan": "Gennaio",

@@ -15,7 +15,8 @@ import {UniversalService} from "./universal.service";
 import {BaseHttpClient} from "./base-http.client";
 import {HttpClient} from "@angular/common/http";
 import {CONFIG_SERVICE, PROMISE_SERVICE} from "../tokens";
-import {CALENDAR_TRANSLATIONS} from "./calendar-translations";
+import {CALENDAR_TRANSLATIONS} from "./constants/calendar-translations";
+import {LANG_TRANSLATIONS} from "./constants/lang-translations";
 
 export const EMPTY_DICT: ITranslations = {};
 
@@ -44,8 +45,8 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     set currentLanguage(lang: string) {
-        this.currentLang = lang;
-        this.events.languageChanged.next(lang);
+        this.currentLang = this.selectLanguage(lang) || this.languageList[0];
+        this.events.languageChanged.next(this.currentLang);
     }
 
     get editLanguage(): string {
@@ -113,6 +114,12 @@ export class StaticLanguageService implements ILanguageService {
         this.initService();
     }
 
+    protected selectLanguage(lang: string): string {
+        if (!lang) return null;
+        return this.languageList.length === 0 || this.languageList.includes(lang)
+            ? lang : null;
+    }
+
     protected initService(): void {
 
     }
@@ -123,6 +130,7 @@ export class StaticLanguageService implements ILanguageService {
         this.languageList.forEach(lang => {
             this.translations[lang] = this.translations[lang] || EMPTY_DICT;
         });
+        this.mergeTranslations();
     }
 
     addLanguages(languages: string[]): void {
@@ -232,14 +240,17 @@ export class StaticLanguageService implements ILanguageService {
 
     protected mergeTranslations(): void {
         const languages = new Set([
+            ...this.languageList,
             ...Object.keys(this.translations),
-            ...Object.keys(this.overrideTranslations)
+            ...Object.keys(this.overrideTranslations),
+            ...Object.keys(CALENDAR_TRANSLATIONS),
         ]);
         this.mergedTranslations = Array.from(languages).reduce((merged, language) => {
             merged[language] = {
                 ...(this.translations[language] || EMPTY_DICT),
                 ...(this.overrideTranslations[language] || EMPTY_DICT),
                 ...(CALENDAR_TRANSLATIONS[language] || CALENDAR_TRANSLATIONS.en),
+                ...LANG_TRANSLATIONS
             };
             return merged;
         }, {} as GlobalTranslations);
