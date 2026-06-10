@@ -1,13 +1,13 @@
-import {Component, OnInit, ViewEncapsulation} from "@angular/core";
+import {Component, Inject, OnInit, ViewEncapsulation} from "@angular/core";
 import {
     addDate,
     ApiService,
     ChipOption,
     Circle,
     Enum,
-    HitZoneRenderer,
+    HitZoneRenderer, ILanguageService,
     InteractiveCanvasRenderer,
-    ITableColumns,
+    ITableColumns, LANGUAGE_SERVICE,
     Rect,
     TableDataLoader,
     toMidnight
@@ -41,9 +41,11 @@ export class AppComponent implements OnInit {
     renderers: InteractiveCanvasRenderer[];
     jsonData: Record<string, any>;
 
-    constructor(readonly api: ApiService) {
+    constructor(readonly api: ApiService, @Inject(LANGUAGE_SERVICE) readonly language: ILanguageService) {
         this.date = toMidnight(new Date());
-        this.dates = [addDate(this.date, 50), this.date, addDate(this.date)]
+        this.dates = [addDate(this.date, 50), this.date, addDate(this.date)];
+        this.language.addLanguages(["en", "de", "es"]);
+        this.language.currentLanguage = this.language.defaultLanguage;
         this.options = [
             {
                 value: "teszt",

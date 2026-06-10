@@ -15,6 +15,7 @@ import {UniversalService} from "./universal.service";
 import {BaseHttpClient} from "./base-http.client";
 import {HttpClient} from "@angular/common/http";
 import {CONFIG_SERVICE, PROMISE_SERVICE} from "../tokens";
+import {CALENDAR_TRANSLATIONS} from "./calendar-translations";
 
 export const EMPTY_DICT: ITranslations = {};
 
@@ -238,6 +239,7 @@ export class StaticLanguageService implements ILanguageService {
             merged[language] = {
                 ...(this.translations[language] || EMPTY_DICT),
                 ...(this.overrideTranslations[language] || EMPTY_DICT),
+                ...(CALENDAR_TRANSLATIONS[language] || CALENDAR_TRANSLATIONS.en),
             };
             return merged;
         }, {} as GlobalTranslations);

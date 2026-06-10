@@ -1,5 +1,19 @@
-import { Component, computed, effect, input, model, signal, ViewEncapsulation } from "@angular/core";
+import {Component, computed, effect, HostListener, input, model, signal, ViewEncapsulation} from "@angular/core";
 import { parseValidDate, toMidnight, isSameDay } from "../../utils/date.utils";
+
+// --- Local Strongly Typed Interface for Grid Cells ---
+export interface CalendarCell {
+    id: string;
+    date: Date | null;
+    isCurrentMonth: boolean;
+    isDisabled: boolean;
+    isSelected: boolean;
+    isInDragRange: boolean;
+    isWeekNum: boolean;
+    weekNumber: number | null;
+    isRangeStart: boolean;
+    isRangeEnd: boolean;
+}
 
 @Component({
     standalone: false,
@@ -27,6 +41,8 @@ export class CalendarComponent {
     private readonly dragCurrentCellDate = signal<Date | null>(null);
     private readonly initialSelectedStateBeforeDrag = signal<Map<number, boolean>>(new Map());
 
+    private readonly dragTargetState = signal<boolean>(true);
+
     private isInitialized = false;
 
     private readonly minDate = computed(() => parseValidDate(this.min()));
@@ -42,7 +58,7 @@ export class CalendarComponent {
 
     readonly isMultiSelect = computed(() => Array.isArray(this.value()));
 
-    readonly calendarCells = computed(() => {
+    readonly calendarCells = computed<CalendarCell[]>(() => {
         const year = this.currentYear();
         const month = this.currentMonth();
 
@@ -55,7 +71,7 @@ export class CalendarComponent {
         }
 
         const gridStartDate = new Date(year, month, 1 - startOffset);
-        const cells = [];
+        const cells: CalendarCell[] = [];
         const totalRows = 6;
 
         const min = this.minDate();
@@ -81,30 +97,37 @@ export class CalendarComponent {
         const currentDrag = this.dragCurrentCellDate();
         const dragging = this.isDragging();
         const dragSnapshot = this.initialSelectedStateBeforeDrag();
+        const targetState = this.dragTargetState();
 
-        // Loop row by row to easily calculate and inject week numbers at the start of each row
+        let dragMinT = Infinity;
+        let dragMaxT = -Infinity;
+        if (dragging && startDrag && currentDrag) {
+            const startT = toMidnight(startDrag).getTime();
+            const endT = toMidnight(currentDrag).getTime();
+            dragMinT = Math.min(startT, endT);
+            dragMaxT = Math.max(startT, endT);
+        }
+
         for (let row = 0; row < totalRows; row++) {
-
-            // 1. Calculate the actual date at the beginning of this row's day sequence
             const firstDateOfRow = new Date(
                 gridStartDate.getFullYear(),
                 gridStartDate.getMonth(),
                 gridStartDate.getDate() + (row * 7)
             );
 
-            // 2. Inject the Week Number column element flag
             cells.push({
                 id: `week-${row}-${firstDateOfRow.getTime()}`,
                 date: null,
                 isCurrentMonth: false,
-                isDisabled: true, // Mark true to protect it from drag mechanics naturally
+                isDisabled: true,
                 isSelected: false,
                 isInDragRange: false,
                 isWeekNum: true,
-                weekNumber: this.getISOWeekNumber(firstDateOfRow)
+                weekNumber: this.getISOWeekNumber(firstDateOfRow),
+                isRangeStart: false,
+                isRangeEnd: false
             });
 
-            // 3. Inject the subsequent 7 day cells for this row
             for (let col = 0; col < 7; col++) {
                 const cellDate = new Date(firstDateOfRow.getFullYear(), firstDateOfRow.getMonth(), firstDateOfRow.getDate() + col);
                 const cellMidnight = toMidnight(cellDate);
@@ -124,16 +147,16 @@ export class CalendarComponent {
                 }
 
                 let isInDragRange = false;
-                if (dragging && startDrag && currentDrag && !isDisabled) {
-                    const startT = toMidnight(startDrag).getTime();
-                    const endT = toMidnight(currentDrag).getTime();
-                    const minT = Math.min(startT, endT);
-                    const maxT = Math.max(startT, endT);
+                let isRangeStart = false;
+                let isRangeEnd = false;
 
-                    if (timestamp >= minT && timestamp <= maxT) {
+                if (dragging && startDrag && currentDrag && !isDisabled) {
+                    if (timestamp >= dragMinT && timestamp <= dragMaxT) {
                         isInDragRange = true;
-                        const originalState = dragSnapshot.get(timestamp) || false;
-                        isSelected = !originalState;
+                        isSelected = targetState;
+
+                        if (timestamp === dragMinT) isRangeStart = true;
+                        if (timestamp === dragMaxT) isRangeEnd = true;
                     } else {
                         isSelected = dragSnapshot.get(timestamp) || false;
                     }
@@ -147,7 +170,9 @@ export class CalendarComponent {
                     isSelected,
                     isInDragRange,
                     isWeekNum: false,
-                    weekNumber: null
+                    weekNumber: null,
+                    isRangeStart,
+                    isRangeEnd
                 });
             }
         }
@@ -177,17 +202,18 @@ export class CalendarComponent {
         });
     }
 
-    onMouseDown(cell: any, event: MouseEvent) {
-        // Explicitly bail out if it's a week number cell or disabled
+    onMouseDown(cell: CalendarCell, event: MouseEvent): void {
         if (cell.isWeekNum || cell.isDisabled) return;
 
         if (!this.isMultiSelect()) {
-            this.value.set(cell.date);
+            if (cell.date) this.value.set(cell.date);
             return;
         }
 
         this.dragStartCellDate.set(cell.date);
         this.dragCurrentCellDate.set(cell.date);
+
+        this.dragTargetState.set(!cell.isSelected);
         this.isDragging.set(true);
 
         const snapshotMap = new Map<number, boolean>();
@@ -200,22 +226,23 @@ export class CalendarComponent {
         this.initialSelectedStateBeforeDrag.set(snapshotMap);
     }
 
-    onMouseEnter(cell: any) {
-        // Ignore dragging calculations completely over week number headers
+    onMouseEnter(cell: CalendarCell): void {
         if (!this.isDragging() || cell.isWeekNum) return;
         this.dragCurrentCellDate.set(cell.date);
     }
 
-    onGridMouseLeave() {
+    onGridMouseLeave(): void {
         // Keeps drag engine context alive smoothly
     }
 
-    onMouseUpGlobal() {
+    @HostListener("window:mouseup", ["$event"])
+    onMouseUpGlobal(): void {
         if (!this.isDragging()) return;
 
         const startDrag = this.dragStartCellDate();
         const currentDrag = this.dragCurrentCellDate();
         const dragSnapshot = this.initialSelectedStateBeforeDrag();
+        const targetState = this.dragTargetState();
 
         if (startDrag && currentDrag) {
             const startT = toMidnight(startDrag).getTime();
@@ -234,15 +261,11 @@ export class CalendarComponent {
             });
 
             this.calendarCells().forEach(cell => {
-                // Skip calculations for week numbers
                 if (cell.isWeekNum) return;
 
                 const t = Number(cell.id);
-                if (t >= minT && t <= maxT && !cell.isDisabled) {
-                    const wasSelectedBeforeDrag = dragSnapshot.get(t) || false;
-                    const shouldBeSelectedNow = !wasSelectedBeforeDrag;
-
-                    if (shouldBeSelectedNow) {
+                if (t >= minT && t <= maxT && !cell.isDisabled && cell.date) {
+                    if (targetState) {
                         updatedSelectionMap.set(t, toMidnight(cell.date));
                     } else {
                         updatedSelectionMap.delete(t);
@@ -262,7 +285,7 @@ export class CalendarComponent {
         this.initialSelectedStateBeforeDrag.set(new Map());
     }
 
-    prevMonth() {
+    prevMonth(): void {
         if (this.currentMonth() === 0) {
             this.currentMonth.set(11);
             this.currentYear.update(y => y - 1);
@@ -271,7 +294,7 @@ export class CalendarComponent {
         }
     }
 
-    nextMonth() {
+    nextMonth(): void {
         if (this.currentMonth() === 11) {
             this.currentMonth.set(0);
             this.currentYear.update(y => y + 1);
@@ -280,9 +303,6 @@ export class CalendarComponent {
         }
     }
 
-    /**
-     * Standard ISO-8601 week calculation helper
-     */
     private getISOWeekNumber(date: Date): number {
         const target = new Date(date.valueOf());
         const dayNr = (date.getDay() + 6) % 7;
