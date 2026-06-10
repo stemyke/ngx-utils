@@ -7,16 +7,16 @@
     --calendar-num-size: 30px;
     --calendar-num-radius: calc(var(--calendar-num-size) / 2 + var(--calendar-cell-padding));
 
-    * {
-        box-sizing: border-box;
-    }
-
     min-width: 300px;
     margin-bottom: 5px;
     border: 1px solid #e0e0e0;
     padding: var(--calendar-padding);
     user-select: none;
     background: #fff;
+
+    * {
+        box-sizing: border-box;
+    }
 
     .calendar-header {
         display: grid;
