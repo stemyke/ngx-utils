@@ -44,8 +44,8 @@ export const CALENDAR_TRANSLATIONS: GlobalTranslations = {
         "day.sun": "So"
     },
     hu: {
-        "month.jan": "január",
-        "month.feb": "február",
+        "month.jan": "Január",
+        "month.feb": "Február",
         "month.mar": "Március",
         "month.apr": "Április",
         "month.may": "Május",
