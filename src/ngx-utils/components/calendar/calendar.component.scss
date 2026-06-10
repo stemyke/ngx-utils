@@ -2,15 +2,16 @@
 
     --calendar-color: var(--primary-color, var(--bs-primary, var(--mat-sys-primary, #666666)));
     --calendar-secondary-color: #686868;
-    --calendar-padding: 10px;
+    --calendar-padding: 4px;
+    --calendar-cell-padding: 3px;
     --calendar-num-size: 30px;
+    --calendar-num-radius: calc(var(--calendar-num-size) / 2 + var(--calendar-cell-padding));
 
     * {
         box-sizing: border-box;
     }
 
     margin-bottom: 5px;
-    max-width: fit-content;
     border: 1px solid #e0e0e0;
     padding: var(--calendar-padding);
     user-select: none;
@@ -22,7 +23,7 @@
         align-items: center;
         background-color: var(--calendar-color);
         color: white;
-        padding: 12px;
+        padding: var(--calendar-padding);
         border-radius: 3px;
         font-weight: bold;
     }
@@ -51,7 +52,7 @@
 
     .calendar-cell {
         position: relative;
-        padding: 3px;
+        padding: var(--calendar-cell-padding);
         font-size: 14px;
         color: #333;
         cursor: pointer;
@@ -67,24 +68,19 @@
         }
     }
 
-    .calendar-cell.disabled {
-        color: #7e7e7e;
-        opacity: 0.75;
-        cursor: not-allowed;
-    }
-
     .calendar-cell.filler {
-        background-color: #f5f5f5;
+        color: #666;
+        background-color: #f6f6f6;
     }
 
     .calendar-cell.filler.filler-start {
-        border-top-left-radius: 50%;
-        border-bottom-left-radius: 50%;
+        border-top-left-radius: var(--calendar-num-radius);
+        border-bottom-left-radius: var(--calendar-num-radius);
     }
 
     .calendar-cell.filler.filler-end {
-        border-top-right-radius: 50%;
-        border-bottom-right-radius: 50%;
+        border-top-right-radius: var(--calendar-num-radius);
+        border-bottom-right-radius: var(--calendar-num-radius);
     }
 
     .calendar-cell.in-range::before {
@@ -96,13 +92,19 @@
     }
 
     .calendar-cell.in-range.range-start::before {
-        border-top-left-radius: 50%;
-        border-bottom-left-radius: 50%;
+        border-top-left-radius: var(--calendar-num-radius);
+        border-bottom-left-radius: var(--calendar-num-radius);
     }
 
     .calendar-cell.in-range.range-end::before {
-        border-top-right-radius: 50%;
-        border-bottom-right-radius: 50%;
+        border-top-right-radius: var(--calendar-num-radius);
+        border-bottom-right-radius: var(--calendar-num-radius);
+    }
+
+    .calendar-cell.disabled {
+        color: #7e7e7e;
+        opacity: 0.75;
+        cursor: default;
     }
 
     .cell-number {

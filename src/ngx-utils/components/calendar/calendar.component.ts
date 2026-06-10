@@ -5,8 +5,6 @@ export interface CalendarCell {
     id: string;
     date: Date | null;
     isCurrentMonth: boolean;
-    isFillerEnd: boolean,
-    isFillerStart: boolean,
     isDisabled: boolean;
     isSelected: boolean;
     isInDragRange: boolean;
@@ -14,6 +12,8 @@ export interface CalendarCell {
     weekNumber: number | null;
     isRangeStart: boolean;
     isRangeEnd: boolean;
+    isFillerStart: boolean;
+    isFillerEnd: boolean;
 }
 
 @Component({
@@ -41,7 +41,6 @@ export class CalendarComponent {
     private readonly dragStartCellDate = signal<Date | null>(null);
     private readonly dragCurrentCellDate = signal<Date | null>(null);
     private readonly initialSelectedStateBeforeDrag = signal<Map<number, boolean>>(new Map());
-
     private readonly dragTargetState = signal<boolean>(true);
     private isInitialized = false;
 
@@ -49,8 +48,7 @@ export class CalendarComponent {
     private readonly maxDate = computed(() => parseValidDate(this.max()));
 
     private readonly disabledTimestamps = computed(() => {
-        const inputs = this.disabledDates() || [];
-        return inputs
+        return (this.disabledDates() || [])
             .map(d => parseValidDate(d))
             .filter((d): d is Date => d !== null)
             .map(d => toMidnight(d).getTime());
@@ -58,33 +56,25 @@ export class CalendarComponent {
 
     readonly isMultiSelect = computed(() => Array.isArray(this.value()));
 
+    // Common Day Validator mapping strategy shared across computed environments
+    private readonly isDayOfWeekDisabledFn = computed(() => {
+        const disDays = this.disabledDays();
+        return (jsDay: number) => disDays.some(d => (d === 7 ? 0 : d) === jsDay);
+    });
+
     readonly validatedValue = computed(() => {
         const val = this.value();
         const min = this.minDate();
         const max = this.maxDate();
         const disabledTimes = this.disabledTimestamps();
-        const disDays = this.disabledDays();
-
-        const isDayOfWeekDisabled = (jsDay: number) => {
-            return disDays.some(d => {
-                if (d === 0 || d === 7) return jsDay === 6;
-                if (d === 1) return jsDay === 1;
-                if (d === 2) return jsDay === 2;
-                if (d === 3) return jsDay === 3;
-                if (d === 4) return jsDay === 4;
-                if (d === 5) return jsDay === 5;
-                if (d === 6) return jsDay === 0;
-                return false;
-            });
-        };
+        const isDayOfWeekDisabled = this.isDayOfWeekDisabledFn();
 
         const checkInvalid = (d: Date): boolean => {
             const midnight = toMidnight(d);
             if (min && midnight < toMidnight(min)) return true;
             if (max && midnight > toMidnight(max)) return true;
             if (disabledTimes.includes(midnight.getTime())) return true;
-            if (isDayOfWeekDisabled(midnight.getDay())) return true;
-            return false;
+            return isDayOfWeekDisabled(midnight.getDay());
         };
 
         if (Array.isArray(val)) {
@@ -98,6 +88,68 @@ export class CalendarComponent {
         return null;
     });
 
+    // --- Computed Navigation States ---
+    readonly canGoPrev = computed(() => {
+        const min = this.minDate();
+        if (!min) return true;
+
+        // Start checking from the month immediately preceding our current view context
+        let testMonth = this.currentMonth() - 1;
+        let testYear = this.currentYear();
+        if (testMonth === -1) {
+            testMonth = 11;
+            testYear--;
+        }
+
+        const minMidnight = toMidnight(min);
+        // Quick exit if the target month falls completely out of bounding limits
+        const lastDayOfTestMonth = new Date(testYear, testMonth + 1, 0);
+        if (lastDayOfTestMonth < minMidnight) return false;
+
+        // Perform a deeper scan backwards to see if any valid slot remains reachable
+        while (lastDayOfTestMonth >= minMidnight) {
+            if (this.isMonthAvailable(testYear, testMonth)) {
+                return true;
+            }
+            testMonth--;
+            if (testMonth === -1) {
+                testMonth = 11;
+                testYear--;
+            }
+            lastDayOfTestMonth.setFullYear(testYear, testMonth + 1, 0);
+        }
+        return false;
+    });
+
+    readonly canGoNext = computed(() => {
+        const max = this.maxDate();
+        if (!max) return true;
+
+        let testMonth = this.currentMonth() + 1;
+        let testYear = this.currentYear();
+        if (testMonth === 12) {
+            testMonth = 0;
+            testYear++;
+        }
+
+        const maxMidnight = toMidnight(max);
+        const firstDayOfTestMonth = new Date(testYear, testMonth, 1);
+        if (firstDayOfTestMonth > maxMidnight) return false;
+
+        while (firstDayOfTestMonth <= maxMidnight) {
+            if (this.isMonthAvailable(testYear, testMonth)) {
+                return true;
+            }
+            testMonth++;
+            if (testMonth === 12) {
+                testMonth = 0;
+                testYear++;
+            }
+            firstDayOfTestMonth.setFullYear(testYear, testMonth, 1);
+        }
+        return false;
+    });
+
     readonly calendarCells = computed<CalendarCell[]>(() => {
         const year = this.currentYear();
         const month = this.currentMonth();
@@ -109,25 +161,11 @@ export class CalendarComponent {
 
         const gridStartDate = new Date(year, month, 1 - startOffset);
         const rawCells: CalendarCell[] = [];
-        const totalRows = 6;
 
         const min = this.minDate();
         const max = this.maxDate();
         const disabledTimes = this.disabledTimestamps();
-        const disDays = this.disabledDays();
-
-        const isDayOfWeekDisabled = (jsDay: number) => {
-            return disDays.some(d => {
-                if (d === 0 || d === 7) return jsDay === 6;
-                if (d === 1) return jsDay === 1;
-                if (d === 2) return jsDay === 2;
-                if (d === 3) return jsDay === 3;
-                if (d === 4) return jsDay === 4;
-                if (d === 5) return jsDay === 5;
-                if (d === 6) return jsDay === 0;
-                return false;
-            });
-        };
+        const isDayOfWeekDisabled = this.isDayOfWeekDisabledFn();
 
         const currentValue = this.validatedValue();
         const startDrag = this.dragStartCellDate();
@@ -139,7 +177,7 @@ export class CalendarComponent {
 
         let dragMinT = Infinity;
         let dragMaxT = -Infinity;
-        let currentDragT = currentDrag ? toMidnight(currentDrag).getTime() : null;
+        const currentDragT = currentDrag ? toMidnight(currentDrag).getTime() : null;
 
         if (multiSelectMode && dragging && startDrag && currentDrag) {
             const startT = toMidnight(startDrag).getTime();
@@ -148,15 +186,10 @@ export class CalendarComponent {
             dragMaxT = Math.max(startT, endT);
         }
 
-        // --- PRE-CALCULATE EXACT JUNCTION TIMESTAMPS ---
-        // 1. Exact absolute timestamp of the 1st day of the NEXT month
+        const prevMonthLastDayT = toMidnight(new Date(year, month, 0)).getTime();
         const nextMonthFirstDayT = toMidnight(new Date(year, month + 1, 1)).getTime();
 
-        // 2. Exact absolute timestamp of the LAST day of the PREVIOUS month (1 day before the 1st of the current month)
-        const prevMonthLastDayT = toMidnight(new Date(year, month, 0)).getTime();
-
-        // Phase 1: Pure single-pass generation loop
-        for (let row = 0; row < totalRows; row++) {
+        for (let row = 0; row < 6; row++) {
             const firstDateOfRow = new Date(gridStartDate.getFullYear(), gridStartDate.getMonth(), gridStartDate.getDate() + (row * 7));
 
             rawCells.push({
@@ -192,36 +225,27 @@ export class CalendarComponent {
                     if (multiSelectMode && startDrag && currentDrag) {
                         if (timestamp >= dragMinT && timestamp <= dragMaxT) {
                             isInDragRange = true;
-                            if (!isDisabled) {
-                                isSelected = targetState;
-                            }
+                            if (!isDisabled) isSelected = targetState;
                             if (timestamp === dragMinT) isRangeStart = true;
                             if (timestamp === dragMaxT) isRangeEnd = true;
                         } else {
-                            isSelected = multiSelectMode ? (dragSnapshot.get(timestamp) || false) : false;
+                            isSelected = dragSnapshot.get(timestamp) || false;
                         }
                     }
-                    else if (!multiSelectMode && currentDragT !== null) {
-                        if (timestamp === currentDragT) {
-                            isInDragRange = true;
-                            if (!isDisabled) isSelected = true;
-                            isRangeStart = true;
-                            isRangeEnd = true;
-                        } else {
-                            isSelected = false;
-                        }
+                    else if (!multiSelectMode && currentDragT !== null && timestamp === currentDragT) {
+                        isInDragRange = true;
+                        if (!isDisabled) isSelected = true;
+                        isRangeStart = true;
+                        isRangeEnd = true;
                     }
                 }
 
-                // --- DIRECT BLUEPRINT TIMESTAMP MATCHING ---
-                // This eliminates index tracking offsets, header pollution, and loops entirely
-                const isFillerEnd = timestamp === prevMonthLastDayT;
-                const isFillerStart = timestamp === nextMonthFirstDayT;
-
                 rawCells.push({
                     id: String(timestamp), date: cellDate, isCurrentMonth: cellDate.getMonth() === month,
-                    isDisabled, isSelected, isInDragRange, isWeekNum: false, weekNumber: null, isRangeStart, isRangeEnd,
-                    isFillerStart, isFillerEnd
+                    isDisabled, isSelected, isInDragRange, isWeekNum: false, weekNumber: null,
+                    isRangeStart, isRangeEnd,
+                    isFillerStart: timestamp === nextMonthFirstDayT,
+                    isFillerEnd: timestamp === prevMonthLastDayT
                 });
             }
         }
@@ -236,8 +260,7 @@ export class CalendarComponent {
                 untracked(() => {
                     let referenceDate: Date | null = null;
                     if (Array.isArray(val) && val.length > 0) {
-                        const maxTimestamp = Math.max(...val.map(d => d.getTime()));
-                        referenceDate = new Date(maxTimestamp);
+                        referenceDate = new Date(Math.max(...val.map(d => d.getTime())));
                     } else if (val instanceof Date) {
                         referenceDate = val;
                     }
@@ -250,6 +273,79 @@ export class CalendarComponent {
                 });
             }
         });
+    }
+
+    // --- Dynamic Month Verification Engine ---
+    private isMonthAvailable(year: number, month: number): boolean {
+        const min = this.minDate();
+        const max = this.maxDate();
+        const disabledTimes = this.disabledTimestamps();
+        const isDayOfWeekDisabled = this.isDayOfWeekDisabledFn();
+
+        const loopDate = new Date(year, month, 1);
+        const minMidnight = min ? toMidnight(min).getTime() : -Infinity;
+        const maxMidnight = max ? toMidnight(max).getTime() : Infinity;
+
+        // March day-by-day through the target month to see if at least one day is selectable
+        while (loopDate.getMonth() === month) {
+            const currentMidnight = toMidnight(loopDate);
+            const currentT = currentMidnight.getTime();
+
+            if (currentT >= minMidnight && currentT <= maxMidnight) {
+                if (!disabledTimes.includes(currentT) && !isDayOfWeekDisabled(currentMidnight.getDay())) {
+                    return true; // Found a valid date slot
+                }
+            }
+            loopDate.setDate(loopDate.getDate() + 1);
+        }
+        return false;
+    }
+
+    // --- Smart Navigation Control Blocks ---
+    prevMonth(): void {
+        if (!this.canGoPrev()) return;
+
+        let targetMonth = this.currentMonth() - 1;
+        let targetYear = this.currentYear();
+        if (targetMonth === -1) {
+            targetMonth = 11;
+            targetYear--;
+        }
+
+        // Leapfrog loop to bypass entirely disabled months
+        while (!this.isMonthAvailable(targetYear, targetMonth)) {
+            targetMonth--;
+            if (targetMonth === -1) {
+                targetMonth = 11;
+                targetYear--;
+            }
+        }
+
+        this.currentMonth.set(targetMonth);
+        this.currentYear.set(targetYear);
+    }
+
+    nextMonth(): void {
+        if (!this.canGoNext()) return;
+
+        let targetMonth = this.currentMonth() + 1;
+        let targetYear = this.currentYear();
+        if (targetMonth === 12) {
+            targetMonth = 0;
+            targetYear++;
+        }
+
+        // Leapfrog loop to bypass entirely disabled months
+        while (!this.isMonthAvailable(targetYear, targetMonth)) {
+            targetMonth++;
+            if (targetMonth === 12) {
+                targetMonth = 0;
+                targetYear++;
+            }
+        }
+
+        this.currentMonth.set(targetMonth);
+        this.currentYear.set(targetYear);
     }
 
     onMouseDown(cell: CalendarCell, event: MouseEvent): void {
@@ -265,12 +361,10 @@ export class CalendarComponent {
             this.dragTargetState.set(true);
         } else {
             this.dragTargetState.set(!cell.isSelected);
-            const currentDates = this.validatedValue() as Date[] || [];
-            currentDates.forEach(d => {
+            (this.validatedValue() as Date[] || []).forEach(d => {
                 snapshotMap.set(toMidnight(d).getTime(), true);
             });
         }
-
         this.initialSelectedStateBeforeDrag.set(snapshotMap);
     }
 
@@ -291,7 +385,6 @@ export class CalendarComponent {
 
             if (startDrag && currentDrag) {
                 if (!this.isMultiSelect()) {
-                    // Prevent saving on release if user drops mouse over a disabled date track
                     const cellCells = this.calendarCells();
                     const hoveredCell = cellCells.find(c => c.date && isSameDay(c.date, currentDrag));
                     if (hoveredCell && !hoveredCell.isDisabled) {
@@ -312,23 +405,13 @@ export class CalendarComponent {
 
                     previousSelection.forEach(d => {
                         const t = toMidnight(d).getTime();
-                        if (t < minT || t > maxT) {
-                            updatedSelectionMap.set(t, d);
-                        }
+                        if (t < minT || t > maxT) updatedSelectionMap.set(t, d);
                     });
 
                     const min = this.minDate();
                     const max = this.maxDate();
                     const disabledTimes = this.disabledTimestamps();
-                    const disDays = this.disabledDays();
-
-                    const isDayOfWeekDisabled = (jsDay: number) => {
-                        return disDays.some(d => {
-                            // Map 7 down to 0 so both match Sunday
-                            const targetDay = d === 7 ? 0 : d;
-                            return jsDay === targetDay;
-                        });
-                    };
+                    const isDayOfWeekDisabled = this.isDayOfWeekDisabledFn();
 
                     const dynamicDateCursor = new Date(minT);
                     const loopEndMidnight = new Date(maxT);
@@ -364,24 +447,6 @@ export class CalendarComponent {
         this.initialSelectedStateBeforeDrag.set(new Map());
     }
 
-    prevMonth(): void {
-        if (this.currentMonth() === 0) {
-            this.currentMonth.set(11);
-            this.currentYear.update(y => y - 1);
-        } else {
-            this.currentMonth.update(m => m - 1);
-        }
-    }
-
-    nextMonth(): void {
-        if (this.currentMonth() === 11) {
-            this.currentMonth.set(0);
-            this.currentYear.update(y => y + 1);
-        } else {
-            this.currentMonth.update(m => m + 1);
-        }
-    }
-
     private findClosestValidDate(
         baseDate: Date,
         min: Date | null,
@@ -401,10 +466,8 @@ export class CalendarComponent {
             direction = -1;
         }
 
-        const maxIterations = 365;
         let iterations = 0;
-
-        while (iterations < maxIterations) {
+        while (iterations < 365) {
             const currentT = testDate.getTime();
             let isInvalid = false;
             if (min && testDate < toMidnight(min)) isInvalid = true;
@@ -412,13 +475,10 @@ export class CalendarComponent {
             if (disabledTimes.includes(currentT)) isInvalid = true;
             if (isDayOfWeekDisabled(testDate.getDay())) isInvalid = true;
 
-            if (!isInvalid) {
-                return testDate;
-            }
+            if (!isInvalid) return testDate;
             testDate.setDate(testDate.getDate() + direction);
             iterations++;
         }
-
         return min ? min : (max ? max : new Date());
     }
 }
