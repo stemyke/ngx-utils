@@ -339,6 +339,7 @@ export {UnorderedListTemplateDirective} from "./ngx-utils/directives/unordered-l
 
 export {BtnComponent} from "./ngx-utils/components/btn/btn.component";
 export {BtnDefaultComponent} from "./ngx-utils/components/btn-default/btn-default.component";
+export {CalendarComponent} from "./ngx-utils/components/calendar/calendar.component";
 export {ChipsComponent} from "./ngx-utils/components/chips/chips.component";
 export {CloseBtnComponent} from "./ngx-utils/components/close-btn/close-btn.component";
 export {CodeEditorComponent} from "./ngx-utils/components/code-editor/code-editor.component";
