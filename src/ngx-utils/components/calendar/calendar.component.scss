@@ -11,6 +11,7 @@
         box-sizing: border-box;
     }
 
+    min-width: 300px;
     margin-bottom: 5px;
     border: 1px solid #e0e0e0;
     padding: var(--calendar-padding);
@@ -18,7 +19,8 @@
     background: #fff;
 
     .calendar-header {
-        display: flex;
+        display: grid;
+        grid-template-columns: 50px 1fr 50px;
         justify-content: space-between;
         align-items: center;
         background-color: var(--calendar-color);
@@ -26,6 +28,20 @@
         padding: var(--calendar-padding);
         border-radius: 3px;
         font-weight: bold;
+
+        .header-label {
+            text-align: center;
+        }
+
+        .prev {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .next {
+            display: flex;
+            justify-content: flex-end;
+        }
     }
 
     .calendar-grid {

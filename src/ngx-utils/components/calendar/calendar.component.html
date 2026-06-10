@@ -1,10 +1,18 @@
 <div class="calendar-container">
     <div class="calendar-header">
-        <btn (click)="prevMonth()" icon="chevron-left"></btn>
+        <div class="prev">
+            @if (canGoPrev()) {
+                <btn (click)="prevMonth()" icon="chevron-left"></btn>
+            }
+        </div>
         <div class="header-label">
             {{ "month." + months[currentMonth()] | translate }} {{ currentYear() }}
         </div>
-        <btn (click)="nextMonth()" icon="chevron-right"></btn>
+        <div class="next">
+            @if (canGoNext()) {
+                <btn (click)="nextMonth()" icon="chevron-right"></btn>
+            }
+        </div>
     </div>
 
     <div class="calendar-grid days-header">
