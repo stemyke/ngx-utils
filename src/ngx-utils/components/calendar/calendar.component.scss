@@ -2,6 +2,7 @@
 
     --calendar-color: var(--primary-color, var(--bs-primary, var(--mat-sys-primary, #666666)));
     --calendar-padding: 10px;
+    --calendar-num-size: 30px;
 
     * {
         box-sizing: border-box;
@@ -27,6 +28,7 @@
 
     .calendar-grid {
         display: grid;
+        gap: 5px 0;
         grid-template-columns: repeat(8, 1fr);
         text-align: center;
     }
@@ -48,7 +50,7 @@
 
     .calendar-cell {
         position: relative;
-        padding: 5px;
+        padding: 3px;
         font-size: 14px;
         color: #333;
         cursor: pointer;
@@ -65,7 +67,7 @@
     }
 
     .calendar-cell.filler {
-        color: #ccc;
+        background: #efefef;
     }
 
     .calendar-cell.disabled {
@@ -74,16 +76,29 @@
         pointer-events: none;
     }
 
-    /* Gray background for drag ranges */
-    .calendar-cell.in-range {
-        background-color: #e0e0e0 !important;
+    .calendar-cell.in-range::before {
+        opacity: 0.5;
+        inset: 0;
+        content: " ";
+        position: absolute;
+        background: var(--calendar-color);
+    }
+
+    .calendar-cell.in-range.range-start::before {
+        border-top-left-radius: 50%;
+        border-bottom-left-radius: 50%;
+    }
+
+    .calendar-cell.in-range.range-end::before {
+        border-top-right-radius: 50%;
+        border-bottom-right-radius: 50%;
     }
 
     .cell-number {
+        position: relative;
         border-radius: 50%;
-        padding: 3px;
-        width: 25px;
-        height: 25px;
+        width: var(--calendar-num-size);
+        height: var(--calendar-num-size);
         display: flex;
         align-items: center;
         justify-content: center;

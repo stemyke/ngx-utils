@@ -28,6 +28,8 @@
                     [class.filler]="!cell.isCurrentMonth"
                     [class.disabled]="cell.isDisabled"
                     [class.in-range]="cell.isInDragRange"
+                    [class.range-start]="cell.isRangeStart"
+                    [class.range-end]="cell.isRangeEnd"
                     [class.active]="cell.isSelected"
                     (mousedown)="onMouseDown(cell, $event)"
                     (mouseenter)="onMouseEnter(cell)"

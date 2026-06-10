@@ -7,9 +7,9 @@ export interface CalendarCell {
     isCurrentMonth: boolean;
     isDisabled: boolean;
     isSelected: boolean;
-    isInDragRange: boolean;
     isWeekNum: boolean;
     weekNumber: number | null;
+    isInDragRange: boolean;
     isRangeStart: boolean;
     isRangeEnd: boolean;
 }
