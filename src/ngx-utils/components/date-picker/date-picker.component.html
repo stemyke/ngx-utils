@@ -3,7 +3,7 @@
      [autoPlacement]="autoPlacement"
      [ngClass]="{disabled: disabled()}" class="date-picker" #chipDropdown="dropdown">
     <input class="date-picker-input"
-           type="date"
+           [type]="strict() ? 'date' : 'text'"
            [pattern]="datePattern"
            [value]="inputValue()"
            (blur)="onBlur($event)"/>

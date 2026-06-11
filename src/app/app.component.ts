@@ -30,6 +30,8 @@ export class AppComponent implements OnInit {
     minDate: Date;
     disabledDates: Date[];
     disabledDays: number[];
+    strDate: Date | string;
+    strDateStrict: Date | string;
     date: Date;
     dates: Date[];
     numberChips: number[];
@@ -48,6 +50,8 @@ export class AppComponent implements OnInit {
         this.minDate = addDate(toMidnight(new Date()), 30);
         this.disabledDates = [addDate(this.minDate, 0), addDate(this.minDate, 2)];
         this.disabledDays = [6, 7];
+        this.strDate = "Maybe tomorrow";
+        this.strDateStrict = "2025-05-05sda";
         this.date = toMidnight(new Date());
         this.dates = [addDate(this.date, 50), this.date, addDate(this.date)];
         this.language.addLanguages(["en", "de", "hu"]);

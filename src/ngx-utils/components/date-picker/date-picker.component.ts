@@ -27,7 +27,7 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
 
     readonly inputValue = computed(() => {
         const value = this.validatedValue();
-        return isDate(value) ? convertToDateFormat(value, "date") : String(value || "");
+        return isDate(value) ? convertToDateFormat(value, "date") : String(this.value() || "");
     });
 
     onChange: any = () => { };
@@ -59,14 +59,17 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
         const target = ev.target as HTMLInputElement;
         let date = parseValidDate(target.value);
         untracked(() => {
-            const min = this.minDate();
-            const max = this.maxDate();
-            const disabledTimes = this.disabledTimestamps();
-            const disabledDays = this.disabledDays();
-            date = findClosestValidDate(date, min, max, disabledTimes, disabledDays);
+            const strict = this.strict();
+            if (strict) {
+                const min = this.minDate();
+                const max = this.maxDate();
+                const disabledTimes = this.disabledTimestamps();
+                const disabledDays = this.disabledDays();
+                date = findClosestValidDate(date, min, max, disabledTimes, disabledDays);
+            }
         });
-        target.value = convertToDateFormat(date);
-        this.value.set(date);
+        target.value = isDate(date) ? convertToDateFormat(date, "date") : String(target.value || "");
+        this.value.set(isDate(date) ? date : target.value || null);
         this.onChange(date);
         this.onTouched();
     }

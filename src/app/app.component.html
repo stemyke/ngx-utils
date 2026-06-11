@@ -12,9 +12,14 @@
 </dropdown-box>
 <hr>
 <div class="app-wrap">
+    <date-picker [(value)]="strDate" [strict]="false" [min]="minDate" [disabledDays]="disabledDays"></date-picker>
+    {{ strDate }}
+    <date-picker [(value)]="strDateStrict" [min]="minDate" [disabledDays]="disabledDays"></date-picker>
+    {{ strDateStrict }}
     <date-picker [(value)]="date" [min]="minDate" [disabledDays]="disabledDays"></date-picker>
+    {{ date }}
     <chips type="number" [(ngModel)]="numberChips" [min]="5"></chips>
-    <calendar [(value)]="dates"></calendar>
+<!--    <calendar [(value)]="dates"></calendar>-->
     <wysiwyg [(ngModel)]="html"></wysiwyg>
     <code-editor [(ngModel)]="html" lang="html"></code-editor>
     <code-editor [(ngModel)]="jsonData" lang="json"></code-editor>
