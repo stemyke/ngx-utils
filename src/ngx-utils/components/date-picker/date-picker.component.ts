@@ -1,9 +1,9 @@
 import {Component, computed, input, untracked, ViewEncapsulation} from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {AutoPlacementOptions} from "@floating-ui/dom";
-import {CalendarInputs} from "../calendar/calendar-inputs";
-import {convertToDateFormat, parseValidDate} from "../../utils/date.utils";
 import {isDate} from "../../utils/object.utils";
+import {convertToDateFormat, findClosestValidDate, parseValidDate} from "../../utils/date.utils";
+import {CalendarInputs} from "../calendar/calendar-inputs";
 
 @Component({
     standalone: false,
@@ -62,8 +62,8 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
             const min = this.minDate();
             const max = this.maxDate();
             const disabledTimes = this.disabledTimestamps();
-            const isDayOfWeekDisabled = this.isDayOfWeekDisabled();
-            date = this.findClosestValidDate(date, min, max, disabledTimes, isDayOfWeekDisabled);
+            const disabledDays = this.disabledDays();
+            date = findClosestValidDate(date, min, max, disabledTimes, disabledDays);
         });
         target.value = convertToDateFormat(date);
         this.value.set(date);

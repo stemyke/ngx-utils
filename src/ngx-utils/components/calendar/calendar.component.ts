@@ -1,5 +1,5 @@
 import {Component, computed, effect, HostListener, signal, untracked, ViewEncapsulation} from "@angular/core";
-import {getISOWeekNumber, isSameDay, parseValidDate, toMidnight} from "../../utils/date.utils";
+import {getISOWeekNumber, isDayOfWeekDisabled, isSameDay, parseValidDate, toMidnight} from "../../utils/date.utils";
 import {CalendarInputs} from "./calendar-inputs";
 
 export interface CalendarCell {
@@ -118,7 +118,7 @@ export class CalendarComponent extends CalendarInputs {
         const min = this.minDate();
         const max = this.maxDate();
         const disabledTimes = this.disabledTimestamps();
-        const isDayOfWeekDisabled = this.isDayOfWeekDisabled();
+        const disabledDays = this.disabledDays();
 
         const currentValue = this.validatedValue();
         const startDrag = this.dragStartCellDate();
@@ -161,7 +161,7 @@ export class CalendarComponent extends CalendarInputs {
                 if (min && cellMidnight < toMidnight(min)) isDisabled = true;
                 if (max && cellMidnight > toMidnight(max)) isDisabled = true;
                 if (disabledTimes.includes(timestamp)) isDisabled = true;
-                if (isDayOfWeekDisabled(cellMidnight.getDay())) isDisabled = true;
+                if (isDayOfWeekDisabled(cellMidnight, disabledDays)) isDisabled = true;
 
                 let isSelected = false;
                 if (!multiSelectMode) {
@@ -234,7 +234,7 @@ export class CalendarComponent extends CalendarInputs {
         const min = this.minDate();
         const max = this.maxDate();
         const disabledTimes = this.disabledTimestamps();
-        const isDayOfWeekDisabled = this.isDayOfWeekDisabled();
+        const disabledDays = this.disabledDays();
 
         const loopDate = new Date(year, month, 1);
         const minMidnight = min ? toMidnight(min).getTime() : -Infinity;
@@ -246,7 +246,7 @@ export class CalendarComponent extends CalendarInputs {
             const currentT = currentMidnight.getTime();
 
             if (currentT >= minMidnight && currentT <= maxMidnight) {
-                if (!disabledTimes.includes(currentT) && !isDayOfWeekDisabled(currentMidnight.getDay())) {
+                if (!disabledTimes.includes(currentT) && !isDayOfWeekDisabled(currentMidnight, disabledDays)) {
                     return true; // Found a valid date slot
                 }
             }
@@ -365,7 +365,7 @@ export class CalendarComponent extends CalendarInputs {
                     const min = this.minDate();
                     const max = this.maxDate();
                     const disabledTimes = this.disabledTimestamps();
-                    const isDayOfWeekDisabled = this.isDayOfWeekDisabled();
+                    const disabledDays = this.disabledDays();
 
                     const dynamicDateCursor = new Date(minT);
                     const loopEndMidnight = new Date(maxT);
@@ -376,7 +376,7 @@ export class CalendarComponent extends CalendarInputs {
                         if (min && dynamicDateCursor < toMidnight(min)) isDayRestricted = true;
                         if (max && dynamicDateCursor > toMidnight(max)) isDayRestricted = true;
                         if (disabledTimes.includes(currentT)) isDayRestricted = true;
-                        if (isDayOfWeekDisabled(dynamicDateCursor.getDay())) isDayRestricted = true;
+                        if (isDayOfWeekDisabled(dynamicDateCursor, disabledDays)) isDayRestricted = true;
 
                         if (!isDayRestricted) {
                             if (targetState) {

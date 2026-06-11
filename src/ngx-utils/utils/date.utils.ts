@@ -62,6 +62,54 @@ export function convertToDateFormat(value: any, format: string = "date"): any {
 }
 
 /**
+ * Returns if the day of the week is in the provided date is disabled
+ * @param date Checked date
+ * @param disabledDays An array of disabled days of the week (0-7, where 0 and 7 both means saturday)
+ */
+export function isDayOfWeekDisabled(date: Date, disabledDays: number[] = []): boolean {
+    if (!Array.isArray(disabledDays)) return false;
+    const day = date.getDay();
+    return disabledDays.some(d => (d === 7 ? 0 : d) === day);
+}
+
+/**
+ * Finds the closest valid date in between the specified conditions
+ * @param base Target date
+ * @param min Minimum date
+ * @param max Maximum date
+ * @param disabledTimes An array of disabled dates (midnight timestamps)
+ * @param disabledDays An array of disabled days of the week (0-7, where 0 and 7 both means saturday)
+ */
+export function findClosestValidDate(base: Date, min: Date | null, max: Date | null, disabledTimes: number[], disabledDays: number[]): Date {
+    const midnightBase = toMidnight(base);
+    let direction = 1;
+    let testDate = new Date(midnightBase.getTime());
+
+    if (min && midnightBase < toMidnight(min)) {
+        testDate = new Date(toMidnight(min).getTime());
+        direction = 1;
+    } else if (max && midnightBase > toMidnight(max)) {
+        testDate = new Date(toMidnight(max).getTime());
+        direction = -1;
+    }
+
+    let iterations = 0;
+    while (iterations < 365) {
+        const currentT = testDate.getTime();
+        let isInvalid = false;
+        if (min && testDate < toMidnight(min)) isInvalid = true;
+        if (max && testDate > toMidnight(max)) isInvalid = true;
+        if (disabledTimes.includes(currentT)) isInvalid = true;
+        if (isDayOfWeekDisabled(testDate, disabledDays)) isInvalid = true;
+
+        if (!isInvalid) return testDate;
+        testDate.setDate(testDate.getDate() + direction);
+        iterations++;
+    }
+    return min ? min : (max ? max : new Date());
+}
+
+/**
  * Adds an amount of units to the specified date
  * @param date
  * @param amount

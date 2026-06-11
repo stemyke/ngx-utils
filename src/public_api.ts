@@ -184,7 +184,17 @@ export {AuthGuard} from "./ngx-utils/utils/auth.guard";
 export {createTypedProvider, cachedFactory} from "./ngx-utils/utils/cached-factory";
 export {CanvasUtils} from "./ngx-utils/utils/canvas";
 export {md5} from "./ngx-utils/utils/crypto.utils";
-export {parseValidDate, toMidnight, isSameDay, getISOWeekNumber, convertToDateFormat, addDate, DateUtils} from "./ngx-utils/utils/date.utils";
+export {
+    parseValidDate,
+    toMidnight,
+    isSameDay,
+    getISOWeekNumber,
+    convertToDateFormat,
+    isDayOfWeekDisabled,
+    findClosestValidDate,
+    addDate,
+    DateUtils
+} from "./ngx-utils/utils/date.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {ForbiddenZone} from "./ngx-utils/utils/forbidden-zone";
 export {GenericValue} from "./ngx-utils/utils/generic-value";
