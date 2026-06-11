@@ -184,7 +184,7 @@ export {AuthGuard} from "./ngx-utils/utils/auth.guard";
 export {createTypedProvider, cachedFactory} from "./ngx-utils/utils/cached-factory";
 export {CanvasUtils} from "./ngx-utils/utils/canvas";
 export {md5} from "./ngx-utils/utils/crypto.utils";
-export {parseValidDate, toMidnight, isSameDay, getISOWeekNumber, addDate, DateUtils} from "./ngx-utils/utils/date.utils";
+export {parseValidDate, toMidnight, isSameDay, getISOWeekNumber, convertToDateFormat, addDate, DateUtils} from "./ngx-utils/utils/date.utils";
 export {FileUtils} from "./ngx-utils/utils/file.utils";
 export {ForbiddenZone} from "./ngx-utils/utils/forbidden-zone";
 export {GenericValue} from "./ngx-utils/utils/generic-value";
@@ -239,7 +239,7 @@ export {
     diffEntities
 } from "./ngx-utils/utils/misc";
 export {
-    getType, isObject, isString, isStringWithValue, isFunction, toStringArray, ObjectUtils
+    getType, isObject, isDefined, isDate, isString, isStringWithValue, isFunction, toStringArray, ObjectUtils
 } from "./ngx-utils/utils/object.utils";
 export {ObservableUtils, ISubscriberInfo} from "./ngx-utils/utils/observable.utils";
 export {CancelablePromise, cancelablePromise, impatientPromise, promiseTimeout} from "./ngx-utils/utils/promise.utils";
@@ -343,6 +343,7 @@ export {CalendarComponent} from "./ngx-utils/components/calendar/calendar.compon
 export {ChipsComponent} from "./ngx-utils/components/chips/chips.component";
 export {CloseBtnComponent} from "./ngx-utils/components/close-btn/close-btn.component";
 export {CodeEditorComponent} from "./ngx-utils/components/code-editor/code-editor.component";
+export {DatePickerComponent} from "./ngx-utils/components/date-picker/date-picker.component";
 export {DropListComponent} from "./ngx-utils/components/drop-list/drop-list.component";
 export {DropdownBoxComponent} from "./ngx-utils/components/dropdown-box/dropdown-box.component";
 export {DynamicTableComponent} from "./ngx-utils/components/dynamic-table/dynamic-table.component";

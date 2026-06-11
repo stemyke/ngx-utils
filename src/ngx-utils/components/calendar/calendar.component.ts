@@ -1,5 +1,6 @@
-import { Component, computed, effect, input, model, signal, untracked, ViewEncapsulation, HostListener } from "@angular/core";
-import { parseValidDate, toMidnight, isSameDay, getISOWeekNumber } from "../../utils/date.utils";
+import {Component, computed, effect, HostListener, signal, untracked, ViewEncapsulation} from "@angular/core";
+import {getISOWeekNumber, isSameDay, parseValidDate, toMidnight} from "../../utils/date.utils";
+import {CalendarInputs} from "./calendar-inputs";
 
 export interface CalendarCell {
     id: string;
@@ -23,70 +24,22 @@ export interface CalendarCell {
     templateUrl: "./calendar.component.html",
     styleUrls: ["./calendar.component.scss"]
 })
-export class CalendarComponent {
+export class CalendarComponent extends CalendarInputs {
 
     readonly months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
     readonly daysOfWeek = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
-    readonly value = model<Date | Date[] | null>(null);
-    readonly min = input<string | Date | null>(null);
-    readonly max = input<string | Date | null>(null);
-    readonly disabledDates = input<(string | Date)[] | null>([]);
-    readonly disabledDays = input<number[]>([]);
-
     readonly currentMonth = signal<number>(new Date().getMonth());
     readonly currentYear = signal<number>(new Date().getFullYear());
 
-    private readonly isDragging = signal<boolean>(false);
-    private readonly dragStartCellDate = signal<Date | null>(null);
-    private readonly dragCurrentCellDate = signal<Date | null>(null);
-    private readonly initialSelectedStateBeforeDrag = signal<Map<number, boolean>>(new Map());
-    private readonly dragTargetState = signal<boolean>(true);
-    private isInitialized = false;
-
-    private readonly minDate = computed(() => parseValidDate(this.min()));
-    private readonly maxDate = computed(() => parseValidDate(this.max()));
-
-    private readonly disabledTimestamps = computed(() => {
-        return (this.disabledDates() || [])
-            .map(d => parseValidDate(d))
-            .filter((d): d is Date => d !== null)
-            .map(d => toMidnight(d).getTime());
-    });
+    protected readonly isDragging = signal<boolean>(false);
+    protected readonly dragStartCellDate = signal<Date | null>(null);
+    protected readonly dragCurrentCellDate = signal<Date | null>(null);
+    protected readonly initialSelectedStateBeforeDrag = signal<Map<number, boolean>>(new Map());
+    protected readonly dragTargetState = signal<boolean>(true);
+    protected isInitialized = false;
 
     readonly isMultiSelect = computed(() => Array.isArray(this.value()));
-
-    // Common Day Validator mapping strategy shared across computed environments
-    private readonly isDayOfWeekDisabledFn = computed(() => {
-        const disDays = this.disabledDays();
-        return (jsDay: number) => disDays.some(d => (d === 7 ? 0 : d) === jsDay);
-    });
-
-    readonly validatedValue = computed(() => {
-        const val = this.value();
-        const min = this.minDate();
-        const max = this.maxDate();
-        const disabledTimes = this.disabledTimestamps();
-        const isDayOfWeekDisabled = this.isDayOfWeekDisabledFn();
-
-        const checkInvalid = (d: Date): boolean => {
-            const midnight = toMidnight(d);
-            if (min && midnight < toMidnight(min)) return true;
-            if (max && midnight > toMidnight(max)) return true;
-            if (disabledTimes.includes(midnight.getTime())) return true;
-            return isDayOfWeekDisabled(midnight.getDay());
-        };
-
-        if (Array.isArray(val)) {
-            return val.filter(d => d instanceof Date && !isNaN(d.getTime()) && !checkInvalid(d));
-        } else if (val instanceof Date && !isNaN(val.getTime())) {
-            if (checkInvalid(val)) {
-                return this.findClosestValidDate(val, min, max, disabledTimes, isDayOfWeekDisabled);
-            }
-            return val;
-        }
-        return null;
-    });
 
     // --- Computed Navigation States ---
     readonly canGoPrev = computed(() => {
@@ -165,7 +118,7 @@ export class CalendarComponent {
         const min = this.minDate();
         const max = this.maxDate();
         const disabledTimes = this.disabledTimestamps();
-        const isDayOfWeekDisabled = this.isDayOfWeekDisabledFn();
+        const isDayOfWeekDisabled = this.isDayOfWeekDisabled();
 
         const currentValue = this.validatedValue();
         const startDrag = this.dragStartCellDate();
@@ -254,6 +207,7 @@ export class CalendarComponent {
     });
 
     constructor() {
+        super();
         effect(() => {
             const val = this.validatedValue();
             if (val && !this.isInitialized) {
@@ -280,7 +234,7 @@ export class CalendarComponent {
         const min = this.minDate();
         const max = this.maxDate();
         const disabledTimes = this.disabledTimestamps();
-        const isDayOfWeekDisabled = this.isDayOfWeekDisabledFn();
+        const isDayOfWeekDisabled = this.isDayOfWeekDisabled();
 
         const loopDate = new Date(year, month, 1);
         const minMidnight = min ? toMidnight(min).getTime() : -Infinity;
@@ -411,7 +365,7 @@ export class CalendarComponent {
                     const min = this.minDate();
                     const max = this.maxDate();
                     const disabledTimes = this.disabledTimestamps();
-                    const isDayOfWeekDisabled = this.isDayOfWeekDisabledFn();
+                    const isDayOfWeekDisabled = this.isDayOfWeekDisabled();
 
                     const dynamicDateCursor = new Date(minT);
                     const loopEndMidnight = new Date(maxT);
@@ -445,40 +399,5 @@ export class CalendarComponent {
         this.dragStartCellDate.set(null);
         this.dragCurrentCellDate.set(null);
         this.initialSelectedStateBeforeDrag.set(new Map());
-    }
-
-    private findClosestValidDate(
-        baseDate: Date,
-        min: Date | null,
-        max: Date | null,
-        disabledTimes: number[],
-        isDayOfWeekDisabled = (jsDay: number) => false
-    ): Date {
-        const midnightBase = toMidnight(baseDate);
-        let direction = 1;
-        let testDate = new Date(midnightBase.getTime());
-
-        if (min && midnightBase < toMidnight(min)) {
-            testDate = new Date(toMidnight(min).getTime());
-            direction = 1;
-        } else if (max && midnightBase > toMidnight(max)) {
-            testDate = new Date(toMidnight(max).getTime());
-            direction = -1;
-        }
-
-        let iterations = 0;
-        while (iterations < 365) {
-            const currentT = testDate.getTime();
-            let isInvalid = false;
-            if (min && testDate < toMidnight(min)) isInvalid = true;
-            if (max && testDate > toMidnight(max)) isInvalid = true;
-            if (disabledTimes.includes(currentT)) isInvalid = true;
-            if (isDayOfWeekDisabled(testDate.getDay())) isInvalid = true;
-
-            if (!isInvalid) return testDate;
-            testDate.setDate(testDate.getDate() + direction);
-            iterations++;
-        }
-        return min ? min : (max ? max : new Date());
     }
 }

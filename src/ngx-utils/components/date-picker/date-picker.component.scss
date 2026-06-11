@@ -1,0 +1,78 @@
+.date-picker {
+
+    --date-picker-border-size: var(--border-size, 1px);
+    --date-picker-border-radius: var(--border-radius, 5px);
+    --date-picker-bg-color: var(--bg-color, #ffffff);
+    --date-picker-border-color: var(--border-color, #ced4da);
+    --date-picker-highlight-color: var(--highlight-color, var(--primary-color, #888888));
+    --date-picker-highlight-text-color: var(--highlight-text-color, #ffffff);
+    --date-picker-text-color: var(--text-color, #151515);
+    --date-picker-text-size: var(--text-size, 16px);
+    --date-picker-padding-vertical: 6px;
+    --date-picker-padding-horizontal: 12px;
+    --date-picker-padding: var(--date-picker-padding-vertical) var(--date-picker-padding-horizontal);
+    --date-picker-btn-padding: 12px;
+    --date-picker-btn-gap: calc(var(--date-picker-btn-padding) / 2);
+    --date-picker-btn-color: white;
+    --date-picker-btn-valid-color: rgba(200, 255, 200, 0.7);
+    --date-picker-btn-invalid-color: rgba(255, 200, 200, 0.7);
+
+    position: relative;
+    margin: 5px 0;
+    font-size: var(--date-picker-text-size);
+    padding: var(--date-picker-padding);
+
+    background: var(--date-picker-bg-color);
+    color: var(--date-picker-text-color);
+    border: var(--date-picker-border-size) solid var(--date-picker-border-color);
+    border-radius: var(--date-picker-border-radius);
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .date-picker-input {
+        background: var(--date-picker-bg-color);
+        font-size: var(--date-picker-text-size);
+        outline: none;
+        border: none;
+        width: 100%;
+        user-select: none;
+        font-weight: normal;
+
+        // Removes the calendar indicator icon in Chrome, Opera, Edge, and Safari
+        &::-webkit-calendar-picker-indicator {
+            display: none !important;
+            -webkit-appearance: none !important;
+        }
+
+        // Removes the clear button (X) inside the input on WebKit browsers
+        &::-webkit-clear-button {
+            display: none !important;
+            -webkit-appearance: none !important;
+        }
+
+        // Removes spin buttons if they pop up under regional browser specifications
+        &::-webkit-inner-spin-button {
+            display: none !important;
+            -webkit-appearance: none !important;
+        }
+    }
+
+    &.disabled {
+        opacity: .75;
+
+        .chips-button {
+            padding-right: var(--date-picker-btn-padding);
+        }
+    }
+
+    > btn {
+        display: block;
+        position: absolute;
+        aspect-ratio: 1;
+        top: 0;
+        bottom: 0;
+        right: 0;
+    }
+}

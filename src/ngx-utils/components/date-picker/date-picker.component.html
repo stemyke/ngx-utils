@@ -1,0 +1,23 @@
+<div dd
+     [closeInside]="false"
+     [autoPlacement]="autoPlacement"
+     [ngClass]="{disabled: disabled()}" class="date-picker" #chipDropdown="dropdown">
+    <input class="date-picker-input"
+           type="date"
+           [pattern]="datePattern"
+           [value]="inputValue()"
+           (blur)="onBlur($event)"/>
+    <btn type="transparent"
+         icon="close"></btn>
+    <btn type="transparent"
+         icon="calendar-days" dropdownToggle></btn>
+    <div *dropdownContent>
+        <calendar [min]="min()"
+                  [max]="max()"
+                  [disabledDates]="disabledDates()"
+                  [disabledDays]="disabledDays()"
+                  [disabled]="disabled()"
+                  [value]="value()"
+                  (valueChange)="onPickerChange($event)"></calendar>
+    </div>
+</div>

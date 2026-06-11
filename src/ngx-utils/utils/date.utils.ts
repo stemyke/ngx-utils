@@ -1,5 +1,6 @@
 import {DateTime} from "luxon";
 import {DurationUnit} from "../common-types";
+import {isDate, isDefined} from "./object.utils";
 
 /**
  * Helper function that parses ISO string or Date object to a real Date object if its possible
@@ -43,6 +44,21 @@ export function getISOWeekNumber(date: Date): number {
         target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
     }
     return 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000);
+}
+
+/**
+ * Convert value to a string with corrected date format (date, date-time)
+ * @param value Value to convert to date string
+ * @param format Expected date format (date, date-time)
+ */
+export function convertToDateFormat(value: any, format: string = "date"): any {
+    if (!isDefined(value) || !format?.includes("date")) return value;
+    value = isDate(value) ? value : new Date(value);
+    const date = isNaN(value) ? new Date() : value as Date;
+    const target = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString();
+    return format === "datetime-local" || format === "date-time"
+        ? target.slice(0, 16)
+        : target.slice(0, 10);
 }
 
 /**

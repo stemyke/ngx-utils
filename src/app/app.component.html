@@ -12,11 +12,9 @@
 </dropdown-box>
 <hr>
 <div class="app-wrap">
-    <calendar [min]="minDate"
-              [disabledDays]="disabledDays"
-              [disabledDates]="disabledDates" [(value)]="date"></calendar>
-    <calendar [disabledDays]="disabledDays"
-              [(value)]="dates"></calendar>
+    <date-picker [(value)]="date" [min]="minDate" [disabledDays]="disabledDays"></date-picker>
+    <chips type="number" [(ngModel)]="numberChips" [min]="5"></chips>
+    <calendar [(value)]="dates"></calendar>
     <wysiwyg [(ngModel)]="html"></wysiwyg>
     <code-editor [(ngModel)]="html" lang="html"></code-editor>
     <code-editor [(ngModel)]="jsonData" lang="json"></code-editor>
@@ -31,7 +29,6 @@
                    [showItems]="[5, 10, 25]"
                    [dataLoader]="apiTableData" [columns]="apiTableColumns">
     </dynamic-table>
-    <chips type="number" [(ngModel)]="numberChips" [min]="5"></chips>
     <chips [(ngModel)]="stringChips" [minLength]="5"></chips>
     <chips [(ngModel)]="stringChips" [disabled]="true" [minLength]="5"></chips>
     <chips [(ngModel)]="optionChips" [options]="options" [strict]="false"></chips>

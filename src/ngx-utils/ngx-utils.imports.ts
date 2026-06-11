@@ -88,9 +88,11 @@ import {ValuesPipe} from "./pipes/values.pipe";
 
 import {BtnComponent} from "./components/btn/btn.component";
 import {BtnDefaultComponent} from "./components/btn-default/btn-default.component";
+import {CalendarComponent} from "./components/calendar/calendar.component";
 import {ChipsComponent} from "./components/chips/chips.component";
 import {CloseBtnComponent} from "./components/close-btn/close-btn.component";
 import {CodeEditorComponent} from "./components/code-editor/code-editor.component";
+import {DatePickerComponent} from "./components/date-picker/date-picker.component";
 import {DropListComponent} from "./components/drop-list/drop-list.component";
 import {DropdownBoxComponent} from "./components/dropdown-box/dropdown-box.component";
 import {DynamicTableComponent} from "./components/dynamic-table/dynamic-table.component";
@@ -107,7 +109,6 @@ import {TabsComponent} from "./components/tabs/tabs.component";
 import {UnorderedListComponent} from "./components/unordered-list/unordered-list.component";
 import {UploadComponent} from "./components/upload/upload.component";
 import {WysiwygComponent} from "./components/wysiwyg/wysiwyg.component";
-import {CalendarComponent} from "./components/calendar/calendar.component";
 
 // --- Pipes ---
 export const pipes = [
@@ -176,6 +177,7 @@ export const components = [
     ChipsComponent,
     CloseBtnComponent,
     CodeEditorComponent,
+    DatePickerComponent,
     DropListComponent,
     DropdownBoxComponent,
     DynamicTableComponent,

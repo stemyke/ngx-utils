@@ -23,6 +23,14 @@ export function isObject(value: any): boolean {
     return getType(value) === "object";
 }
 
+export function isDefined(value: any): boolean {
+    return typeof value !== "undefined" && value !== null;
+}
+
+export function isDate(value: any): value is Date {
+    return null !== value && !isNaN(value) && "undefined" !== typeof value.getDate;
+}
+
 export function isString(value: any): value is string {
     return typeof value === "string";
 }
@@ -162,7 +170,7 @@ export class ObjectUtils {
         let curKey = "";
         do {
             curKey += keys.shift();
-            if (ObjectUtils.isDefined(obj) && ObjectUtils.isDefined(obj[curKey]) && (typeof obj[curKey] === "object" || !keys.length)) {
+            if (isDefined(obj) && isDefined(obj[curKey]) && (typeof obj[curKey] === "object" || !keys.length)) {
                 obj = obj[curKey];
                 curKey = "";
             } else if (!keys.length) {
@@ -227,7 +235,7 @@ export class ObjectUtils {
     }
 
     static isDefined(value: any): boolean {
-        return typeof value !== "undefined" && value !== null;
+        return isDefined(value);
     }
 
     static isNullOrUndefined(value: any): boolean {
@@ -247,7 +255,7 @@ export class ObjectUtils {
     }
 
     static isDate(value: any): value is Date {
-        return null !== value && !isNaN(value) && "undefined" !== typeof value.getDate;
+        return isDate(value);
     }
 
     static isBlob(value: any): value is Blob {
@@ -301,7 +309,7 @@ export class ObjectUtils {
     }
 
     static pad(obj: any, width: number, chr: string = "0"): string {
-        const str = ObjectUtils.isDefined(obj) ? obj.toString() : "";
+        const str = isDefined(obj) ? obj.toString() : "";
         return str.length >= width ? str : new Array(width - str.length + 1).join(chr) + str;
     }
 
