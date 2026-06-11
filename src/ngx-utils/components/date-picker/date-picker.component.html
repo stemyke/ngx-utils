@@ -8,7 +8,7 @@
            [value]="inputValue()"
            (blur)="onBlur($event)"/>
     <btn type="transparent"
-         icon="close"></btn>
+         icon="close" (click)="clear()"></btn>
     <btn type="transparent"
          icon="calendar-days" dropdownToggle></btn>
     <div *dropdownContent>
@@ -17,6 +17,7 @@
                   [disabledDates]="disabledDates()"
                   [disabledDays]="disabledDays()"
                   [disabled]="disabled()"
+                  [strict]="strict()"
                   [value]="value()"
                   (valueChange)="onPickerChange($event)"></calendar>
     </div>
