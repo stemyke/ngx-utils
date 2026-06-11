@@ -145,7 +145,7 @@ export class StaticLanguageService implements ILanguageService {
             return;
         }
         this.overrideTranslations = {};
-        this.mergedTranslations = this.translations;
+        this.mergeTranslations();
     }
 
     getTranslationSync(key: string, params: Object = null): string {
@@ -192,7 +192,7 @@ export class StaticLanguageService implements ILanguageService {
     }
 
     protected async loadDictionary(): Promise<ITranslations> {
-        return this.dictionary;
+        return this.translations[this.currentLanguage] || EMPTY_DICT;
     }
 
     protected setDictionary(lang: string, dictionary: ITranslations): ITranslations {

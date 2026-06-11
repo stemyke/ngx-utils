@@ -1,12 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    computed,
-    ElementRef,
-    inject,
-    input,
-    ViewEncapsulation
-} from "@angular/core";
+import {Component, computed, ElementRef, inject, input, ViewEncapsulation} from "@angular/core";
 import {UrlTree} from "@angular/router";
 import {ButtonProps, ButtonSize, ButtonType} from "../../common-types";
 import {BUTTON_TYPE} from "../../tokens";
@@ -14,7 +6,6 @@ import {BUTTON_TYPE} from "../../tokens";
 @Component({
     standalone: false,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: "btn",
     templateUrl: "./btn.component.html"
 })
