@@ -12,7 +12,7 @@
 </dropdown-box>
 <hr>
 <div class="app-wrap">
-    <date-picker [(value)]="strDate" [strict]="false" [min]="minDate" [disabledDays]="disabledDays"></date-picker>
+    <date-picker [(ngModel)]="strDate" [strict]="false" [min]="minDate" [disabledDays]="disabledDays"></date-picker>
     {{ strDate }}
     <date-picker [(value)]="strDateStrict" [min]="minDate" [disabledDays]="disabledDays"></date-picker>
     {{ strDateStrict }}

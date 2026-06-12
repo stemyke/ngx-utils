@@ -72,8 +72,4 @@ export class CalendarInputs {
             }
         });
     }
-
-    clear(): void {
-        this.value.set(null);
-    }
 }

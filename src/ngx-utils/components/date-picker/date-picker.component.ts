@@ -67,6 +67,7 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
     onBlur(ev: FocusEvent): void {
         const target = ev.target as HTMLInputElement;
         let date = parseValidDate(target.value);
+        let value: Date | string = date;
         untracked(() => {
             const strict = this.strict();
             const min = this.minDate();
@@ -79,13 +80,18 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
             target.value = isDate(date)
                 ? convertToDateFormat(date, "date")
                 : (strict ? null : target.value);
-            this.value.set(
-                isDate(date)
+            value = isDate(date)
                     ? date
-                    : (strict ? null : target.value)
-            );
+                    : (strict ? null : target.value);
         });
-        this.onChange(date);
+        this.value.set(value);
+        this.onChange(value);
+        this.onTouched();
+    }
+
+    clear(): void {
+        this.value.set(null);
+        this.onChange(null);
         this.onTouched();
     }
 }
