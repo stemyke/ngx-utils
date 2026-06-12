@@ -111,17 +111,18 @@ export class CalendarComponent extends CalendarInputs {
     });
 
     readonly calendarCells = computed<CalendarCell[]>(() => {
-        const year = this.currentYear();
-        const month = this.currentMonth();
+        const curYear = this.currentYear();
+        const curMonth = this.currentMonth();
 
-        const firstDayOfMonth = new Date(year, month, 1);
+        const firstDayOfMonth = new Date(curYear, curMonth, 1);
         let startOffset = firstDayOfMonth.getDay() - 1;
         if (startOffset === -1) startOffset = 6;
         if (startOffset === 0) startOffset = 7;
 
-        const gridStartDate = new Date(year, month, 1 - startOffset);
+        const gridStartDate = new Date(curYear, curMonth, 1 - startOffset);
         const rawCells: CalendarCell[] = [];
 
+        const id = this.testId();
         const min = this.minDate();
         const max = this.maxDate();
         const disabledTimes = this.disabledTimestamps();
@@ -146,14 +147,13 @@ export class CalendarComponent extends CalendarInputs {
             dragMaxT = Math.max(startT, endT);
         }
 
-        const prevMonthLastDayT = toMidnight(new Date(year, month, 0)).getTime();
-        const nextMonthFirstDayT = toMidnight(new Date(year, month + 1, 1)).getTime();
+        const prevMonthLastDayT = toMidnight(new Date(curYear, curMonth, 0)).getTime();
+        const nextMonthFirstDayT = toMidnight(new Date(curYear, curMonth + 1, 1)).getTime();
 
         for (let row = 0; row < 6; row++) {
             const firstDateOfRow = new Date(gridStartDate.getFullYear(), gridStartDate.getMonth(), gridStartDate.getDate() + (row * 7));
-            const weekNum = getISOWeekNumber(firstDateOfRow);
             rawCells.push({
-                id: `week-${row}-${weekNum}`,
+                id: `${id}-week-${row}`,
                 date: null, isCurrentMonth: false, isDisabled: true, isSelected: false, isInDragRange: false,
                 isWeekNum: true, numValue: getISOWeekNumber(firstDateOfRow), isRangeStart: false, isRangeEnd: false,
                 isFillerStart: false, isFillerEnd: false
@@ -199,15 +199,18 @@ export class CalendarComponent extends CalendarInputs {
                     }
                 }
 
+                const date = cellDate.getDate();
+                const month = cellDate.getMonth();
+
                 rawCells.push({
-                    id: String(timestamp),
+                    id: `${id}-day-${month}-${date}`,
                     date: cellDate,
-                    isCurrentMonth: cellDate.getMonth() === month,
+                    isCurrentMonth: month === curMonth,
                     isDisabled,
                     isSelected,
                     isInDragRange,
                     isWeekNum: false,
-                    numValue: cellDate.getDate(),
+                    numValue: date,
                     isRangeStart,
                     isRangeEnd,
                     isFillerStart: timestamp === nextMonthFirstDayT,

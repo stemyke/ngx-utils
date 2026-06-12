@@ -1,3 +1,4 @@
+@let id = testId();
 <div class="date-picker"
      drop-down
      [closeInside]="false"
@@ -5,20 +6,24 @@
      [ngClass]="{disabled: disabled()}"
      #pickerDropdown="dropdown">
     <input class="date-picker-input"
+           [attr.data-testid]="id"
            [type]="strict() ? 'date' : 'text'"
            [value]="inputValue()"
            (focus)="onFocus()"
            (blur)="onBlur($event)"/>
     <div class="date-picker-buttons">
         @if (value()) {
-            <btn type="transparent"
+            <btn [attr.data-testid]="id + '-clear'"
+                 type="transparent"
                  icon="close" (click)="clear()"></btn>
         }
-        <btn type="transparent"
+        <btn [attr.data-testid]="id + '-open-picker'"
+             type="transparent"
              icon="calendar-days" dropdownToggle></btn>
     </div>
     <div *dropdownContent>
-        <calendar [min]="min()"
+        <calendar [testId]="id + '-picker'"
+                  [min]="min()"
                   [max]="max()"
                   [disabledDates]="disabledDates()"
                   [disabledDays]="disabledDays()"

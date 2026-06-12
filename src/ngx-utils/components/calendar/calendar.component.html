@@ -1,16 +1,30 @@
+@let id = testId();
 <div class="calendar-container">
     <div class="calendar-header">
         <div class="prev">
             @if (canGoPrev()) {
-                <btn (click)="prevMonth()" icon="chevron-left"></btn>
+                <btn icon="chevron-left"
+                     [attr.data-testid]="id + '-prev-month'"
+                     (click)="prevMonth()"></btn>
             }
         </div>
         <div class="header-label">
-            {{ "month." + months[currentMonth()] | translate }} {{ currentYear() }}
+            @let month = currentMonth();
+            <span [attr.data-testid]="id + '-month'"
+                  [attr.data-value]="month">
+                {{ "month." + months[month] | translate }}
+            </span>
+            @let year = currentYear();
+            <span [attr.data-testid]="id + '-year'"
+                  [attr.data-value]="year">
+                {{ year }}
+            </span>
         </div>
         <div class="next">
             @if (canGoNext()) {
-                <btn (click)="nextMonth()" icon="chevron-right"></btn>
+                <btn icon="chevron-right"
+                     [attr.data-testid]="id + '-next-month'"
+                     (click)="nextMonth()"></btn>
             }
         </div>
     </div>
@@ -25,7 +39,8 @@
     <div class="calendar-grid days-grid" (mouseleave)="onGridMouseLeave()">
         @for (cell of calendarCells(); track cell.id) {
             @if (cell.isWeekNum) {
-                <div class="calendar-cell week-number-cell">
+                <div class="calendar-cell week-number-cell"
+                     [attr.data-testid]="cell.id">
                     {{ cell.numValue }}
                 </div>
             }
@@ -40,6 +55,7 @@
                     [class.range-start]="cell.isRangeStart"
                     [class.range-end]="cell.isRangeEnd"
                     [class.active]="cell.isSelected"
+                    [attr.data-testid]="cell.id"
                     (mousedown)="onMouseDown(cell, $event)"
                     (mouseenter)="onMouseEnter(cell)"
                 >
