@@ -26,10 +26,9 @@
         @for (cell of calendarCells(); track cell.id) {
             @if (cell.isWeekNum) {
                 <div class="calendar-cell week-number-cell">
-                    {{ cell.weekNumber }}
+                    {{ cell.numValue }}
                 </div>
             }
-
             @else {
                 <div
                     class="calendar-cell"
@@ -44,7 +43,7 @@
                     (mousedown)="onMouseDown(cell, $event)"
                     (mouseenter)="onMouseEnter(cell)"
                 >
-                    <span class="cell-number">{{ cell.date?.getDate() }}</span>
+                    <span class="cell-number">{{ cell.numValue }}</span>
                 </div>
             }
         }

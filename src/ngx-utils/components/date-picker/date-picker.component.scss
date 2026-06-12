@@ -59,24 +59,21 @@
         }
     }
 
+    .date-picker-buttons {
+        display: flex;
+        justify-content: flex-end;
+        position: absolute;
+        aspect-ratio: 2 / 1;
+        top: 0;
+        bottom: 0;
+        right: 0;
+    }
+
     &.disabled {
         opacity: .75;
 
         .chips-button {
             padding-right: var(--date-picker-btn-padding);
         }
-    }
-
-    > btn {
-        display: block;
-        position: absolute;
-        aspect-ratio: 1;
-        top: 0;
-        bottom: 0;
-        right: 0;
-    }
-
-    > btn[icon="close"] {
-        right: 40px;
     }
 }

@@ -1,5 +1,12 @@
 import {Component, computed, effect, HostListener, signal, untracked, ViewEncapsulation} from "@angular/core";
-import {getISOWeekNumber, isDayOfWeekDisabled, isSameDay, parseValidDate, toMidnight} from "../../utils/date.utils";
+import {
+    findClosestValidDate,
+    getISOWeekNumber,
+    isDayOfWeekDisabled,
+    isSameDay,
+    parseValidDate,
+    toMidnight
+} from "../../utils/date.utils";
 import {CalendarInputs} from "./calendar-inputs";
 
 export interface CalendarCell {
@@ -9,8 +16,8 @@ export interface CalendarCell {
     isDisabled: boolean;
     isSelected: boolean;
     isInDragRange: boolean;
+    numValue: number;
     isWeekNum: boolean;
-    weekNumber: number | null;
     isRangeStart: boolean;
     isRangeEnd: boolean;
     isFillerStart: boolean;
@@ -144,11 +151,11 @@ export class CalendarComponent extends CalendarInputs {
 
         for (let row = 0; row < 6; row++) {
             const firstDateOfRow = new Date(gridStartDate.getFullYear(), gridStartDate.getMonth(), gridStartDate.getDate() + (row * 7));
-
+            const weekNum = getISOWeekNumber(firstDateOfRow);
             rawCells.push({
-                id: `week-${row}-${firstDateOfRow.getTime()}`,
+                id: `week-${row}-${weekNum}`,
                 date: null, isCurrentMonth: false, isDisabled: true, isSelected: false, isInDragRange: false,
-                isWeekNum: true, weekNumber: getISOWeekNumber(firstDateOfRow), isRangeStart: false, isRangeEnd: false,
+                isWeekNum: true, numValue: getISOWeekNumber(firstDateOfRow), isRangeStart: false, isRangeEnd: false,
                 isFillerStart: false, isFillerEnd: false
             });
 
@@ -184,8 +191,7 @@ export class CalendarComponent extends CalendarInputs {
                         } else {
                             isSelected = dragSnapshot.get(timestamp) || false;
                         }
-                    }
-                    else if (!multiSelectMode && currentDragT !== null && timestamp === currentDragT) {
+                    } else if (!multiSelectMode && currentDragT !== null && timestamp === currentDragT) {
                         isInDragRange = true;
                         if (!isDisabled) isSelected = true;
                         isRangeStart = true;
@@ -194,9 +200,16 @@ export class CalendarComponent extends CalendarInputs {
                 }
 
                 rawCells.push({
-                    id: String(timestamp), date: cellDate, isCurrentMonth: cellDate.getMonth() === month,
-                    isDisabled, isSelected, isInDragRange, isWeekNum: false, weekNumber: null,
-                    isRangeStart, isRangeEnd,
+                    id: String(timestamp),
+                    date: cellDate,
+                    isCurrentMonth: cellDate.getMonth() === month,
+                    isDisabled,
+                    isSelected,
+                    isInDragRange,
+                    isWeekNum: false,
+                    numValue: cellDate.getDate(),
+                    isRangeStart,
+                    isRangeEnd,
                     isFillerStart: timestamp === nextMonthFirstDayT,
                     isFillerEnd: timestamp === prevMonthLastDayT
                 });
@@ -213,12 +226,26 @@ export class CalendarComponent extends CalendarInputs {
             if (val && !this.isInitialized) {
                 untracked(() => {
                     let referenceDate: Date | null = null;
+
+                    // 1. If a valid selection exists, use the latest date as the reference view anchor
                     if (Array.isArray(val) && val.length > 0) {
                         referenceDate = new Date(Math.max(...val.map(d => d.getTime())));
                     } else if (val instanceof Date) {
                         referenceDate = val;
                     }
 
+                    // 2. FALLBACK: If no selection exists, dynamically look up the first allowed calendar date
+                    if (!referenceDate || isNaN(referenceDate.getTime())) {
+                        const min = this.minDate();
+                        const max = this.maxDate();
+                        const disabledTimes = this.disabledTimestamps();
+                        const disabledDays = this.disabledDays();
+
+                        // Start searching from today
+                        referenceDate = findClosestValidDate(new Date(), min, max, disabledTimes, disabledDays);
+                    }
+
+                    // 3. Update the view tracking states cleanly
                     if (referenceDate && !isNaN(referenceDate.getTime())) {
                         this.currentMonth.set(referenceDate.getMonth());
                         this.currentYear.set(referenceDate.getFullYear());
@@ -327,7 +354,8 @@ export class CalendarComponent extends CalendarInputs {
         this.dragCurrentCellDate.set(cell.date);
     }
 
-    onGridMouseLeave(): void { }
+    onGridMouseLeave(): void {
+    }
 
     @HostListener("window:mouseup", ["$event"])
     onMouseUpGlobal(): void {
@@ -346,8 +374,7 @@ export class CalendarComponent extends CalendarInputs {
                         this.currentMonth.set(currentDrag.getMonth());
                         this.currentYear.set(currentDrag.getFullYear());
                     }
-                }
-                else {
+                } else {
                     const targetState = this.dragTargetState();
                     const startT = toMidnight(startDrag).getTime();
                     const endT = toMidnight(currentDrag).getTime();

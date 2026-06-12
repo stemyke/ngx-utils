@@ -14,6 +14,9 @@ export class CalendarInputs {
     readonly disabledDays = input<number[]>([]);
     readonly disabled = model(false);
     readonly strict = input(true);
+    readonly testId = input("calendar", {
+        transform: value => String(value || "calendar")
+    });
 
     protected readonly minDate = computed(() => parseValidDate(this.min()));
     protected readonly maxDate = computed(() => parseValidDate(this.max()));

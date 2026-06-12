@@ -1,16 +1,21 @@
-<div dd
+<div class="date-picker"
+     drop-down
      [closeInside]="false"
      [autoPlacement]="autoPlacement"
-     [ngClass]="{disabled: disabled()}" class="date-picker" #chipDropdown="dropdown">
+     [ngClass]="{disabled: disabled()}"
+     #pickerDropdown="dropdown">
     <input class="date-picker-input"
            [type]="strict() ? 'date' : 'text'"
-           [pattern]="datePattern"
            [value]="inputValue()"
            (blur)="onBlur($event)"/>
-    <btn type="transparent"
-         icon="close" (click)="clear()"></btn>
-    <btn type="transparent"
-         icon="calendar-days" dropdownToggle></btn>
+    <div class="date-picker-buttons">
+        @if (value()) {
+            <btn type="transparent"
+                 icon="close" (click)="clear()"></btn>
+        }
+        <btn type="transparent"
+             icon="calendar-days" dropdownToggle></btn>
+    </div>
     <div *dropdownContent>
         <calendar [min]="min()"
                   [max]="max()"

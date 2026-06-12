@@ -1,4 +1,4 @@
-import {Component, computed, input, untracked, ViewEncapsulation} from "@angular/core";
+import {Component, computed, untracked, ViewEncapsulation} from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {AutoPlacementOptions} from "@floating-ui/dom";
 import {isDate} from "../../utils/object.utils";
@@ -16,9 +16,6 @@ import {CalendarInputs} from "../calendar/calendar-inputs";
     ],
 })
 export class DatePickerComponent extends CalendarInputs implements ControlValueAccessor {
-
-    readonly testId = input("date-picker");
-    readonly datePattern = "^\\d{4}-\\d{2}-\\d{2}$";
 
     readonly autoPlacement: AutoPlacementOptions = {
         autoAlignment: true,
@@ -60,16 +57,22 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
         let date = parseValidDate(target.value);
         untracked(() => {
             const strict = this.strict();
-            if (strict) {
-                const min = this.minDate();
-                const max = this.maxDate();
-                const disabledTimes = this.disabledTimestamps();
-                const disabledDays = this.disabledDays();
-                date = findClosestValidDate(date, min, max, disabledTimes, disabledDays);
-            }
+            const min = this.minDate();
+            const max = this.maxDate();
+            const disabledTimes = this.disabledTimestamps();
+            const disabledDays = this.disabledDays();
+            date = date
+                ? findClosestValidDate(date, min, max, disabledTimes, disabledDays)
+                : null;
+            target.value = isDate(date)
+                ? convertToDateFormat(date, "date")
+                : (strict ? null : target.value);
+            this.value.set(
+                isDate(date)
+                    ? date
+                    : (strict ? null : target.value)
+            );
         });
-        target.value = isDate(date) ? convertToDateFormat(date, "date") : String(target.value || "");
-        this.value.set(isDate(date) ? date : target.value || null);
         this.onChange(date);
         this.onTouched();
     }
