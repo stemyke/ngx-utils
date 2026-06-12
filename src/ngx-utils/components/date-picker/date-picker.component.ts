@@ -1,9 +1,10 @@
-import {Component, computed, untracked, ViewEncapsulation} from "@angular/core";
+import {Component, computed, untracked, viewChild, ViewEncapsulation} from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {AutoPlacementOptions} from "@floating-ui/dom";
 import {isDate} from "../../utils/object.utils";
 import {convertToDateFormat, findClosestValidDate, parseValidDate} from "../../utils/date.utils";
 import {CalendarInputs} from "../calendar/calendar-inputs";
+import {DropdownDirective} from "../../directives/dropdown.directive";
 
 @Component({
     standalone: false,
@@ -27,6 +28,8 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
         return isDate(value) ? convertToDateFormat(value, "date") : String(this.value() || "");
     });
 
+    readonly pickerDropdown = viewChild<DropdownDirective>("pickerDropdown");
+
     onChange: any = () => { };
     onTouched: any = () => { };
 
@@ -48,8 +51,17 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
 
     onPickerChange(date: any) {
         this.value.set(date);
+        untracked(() => {
+            this.pickerDropdown()?.hide();
+        });
         this.onChange(date);
         this.onTouched();
+    }
+
+    onFocus(): void {
+        untracked(() => {
+            this.pickerDropdown()?.hide();
+        });
     }
 
     onBlur(ev: FocusEvent): void {

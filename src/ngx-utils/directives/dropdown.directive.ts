@@ -115,7 +115,7 @@ export class DropdownDirective implements OnDestroy {
                     parents.push(this.nativeElement);
                 }
                 // If one of the parents contains the target then we clicked inside
-                if (parents.some(child => child.contains(target))) return;
+                if (!document.contains(target) || parents.some(child => child.contains(target))) return;
             }
             setTimeout(() => this.hide(), event.type == "touchend" ? 250 : 100);
         };

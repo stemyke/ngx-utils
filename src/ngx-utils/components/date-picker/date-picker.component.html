@@ -7,6 +7,7 @@
     <input class="date-picker-input"
            [type]="strict() ? 'date' : 'text'"
            [value]="inputValue()"
+           (focus)="onFocus()"
            (blur)="onBlur($event)"/>
     <div class="date-picker-buttons">
         @if (value()) {

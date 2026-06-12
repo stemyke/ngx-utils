@@ -4,7 +4,7 @@ import {Injectable, NgModule} from "@angular/core";
 import {FormsModule} from "@angular/forms";
 
 import {AppComponent} from "./app.component";
-import {LanguageService, NgxUtilsModule} from "../public_api";
+import {NgxUtilsModule} from "../public_api";
 
 @Injectable()
 export class HammerConfig extends HammerGestureConfig {
@@ -26,9 +26,7 @@ export class HammerConfig extends HammerGestureConfig {
     imports: [
         BrowserModule,
         FormsModule,
-        NgxUtilsModule.forRoot({
-            languageService: LanguageService,
-        }),
+        NgxUtilsModule.forRoot(),
         HammerModule,
         NgxUtilsModule
     ],

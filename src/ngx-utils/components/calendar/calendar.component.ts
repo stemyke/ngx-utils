@@ -223,36 +223,34 @@ export class CalendarComponent extends CalendarInputs {
         super();
         effect(() => {
             const val = this.validatedValue();
-            if (val && !this.isInitialized) {
-                untracked(() => {
-                    let referenceDate: Date | null = null;
+            untracked(() => {
+                let referenceDate: Date | null = null;
 
-                    // 1. If a valid selection exists, use the latest date as the reference view anchor
-                    if (Array.isArray(val) && val.length > 0) {
-                        referenceDate = new Date(Math.max(...val.map(d => d.getTime())));
-                    } else if (val instanceof Date) {
-                        referenceDate = val;
-                    }
+                // 1. If a valid selection exists, use the latest date as the reference view anchor
+                if (Array.isArray(val) && val.length > 0) {
+                    referenceDate = new Date(Math.max(...val.map(d => d.getTime())));
+                } else if (val instanceof Date) {
+                    referenceDate = val;
+                }
 
-                    // 2. FALLBACK: If no selection exists, dynamically look up the first allowed calendar date
-                    if (!referenceDate || isNaN(referenceDate.getTime())) {
-                        const min = this.minDate();
-                        const max = this.maxDate();
-                        const disabledTimes = this.disabledTimestamps();
-                        const disabledDays = this.disabledDays();
+                // 2. FALLBACK: If no selection exists, dynamically look up the first allowed calendar date
+                if (!referenceDate || isNaN(referenceDate.getTime())) {
+                    const min = this.minDate();
+                    const max = this.maxDate();
+                    const disabledTimes = this.disabledTimestamps();
+                    const disabledDays = this.disabledDays();
 
-                        // Start searching from today
-                        referenceDate = findClosestValidDate(new Date(), min, max, disabledTimes, disabledDays);
-                    }
+                    // Start searching from today
+                    referenceDate = findClosestValidDate(new Date(), min, max, disabledTimes, disabledDays);
+                }
 
-                    // 3. Update the view tracking states cleanly
-                    if (referenceDate && !isNaN(referenceDate.getTime())) {
-                        this.currentMonth.set(referenceDate.getMonth());
-                        this.currentYear.set(referenceDate.getFullYear());
-                        this.isInitialized = true;
-                    }
-                });
-            }
+                // 3. Update the view tracking states cleanly
+                if (referenceDate && !isNaN(referenceDate.getTime())) {
+                    this.currentMonth.set(referenceDate.getMonth());
+                    this.currentYear.set(referenceDate.getFullYear());
+                    this.isInitialized = true;
+                }
+            });
         });
     }
 
@@ -371,8 +369,6 @@ export class CalendarComponent extends CalendarInputs {
                     const hoveredCell = cellCells.find(c => c.date && isSameDay(c.date, currentDrag));
                     if (hoveredCell && !hoveredCell.isDisabled) {
                         this.value.set(currentDrag);
-                        this.currentMonth.set(currentDrag.getMonth());
-                        this.currentYear.set(currentDrag.getFullYear());
                     }
                 } else {
                     const targetState = this.dragTargetState();
@@ -416,8 +412,6 @@ export class CalendarComponent extends CalendarInputs {
                     }
 
                     this.value.set(Array.from(updatedSelectionMap.values()));
-                    this.currentMonth.set(currentDrag.getMonth());
-                    this.currentYear.set(currentDrag.getFullYear());
                 }
             }
         });
