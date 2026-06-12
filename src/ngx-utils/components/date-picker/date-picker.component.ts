@@ -30,8 +30,10 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
 
     readonly pickerDropdown = viewChild<DropdownDirective>("pickerDropdown");
 
-    onChange: any = () => { };
-    onTouched: any = () => { };
+    onChange: any = () => {
+    };
+    onTouched: any = () => {
+    };
 
     registerOnChange(fn: any) {
         this.onChange = fn;
@@ -81,8 +83,8 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
                 ? convertToDateFormat(date, "date")
                 : (strict ? null : target.value);
             value = isDate(date)
-                    ? date
-                    : (strict ? null : target.value);
+                ? date
+                : (strict ? null : target.value);
         });
         this.value.set(value);
         this.onChange(value);
