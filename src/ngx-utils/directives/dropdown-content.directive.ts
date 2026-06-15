@@ -206,6 +206,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
         arrow.classList.add(`dropdown-content-arrow`);
         arrow.style.position = `absolute`;
         wrapper.appendChild(arrow);
+        wrapper.popover = "manual";
         const ref = this.vcr.createEmbeddedView(this.templateRef);
         ref.rootNodes.forEach(node => wrapper.appendChild(node));
         ref.detectChanges();
@@ -238,6 +239,10 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
             }
         }
         wrapper.classList.add("dropdown-content-wrap");
+        wrapper.style.margin = "0";
+        wrapper.style.padding = "0";
+        wrapper.style.border = "none";
+        wrapper.showPopover();
         return [wrapper, arrow];
     }
 
