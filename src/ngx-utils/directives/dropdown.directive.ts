@@ -1,6 +1,17 @@
-import {Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnDestroy, Output} from "@angular/core";
+import {
+    Directive,
+    ElementRef,
+    EventEmitter,
+    HostBinding,
+    HostListener, Inject,
+    Input,
+    OnDestroy,
+    Optional,
+    Output
+} from "@angular/core";
 import {AutoPlacementOptions, Boundary, Placement} from "@floating-ui/dom";
 import {DropdownAttachTo} from "../common-types";
+import {ROOT_ELEMENT} from "../tokens";
 
 @Directive({
     standalone: false,
@@ -90,7 +101,8 @@ export class DropdownDirective implements OnDestroy {
         this.hide();
     }
 
-    constructor(protected element: ElementRef<HTMLElement>) {
+    constructor(protected element: ElementRef<HTMLElement>,
+                @Optional() @Inject(ROOT_ELEMENT) protected rootElem: HTMLElement) {
         this.opened = false;
         this.disabled = false;
         this.closeInside = true;
@@ -115,7 +127,7 @@ export class DropdownDirective implements OnDestroy {
                     parents.push(this.nativeElement);
                 }
                 // If one of the parents contains the target then we clicked inside
-                if (!document.contains(target) || parents.some(child => child.contains(target))) return;
+                if (this.rootElem?.contains(target) === false || parents.some(child => child.contains(target))) return;
             }
             setTimeout(() => this.hide(), event.type == "touchend" ? 250 : 100);
         };

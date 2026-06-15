@@ -143,7 +143,9 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                     });
 
                     const refRect = ref.getBoundingClientRect();
+                    const parentRect = this.attachTo.getBoundingClientRect();
                     const contentRect = content.getBoundingClientRect();
+
                     const lastPlacement = this.lastPlacement;
                     const newPlacement = `dropdown-placement-${placement}`;
                     if (lastPlacement) {
@@ -169,6 +171,7 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
                     }
                     rectProps.forEach(prop => {
                         content.style.setProperty(`--toggle-${prop}`, `${refRect[prop]}px`);
+                        content.style.setProperty(`--parent-${prop}`, `${parentRect[prop]}px`);
                         ref.style.setProperty(`--content-${prop}`, `${contentRect[prop]}px`);
                     });
                     this.lastPlacement = newPlacement;
@@ -241,7 +244,9 @@ export class DropdownContentDirective implements OnInit, OnDestroy {
         wrapper.classList.add("dropdown-content-wrap");
         wrapper.style.margin = "0";
         wrapper.style.padding = "0";
-        wrapper.style.border = "none";
+        wrapper.style.borderWidth = "0";
+        wrapper.style.overflow = "visible";
+        wrapper.style.background = "none";
         wrapper.showPopover();
         return [wrapper, arrow];
     }
