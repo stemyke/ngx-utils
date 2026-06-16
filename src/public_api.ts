@@ -190,6 +190,7 @@ export {
     isSameDay,
     getISOWeekNumber,
     convertToDateFormat,
+    convertToDate,
     isDayOfWeekDisabled,
     findClosestValidDate,
     addDate,

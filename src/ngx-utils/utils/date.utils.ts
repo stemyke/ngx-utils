@@ -62,6 +62,17 @@ export function convertToDateFormat(value: any, format: string = "date"): any {
 }
 
 /**
+ * Convert value to date object with format (date, date-time)
+ * @param value Value to convert to date
+ * @param format Expected date format (date, date-time)
+ */
+export function convertToDate(value: any, format: string = "date"): any {
+    return (!isDefined(value) || !format?.includes("date"))
+        ? value
+        : new Date(convertToDateFormat(value, format));
+}
+
+/**
  * Returns if the day of the week is in the provided date is disabled
  * @param date Checked date
  * @param disabledDays An array of disabled days of the week (0-7, where 0 and 7 both means saturday)
