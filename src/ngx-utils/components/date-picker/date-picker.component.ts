@@ -1,4 +1,4 @@
-import {Component, computed, untracked, viewChild, ViewEncapsulation} from "@angular/core";
+import {Component, computed, model, untracked, viewChild, ViewEncapsulation} from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {AutoPlacementOptions} from "@floating-ui/dom";
 import {isDate} from "../../utils/object.utils";
@@ -17,6 +17,8 @@ import {DropdownDirective} from "../../directives/dropdown.directive";
     ],
 })
 export class DatePickerComponent extends CalendarInputs implements ControlValueAccessor {
+
+    readonly disabled = model(false);
 
     readonly autoPlacement: AutoPlacementOptions = {
         autoAlignment: true,

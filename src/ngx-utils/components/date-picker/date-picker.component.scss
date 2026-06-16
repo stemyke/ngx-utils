@@ -76,9 +76,5 @@
 
     &.disabled {
         opacity: .75;
-
-        .chips-button {
-            padding-right: var(--date-picker-btn-padding);
-        }
     }
 }
