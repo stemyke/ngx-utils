@@ -1,10 +1,10 @@
-import {ElementRef, EventEmitter, InjectionToken, Injector, NgZone, Provider, TemplateRef, Type} from "@angular/core";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {ActivatedRouteSnapshot, Data, LoadChildrenCallback, Route, Routes, UrlTree} from "@angular/router";
-import {Observable} from "rxjs";
-import {DurationLikeObject} from "luxon";
+import { ElementRef, EventEmitter, InjectionToken, Injector, NgZone, Provider, TemplateRef, Type } from "@angular/core";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { ActivatedRouteSnapshot, Data, LoadChildrenCallback, Route, Routes, UrlTree } from "@angular/router";
+import { Observable } from "rxjs";
+import { DurationLikeObject } from "luxon";
 
-import {MaybePromise, StringKeys} from "./helper-types";
+import { MaybePromise, StringKeys } from "./helper-types";
 
 // --- Util
 export type DurationUnit = StringKeys<DurationLikeObject>;
@@ -86,7 +86,7 @@ export interface ILanguageSettings {
     languages: string[];
     devLanguages: string[];
     defaultLanguage: string;
-    settings?: {[lang: string]: ILanguageSetting};
+    settings?: { [lang: string]: ILanguageSetting };
 }
 
 export interface ILanguageService {
@@ -415,10 +415,10 @@ export type PaginationDataLoader = (page: number, itemsPerPage: number, controll
 export class PaginationItemContext {
 
     constructor(readonly item: any,
-                readonly parallelItem: any,
-                readonly count: number,
-                public index: number,
-                public dataIndex: number) {
+        readonly parallelItem: any,
+        readonly count: number,
+        public index: number,
+        public dataIndex: number) {
     }
 
     get first(): boolean {
@@ -719,7 +719,7 @@ export interface DiscriminatorOptions {
  * A holder that defines the schema discriminator
  */
 export interface Discriminator {
-    discriminator: DiscriminatorOptions;
+    discriminator?: DiscriminatorOptions;
     discriminatorFn?: DiscriminatorFn;
 }
 
@@ -740,7 +740,7 @@ export interface OpenApiSchemaRef {
 }
 
 export interface OpenApiSchemaProperty extends DynamicSchemaRef, OpenApiSchemaRef, Discriminator {
-    id: string;
+    id?: string;
     type?: string;
     format?: string;
     column?: boolean;
