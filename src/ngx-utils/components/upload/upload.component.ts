@@ -16,6 +16,7 @@ import {lastValueFrom} from "rxjs";
 import {map} from "rxjs/operators";
 
 import {
+    ControlValueAccesFn,
     IApiService,
     IBaseHttpClient,
     IFileUploadProcess,
@@ -65,8 +66,8 @@ export class UploadComponent implements ControlValueAccessor, OnChanges {
     dropAllowed: boolean;
     processing: IFileUploadProcess[];
 
-    onChange: Function;
-    onTouched: Function;
+    onChange: ControlValueAccesFn<UploadType | UploadType[]>;
+    onTouched: ControlValueAccesFn;
 
     protected rootElem: DocumentOrShadowRoot
     protected fileImageCache: Map<Blob, string>;

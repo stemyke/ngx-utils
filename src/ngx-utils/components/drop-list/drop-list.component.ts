@@ -11,7 +11,7 @@ import {
 } from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 
-import {DragEventHandler} from "../../common-types";
+import {DragEventHandler, ControlValueAccesFn} from "../../common-types";
 import {checkTransitions} from "../../utils/misc";
 import {ObjectUtils} from "../../utils/object.utils";
 import {ArrayUtils} from "../../utils/array.utils";
@@ -48,8 +48,8 @@ export class DropListComponent implements OnChanges, ControlValueAccessor {
     @ContentChild("itemTemplate")
     itemTemplate: TemplateRef<any>;
 
-    onChange: Function;
-    onTouched: Function;
+    onChange: ControlValueAccesFn<DropListId[]>;
+    onTouched: ControlValueAccesFn;
     valueMap: Record<DropListId, DropListItem>;
 
     remove: (index: number) => void;

@@ -24,6 +24,7 @@ export {
     ResolveFactory,
     IResolveFactory,
     CanvasColor,
+    ControlValueAccesFn,
     IIconService,
     ITranslation,
     ITranslations,

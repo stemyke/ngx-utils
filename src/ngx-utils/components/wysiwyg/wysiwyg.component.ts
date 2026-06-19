@@ -12,6 +12,7 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {getRoot} from "../../utils/misc";
 import {LoaderUtils} from "../../utils/loader.utils";
+import {ControlValueAccesFn} from "../../common-types";
 
 interface Pell {
     content: HTMLElement;
@@ -35,8 +36,8 @@ export class WysiwygComponent implements ControlValueAccessor, OnChanges, AfterV
     @Input() disabled: boolean;
     @Output() valueChange: EventEmitter<string>;
 
-    onChange: Function;
-    onTouched: Function;
+    onChange: ControlValueAccesFn<string>;
+    onTouched: ControlValueAccesFn;
 
     protected rootElem: DocumentOrShadowRoot;
     protected editor: Pell;

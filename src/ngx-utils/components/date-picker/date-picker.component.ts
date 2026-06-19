@@ -5,6 +5,7 @@ import {isDate} from "../../utils/object.utils";
 import {convertToDateFormat, findClosestValidDate, parseValidDate} from "../../utils/date.utils";
 import {CalendarInputs} from "../calendar/calendar-inputs";
 import {DropdownDirective} from "../../directives/dropdown.directive";
+import {ControlValueAccesFn} from "../../common-types";
 
 @Component({
     standalone: false,
@@ -32,9 +33,9 @@ export class DatePickerComponent extends CalendarInputs implements ControlValueA
 
     readonly pickerDropdown = viewChild<DropdownDirective>("pickerDropdown");
 
-    onChange: any = () => {
+    onChange: ControlValueAccesFn<Date | Date[] | string | null> = () => {
     };
-    onTouched: any = () => {
+    onTouched: ControlValueAccesFn = () => {
     };
 
     registerOnChange(fn: any) {

@@ -11,12 +11,12 @@ import {
     effect,
     viewChild
 } from "@angular/core";
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 
-import {getRoot} from "../../utils/misc";
-import {LoaderUtils} from "../../utils/loader.utils";
-import {EDITOR_TYPES} from "../../common-types";
-import {isString} from "../../utils/object.utils";
+import { getRoot } from "../../utils/misc";
+import { LoaderUtils } from "../../utils/loader.utils";
+import { EDITOR_TYPES, ControlValueAccesFn } from "../../common-types";
+import { isString } from "../../utils/object.utils";
 
 type CodeMirrorExtension = () => Object;
 
@@ -60,7 +60,7 @@ declare const jsonlint: {
     templateUrl: "./code-editor.component.html",
     encapsulation: ViewEncapsulation.None,
     providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: CodeEditorComponent, multi: true}
+        { provide: NG_VALUE_ACCESSOR, useExisting: CodeEditorComponent, multi: true }
     ],
 })
 export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit {
@@ -69,13 +69,14 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
     readonly lang = input<string>("json");
     readonly disabled = model<boolean>(false);
 
-    onChange: Function = () => {};
-    onTouched: Function = () => {};
+    protected onChange: ControlValueAccesFn<string | Object> = () => { };
+    protected onTouched: ControlValueAccesFn = () => { };
 
     protected readonly cdr = inject(ChangeDetectorRef);
     protected readonly element = inject(ElementRef<HTMLElement>);
 
     protected langCompartment: CodeEditorCompartment;
+    protected editableCompartment: CodeEditorCompartment;
     protected extensions: Record<string, Object> = {};
     protected rootElem: DocumentOrShadowRoot;
     protected readonly editor = signal<CodeEditorView | null>(null);
@@ -98,15 +99,20 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
 
             const value = this.value() || "";
             const lang = this.lang();
-            
+            const disabled = this.disabled();
+
             const expectedStr = !isString(value) ? JSON.stringify(value, null, 4) : value;
             const currentStr = editor.state.doc.toString();
-            
+
             const langExtension = this.getLangExtension();
+            const { EditorView } = CM["@codemirror/view"];
             const dispatchData: any = {
-                effects: this.langCompartment.reconfigure(langExtension)
+                effects: [
+                    this.langCompartment.reconfigure(langExtension),
+                    this.editableCompartment.reconfigure(EditorView.editable.of(!disabled))
+                ]
             };
-            
+
             if (currentStr !== expectedStr) {
                 dispatchData.changes = {
                     from: 0,
@@ -134,10 +140,10 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
             LoaderUtils.loadScript("https://cdn.jsdelivr.net/npm/jsonlint", true),
         ]).then(() => {
 
-            const {basicSetup} = CM["codemirror"];
-            const {Compartment} = CM["@codemirror/state"];
-            const {EditorView} = CM["@codemirror/view"];
-            const {linter} = CM["@codemirror/lint"];
+            const { basicSetup } = CM["codemirror"];
+            const { Compartment } = CM["@codemirror/state"];
+            const { EditorView } = CM["@codemirror/view"];
+            const { linter } = CM["@codemirror/lint"];
             const langExtension = this.getLangExtension();
 
             const jsonLinter = linter((view: CodeEditorView) => {
@@ -187,11 +193,13 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
             // Initialize editor on an HTMLElement
             const value = this.value() || "";
             this.langCompartment = new Compartment();
+            this.editableCompartment = new Compartment();
             this.editor.set(new EditorView({
                 doc: !isString(value) ? JSON.stringify(value, null, 4) : value,
                 extensions: [
                     basicSetup,
                     this.langCompartment.of(langExtension),
+                    this.editableCompartment.of(EditorView.editable.of(!this.disabled())),
                     jsonLinter,
                     changeHandler
                 ],

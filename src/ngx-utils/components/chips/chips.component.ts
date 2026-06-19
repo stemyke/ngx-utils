@@ -10,7 +10,7 @@ import {
 } from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {ObjectUtils} from "../../utils/object.utils";
-import {ChipOption, ChipStatus, ChipValue} from "../../common-types";
+import {ChipOption, ChipStatus, ChipValue, ControlValueAccesFn} from "../../common-types";
 import {AutoPlacementOptions} from "@floating-ui/dom";
 import {DropdownDirective} from "../../directives/dropdown.directive";
 
@@ -61,8 +61,8 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
     private undoList: Function[];
     private previousValue: string;
 
-    onChange: any = () => { };
-    onTouched: any = () => { };
+    onChange: ControlValueAccesFn<ChipValue | ChipValue[]> = () => { };
+    onTouched: ControlValueAccesFn = () => { };
 
     constructor(readonly cdr: ChangeDetectorRef) {
         this.testId = "chips";

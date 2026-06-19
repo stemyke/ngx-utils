@@ -770,6 +770,9 @@ export type OpenApiSchemaSelector = (name: string, schemas: OpenApiSchemas, inje
 // --- Code editor ---
 export const EDITOR_TYPES = ["php", "json", "html", "css", "scss"] as ReadonlyArray<string>;
 
+// --- Control Value Accessor ---
+export type ControlValueAccesFn<T = any> = (value?: T) => void;
+
 // --- Dynamic table ---
 export type TableFilterType = "text" | "enum" | "checkbox";
 
