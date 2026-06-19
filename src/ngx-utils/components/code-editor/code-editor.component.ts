@@ -3,12 +3,13 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
-    EventEmitter,
-    Input,
-    OnChanges,
-    Output,
-    ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject,
+    input,
+    model,
+    signal,
+    effect,
+    viewChild
 } from "@angular/core";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 
@@ -62,23 +63,24 @@ declare const jsonlint: {
         {provide: NG_VALUE_ACCESSOR, useExisting: CodeEditorComponent, multi: true}
     ],
 })
-export class CodeEditorComponent implements ControlValueAccessor, OnChanges, AfterViewInit {
+export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit {
 
-    @Input() value: string | Object;
-    @Input() lang: string;
-    @Input() disabled: boolean;
-    @Output() valueChange: EventEmitter<string>;
+    readonly value = model<string | Object>("");
+    readonly lang = input<string>("json");
+    readonly disabled = model<boolean>(false);
 
-    onChange: Function;
-    onTouched: Function;
+    onChange: Function = () => {};
+    onTouched: Function = () => {};
+
+    protected readonly cdr = inject(ChangeDetectorRef);
+    protected readonly element = inject(ElementRef<HTMLElement>);
 
     protected langCompartment: CodeEditorCompartment;
-    protected extensions: Record<string, Object>;
+    protected extensions: Record<string, Object> = {};
     protected rootElem: DocumentOrShadowRoot;
-    protected editor: CodeEditorView;
+    protected readonly editor = signal<CodeEditorView | null>(null);
 
-    @ViewChild("editor")
-    protected editorElem: ElementRef<HTMLDivElement>;
+    protected readonly editorElem = viewChild<ElementRef<HTMLDivElement>>("editor");
 
     get root(): DocumentOrShadowRoot {
         this.rootElem = this.rootElem || getRoot(this.element.nativeElement);
@@ -89,26 +91,41 @@ export class CodeEditorComponent implements ControlValueAccessor, OnChanges, Aft
         return this.root as any;
     }
 
-    constructor(
-        readonly cdr: ChangeDetectorRef,
-        readonly element: ElementRef<HTMLElement>
-    ) {
-        this.value = "";
-        this.lang = "json";
-        this.onChange = () => {
-        };
-        this.onTouched = () => {
-        };
-        this.extensions = {};
+    constructor() {
+        effect(() => {
+            const editor = this.editor();
+            if (!editor) return;
+
+            const value = this.value() || "";
+            const lang = this.lang();
+            
+            const expectedStr = !isString(value) ? JSON.stringify(value, null, 4) : value;
+            const currentStr = editor.state.doc.toString();
+            
+            const langExtension = this.getLangExtension();
+            const dispatchData: any = {
+                effects: this.langCompartment.reconfigure(langExtension)
+            };
+            
+            if (currentStr !== expectedStr) {
+                dispatchData.changes = {
+                    from: 0,
+                    to: editor.state.doc.length,
+                    insert: expectedStr
+                };
+            }
+            editor.dispatch(dispatchData);
+        });
     }
 
     getLangExtension(): Object {
-        if (!this.extensions[this.lang]) {
-            const lang = CM[`@codemirror/lang-${this.lang || "json"}`];
-            const ext = lang[this.lang] as CodeMirrorExtension;
-            this.extensions[this.lang] = ext();
+        const langVal = this.lang();
+        if (!this.extensions[langVal]) {
+            const lang = CM[`@codemirror/lang-${langVal || "json"}`];
+            const ext = lang[langVal] as CodeMirrorExtension;
+            this.extensions[langVal] = ext();
         }
-        return this.extensions[this.lang];
+        return this.extensions[langVal];
     }
 
     ngAfterViewInit(): void {
@@ -127,7 +144,7 @@ export class CodeEditorComponent implements ControlValueAccessor, OnChanges, Aft
                 const diagnostics: any[] = [];
                 const value = view.state.doc.toString();
 
-                if (!value.trim() || this.lang !== "json") return diagnostics;
+                if (!value.trim() || this.lang() !== "json") return diagnostics;
 
                 try {
                     jsonlint.parse(value);
@@ -151,24 +168,26 @@ export class CodeEditorComponent implements ControlValueAccessor, OnChanges, Aft
                 if (update.docChanged) {
                     // Grab the full string payload of the document
                     const value = update.state.doc.toString();
-                    if (this.lang === "json") {
+                    let parsedValue: any;
+                    if (this.lang() === "json") {
                         try {
-                            this.value = JSON.parse(value);
+                            parsedValue = JSON.parse(value);
                         } catch (e) {
                             return null;
                         }
                     } else {
-                        this.value = value;
+                        parsedValue = value;
                     }
-                    this.onChange(this.value);
-                    this.onTouched(this.value);
+                    this.value.set(parsedValue);
+                    this.onChange(parsedValue);
+                    this.onTouched(parsedValue);
                 }
             });
 
             // Initialize editor on an HTMLElement
-            const value = this.value || "";
+            const value = this.value() || "";
             this.langCompartment = new Compartment();
-            this.editor = new EditorView({
+            this.editor.set(new EditorView({
                 doc: !isString(value) ? JSON.stringify(value, null, 4) : value,
                 extensions: [
                     basicSetup,
@@ -176,22 +195,8 @@ export class CodeEditorComponent implements ControlValueAccessor, OnChanges, Aft
                     jsonLinter,
                     changeHandler
                 ],
-                parent: this.editorElem.nativeElement
-            });
-        });
-    }
-
-    ngOnChanges(): void {
-        if (!this.editor) return;
-        const value = this.value || "";
-        this.lang = EDITOR_TYPES.includes(this.lang) ? this.lang : "json";
-        this.editor.dispatch({
-            effects: this.langCompartment.reconfigure(this.getLangExtension()),
-            changes: {
-                from: 0,
-                to: this.editor.state.doc.length,
-                insert: !isString(value) ? JSON.stringify(value, null, 4) : value
-            }
+                parent: this.editorElem()?.nativeElement
+            }));
         });
     }
 
@@ -204,8 +209,11 @@ export class CodeEditorComponent implements ControlValueAccessor, OnChanges, Aft
     }
 
     writeValue(value: string) {
-        this.value = value;
+        this.value.set(value);
         this.cdr.markForCheck();
-        this.ngOnChanges();
+    }
+
+    setDisabledState(isDisabled: boolean) {
+        this.disabled.set(isDisabled);
     }
 }

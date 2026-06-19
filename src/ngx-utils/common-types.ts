@@ -745,19 +745,19 @@ export interface OpenApiSchemaProperty extends DynamicSchemaRef, OpenApiSchemaRe
     format?: string;
     column?: boolean;
     additionalProperties?: any;
-    allOf?: ReadonlyArray<OpenApiSchemaRef>;
-    oneOf?: ReadonlyArray<OpenApiSchemaRef>;
+    allOf?: ReadonlyArray<OpenApiSchemaProperty>;
+    oneOf?: ReadonlyArray<OpenApiSchemaProperty>;
     items?: OpenApiSchemaProperty;
     enum?: string[];
     [key: string]: any;
 }
 
 export interface OpenApiSchema {
-    name?: string;
     properties: {
         [name: string]: OpenApiSchemaProperty;
     };
-    required: string[];
+    name?: string;
+    required?: string[];
     [key: string]: any;
 }
 
