@@ -8,11 +8,11 @@ import {
     ViewChild,
     ViewEncapsulation
 } from "@angular/core";
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {ObjectUtils} from "../../utils/object.utils";
-import {ChipOption, ChipStatus, ChipValue, ControlValueAccesFn} from "../../common-types";
-import {AutoPlacementOptions} from "@floating-ui/dom";
-import {DropdownDirective} from "../../directives/dropdown.directive";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { ObjectUtils } from "../../utils/object.utils";
+import { ChipOption, ChipStatus, ChipValue, ControlValueAccesFn } from "../../common-types";
+import { AutoPlacementOptions } from "@floating-ui/dom";
+import { DropdownDirective } from "../../directives/dropdown.directive";
 
 @Component({
     standalone: false,
@@ -21,7 +21,7 @@ import {DropdownDirective} from "../../directives/dropdown.directive";
     templateUrl: "./chips.component.html",
     styleUrls: ["./chips.component.scss"],
     providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: ChipsComponent, multi: true}
+        { provide: NG_VALUE_ACCESSOR, useExisting: ChipsComponent, multi: true }
     ],
 })
 export class ChipsComponent implements ControlValueAccessor, OnChanges {
@@ -58,8 +58,8 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
     statuses: ChipStatus[];
     autoPlacement: AutoPlacementOptions;
 
-    private undoList: Function[];
-    private previousValue: string;
+    protected readonly undoList: Function[];
+    protected previousValue: string;
 
     onChange: ControlValueAccesFn<ChipValue | ChipValue[]> = () => { };
     onTouched: ControlValueAccesFn = () => { };
@@ -183,7 +183,15 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
     }
 
     onBlur(ev: FocusEvent): void {
-        if (this.chipDropdown.isOpened) return;
+        const relatedTarget = ev.relatedTarget as HTMLElement;
+        // If the focus is moving to an element inside the dropdown (like an option button),
+        // we do not want to trigger the blur commit logic.
+        const contentElement = this.chipDropdown?.contentElement;
+        const insideDropdown = relatedTarget
+            && contentElement instanceof HTMLElement
+            && contentElement.contains(relatedTarget);
+        if (insideDropdown) return;
+
         const input = ev.target as HTMLInputElement;
         this.enterOption(input.value);
     }
@@ -191,6 +199,7 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
     enterOption(src: string | number): boolean {
         const value = String(src);
         let option = this.createOption(value);
+        console.log("enter option called", src, value, option);
         if (!option && value && this.filteredOptions?.length === 1) {
             const regex = new RegExp(value, "gi");
             option = this.filteredOptions.find(o => o.label?.match(regex));

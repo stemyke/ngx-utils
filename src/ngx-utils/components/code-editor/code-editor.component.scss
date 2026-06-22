@@ -1,4 +1,4 @@
-.code-editor > div {
+.code-editor>div {
     margin: 10px 0;
 
     .cm-editor {
@@ -10,5 +10,14 @@
         max-height: 345px;
         background: #fefefe;
         border: 1px solid #ddd;
+    }
+}
+
+.code-editor.disabled .cm-content {
+    pointer-events: none;
+    user-select: none;
+
+    .cm-activeLine {
+        background-color: transparent;
     }
 }

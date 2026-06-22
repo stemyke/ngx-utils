@@ -228,26 +228,44 @@ export class CalendarComponent extends CalendarInputs {
             const val = this.validatedValue();
             untracked(() => {
                 let referenceDate: Date | null = null;
+                const isMulti = this.isMultiSelect();
 
-                // 1. If a valid selection exists, use the latest date as the reference view anchor
-                if (Array.isArray(val) && val.length > 0) {
-                    referenceDate = new Date(Math.max(...val.map(d => d.getTime())));
-                } else if (val instanceof Date) {
-                    referenceDate = val;
+                if (isMulti) {
+                    // For multi-select, always initialize to the current month if not initialized yet.
+                    if (!this.isInitialized) {
+                        const today = new Date();
+                        const todayYear = today.getFullYear();
+                        const todayMonth = today.getMonth();
+
+                        // Check if today's month has at least one valid date, or if it is restricted.
+                        if (this.isMonthAvailable(todayYear, todayMonth)) {
+                            referenceDate = today;
+                        } else {
+                            const min = this.minDate();
+                            const max = this.maxDate();
+                            const disabledTimes = this.disabledTimestamps();
+                            const disabledDays = this.disabledDays();
+                            referenceDate = findClosestValidDate(today, min, max, disabledTimes, disabledDays);
+                        }
+                    }
+                } else {
+                    // For single-select, align the view to the selected date or fall back to the closest valid date.
+                    if (val instanceof Date) {
+                        referenceDate = val;
+                    } else if (Array.isArray(val) && val.length > 0) {
+                        referenceDate = new Date(Math.max(...val.map(d => d.getTime())));
+                    }
+
+                    if (!referenceDate || isNaN(referenceDate.getTime())) {
+                        const min = this.minDate();
+                        const max = this.maxDate();
+                        const disabledTimes = this.disabledTimestamps();
+                        const disabledDays = this.disabledDays();
+                        referenceDate = findClosestValidDate(new Date(), min, max, disabledTimes, disabledDays);
+                    }
                 }
 
-                // 2. FALLBACK: If no selection exists, dynamically look up the first allowed calendar date
-                if (!referenceDate || isNaN(referenceDate.getTime())) {
-                    const min = this.minDate();
-                    const max = this.maxDate();
-                    const disabledTimes = this.disabledTimestamps();
-                    const disabledDays = this.disabledDays();
-
-                    // Start searching from today
-                    referenceDate = findClosestValidDate(new Date(), min, max, disabledTimes, disabledDays);
-                }
-
-                // 3. Update the view tracking states cleanly
+                // Update the view tracking states cleanly on initialization or when single-select value changes.
                 if (referenceDate && !isNaN(referenceDate.getTime())) {
                     this.currentMonth.set(referenceDate.getMonth());
                     this.currentYear.set(referenceDate.getFullYear());
@@ -415,6 +433,14 @@ export class CalendarComponent extends CalendarInputs {
                     }
 
                     this.value.set(Array.from(updatedSelectionMap.values()));
+                }
+
+                // Switch month/year if we chose a filler day
+                const dragMonth = currentDrag.getMonth();
+                const dragYear = currentDrag.getFullYear();
+                if (dragMonth !== this.currentMonth() || dragYear !== this.currentYear()) {
+                    this.currentMonth.set(dragMonth);
+                    this.currentYear.set(dragYear);
                 }
             }
         });

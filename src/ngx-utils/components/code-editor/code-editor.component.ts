@@ -9,7 +9,8 @@ import {
     model,
     signal,
     effect,
-    viewChild
+    viewChild,
+    untracked
 } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 
@@ -98,7 +99,6 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
             if (!editor) return;
 
             const value = this.value() || "";
-            const lang = this.lang();
             const disabled = this.disabled();
 
             const expectedStr = !isString(value) ? JSON.stringify(value, null, 4) : value;
@@ -120,6 +120,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
                     insert: expectedStr
                 };
             }
+
             editor.dispatch(dispatchData);
         });
     }
@@ -138,8 +139,28 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
         Promise.all([
             LoaderUtils.loadScript("https://codemirror.net/codemirror.js", true),
             LoaderUtils.loadScript("https://cdn.jsdelivr.net/npm/jsonlint", true),
-        ]).then(() => {
+        ]).then(() => this.initEditor());
+    }
 
+    registerOnChange(fn: any) {
+        this.onChange = fn;
+    }
+
+    registerOnTouched(fn: any) {
+        this.onTouched = fn;
+    }
+
+    writeValue(value: string) {
+        this.value.set(value);
+        this.cdr.markForCheck();
+    }
+
+    setDisabledState(isDisabled: boolean) {
+        this.disabled.set(isDisabled);
+    }
+
+    protected initEditor(): void {
+        untracked(() => {
             const { basicSetup } = CM["codemirror"];
             const { Compartment } = CM["@codemirror/state"];
             const { EditorView } = CM["@codemirror/view"];
@@ -174,8 +195,9 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
                 if (update.docChanged) {
                     // Grab the full string payload of the document
                     const value = update.state.doc.toString();
+                    const lang = untracked(() => this.lang());
                     let parsedValue: any;
-                    if (this.lang() === "json") {
+                    if (lang === "json") {
                         try {
                             parsedValue = JSON.parse(value);
                         } catch (e) {
@@ -192,6 +214,8 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
 
             // Initialize editor on an HTMLElement
             const value = this.value() || "";
+            const disabled = this.disabled();
+
             this.langCompartment = new Compartment();
             this.editableCompartment = new Compartment();
             this.editor.set(new EditorView({
@@ -199,29 +223,13 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
                 extensions: [
                     basicSetup,
                     this.langCompartment.of(langExtension),
-                    this.editableCompartment.of(EditorView.editable.of(!this.disabled())),
+                    this.editableCompartment.of(EditorView.editable.of(!disabled)),
+                    EditorView.lineWrapping,
                     jsonLinter,
                     changeHandler
                 ],
                 parent: this.editorElem()?.nativeElement
             }));
         });
-    }
-
-    registerOnChange(fn: any) {
-        this.onChange = fn;
-    }
-
-    registerOnTouched(fn: any) {
-        this.onTouched = fn;
-    }
-
-    writeValue(value: string) {
-        this.value.set(value);
-        this.cdr.markForCheck();
-    }
-
-    setDisabledState(isDisabled: boolean) {
-        this.disabled.set(isDisabled);
     }
 }
