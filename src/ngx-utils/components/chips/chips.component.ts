@@ -199,7 +199,6 @@ export class ChipsComponent implements ControlValueAccessor, OnChanges {
     enterOption(src: string | number): boolean {
         const value = String(src);
         let option = this.createOption(value);
-        console.log("enter option called", src, value, option);
         if (!option && value && this.filteredOptions?.length === 1) {
             const regex = new RegExp(value, "gi");
             option = this.filteredOptions.find(o => o.label?.match(regex));
