@@ -2,6 +2,18 @@
     * {
         box-sizing: border-box;
     }
+
+    li {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    li > label {
+        font-weight: bold;
+        display: inline-block;
+        margin: 0;
+    }
 }
 
 .list-enum {
