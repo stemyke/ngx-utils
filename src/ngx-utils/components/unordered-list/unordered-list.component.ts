@@ -27,6 +27,7 @@ export class UnorderedListComponent implements OnChanges, AfterContentInit, Afte
 
     @Input() data: any;
     @Input() keyPrefix: string;
+    @Input() key: string;
     @Input() listStyle: UnorderedListStyle;
     @Input() path: string;
     @Input() level: number;

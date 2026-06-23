@@ -1,6 +1,6 @@
 import {Directive, ElementRef, Input, OnChanges, ViewContainerRef} from "@angular/core";
 import {UnorderedListStyle, UnorderedListTemplate, UnorderedListTemplates} from "../common-types";
-import {ObjectUtils} from "../utils/object.utils";
+import {ObjectUtils, isObject, getType} from "../utils/object.utils";
 
 @Directive({
     standalone: false,
@@ -12,6 +12,7 @@ export class UnorderedListItemDirective implements OnChanges {
     @Input() type: string;
     @Input() data: any;
     @Input() keyPrefix: string;
+    @Input() key: string;
     @Input() listStyle: UnorderedListStyle;
     @Input() path: string;
     @Input() level: number;
@@ -39,10 +40,10 @@ export class UnorderedListItemDirective implements OnChanges {
             this.item.value = value;
             this.path = ObjectUtils.isNullOrUndefined(this.path) ? "" : this.path.toString();
             this.isArray = ObjectUtils.isArray(this.data);
-            this.isObject = ObjectUtils.isObject(this.data);
+            this.isObject = isObject(this.data);
             this.valueIsArray = ObjectUtils.isArray(this.item.value);
-            this.valueIsObject = ObjectUtils.isObject(this.item.value);
-            this.valueType = ObjectUtils.getType(this.item.value);
+            this.valueIsObject = isObject(this.item.value);
+            this.valueType = getType(this.item.value);
             const context: any = this;
             const template = this
                 .templates

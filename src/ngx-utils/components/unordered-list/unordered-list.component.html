@@ -1,30 +1,33 @@
 <ng-template let-keyPrefix="keyPrefix" let-key="item.key" #defaultKeyTemplate>
     <label>{{ (keyPrefix ? keyPrefix + key : key) | translate }}:</label>
 </ng-template>
-<ng-template let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-key="item.key" let-value="item.value" let-path="path"
-             let-templates="templates" let-type="valueType" #defaultValueTemplate>
+<ng-template let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-key="key" let-item="item" let-path="path"
+             let-templates="templates" let-type="valueType" let-level="level" #defaultValueTemplate>
     @if (type === 'enum') {
-        <span [ngClass]="`list-enum enum-${key} enum-value-${value}`">
-            <span>{{ `${key}.${value}` | translate }}</span>
+        @let enumKey = key || item.key;
+        <span [ngClass]="`list-enum enum-${enumKey} enum-value-${item.value}`">
+            <span>{{ `${enumKey}.${item.value}` | translate }}</span>
         </span>
     }
     @else if (type === 'object' || type === 'array') {
-        <unordered-list [data]="value"
+        <unordered-list [data]="item.value"
                         [keyPrefix]="keyPrefix"
+                        [key]="item.key"
                         [listStyle]="listStyle"
                         [path]="path"
                         [level]="level + 1"
                         [templates]="templates"></unordered-list>
     } @else {
-        <span [innerHTML]="value"></span>
+        <span [innerHTML]="item.value"></span>
     }
 </ng-template>
 <ng-template let-item="item" let-data="data" let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-path="path" let-level="level" let-templates="templates" #defaultItemTemplate>
     <ng-template #itemKey>
-        <ng-container [unorderedListItem]="item"
-                      type="key"
+        <ng-container type="key"
+                      [unorderedListItem]="item"
                       [data]="data"
                       [keyPrefix]="keyPrefix"
+                      [key]="key"
                       [listStyle]="listStyle"
                       [path]="path"
                       [level]="level"
@@ -32,10 +35,11 @@
                       [defaultTemplates]="defaultTemplates"></ng-container>
     </ng-template>
     <ng-template #itemValue>
-        <ng-container [unorderedListItem]="item"
-                      type="value"
+        <ng-container type="value"
+                      [unorderedListItem]="item"
                       [data]="data"
                       [keyPrefix]="keyPrefix"
+                      [key]="key"
                       [listStyle]="listStyle"
                       [path]="path"
                       [level]="level"
