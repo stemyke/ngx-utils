@@ -129,7 +129,13 @@ export class AppComponent implements OnInit {
         this.asset = "67e69e44638845f9da9f1278";
         this.html = `<b>Bold</b> <i>Italic</i>`;
         this.listData = {
-            deliveryMethod: new Enum("standard")
+            deliveryMethod: new Enum("standard"),
+            deliveryDatas: {
+                test: new Enum("express")
+            },
+            other: {
+                test: [new Enum("wow")]
+            }
         };
         this.rects = [
             new Rect(10, 30, 15, 15, 10),

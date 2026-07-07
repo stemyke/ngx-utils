@@ -12,6 +12,7 @@
 </dropdown-box>
 <hr>
 <div class="app-wrap">
+    <unordered-list [data]="listData"></unordered-list>
     <date-picker [(ngModel)]="strDate" [strict]="false" [min]="minDate" [disabledDays]="disabledDays"></date-picker>
     {{ strDate }}
     <date-picker [(value)]="strDateStrict" [min]="minDate" [disabledDays]="disabledDays"></date-picker>
@@ -36,7 +37,6 @@
     <upload [accept]="['jpg', 'png']" [disabled]="false" [multiple]="true" [(ngModel)]="assets"></upload>
     <upload [accept]="['jpg', 'png']" [disabled]="true" [multiple]="false" [(ngModel)]="asset"></upload>
     <upload [accept]="['jpg', 'png']" [disabled]="false" [multiple]="false" [(ngModel)]="asset"></upload>
-    <unordered-list [data]="listData"></unordered-list>
     <interactive-canvas [width]="100" [height]="100" [beforeItems]="renderers">
         @for (rect of rects; track ix; let ix = $index) {
         <interactive-rect [position]="rect.center" [width]="rect.width" [height]="rect.height"
