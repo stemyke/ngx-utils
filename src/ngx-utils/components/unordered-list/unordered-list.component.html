@@ -2,7 +2,7 @@
     <label>{{ (keyPrefix ? keyPrefix + key : key) | translate }}:</label>
 </ng-template>
 <ng-template let-keyPrefix="keyPrefix" let-listStyle="listStyle" let-key="key" let-item="item" let-path="path"
-             let-templates="templates" let-type="valueType" let-level="level" #defaultValueTemplate>
+             let-templates="templates" let-type="valueType" #defaultValueTemplate>
     @if (type === 'enum') {
         @let enumKey = key || item.key;
         <span [ngClass]="`list-enum enum-${enumKey} enum-value-${item.value}`">
@@ -15,7 +15,7 @@
                         [key]="item.key"
                         [listStyle]="listStyle"
                         [path]="path"
-                        [level]="level"
+                        [level]="level + 1"
                         [templates]="templates"></unordered-list>
     } @else {
         <span [innerHTML]="item.value"></span>
