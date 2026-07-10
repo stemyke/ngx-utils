@@ -12,6 +12,8 @@ import {
 import {IPaginationData, ITimer, PaginationDataLoader, PaginationItemContext} from "../common-types";
 import {TimerUtils} from "../utils/timer.utils";
 
+const emptyData = [];
+
 @Directive({
     standalone: false,
     selector: "[pagination]",
@@ -23,8 +25,8 @@ export class PaginationDirective implements OnChanges {
         return this.data ? this.data.total : 0;
     }
 
-    get items(): any[] {
-        return this.data ? this.data.items : [];
+    get items(): ReadonlyArray<object> {
+        return this.data ? this.data.items : emptyData;
     }
 
     @Input("pagination") loader: PaginationDataLoader;
@@ -58,8 +60,10 @@ export class PaginationDirective implements OnChanges {
     }
 
     refresh(time?: number): void {
-        this.renderer.addClass(this.element.nativeElement, "loading");
         time = isNaN(time) || time <= 0 ? this.updateTime : time;
+        this.renderer.addClass(this.element.nativeElement, "loading");
+        this.data = null;
+        this.onRefresh.emit();
         this.updateTimer.time = isNaN(time) || time <= 0 ? 350 : time;
         Promise.resolve(this.waitFor).then(() => {
             this.updateTimer.run();

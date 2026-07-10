@@ -98,7 +98,7 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
     cols: string[];
     sortable: boolean;
 
-    get items(): any[] {
+    get items(): ReadonlyArray<object> {
         return !this.pagination ? [] : this.pagination.items;
     }
 
