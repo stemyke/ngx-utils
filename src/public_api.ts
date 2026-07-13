@@ -248,7 +248,8 @@ export {
     provideWithOptions,
     injectOptions,
     DiffEntityResult,
-    diffEntities
+    diffEntities,
+    convertTableColumns
 } from "./ngx-utils/utils/misc";
 export {
     getType, isObject, isDefined, isDate, isString, isStringWithValue, isFunction, toStringArray, ObjectUtils

@@ -4,7 +4,7 @@ import { ActivatedRouteSnapshot, Data, LoadChildrenCallback, Route, Routes, UrlT
 import { Observable } from "rxjs";
 import { DurationLikeObject } from "luxon";
 
-import { MaybePromise, StringKeys } from "./helper-types";
+import {MaybePromise, RequireAtLeastOne, StringKeys} from "./helper-types";
 
 // --- Util
 export type DurationUnit = StringKeys<DurationLikeObject>;
@@ -776,18 +776,20 @@ export type ControlValueAccesFn<T = any> = (value?: T) => void;
 // --- Dynamic table ---
 export type TableFilterType = "text" | "enum" | "checkbox";
 
-export interface ITableOrders {
-    [column: string]: string;
-}
-
 export interface ITableColumn {
-    title: string;
+    title?: string;
     sort?: string;
     filter?: boolean;
     filterType?: TableFilterType;
     enum?: string[];
     enumPrefix?: string;
     [key: string]: any;
+}
+
+export type TableColumn = RequireAtLeastOne<ITableColumn>;
+
+export interface ITableOrders {
+    [column: string]: string | TableColumn;
 }
 
 export interface ITableColumns {

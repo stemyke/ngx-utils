@@ -27,7 +27,7 @@ import {
 } from "../../common-types";
 import {ObjectUtils} from "../../utils/object.utils";
 import {UniqueUtils} from "../../utils/unique.utils";
-import {checkTransitions} from "../../utils/misc";
+import {checkTransitions, convertTableColumns} from "../../utils/misc";
 
 import {DynamicTableTemplateDirective} from "../../directives/dynamic-table-template.directive";
 import {PaginationDirective} from "../../directives/pagination.directive";
@@ -185,18 +185,7 @@ export class DynamicTableComponent implements AfterViewInit, OnChanges, OnDestro
         const orderBy = this.orderBy;
         if (changes.columns) {
             const columns = changes.columns.currentValue || [];
-            this.columnDefs = ObjectUtils.isArray(columns) ? columns.reduce((result, column) => {
-                if (!ObjectUtils.isString(column) || column.length == 0)
-                    return result;
-                result[column] = {title: `${this.titlePrefix}.${column}`, sort: column};
-                return result;
-            }, {}) : Object.keys(columns).reduce((result, key) => {
-                const value = columns[key];
-                result[key] = !value || ObjectUtils.isString(value)
-                    ? {title: `${this.titlePrefix}.${key}`, sort: value}
-                    : value;
-                return result;
-            }, {} as ITableColumns);
+            this.columnDefs = convertTableColumns(columns, this.titlePrefix);
             this.cols = Object.keys(this.columnDefs);
             this.cols.forEach(col => {
                 const column = this.columnDefs[col];

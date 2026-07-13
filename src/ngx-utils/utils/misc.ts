@@ -1,6 +1,15 @@
 import {inject, Injector, Provider, Type, ValueProvider, ɵComponentDef as ComponentDef} from "@angular/core";
-import {CssSelector, CssSelectorList, TypedFactoryProvider, TypedValueProvider} from "../common-types";
+import {
+    CssSelector,
+    CssSelectorList,
+    ITableColumn,
+    ITableColumns,
+    TableColumns,
+    TypedFactoryProvider,
+    TypedValueProvider
+} from "../common-types";
 import {DYNAMIC_ENTRY_COMPONENTS, OPTIONS_TOKEN} from "../tokens";
+import {isString} from "./object.utils";
 
 export function isBrowser(): boolean {
     return typeof window !== "undefined";
@@ -181,4 +190,21 @@ export function diffEntities<T extends { id?: string | number }>(current: T[], i
         // 3. Updated: ID exists in both lists
         updated: incoming.filter(item => item.id && currentMap.has(item.id))
     };
+}
+
+export function convertTableColumns(columns: TableColumns, titlePrefix: string = "label"): ITableColumns {
+    return Array.isArray(columns) ? columns.reduce((result, column) => {
+        if (!isString(column) || column.length == 0)
+            return result;
+        result[column] = {title: `${titlePrefix}.${column}`, sort: column};
+        return result;
+    }, {}) : Object.keys(columns).reduce((result, key) => {
+        const value = columns[key];
+        const column = !value || isString(value)
+            ? {sort: value as string}
+            : value as ITableColumn;
+        column.title = column.title || `${titlePrefix}.${key}`;
+        result[key] = column;
+        return result;
+    }, {} as ITableColumns);
 }
