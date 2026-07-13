@@ -51,8 +51,10 @@
         max-width: calc(100% - var(--chips-padding-horizontal) * 2);
         display: flex;
         gap: 5px;
-        overflow: auto;
         border-radius: var(--chips-border-radius);
+        flex-wrap: wrap;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 
     .chips-button {
